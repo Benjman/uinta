@@ -1,7 +1,7 @@
 #ifndef UINTA_SHADER_DTO_H
 #define UINTA_SHADER_DTO_H
 
-#include <uinta/io.h>
+#include <uinta/types.h>
 
 namespace uinta {
 
