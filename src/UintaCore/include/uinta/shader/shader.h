@@ -3,9 +3,6 @@
 
 #include "shader_dto.h"
 
-#include <future>
-#include <string>
-
 #include <GLES3/gl3.h>
 
 namespace uinta {
