@@ -1,0 +1,11 @@
+[submodule "glfw"]
+	path = dep/glfw
+	url = https://github.com/glfw/glfw.git
+	branch = 3.3-stable
+[submodule "glad"]
+	path = dep/glad
+	url = https://github.com/Dav1dde/glad.git
+[submodule "EnTT"]
+	path = dep/entt
+	url = https://github.com/skypjack/entt.git
+	branch = master
