@@ -7,26 +7,30 @@
  * Hardware specific data, like available memory, max threads, etc.
  */
 
-#ifdef _WIN32
-#define UINTA_OS "Windows 32-bit"
-#elif _WIN64
-#define UINTA_OS "Windows 64-bit"
-#elif __APPLE__ || __MACH__
-#define UINTA_OS "Mac OSX"
-#elif __linux__
-#define UINTA_OS "Linux"
-#elif __FreeBSD__
-#define UINTA_OS "FreeBSD"
-#elif __unix || __unix__
-#define UINTA_OS "Unix"
-#else
-#define UINTA_OS "Other"
-#endif
-
 #include <thread>
 
 inline size_t uintaGetHardwareConcurrencyCount() {
 	return std::thread::hardware_concurrency();
+}
+
+inline const char *uintaGetOsName() {
+
+#ifdef _WIN32
+	return "Windows 32-bit";
+#elif _WIN64
+	return "Windows 64-bit";
+#elif __APPLE__ || __MACH__
+	return "Mac OSX";
+#elif __linux__
+	return "Linux";
+#elif __FreeBSD__
+	return "FreeBSD";
+#elif __unix || __unix__
+	return "Unix";
+#else
+	return "Other";
+#endif
+
 }
 
 #endif //UINTA_OS_H

@@ -16,7 +16,7 @@ namespace uinta::internal {
 uinta::internal::WindowMap uinta::internal::windows;
 
 bool uinta::glfw::initialize(GlfwDto &dto) {
-    std::cout << "Initializing for target " << UINTA_OS <<  std::endl;
+    std::cout << "Initializing for target " << uintaGetOsName() <<  std::endl;
 
     initializeGlfw(dto);
     if (dto.getStatus() != Initialized) {
