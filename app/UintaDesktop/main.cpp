@@ -15,7 +15,7 @@ int main(const int argc, const char **argv) {
 	GlfwDto dto(800, 600, "Test Window Creation");
 //    dto.setHeadless(true);
 
-	if (!initialize(dto) && dto.getStatus() == Error) {
+	if (!initialize(dto) || dto.getStatus() == Error) {
 		return -1;
 	}
 
