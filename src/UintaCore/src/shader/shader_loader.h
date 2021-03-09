@@ -19,8 +19,8 @@ namespace uinta {
 				loadSources(dto);
 			}
 
-			assert(!std::string(dto._vertSource).empty());
-			assert(!std::string(dto._fragSource).empty());
+			ASSERT(!std::string(dto._vertSource).empty());
+			ASSERT(!std::string(dto._fragSource).empty());
 
 			GLuint vertId = compileShader(GL_VERTEX_SHADER, dto._vertSource);
 			GLuint fragId = compileShader(GL_FRAGMENT_SHADER, dto._fragSource);
@@ -31,8 +31,8 @@ namespace uinta {
 
 	private:
 		static void loadSources(ShaderDto &dto) {
-			assert(!std::string(dto._vertPath).empty());
-			assert(!std::string(dto._fragPath).empty());
+			ASSERT(!std::string(dto._vertPath).empty());
+			ASSERT(!std::string(dto._fragPath).empty());
 
 			// TODO thread this bad boy
 			File vertFile = File::requestFile(dto._vertPath);
