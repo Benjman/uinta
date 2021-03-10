@@ -67,7 +67,7 @@ void uinta::Vbo::storeData(const void *data, vbo_size_t size, vbo_size_t offset)
 	if (size > _size) {
 		resize(size);
 	}
-	glBufferSubData(_target, offset, _size, data);
+	glBufferSubData(_target, offset, size, data);
 	checkGlErrors();
 	_data = data;
 }
