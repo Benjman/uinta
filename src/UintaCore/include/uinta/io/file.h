@@ -8,10 +8,10 @@ namespace uinta {
 	class FileDto;
 
 	class File {
-		file_size _contentLength;
+		file_size_t _contentLength;
 		char *_contents;
 
-		File(const char *contents, file_size contentLength);
+		File(const char *contents, file_size_t contentLength);
 
 	public:
 		static File requestFile(const char *path);
@@ -20,7 +20,7 @@ namespace uinta {
 			delete[] _contents;
 		}
 
-		[[nodiscard]] file_size getContentLength() const {
+		[[nodiscard]] file_size_t getContentLength() const {
 			return _contentLength;
 		}
 
