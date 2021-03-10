@@ -17,7 +17,6 @@ uinta::Vbo uinta::Vbo::requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_si
 	}
 
 	vbo.bind();
-	vbo.resize(size);
 	vbo.storeData(data, size);
 
 	return vbo;
@@ -58,7 +57,7 @@ void uinta::Vbo::checkGlErrors() {
 }
 
 void uinta::Vbo::resize(vbo_size_t size) {
-	glBufferData(_target, size, _data, _usage);
+	glBufferData(_target, size, nullptr, _usage);
 	checkGlErrors();
 	_size = size;
 }
@@ -69,7 +68,6 @@ void uinta::Vbo::storeData(const void *data, vbo_size_t size, vbo_size_t offset)
 	}
 	glBufferSubData(_target, offset, size, data);
 	checkGlErrors();
-	_data = data;
 }
 
 void uinta::Vbo::bind() const {
