@@ -9,3 +9,6 @@
 	path = dep/entt
 	url = https://github.com/skypjack/entt.git
 	branch = master
+[submodule "glm"]
+	path = dep/glm
+	url = https://github.com/g-truc/glm.git
