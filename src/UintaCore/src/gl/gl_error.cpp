@@ -66,8 +66,10 @@ bool checkShaderErrors(gl_error_check_type type) {
 
 void uinta::checkGlErrors(gl_error_check_type type) {
 #ifdef UINTA_DEBUG
-	if (checkGenBuffersError(type) ||
-		checkVboErrors(type))
+	if (
+			checkGenBuffersError(type) ||
+			checkVboErrors(type)
+			)
 		return;
 #endif
 }
