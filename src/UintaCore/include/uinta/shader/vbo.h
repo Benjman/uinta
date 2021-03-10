@@ -18,8 +18,6 @@ namespace uinta {
 
 		static Vbo requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_size_t size, const void *data);
 
-		static void checkGlErrors();
-
 	public:
 		Vbo(vbo_target_t target, vbo_usage_t usage) : Vbo(target, usage, INVALID_VBO_ID, 0) {}
 
