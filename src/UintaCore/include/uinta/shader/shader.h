@@ -1,9 +1,7 @@
 #ifndef UINTA_SHADER_H
 #define UINTA_SHADER_H
 
-#include "shader_dto.h"
-
-#include <GLES3/gl3.h>
+#include "shader_types.h"
 
 namespace uinta {
 
@@ -16,12 +14,12 @@ namespace uinta {
 	public:
 		static Shader createShader(ShaderDto &dto);
 
-		[[nodiscard]] GLuint getGlId() const { return _glId; }
+		[[nodiscard]] program_id_t getProgramId() const { return _programId; }
 
 	private:
-		explicit Shader(GLuint glId) : _glId(glId) {}
+		explicit Shader(program_id_t programId) : _programId(programId) {}
 
-		GLuint _glId;
+		program_id_t _programId;
 
 	};
 

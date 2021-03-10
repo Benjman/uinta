@@ -10,35 +10,34 @@ namespace uinta {
 		Raw,
 	};
 
-	class ShaderDto {
+	struct ShaderDto {
 		friend class ShaderLoader;
 
-		ShaderSourceType _sourceType;
+		ShaderSourceType sourceType;
 
-		const char *_vertPath;
-		const char *_fragPath;
+		const char *vertPath;
+		const char *fragPath;
 
-		char *_vertSource{};
-		char *_fragSource{};
+		char *vertSource{};
+		char *fragSource{};
 
-		size_t _vertLength;
-		size_t _fragLength;
+		size_t vertLength;
+		size_t fragLength;
 
-	public:
 		ShaderDto(const char *vertPath, const char *fragPath)
 				: ShaderDto(IO, vertPath, fragPath) {}
 
 		ShaderDto(ShaderSourceType sourceType, const char *vert, const char *frag)
-				: _sourceType(sourceType),
-				  _vertPath(sourceType == IO ? vert : ""),
-				  _fragPath(sourceType == IO ? frag : "") {}
+				: sourceType(sourceType),
+				  vertPath(sourceType == IO ? vert : ""),
+				  fragPath(sourceType == IO ? frag : "") {}
 
 		~ShaderDto() {
-			delete[] _vertSource;
-			delete[] _fragSource;
+			delete[] vertSource;
+			delete[] fragSource;
 		}
 	};
 
 }
 
-#endif //UINTA_SHADER_DTO_H
+#endif //UINTASHADERDTOH

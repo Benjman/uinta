@@ -15,15 +15,15 @@ namespace uinta {
 	struct ShaderLoader {
 
 		static Shader loadShader(ShaderDto &dto) {
-			if (dto._sourceType == IO) {
+			if (dto.sourceType == IO) {
 				loadSources(dto);
 			}
 
-			ASSERT(!std::string(dto._vertSource).empty());
-			ASSERT(!std::string(dto._fragSource).empty());
+			ASSERT(!std::string(dto.vertSource).empty());
+			ASSERT(!std::string(dto.fragSource).empty());
 
-			GLuint vertId = compileShader(GL_VERTEX_SHADER, dto._vertSource);
-			GLuint fragId = compileShader(GL_FRAGMENT_SHADER, dto._fragSource);
+			GLuint vertId = compileShader(GL_VERTEX_SHADER, dto.vertSource);
+			GLuint fragId = compileShader(GL_FRAGMENT_SHADER, dto.fragSource);
 			GLuint programId = linkProgram(vertId, fragId);
 
 			return Shader(programId);
@@ -31,21 +31,21 @@ namespace uinta {
 
 	private:
 		static void loadSources(ShaderDto &dto) {
-			ASSERT(!std::string(dto._vertPath).empty());
-			ASSERT(!std::string(dto._fragPath).empty());
+			ASSERT(!std::string(dto.vertPath).empty());
+			ASSERT(!std::string(dto.fragPath).empty());
 
 			// TODO thread this bad boy
-			File vertFile = File::requestFile(dto._vertPath);
-			File fragFile = File::requestFile(dto._fragPath);
+			File vertFile = File::requestFile(dto.vertPath);
+			File fragFile = File::requestFile(dto.fragPath);
 
-			dto._vertLength = vertFile.getContentLength();
-			dto._fragLength = fragFile.getContentLength();
+			dto.vertLength = vertFile.getContentLength();
+			dto.fragLength = fragFile.getContentLength();
 
-			dto._vertSource = new char[dto._vertLength]{};
-			dto._fragSource = new char[dto._fragLength]{};
+			dto.vertSource = new char[dto.vertLength]{};
+			dto.fragSource = new char[dto.fragLength]{};
 
-			strncpy(dto._vertSource, vertFile.getContents(), dto._vertLength - 1);
-			strncpy(dto._fragSource, fragFile.getContents(), dto._fragLength - 1);
+			strncpy(dto.vertSource, vertFile.getContents(), dto.vertLength - 1);
+			strncpy(dto.fragSource, fragFile.getContents(), dto.fragLength - 1);
 		}
 
 		static GLuint compileShader(GLuint type, const char *source) {
@@ -72,7 +72,7 @@ namespace uinta {
 		static GLuint linkProgram(GLuint vertId, GLuint fragId) {
 			GLuint id = glCreateProgram();
 			glAttachShader(id, vertId);
-			glAttachShader(id, 5);
+			glAttachShader(id, fragId);
 			glLinkProgram(id);
 
 #ifdef UINTA_DEBUG
