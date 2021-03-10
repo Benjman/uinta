@@ -1,7 +1,7 @@
 #ifndef UINTA_SHADER_H
 #define UINTA_SHADER_H
 
-#include "shader_types.h"
+#include <uinta/gl/gl_types.h>
 
 namespace uinta {
 

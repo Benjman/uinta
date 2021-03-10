@@ -4,8 +4,10 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
+        src/gl/gl_state.cpp
         src/io/file.cpp
         src/shader/shader.cpp
+        src/shader/vbo.cpp
         )
 
 set(UINTA_CORE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)

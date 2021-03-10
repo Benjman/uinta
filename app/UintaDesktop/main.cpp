@@ -1,17 +1,13 @@
 #include "glfw.h"
 
-#include <uinta/exception.h>
 #include <uinta/shader.h>
 
 using namespace uinta;
 using namespace uinta::glfw;
 
-#include <iostream>
-#include <string>
-
 void debug();
 
-int main(const int argc, const char **argv) {
+int main() {
 	GlfwDto dto(800, 600, "Test Window Creation");
 //    dto.setHeadless(true);
 
@@ -34,10 +30,10 @@ int main(const int argc, const char **argv) {
 }
 
 void debug() {
-	try {
-		ShaderDto dto("/home/ben/Documents/shader.vert", "/home/ben/Documents/shader.frag");
-		Shader shader = Shader::createShader(dto);
-	} catch (const Exception &e) {
-		std::cerr << e.what() << std::endl;
-	}
+	Vbo vbo = Vbo::requestVbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW, 1024);
+
+	float_t data[] = {
+			1.f, 2.f, 3.f
+	};
+	vbo.storeData(data, sizeof(data));
 }
