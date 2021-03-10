@@ -9,12 +9,12 @@ uinta::Vbo uinta::Vbo::requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_si
 	Vbo vbo(target, usage);
 
 	glGenBuffers(1, &vbo._id);
+	checkGlErrors();
 	if (vbo._id == INVALID_VBO_ID) {
 		// TODO error logging
 		std::cerr << "Invalid OpenGL buffer ID returned for VBO." << std::endl;
 		return vbo;
 	}
-	checkGlErrors();
 
 	vbo.bind();
 	vbo.resize(size);
