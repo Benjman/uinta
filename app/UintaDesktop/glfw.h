@@ -66,7 +66,7 @@ namespace uinta::glfw {
             _title = title;
         }
 
-        bool isHeadless() const {
+        [[nodiscard]] bool isHeadless() const {
             return _headless;
         }
 

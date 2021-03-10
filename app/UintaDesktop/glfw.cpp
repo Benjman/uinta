@@ -106,6 +106,7 @@ void uinta::glfw::printOSInfo() {
 
     std::cout << "\tOpenGL version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "\tMax threads: " << uintaGetHardwareConcurrencyCount() << std::endl;
+    std::cout << std::endl;
 }
 
 void uinta::glfw::setContext(GlfwDto &dto) {
