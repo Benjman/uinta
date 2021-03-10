@@ -9,7 +9,7 @@ namespace uinta {
 		Shader
 	};
 
-	void checkGlErrors(gl_error_check_type type);
+	void checkGlError(gl_error_check_type type);
 
 }
 
