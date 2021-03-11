@@ -7,7 +7,7 @@ uinta::Vbo uinta::Vbo::requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_si
 	Vbo vbo(target, usage);
 
 	glGenBuffers(1, &vbo._id);
-	checkGlError(GenBuffer);
+	checkGlError(GL_GEN_BUFFERS);
 
 	vbo.bind();
 	vbo.storeData(data, size);
@@ -17,7 +17,7 @@ uinta::Vbo uinta::Vbo::requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_si
 
 void uinta::Vbo::resize(vbo_size_t size) {
 	glBufferData(_target, size, nullptr, _usage);
-	checkGlError(VBO);
+	checkGlError(GL_BUFFER_DATA);
 	_size = size;
 }
 
@@ -26,12 +26,12 @@ void uinta::Vbo::storeData(const void *data, vbo_size_t size, vbo_size_t offset)
 		resize(size);
 	}
 	glBufferSubData(_target, offset, size, data);
-	checkGlError(VBO);
+	checkGlError(GL_BUFFER_SUB_DATA);
 }
 
 void uinta::Vbo::bind() const {
 	if (gl_state::getBoundBuffer(_target) == _id) return;
 	glBindBuffer(_target, _id);
-	checkGlError(VBO);
+	checkGlError(GL_BIND_BUFFER);
 	gl_state::setBoundBuffer(_target, _id);
 }

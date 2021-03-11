@@ -103,6 +103,24 @@ void checkGlBindBuffer(GLenum err) {
 	}
 }
 
+void checkGlDisableVertexAttribArray(GLenum err) {
+	if (err == GL_INVALID_VALUE) {
+		std::cerr << "glDisableVertexAttribArray  GL_INVALID_VALUE: _index is greater than or equal to ";
+		std::cerr << "GL_MAX_VERTEX_ATTRIBS" << std::endl;
+	} else {
+		std::cerr << "Unknown glDisableVertexAttribArray error." << std::endl;
+	}
+}
+
+void checkGlEnableVertexAttribArray(GLenum err) {
+	if (err == GL_INVALID_VALUE) {
+		std::cerr << "glEnableVertexAttribArray  GL_INVALID_VALUE: _index is greater than or equal to ";
+		std::cerr << "GL_MAX_VERTEX_ATTRIBS" << std::endl;
+	} else {
+		std::cerr << "Unknown glEnableVertexAttribArray error." << std::endl;
+	}
+}
+
 void uinta::checkGlError(gl_error_check_type type) {
 #ifdef UINTA_DEBUG
 	GLenum err = glGetError();
@@ -123,6 +141,12 @@ void uinta::checkGlError(gl_error_check_type type) {
 			break;
 		case GL_BIND_BUFFER:
 			checkGlBindBuffer(err);
+			break;
+		case GL_DISABLE_VERTEX_ATTRIB_ARRAY:
+			checkGlDisableVertexAttribArray(err);
+			break;
+		case GL_ENABLE_VERTEX_ATTRIB_ARRAY:
+			checkGlEnableVertexAttribArray(err);
 			break;
 	}
 #endif

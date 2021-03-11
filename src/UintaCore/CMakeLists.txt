@@ -9,6 +9,7 @@ set(SOURCES ${SOURCES}
         src/io/file.cpp
         src/shader/shader.cpp
         src/shader/vbo.cpp
+        src/shader/vertex_attribute.cpp
         )
 
 set(UINTA_CORE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)

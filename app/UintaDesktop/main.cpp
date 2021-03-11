@@ -9,7 +9,7 @@ void debug();
 
 int main() {
 	GlfwDto dto(800, 600, "Test Window Creation");
-//    dto.setHeadless(true);
+    dto.setHeadless(true);
 
 	if (!initialize(dto) || dto.getStatus() == Error) {
 		return -1;
@@ -30,10 +30,5 @@ int main() {
 }
 
 void debug() {
-	Vbo vbo = Vbo::requestVbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW, 1024);
-
-	float_t data[] = {
-			1.f, 2.f, 3.f
-	};
-	vbo.storeData(data, sizeof(data));
+	VertexAttribute attribute(0, 3, GL_FLOAT, false, 3 * sizeof(float_t), 0);
 }
