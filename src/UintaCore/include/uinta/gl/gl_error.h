@@ -4,9 +4,11 @@
 namespace uinta {
 
 	enum gl_error_check_type {
-		VBO,
-		GenBuffer,
-		Shader
+		GL_BIND_BUFFER,
+		GL_BUFFER_DATA,
+		GL_BUFFER_SUB_DATA,
+		GL_GEN_BUFFERS,
+		GL_VERTEX_ATTRIB_POINTER,
 	};
 
 	void checkGlError(gl_error_check_type type);
