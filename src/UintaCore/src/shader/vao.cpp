@@ -34,12 +34,13 @@ void uinta::Vao::unbind() {
 	}
 }
 
-uinta::VertexAttribute uinta::Vao::createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
+uinta::VertexAttribute *uinta::Vao::createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
 												   attrib_normalize_t normalized, attrib_stride_t stride,
 												   const void *offset) {
-	VertexAttribute attrib(this, index, size, type, normalized, stride, offset);
-	_attributes.emplace_back(&attrib);
-	return attrib;
+	bind();
+	auto *attribute = new VertexAttribute(index, size, type, normalized, stride, offset);
+	_attributes.emplace_back(attribute);
+	return attribute;
 }
 
 void uinta::Vao::disableAllAttributes() {

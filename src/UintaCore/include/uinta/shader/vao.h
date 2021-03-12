@@ -23,7 +23,7 @@ namespace uinta {
 
 		void bind() const;
 
-		VertexAttribute createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
+		VertexAttribute *createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
 										attrib_normalize_t normalized, attrib_stride_t stride, const void *offset);
 
 		void enableAllAttributes();
