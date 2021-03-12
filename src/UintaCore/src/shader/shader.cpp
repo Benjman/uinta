@@ -13,7 +13,3 @@ void uinta::Shader::use() const {
 	glUseProgram(_id);
 	glCheckError(GL_USE_PROGRAM);
 }
-
-uinta::Shader::~Shader() {
-	glDeleteShader(_id);
-}

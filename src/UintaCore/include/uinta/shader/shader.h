@@ -18,8 +18,6 @@ namespace uinta {
 
 		void use() const;
 
-		~Shader();
-
 	private:
 		explicit Shader(program_id_t programId) : _id(programId) {}
 
