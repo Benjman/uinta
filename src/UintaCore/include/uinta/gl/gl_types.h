@@ -16,11 +16,16 @@ namespace uinta {
 	using vbo_usage_t = GLenum;
 	using vbo_size_t = GLsizeiptr;
 
+	// VAO
+	using vao_id_t = GLuint;
+
 	// Vertex Attribute
 	using attrib_index_t = GLuint;
 	using attrib_normalize_t = GLboolean;
 	using attrib_stride_t = GLsizei;
 	using attrib_size_t = GLint;
+
+
 
 
 	static inline const location_id_t INVALID_VBO_ID = 0;
