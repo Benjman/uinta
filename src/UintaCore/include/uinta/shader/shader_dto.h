@@ -3,6 +3,8 @@
 
 #include <uinta/types.h>
 
+#include <cstring>
+
 namespace uinta {
 
 	enum ShaderSourceType {
@@ -25,16 +27,18 @@ namespace uinta {
 		size_t fragLength;
 
 		ShaderDto(const char *vertPath, const char *fragPath)
-				: ShaderDto(IO, vertPath, fragPath) {}
+				: ShaderDto(vertPath, fragPath, IO) {}
 
-		ShaderDto(ShaderSourceType sourceType, const char *vert, const char *frag)
-				: sourceType(sourceType),
-				  vertPath(sourceType == IO ? vert : ""),
-				  fragPath(sourceType == IO ? frag : "") {}
+		ShaderDto(const char *vert, const char *frag, ShaderSourceType sourceType)
+				: vertPath(sourceType == IO ? vert : ""),
+				  fragPath(sourceType == IO ? frag : ""),
+				  vertSource(sourceType == Raw ? (char *) vert : (char *) ""),
+				  fragSource(sourceType == Raw ? (char *) frag : (char *) ""),
+				  sourceType(sourceType) {}
 
 		~ShaderDto() {
-			delete[] vertSource;
-			delete[] fragSource;
+			if (strlen(vertPath)) delete[] vertSource;
+			if (strlen(fragPath)) delete[] fragSource;
 		}
 	};
 
