@@ -11,9 +11,16 @@ namespace uinta {
 		GL_ENABLE_VERTEX_ATTRIB_ARRAY,
 		GL_GEN_BUFFERS,
 		GL_VERTEX_ATTRIB_POINTER,
+		GL_CREATE_SHADER,
+		GL_SHADER_SOURCE,
+		GL_COMPILE_SHADER,
+		GL_CREATE_PROGRAM,
+		GL_ATTACH_SHADER,
+		GL_LINK_PROGRAM,
+		GL_DELETE_SHADER,
 	};
 
-	void checkGlError(gl_error_check_type type);
+	void glCheckError(gl_error_check_type type);
 
 }
 

@@ -6,8 +6,9 @@
 
 #include <uinta/io.h>
 #include <uinta/util/assert.h> // NOLINT(modernize-deprecated-headers)
-#include <cstring>
+#include <uinta/gl/gl_error.h>
 
+#include <cstring>
 #include <iostream> // TODO remove after logging is implemented
 
 namespace uinta {
@@ -50,10 +51,13 @@ namespace uinta {
 
 		static GLuint compileShader(GLuint type, const char *source) {
 			GLuint id = glCreateShader(type);
+			glCheckError(GL_CREATE_SHADER);
 
 			glShaderSource(id, 1, &source, nullptr);
+			glCheckError(GL_SHADER_SOURCE);
 
 			glCompileShader(id);
+			glCheckError(GL_COMPILE_SHADER);
 
 #ifdef UINTA_DEBUG
 			// Error checking
@@ -71,9 +75,16 @@ namespace uinta {
 
 		static GLuint linkProgram(GLuint vertId, GLuint fragId) {
 			GLuint id = glCreateProgram();
+			glCheckError(GL_CREATE_PROGRAM);
+
 			glAttachShader(id, vertId);
+			glCheckError(GL_ATTACH_SHADER);
+
 			glAttachShader(id, fragId);
+			glCheckError(GL_ATTACH_SHADER);
+
 			glLinkProgram(id);
+			glCheckError(GL_LINK_PROGRAM);
 
 #ifdef UINTA_DEBUG
 			int success;
@@ -86,7 +97,10 @@ namespace uinta {
 #endif
 
 			glDeleteShader(vertId);
+			glCheckError(GL_DELETE_SHADER);
+
 			glDeleteShader(fragId);
+			glCheckError(GL_DELETE_SHADER);
 
 			return id;
 		}

@@ -12,7 +12,7 @@ uinta::VertexAttribute::VertexAttribute(attrib_index_t index, attrib_size_t size
 		  _offset(offset),
 		  _enabled(enabled) {
 	glVertexAttribPointer(_index, _size, _type, _normalized, _stride, _offset);
-	checkGlError(GL_VERTEX_ATTRIB_POINTER);
+	glCheckError(GL_VERTEX_ATTRIB_POINTER);
 	if (enabled) {
 		enable();
 	}
@@ -20,10 +20,10 @@ uinta::VertexAttribute::VertexAttribute(attrib_index_t index, attrib_size_t size
 
 void uinta::VertexAttribute::disable() const {
 	glDisableVertexAttribArray(_index);
-	checkGlError(GL_DISABLE_VERTEX_ATTRIB_ARRAY);
+	glCheckError(GL_DISABLE_VERTEX_ATTRIB_ARRAY);
 }
 
 void uinta::VertexAttribute::enable() const {
 	glEnableVertexAttribArray(_index);
-	checkGlError(GL_ENABLE_VERTEX_ATTRIB_ARRAY);
+	glCheckError(GL_ENABLE_VERTEX_ATTRIB_ARRAY);
 }
