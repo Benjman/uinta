@@ -8,6 +8,7 @@ set(SOURCES ${SOURCES}
         src/gl/gl_error.cpp
         src/io/file.cpp
         src/shader/shader.cpp
+        src/shader/vao.cpp
         src/shader/vbo.cpp
         src/shader/vertex_attribute.cpp
         )
