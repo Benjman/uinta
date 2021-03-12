@@ -6,8 +6,6 @@
 using namespace uinta;
 using namespace uinta::glfw;
 
-void debug(GlfwDto &dto);
-
 int main() {
 	GlfwDto dto(800, 600, "Test Window Creation");
 //    dto.setHeadless(true);
@@ -16,21 +14,6 @@ int main() {
 		return -1;
 	}
 
-	debug(dto);
-
-//	while (!shouldClose(dto)) {
-	glfwSwapBuffers(dto.getWindow());
-	glfwPollEvents();
-
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-//	}
-
-	terminate();
-	return 0;
-}
-
-void debug(GlfwDto &dto) {
 	const char *vertexShaderSource = "#version 330 core\n"
 									 "layout (location = 0) in vec3 aPos;\n"
 									 "void main()\n"
@@ -73,5 +56,7 @@ void debug(GlfwDto &dto) {
 		glfwSwapBuffers(dto.getWindow());
 		glfwPollEvents();
 	}
-//	other(dto);
+
+	terminate();
+	return 0;
 }
