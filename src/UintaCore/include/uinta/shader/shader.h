@@ -5,7 +5,6 @@
 
 namespace uinta {
 
-	class File;
 	class ShaderDto;
 
 	class Shader {

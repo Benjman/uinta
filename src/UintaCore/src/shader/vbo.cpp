@@ -50,7 +50,7 @@ void uinta::Vbo::bind() const {
 void uinta::Vbo::unbind(uinta::vbo_target_t target) {
 	if (isNotBoundBufferElseSet(target, 0)) {
 		glBindBuffer(target, 0);
-		glCheckError(GL_BIND_BUFFER);
+		// No need fo GL error checking. Binding 0 is always permitted.
 	}
 }
 

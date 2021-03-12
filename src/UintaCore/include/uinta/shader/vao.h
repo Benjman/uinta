@@ -39,8 +39,6 @@ namespace uinta {
 
 		void removeAttribute(VertexAttribute *pAttribute);
 
-		void addAttribute(VertexAttribute *pAttribute);
-
 	}; // class Vao
 
 } // namespace uinta

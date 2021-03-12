@@ -18,6 +18,11 @@ uinta::Vao uinta::Vao::requestVao() {
 uinta::Vao::~Vao() {
 	glDeleteVertexArrays(1, &_id);
 	glCheckError(GL_DELETE_VERTEX_ARRAYS);
+
+	for (auto attribute : _attributes) {
+		attribute->disable();
+		delete attribute;
+	}
 }
 
 void uinta::Vao::bind() const {
@@ -30,7 +35,7 @@ void uinta::Vao::bind() const {
 void uinta::Vao::unbind() {
 	if (isNotBoundVertexArrayElseSet(0)) {
 		glBindVertexArray(0);
-		// No need fo GL error checking. Binding 0 is permitted.
+		// No need fo GL error checking. Binding 0 is always permitted.
 	}
 }
 
@@ -55,14 +60,11 @@ void uinta::Vao::enableAllAttributes() {
 	}
 }
 
-void uinta::Vao::addAttribute(VertexAttribute *attribute) {
-	_attributes.push_back(attribute);
-}
-
 void uinta::Vao::removeAttribute(VertexAttribute *attribute) {
 	auto element = std::find(_attributes.begin(), _attributes.end(), attribute);
 	if (element != _attributes.end()) {
 		attribute->disable();
 		_attributes.erase(element);
+		// TODO test to see if attribute is deallocated
 	}
 }

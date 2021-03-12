@@ -26,10 +26,7 @@ namespace uinta {
 		size_t vertLength;
 		size_t fragLength;
 
-		ShaderDto(const char *vertPath, const char *fragPath)
-				: ShaderDto(vertPath, fragPath, IO) {}
-
-		ShaderDto(const char *vert, const char *frag, ShaderSourceType sourceType)
+		ShaderDto(const char *vert, const char *frag, ShaderSourceType sourceType = IO)
 				: vertPath(sourceType == IO ? vert : ""),
 				  fragPath(sourceType == IO ? frag : ""),
 				  vertSource(sourceType == Raw ? (char *) vert : (char *) ""),

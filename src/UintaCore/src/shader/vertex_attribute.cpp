@@ -1,5 +1,4 @@
 #include <uinta/shader/vertex_attribute.h>
-#include <uinta/shader/vao.h>
 #include <uinta/gl.h>
 
 uinta::VertexAttribute::VertexAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
@@ -7,7 +6,7 @@ uinta::VertexAttribute::VertexAttribute(attrib_index_t index, attrib_size_t size
 										bool enabled)
 		: _index(index),
 		  _enabled(enabled) {
-	glVertexAttribPointer(_index, size, type, normalized, stride, (void *) offset);
+	glVertexAttribPointer(_index, size, type, normalized, stride, offset);
 	glCheckError(GL_VERTEX_ATTRIB_POINTER);
 	if (enabled) {
 		enable(true);

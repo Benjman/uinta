@@ -3,8 +3,6 @@
 
 #include <uinta/gl/gl_types.h>
 
-// TODO release vaos
-
 namespace uinta {
 
 	class Vbo {
