@@ -1,29 +1,37 @@
 #include <uinta/shader/vertex_attribute.h>
+#include <uinta/shader/vao.h>
 #include <uinta/gl.h>
 
-uinta::VertexAttribute::VertexAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
+uinta::VertexAttribute::VertexAttribute(Vao *parent, attrib_index_t index, attrib_size_t size, gl_type_t type,
 										attrib_normalize_t normalized, attrib_stride_t stride, const void *offset,
 										bool enabled)
-		: _index(index),
-		  _size(size),
-		  _type(type),
-		  _normalized(normalized),
-		  _stride(stride),
-		  _offset(offset),
+		: _parent(parent),
+		  _index(index),
 		  _enabled(enabled) {
-	glVertexAttribPointer(_index, _size, _type, _normalized, _stride, _offset);
+	if (_parent != nullptr) {
+		_parent->bind();
+	}
+	glVertexAttribPointer(_index, size, type, normalized, stride, (void *)offset);
 	glCheckError(GL_VERTEX_ATTRIB_POINTER);
 	if (enabled) {
-		enable();
+		enable(true);
 	}
 }
 
-void uinta::VertexAttribute::disable() const {
-	glDisableVertexAttribArray(_index);
-	glCheckError(GL_DISABLE_VERTEX_ATTRIB_ARRAY);
-}
-
-void uinta::VertexAttribute::enable() const {
+void uinta::VertexAttribute::enable(bool force) {
+	if (_enabled && !force) return;
 	glEnableVertexAttribArray(_index);
 	glCheckError(GL_ENABLE_VERTEX_ATTRIB_ARRAY);
+	_enabled = true;
+}
+
+void uinta::VertexAttribute::disable(bool force) {
+	if (!_enabled && !force) return;
+	glDisableVertexAttribArray(_index);
+	glCheckError(GL_DISABLE_VERTEX_ATTRIB_ARRAY);
+	_enabled = false;
+}
+
+uinta::VertexAttribute::~VertexAttribute() {
+	_parent->removeAttribute(this);
 }
