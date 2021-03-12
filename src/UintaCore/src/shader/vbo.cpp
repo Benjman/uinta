@@ -1,3 +1,4 @@
+#include <uinta/shader/vao.h>
 #include <uinta/shader/vbo.h>
 #include <uinta/gl.h>
 
@@ -8,11 +9,15 @@ uinta::Vbo::~Vbo() {
 	glCheckError(GL_DELETE_BUFFERS);
 }
 
-uinta::Vbo uinta::Vbo::requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_size_t size, const void *data) {
+uinta::Vbo uinta::Vbo::requestVbo(Vao *vao, vbo_target_t target, vbo_usage_t usage, vbo_size_t size, const void *data) {
 	Vbo vbo(target, usage);
 
 	glGenBuffers(1, &vbo._id);
 	glCheckError(GL_GEN_BUFFERS);
+
+	if (vao != nullptr) {
+		vao->bind();
+	}
 
 	vbo.bind();
 	vbo.storeData(data, size);
@@ -20,32 +25,33 @@ uinta::Vbo uinta::Vbo::requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_si
 	return vbo;
 }
 
-void uinta::Vbo::resize(vbo_size_t size) {
-	glBufferData(_target, size, nullptr, _usage);
+void uinta::Vbo::resize(vbo_size_t size, const void *data) {
+	glBufferData(_target, size, data, _usage);
 	glCheckError(GL_BUFFER_DATA);
 	_size = size;
 }
 
 void uinta::Vbo::storeData(const void *data, vbo_size_t size, vbo_size_t offset) {
 	if (size > _size) {
-		resize(size);
+		resize(size, data);
+	} else {
+		glBufferSubData(_target, offset, size, data);
+		glCheckError(GL_BUFFER_SUB_DATA);
 	}
-	glBufferSubData(_target, offset, size, data);
-	glCheckError(GL_BUFFER_SUB_DATA);
 }
 
 void uinta::Vbo::bind() const {
-	if (gl_state::getBoundBuffer(_target) == _id) return;
-	glBindBuffer(_target, _id);
-	glCheckError(GL_BIND_BUFFER);
-	gl_state::setBoundBuffer(_target, _id);
+	if (gl_state::isNotBoundBufferElseSet(_target, _id)) {
+		glBindBuffer(_target, _id);
+		glCheckError(GL_BIND_BUFFER);
+	}
 }
 
 void uinta::Vbo::unbind(uinta::vbo_target_t target) {
-	if (gl_state::getBoundBuffer(target) == 0) return;
-	glBindBuffer(target, 0);
-	glCheckError(GL_BIND_BUFFER);
-	gl_state::setBoundBuffer(target, 0);
+	if (gl_state::isNotBoundBufferElseSet(target, 0)) {
+		glBindBuffer(target, 0);
+		glCheckError(GL_BIND_BUFFER);
+	}
 }
 
 void uinta::Vbo::unbind() const {
