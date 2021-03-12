@@ -40,3 +40,14 @@ void uinta::Vbo::bind() const {
 	glCheckError(GL_BIND_BUFFER);
 	gl_state::setBoundBuffer(_target, _id);
 }
+
+void uinta::Vbo::unbind(uinta::vbo_target_t target) {
+	if (gl_state::getBoundBuffer(target) == 0) return;
+	glBindBuffer(target, 0);
+	glCheckError(GL_BIND_BUFFER);
+	gl_state::setBoundBuffer(target, 0);
+}
+
+void uinta::Vbo::unbind() const {
+	Vbo::unbind(_target);
+}

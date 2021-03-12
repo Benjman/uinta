@@ -20,12 +20,16 @@ namespace uinta {
 
 		static Vbo requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_size_t size, const void *data);
 
+		static void unbind(vbo_target_t target);
+
 	public:
 		void bind() const;
 
 		void storeData(const void *data, vbo_size_t size) { storeData(data, size, 0); }
 
 		void storeData(const void *data, vbo_size_t size, vbo_size_t offset);
+
+		void unbind() const;
 
 		~Vbo();
 
