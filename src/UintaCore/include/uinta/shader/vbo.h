@@ -3,6 +3,8 @@
 
 #include <uinta/gl/gl_types.h>
 
+// TODO release vaos
+
 namespace uinta {
 
 	class Vbo {
@@ -19,17 +21,19 @@ namespace uinta {
 		static Vbo requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_size_t size, const void *data);
 
 	public:
-		Vbo(vbo_target_t target, vbo_usage_t usage) : Vbo(target, usage, INVALID_VBO_ID, 0) {}
-
-		explicit Vbo(vbo_target_t target, vbo_usage_t usage, vbo_id_t id, vbo_size_t size) : _target(target), _usage(usage), _id(id), _size(size) {}
-
 		void bind() const;
 
 		void storeData(const void *data, vbo_size_t size) { storeData(data, size, 0); }
 
 		void storeData(const void *data, vbo_size_t size, vbo_size_t offset);
 
+		~Vbo();
+
 	private:
+		Vbo(vbo_target_t target, vbo_usage_t usage) : Vbo(target, usage, INVALID_VBO_ID, 0) {}
+
+		explicit Vbo(vbo_target_t target, vbo_usage_t usage, vbo_id_t id, vbo_size_t size) : _target(target), _usage(usage), _id(id), _size(size) {}
+
 		void resize(vbo_size_t size);
 
 	};

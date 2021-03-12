@@ -18,6 +18,7 @@ namespace uinta {
 		GL_ATTACH_SHADER,
 		GL_LINK_PROGRAM,
 		GL_DELETE_SHADER,
+		GL_DELETE_BUFFERS,
 	};
 
 	void glCheckError(gl_error_check_type type);

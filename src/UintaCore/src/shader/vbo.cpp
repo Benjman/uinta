@@ -3,6 +3,11 @@
 
 // TODO Need tests. Figure out how to create an OpenGL context within gtest, and cover this class.
 
+uinta::Vbo::~Vbo() {
+	glDeleteBuffers(1, &_id);
+	glCheckError(GL_DELETE_BUFFERS);
+}
+
 uinta::Vbo uinta::Vbo::requestVbo(vbo_target_t target, vbo_usage_t usage, vbo_size_t size, const void *data) {
 	Vbo vbo(target, usage);
 
