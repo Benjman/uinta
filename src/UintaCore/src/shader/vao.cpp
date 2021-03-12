@@ -21,14 +21,14 @@ uinta::Vao::~Vao() {
 }
 
 void uinta::Vao::bind() const {
-//	if (gl_state::isNotBoundVertexArrayElseSet(_id)) {
-	glBindVertexArray(_id);
-	glCheckError(GL_BIND_VERTEX_ARRAY);
-//	}
+	if (isNotBoundVertexArrayElseSet(_id)) {
+		glBindVertexArray(_id);
+		glCheckError(GL_BIND_VERTEX_ARRAY);
+	}
 }
 
 void uinta::Vao::unbind() {
-	if (gl_state::isNotBoundVertexArrayElseSet(0)) {
+	if (isNotBoundVertexArrayElseSet(0)) {
 		glBindVertexArray(0);
 		// No need fo GL error checking. Binding 0 is permitted.
 	}
@@ -42,10 +42,20 @@ uinta::VertexAttribute uinta::Vao::createAttribute(attrib_index_t index, attrib_
 	return attrib;
 }
 
+void uinta::Vao::disableAllAttributes() {
+	for (auto attribute : _attributes) {
+		attribute->disable();
+	}
+}
+
 void uinta::Vao::enableAllAttributes() {
 	for (auto attribute : _attributes) {
 		attribute->enable();
 	}
+}
+
+void uinta::Vao::addAttribute(VertexAttribute *attribute) {
+	_attributes.push_back(attribute);
 }
 
 void uinta::Vao::removeAttribute(VertexAttribute *attribute) {

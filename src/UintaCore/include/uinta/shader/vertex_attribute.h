@@ -1,6 +1,8 @@
 #ifndef UINTA_VERTEX_ATTRIBUTE_H
 #define UINTA_VERTEX_ATTRIBUTE_H
 
+#include "vao.h"
+
 #include <uinta/gl/gl_types.h>
 
 namespace uinta {

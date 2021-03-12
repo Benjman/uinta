@@ -11,10 +11,13 @@ uinta::VertexAttribute::VertexAttribute(Vao *parent, attrib_index_t index, attri
 	if (_parent != nullptr) {
 		_parent->bind();
 	}
-	glVertexAttribPointer(_index, size, type, normalized, stride, (void *)offset);
+	glVertexAttribPointer(_index, size, type, normalized, stride, (void *) offset);
 	glCheckError(GL_VERTEX_ATTRIB_POINTER);
 	if (enabled) {
 		enable(true);
+	}
+	if (parent != nullptr) {
+		parent->addAttribute(this);
 	}
 }
 

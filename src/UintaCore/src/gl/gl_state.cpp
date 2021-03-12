@@ -4,16 +4,21 @@
 
 // TODO all these methods desperately need tests....
 
-namespace uinta::internal {
+namespace uinta::gl_state {
 	using BoundBufferMap = std::unordered_map<vbo_target_t, vbo_id_t>;
-	static inline BoundBufferMap _boundBuffers{};
+	extern BoundBufferMap _boundBuffers;
 
-	static inline vao_id_t _boundVao = GL_ZERO;
+	extern vao_id_t _boundVao;
+	extern program_id_t _programInUse;
 }
 
-using namespace uinta::internal;
+using namespace uinta::gl_state;
 
-uinta::vbo_id_t uinta::gl_state::getBoundBuffer(vbo_target_t target) {
+BoundBufferMap uinta::gl_state::_boundBuffers{};
+uinta::vao_id_t uinta::gl_state::_boundVao = GL_ZERO;
+uinta::program_id_t uinta::gl_state::_programInUse = GL_ZERO;
+
+uinta::vbo_id_t uinta::getBoundBuffer(vbo_target_t target) {
 	auto iterator = _boundBuffers.find(target);
 	if (iterator != _boundBuffers.end()) {
 		return iterator->second;
@@ -21,7 +26,7 @@ uinta::vbo_id_t uinta::gl_state::getBoundBuffer(vbo_target_t target) {
 	return INVALID_VBO_ID;
 }
 
-void uinta::gl_state::setBoundBuffer(vbo_target_t target, vbo_id_t id) {
+void uinta::setBoundBuffer(vbo_target_t target, vbo_id_t id) {
 	if (getBoundBuffer(target)) {
 		_boundBuffers.at(target) = id;
 	} else {
@@ -29,15 +34,15 @@ void uinta::gl_state::setBoundBuffer(vbo_target_t target, vbo_id_t id) {
 	}
 }
 
-uinta::vao_id_t uinta::gl_state::getBoundVertexArray() {
+uinta::vao_id_t uinta::getBoundVertexArray() {
 	return _boundVao;
 }
 
-void uinta::gl_state::setBoundVertexArray(vao_id_t id) {
+void uinta::setBoundVertexArray(vao_id_t id) {
 	_boundVao = id;
 }
 
-bool uinta::gl_state::isNotBoundVertexArrayElseSet(vao_id_t id) {
+bool uinta::isNotBoundVertexArrayElseSet(vao_id_t id) {
 	bool isBound = id == getBoundVertexArray();
 	if (!isBound) {
 		setBoundVertexArray(id);
@@ -45,10 +50,26 @@ bool uinta::gl_state::isNotBoundVertexArrayElseSet(vao_id_t id) {
 	return !isBound;
 }
 
-bool uinta::gl_state::isNotBoundBufferElseSet(vbo_target_t target, vbo_id_t id) {
+bool uinta::isNotBoundBufferElseSet(vbo_target_t target, vbo_id_t id) {
 	bool isBound = id == getBoundBuffer(target);
 	if (!isBound) {
 		setBoundBuffer(target, id);
 	}
 	return !isBound;
+}
+
+uinta::program_id_t uinta::getCurrentProgramId() {
+	return _programInUse;
+}
+
+void uinta::setCurrentProgramId(uinta::program_id_t id) {
+	_programInUse = id;
+}
+
+bool uinta::isProgramNotInUseElseSet(uinta::program_id_t id) {
+	bool inUse = id == getCurrentProgramId();
+	if (!inUse) {
+		setCurrentProgramId(id);
+	}
+	return !inUse;
 }

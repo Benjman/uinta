@@ -41,14 +41,14 @@ void uinta::Vbo::storeData(const void *data, vbo_size_t size, vbo_size_t offset)
 }
 
 void uinta::Vbo::bind() const {
-	if (gl_state::isNotBoundBufferElseSet(_target, _id)) {
+	if (isNotBoundBufferElseSet(_target, _id)) {
 		glBindBuffer(_target, _id);
 		glCheckError(GL_BIND_BUFFER);
 	}
 }
 
 void uinta::Vbo::unbind(uinta::vbo_target_t target) {
-	if (gl_state::isNotBoundBufferElseSet(target, 0)) {
+	if (isNotBoundBufferElseSet(target, 0)) {
 		glBindBuffer(target, 0);
 		glCheckError(GL_BIND_BUFFER);
 	}

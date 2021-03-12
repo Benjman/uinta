@@ -28,6 +28,8 @@ namespace uinta {
 
 		void enableAllAttributes();
 
+		void disableAllAttributes();
+
 	private:
 		AttributeCollection _attributes;
 
@@ -36,6 +38,8 @@ namespace uinta {
 		Vao() = default;
 
 		void removeAttribute(VertexAttribute *pAttribute);
+
+		void addAttribute(VertexAttribute *pAttribute);
 
 	}; // class Vao
 
