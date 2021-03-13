@@ -2,13 +2,19 @@
 
 #include <uinta/shader.h>
 #include <uinta/gl.h>
+#include <uinta/font.h>
 
 using namespace uinta;
 using namespace uinta::glfw;
 
 void exitHandler();
 
+void debug();
+
 int main() {
+	debug();
+	return 0;
+
 	GlfwDto dto(800, 600, "Test Window Creation");
 //    dto.setHeadless(true);
 
@@ -56,4 +62,8 @@ int main() {
 
 void exitHandler() {
 	terminate();
+}
+
+void debug() {
+	Font font = Font::loadFont("/home/ben/.local/share/fonts/Roboto-Regular.ttf");
 }
