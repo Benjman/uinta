@@ -88,7 +88,7 @@ namespace uinta::glfw {
 
     extern void initializeGlfw(GlfwDto &dto);
 
-    extern void printOSInfo();
+    extern void printInfo();
 
     extern void setContext(GlfwDto &dto);
 

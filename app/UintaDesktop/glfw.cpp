@@ -16,15 +16,12 @@ namespace uinta::internal {
 uinta::internal::WindowMap uinta::internal::windows;
 
 bool uinta::glfw::initialize(GlfwDto &dto) {
-	std::cout << "Initializing for target " << uintaGetOsName() << std::endl;
-
 	initializeGlfw(dto);
 	if (dto.getStatus() != Initialized) {
 		// TODO fatal logging
 		std::cerr << "Failed to initialize GLFW." << std::endl;
 		return false;
 	}
-	std::cout << "Initialized GLFW version " << glfwGetVersionString() << std::endl;
 
 	createWindow(dto);
 	if (dto.getStatus() != WindowCreated) {
@@ -32,8 +29,6 @@ bool uinta::glfw::initialize(GlfwDto &dto) {
 		std::cerr << "Failed to create GLFW _window." << std::endl;
 		return false;
 	}
-	std::cout << "Window created" << (dto.isHeadless() ? " (headless)" : "") << std::endl;
-	setContext(dto);
 
 	initializeGlad(dto);
 	if (dto.getStatus() != GladInitialized) {
@@ -41,14 +36,16 @@ bool uinta::glfw::initialize(GlfwDto &dto) {
 		std::cerr << "Failed to initialize GLAD." << std::endl;
 		return false;
 	}
-	std::cout << "GLAD initialized" << std::endl;
 
-	printOSInfo();
+	std::cout << "Initialization complete." << std::endl;
+	printInfo();
 
 	return true;
 }
 
 void uinta::glfw::createWindow(GlfwDto &dto) {
+	std::cout << "Creating " << (dto.isHeadless() ? "headless " : "") << "window... ";
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -69,6 +66,9 @@ void uinta::glfw::createWindow(GlfwDto &dto) {
 	internal::windows.insert(std::pair<GLFWwindow *, GlfwDto *>(window, &dto));
 
 	glfwSetFramebufferSizeCallback(dto.getWindow(), framebufferSizeChangedHandler);
+	setContext(dto);
+
+	std::cout << "done" << std::endl;
 }
 
 void uinta::glfw::framebufferSizeChangedHandler(GLFWwindow *window, int width, int height) {
@@ -87,26 +87,30 @@ void uinta::glfw::glfwErrorHandler(int error, const char *description) {
 }
 
 void uinta::glfw::initializeGlfw(GlfwDto &dto) {
+	std::cout << "Initializing GLFW... ";
 	if (!glfwInit()) {
 		dto.setStatus(Error);
 	}
 	glfwSetErrorCallback(&glfwErrorHandler);
 	dto.setStatus(Initialized);
+	std::cout << "done" << std::endl;
 }
 
 void uinta::glfw::initializeGlad(GlfwDto &dto) {
+	std::cout << "Initializing GLAD... ";
 	if (!gladLoadGLES2Loader((GLADloadproc) glfwGetProcAddress)) {
 		dto.setStatus(Error);
 	}
 	dto.setStatus(GladInitialized);
+	std::cout << "done" << std::endl;
 }
 
-void uinta::glfw::printOSInfo() {
-	std::cout << "\nOS INFO:" << std::endl;
-
-	std::cout << "\tOpenGL version: " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "\tMax threads: " << uintaGetHardwareConcurrencyCount() << std::endl;
-	std::cout << std::endl;
+void uinta::glfw::printInfo() {
+	std::cout << "BUILD TYPE: " << (uintaIsDebugBuild() ? "Debug" : "Release") << std::endl;
+	std::cout << "GLFW VERSION" << glfwGetVersionString() << std::endl;
+	std::cout << "OPENGL VERSION: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "TARGET: " << uintaGetOsName() << std::endl;
+	std::cout << "THREADS: " << uintaGetHardwareConcurrencyCount() << std::endl;
 }
 
 void uinta::glfw::setContext(GlfwDto &dto) {
