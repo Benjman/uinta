@@ -3,34 +3,21 @@
 
 #include "gl_types.h"
 
-namespace uinta {
+#include <uinta/types.h>
 
-	extern vbo_id_t getBoundBuffer(vbo_target_t target);
+namespace uinta::gl_state {
 
-	extern void setBoundBuffer(vbo_target_t target, vbo_id_t id);
+	static const uint8_t MAX_GL_STATE_TYPES = 100;
 
-	extern vao_id_t getBoundVertexArray();
+	enum GlStateType {
+		BUFFER_BOUND,
+		SHADER_IN_USE,
+		VERTEX_ARRAY_BOUND,
+	};
 
-	extern void setBoundVertexArray(vao_id_t id);
+	extern bool isActive(GlStateType type, size_t key, size_t secondary = 0);
 
-	/***
-	 * @return Whether the currently bound vertex array is NOT id. If not, set internally bound vertex array to id.
-	 */
-	extern bool isNotBoundVertexArrayElseSet(vao_id_t id);
-
-	/***
-	 * @return Whether the id is NOT currently bound to the target. If not, set internally bound buffer to id for the target.
-	 */
-	extern bool isNotBoundBufferElseSet(vbo_target_t target, vbo_id_t id);
-
-	extern program_id_t getCurrentProgramId();
-
-	extern void setCurrentProgramId(program_id_t id);
-
-	/***
-	 * @return Whether id is currently NOT in use. If not, set internally bound program to id.
-	 */
-	extern bool isProgramNotInUseElseSet(program_id_t id);
+	extern bool isActiveElseSet(GlStateType type, size_t key, size_t secondary = INT32_MAX);
 
 }
 

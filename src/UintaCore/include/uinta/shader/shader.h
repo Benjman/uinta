@@ -20,7 +20,7 @@ namespace uinta {
 	private:
 		explicit Shader(program_id_t programId) : _id(programId) {}
 
-		program_id_t _id;
+		const program_id_t _id;
 
 	};
 

@@ -5,6 +5,8 @@
 
 #include <algorithm>
 
+using namespace uinta::gl_state;
+
 uinta::Vao uinta::Vao::requestVao() {
 	Vao vao;
 
@@ -26,14 +28,14 @@ uinta::Vao::~Vao() {
 }
 
 void uinta::Vao::bind() const {
-	if (isNotBoundVertexArrayElseSet(_id)) {
+	if (!isActiveElseSet(VERTEX_ARRAY_BOUND, _id)) {
 		glBindVertexArray(_id);
 		glCheckError(GL_BIND_VERTEX_ARRAY);
 	}
 }
 
 void uinta::Vao::unbind() {
-	if (isNotBoundVertexArrayElseSet(0)) {
+	if (!isActiveElseSet(VERTEX_ARRAY_BOUND, 0)) {
 		glBindVertexArray(0);
 		// No need fo GL error checking. Binding 0 is always permitted.
 	}
