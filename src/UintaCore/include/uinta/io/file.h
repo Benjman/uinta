@@ -5,8 +5,6 @@
 
 namespace uinta {
 
-	class FileDto;
-
 	class File {
 		file_size_t _contentLength;
 		char *_contents;
