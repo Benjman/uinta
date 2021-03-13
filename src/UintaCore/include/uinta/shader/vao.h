@@ -32,7 +32,6 @@ namespace uinta {
 
 	private:
 		AttributeCollection _attributes;
-
 		vao_id_t _id{};
 
 		Vao() = default;

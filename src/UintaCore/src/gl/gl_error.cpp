@@ -197,6 +197,31 @@ void checkGlDrawArrays(GLenum err) {
 	}
 }
 
+void checkGlDrawElements(GLenum err) {
+	switch (err) {
+		case GL_INVALID_ENUM:
+			std::cerr << "glDrawElements GL_INVALID_ENUM: _mode is not an accepted value." << std::endl;
+			break;
+		case GL_INVALID_VALUE:
+			std::cerr << "glDrawElements GL_INVALID_VALUE: _count is negative." << std::endl;
+			break;
+		case GL_INVALID_OPERATION:
+			std::cerr << "glDrawElements GL_INVALID_OPERATION: Either;";
+			std::cerr << "\n\t1) A non-zero buffer object name is bound to an enabled array or the element array and ";
+			std::cerr << "the buffer object's data store is currently mapped. Or,";
+			std::cerr << "\n\t2) Transform feedback is active and not paused." << std::endl;
+			break;
+		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			std::cerr << "glDrawElements GL_INVALID_FRAMEBUFFER_OPERATION: The currently bound framebuffer is not ";
+			std::cerr << "framebuffer complete (i.e. the return value from glCheckFramebufferStatus is not ";
+			std::cerr << "GL_FRAMEBUFFER_COMPLETE)." << std::endl;
+			break;
+
+		default:
+			std::cerr << "Unknown glDrawElements error." << std::endl;
+	}
+}
+
 void checkGlEnableVertexAttribArray(GLenum err) {
 	if (err == GL_INVALID_VALUE) {
 		std::cerr << "glEnableVertexAttribArray  GL_INVALID_VALUE: _index is greater than or equal to ";
@@ -349,6 +374,8 @@ void uinta::glCheckError(gl_error_check_type type) {
 		case GL_DRAW_ARRAYS:
 			checkGlDrawArrays(err);
 			break;
+		case GL_DRAW_ELEMENTS:
+			checkGlDrawElements(err);
 		case GL_ENABLE_VERTEX_ATTRIB_ARRAY:
 			checkGlEnableVertexAttribArray(err);
 			break;

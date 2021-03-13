@@ -22,13 +22,19 @@ int main() {
 	Shader shader = Shader::createShader(shaderDto);
 
 	float vertices[] = {
-			-0.5f, -0.5f, 0.0f, // left
-			0.5f, -0.5f, 0.0f, // right
-			0.0f, 0.5f, 0.0f  // top
+			0.5f,  0.5f, 0.0f,  // top right
+			0.5f, -0.5f, 0.0f,  // bottom right
+			-0.5f, -0.5f, 0.0f,  // bottom left
+			-0.5f,  0.5f, 0.0f   // top left
+	};
+	unsigned int indices[] = {  // note that we start from 0!
+			0, 1, 3,  // first Triangle
+			1, 2, 3   // second Triangle
 	};
 
 	Vao vao = Vao::requestVao();
-	Vbo vbo = Vbo::requestVbo(&vao, GL_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(vertices), vertices);
+	Vbo vertexBuffer = Vbo::requestVbo(&vao, GL_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(vertices), vertices);
+	Vbo indexBuffer = Vbo::requestVbo(&vao, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(indices), indices);
 	vao.createAttribute(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
 	while (!shouldClose(dto)) {
@@ -38,8 +44,8 @@ int main() {
 		shader.use();
 		vao.bind();
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glCheckError(GL_DRAW_ARRAYS);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		glCheckError(GL_DRAW_ELEMENTS);
 
 		glfwSwapBuffers(dto.getWindow());
 
