@@ -9,8 +9,6 @@ using namespace uinta::glfw;
 void exitHandler();
 
 int main() {
-	std::atexit(exitHandler);
-
 	GlfwDto dto(800, 600, "Test Window Creation");
 //    dto.setHeadless(true);
 
@@ -52,9 +50,9 @@ int main() {
 		glfwPollEvents();
 	}
 
+	std::atexit(exitHandler);
 	return 0;
 }
-
 
 void exitHandler() {
 	terminate();
