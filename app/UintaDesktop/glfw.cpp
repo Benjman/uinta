@@ -107,7 +107,7 @@ void uinta::glfw::initializeGlad(GlfwDto &dto) {
 
 void uinta::glfw::printInfo() {
 	std::cout << "BUILD TYPE: " << (uintaIsDebugBuild() ? "Debug" : "Release") << std::endl;
-	std::cout << "GLFW VERSION" << glfwGetVersionString() << std::endl;
+	std::cout << "GLFW VERSION: " << glfwGetVersionString() << std::endl;
 	std::cout << "OPENGL VERSION: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "TARGET: " << uintaGetOsName() << std::endl;
 	std::cout << "THREADS: " << uintaGetHardwareConcurrencyCount() << std::endl;
