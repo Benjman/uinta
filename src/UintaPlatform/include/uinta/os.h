@@ -33,4 +33,12 @@ inline const char *uintaGetOsName() {
 
 }
 
+inline const bool uintaIsDebugBuild() {
+#ifdef UINTA_DEBUG
+	return true;
+#else
+	return false;
+#endif
+}
+
 #endif //UINTA_OS_H
