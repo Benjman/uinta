@@ -37,7 +37,7 @@ bool uinta::glfw::initialize(GlfwDto &dto) {
 		return false;
 	}
 
-	std::cout << "Initialization complete." << std::endl;
+	std::cout << "Initialization complete" << std::endl;
 	printInfo();
 
 	return true;
