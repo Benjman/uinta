@@ -12,9 +12,6 @@ void exitHandler();
 void debug();
 
 int main() {
-	debug();
-	return 0;
-
 	GlfwDto dto(800, 600, "Test Window Creation");
 //    dto.setHeadless(true);
 
@@ -24,14 +21,16 @@ int main() {
 
 	ShaderDto shaderDto("/home/ben/Documents/shader.vert", "/home/ben/Documents/shader.frag");
 	Shader shader = Shader::createShader(shaderDto);
+	Font font = Font::loadFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
 
 	float vertices[] = {
-			0.5f,  0.5f, 0.0f,  // top right
-			0.5f, -0.5f, 0.0f,  // bottom right
-			-0.5f, -0.5f, 0.0f,  // bottom left
-			-0.5f,  0.5f, 0.0f   // top left
+			// positions         // texture coords
+			0.5f,  0.5f, 0.0f,   1.0f, 0.0f,
+			0.5f, -0.5f, 0.0f,   1.0f, 1.0f,
+			-0.5f, -0.5f, 0.0f,   0.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f,   0.0f, 0.0f
 	};
-	unsigned int indices[] = {  // note that we start from 0!
+	unsigned int indices[] = {
 			0, 1, 3,  // first Triangle
 			1, 2, 3   // second Triangle
 	};
@@ -39,7 +38,8 @@ int main() {
 	Vao vao = Vao::requestVao();
 	Vbo vertexBuffer = Vbo::requestVbo(&vao, GL_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(vertices), vertices);
 	Vbo indexBuffer = Vbo::requestVbo(&vao, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(indices), indices);
-	vao.createAttribute(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+	vao.createAttribute(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(0 * sizeof(float)));
+	vao.createAttribute(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
 
 	while (!shouldClose(dto)) {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -48,7 +48,7 @@ int main() {
 		shader.use();
 		vao.bind();
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glCheckError(GL_DRAW_ELEMENTS);
 
 		glfwSwapBuffers(dto.getWindow());
@@ -65,5 +65,4 @@ void exitHandler() {
 }
 
 void debug() {
-	Font font = Font::loadFont("/home/ben/.local/share/fonts/Roboto-Regular.ttf");
 }

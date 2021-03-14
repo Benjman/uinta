@@ -11,13 +11,14 @@ namespace uinta {
 		attrib_index_t _index;
 		bool _enabled;
 
-	private:
-		VertexAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
-						attrib_normalize_t normalized, attrib_stride_t stride, const void *offset, bool enable = true);
-
+	public:
 		void enable(bool force = false);
 
 		void disable(bool force = false);
+
+	private:
+		VertexAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
+						attrib_normalize_t normalized, attrib_stride_t stride, const void *offset, bool enable = true);
 
 	}; // class VertexAttribute
 

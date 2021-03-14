@@ -9,6 +9,7 @@ namespace uinta {
 		friend class FontLoader;
 
 	public:
+		uint32_t _textureId;
 		static Font loadFont(const char *trueTypePath);
 
 	private:
