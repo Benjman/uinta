@@ -31,6 +31,21 @@ void checkGlBindBuffer(GLenum err) {
 	}
 }
 
+void checkGlBindTexture(GLenum err) {
+	switch (err) {
+		case GL_INVALID_ENUM:
+			std::cerr << "glBindTexture GL_INVALID_ENUM: _target is not one of the allowable values." << std::endl;
+			break;
+		case GL_INVALID_OPERATION:
+			std::cerr << "glBindTexture GL_INVALID_OPERATION: _texture was previously created with a target that doesn't match that of target." << std::endl;
+			break;
+
+		default:
+			std::cerr << "Unknown glBindTexture error." << std::endl;
+			break;
+	}
+}
+
 void checkGlBindVertexArray(GLenum err) {
 	if (err == GL_INVALID_OPERATION) {
 		std::cerr << "glBindVertexArray GL_INVALID_OPERATION: _array is not zero or the name of a vertex array object ";
@@ -282,6 +297,48 @@ void checkGlShaderSource(GLenum err) {
 	}
 }
 
+void checkGlTexImage2D(GLenum err) {
+	switch (err) {
+		case GL_INVALID_ENUM:
+			std::cerr << "glTexImage2D GL_INVALID_ENUM: Either;";
+			std::cerr << "\n\t1) _target is not GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, or GL_TEXTURE_CUBE_MAP_NEGATIVE_Z." << std::endl;
+			std::cerr << "\n\t2) _type is not a type constant." << std::endl;
+			std::cerr << "\n\t3) _internalFormat is not one of the accepted resolution and format symbolic constants." << std::endl;
+			break;
+		case GL_INVALID_VALUE:
+			std::cerr << "glTexImage2D GL_INVALID_VALUE: Either;";
+			std::cerr << "\n\t1) _target is one of the six cube map 2D image targets and the width and height parameters are not equal.";
+			std::cerr << "\n\t2) _width is less than 0 or greater than GL_MAX_TEXTURE_SIZE.";
+			std::cerr << "\n\t3) _level is less than 0.";
+			std::cerr << "\n\t4) _level is greater than log_2(_max), where _max is the returned value of GL_MAX_TEXTURE_SIZE.";
+			std::cerr << "\n\t5) _width or height is less than 0 or greater than GL_MAX_TEXTURE_SIZE.";
+			std::cerr << "\n\t6) _border is not 0.";
+			std::cerr << std::endl;
+		case GL_INVALID_OPERATION:
+			std::cerr << "glTexImage2D GL_INVALID_OPERATION: Either;";
+			std::cerr << "\n\t1) The combination of _internalFormat, format and _type is not one of those in the tables above.";
+			std::cerr << "\n\t2) A non-zero buffer object name is bound to the GL_PIXEL_UNPACK_BUFFER target and the buffer object's data store is currently mapped.";
+			std::cerr << "\n\t3) A non-zero buffer object name is bound to the GL_PIXEL_UNPACK_BUFFER target and the data would be unpacked from the buffer object such that the memory reads required would exceed the data store size.";
+			std::cerr << "\n\t4) A non-zero buffer object name is bound to the GL_PIXEL_UNPACK_BUFFER target and data is not evenly divisible into the number of bytes needed to store in memory a datum indicated by type.";
+			std::cerr << std::endl;
+			break;
+
+		default:
+			std::cerr << "Unknown glTexImage2D error." << std::endl;
+			break;
+	}
+}
+
+void checkGlTexParameteri(GLenum err) {
+	if (err == GL_INVALID_ENUM) {
+			std::cerr << "glTexParameteri GL_INVALID_ENUM: Either;";
+			std::cerr << "\n\t1) _target or pname is not one of the accepted defined values.";
+			std::cerr << "\n\t2) _params should have a defined constant value (based on the value of pname) and does not." << std::endl;
+	} else {
+		std::cerr << "Unknown glTexParameteri error." << std::endl;
+	}
+}
+
 void checkGlUseProgram(GLenum err) {
 	switch (err) {
 		case GL_INVALID_VALUE:
@@ -338,6 +395,9 @@ void uinta::glCheckError(gl_error_check_type type) {
 		case GL_BIND_BUFFER:
 			checkGlBindBuffer(err);
 			break;
+		case GL_BIND_TEXTURE:
+			checkGlBindTexture(err);
+			break;
 		case GL_BIND_VERTEX_ARRAY:
 			checkGlBindVertexArray(err);
 			break;
@@ -391,12 +451,20 @@ void uinta::glCheckError(gl_error_check_type type) {
 		case GL_SHADER_SOURCE:
 			checkGlShaderSource(err);
 			break;
+		case GL_TEX_IMAGE2D:
+			checkGlTexImage2D(err);
+			break;
+		case GL_TEX_PARAMETERI:
+			checkGlTexParameteri(err);
+			break;
 		case GL_USE_PROGRAM:
 			checkGlUseProgram(err);
 			break;
 		case GL_VERTEX_ATTRIB_POINTER:
 			checkGlVertexAttribPointer(err);
 			return;
+		default:
+			std::cerr << "!!!   UNIMPLEMENTED glCheckError TYPE   !!!" << std::endl;
 	}
 #endif
 }
