@@ -4,7 +4,6 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
-        src/font/font.cpp
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
         src/io/file.cpp
@@ -12,6 +11,8 @@ set(SOURCES ${SOURCES}
         src/shader/vao.cpp
         src/shader/vbo.cpp
         src/shader/vertex_attribute.cpp
+        src/text/font.cpp
+        src/texture/texture.cpp
         )
 
 set(UINTA_CORE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)

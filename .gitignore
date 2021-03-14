@@ -18,5 +18,6 @@
 /.idea/workspace.xml
 /build
 /captures
+/cmake-build-*
 compile_commands.json
 local.properties

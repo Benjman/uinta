@@ -2,17 +2,15 @@
 
 #include <uinta/shader.h>
 #include <uinta/gl.h>
-#include <uinta/font.h>
+#include <uinta/text.h>
 
 using namespace uinta;
 using namespace uinta::glfw;
 
 void exitHandler();
 
-void debug();
-
 int main() {
-	GlfwDto dto(800, 600, "Test Window Creation");
+	GlfwDto dto(1000, 1000, "Test Window Creation");
 //    dto.setHeadless(true);
 
 	if (!initialize(dto) || dto.getStatus() == Error) {
@@ -62,7 +60,4 @@ int main() {
 
 void exitHandler() {
 	terminate();
-}
-
-void debug() {
 }
