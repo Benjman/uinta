@@ -19,6 +19,8 @@ namespace uinta {
 	public:
 		void bind() const;
 
+		void appendData(const void *data, size_t size);
+
 		void storeData(const void *data, vbo_size_t size, vbo_size_t offset = 0);
 
 		void unbind() const;

@@ -61,3 +61,7 @@ void uinta::Vbo::unbind(uinta::vbo_target_t target) {
 void uinta::Vbo::unbind() const {
 	Vbo::unbind(_target);
 }
+
+void uinta::Vbo::appendData(const void *data, size_t size) {
+	storeData(data, _size + size, _size);
+}
