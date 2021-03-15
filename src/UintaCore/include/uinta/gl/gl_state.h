@@ -13,6 +13,7 @@ namespace uinta::gl_state {
 		BUFFER_BOUND,
 		SHADER_IN_USE,
 		VERTEX_ARRAY_BOUND,
+		TEXTURE_2D,
 	};
 
 	extern bool isActive(GlStateType type, size_t key, size_t secondary = 0);

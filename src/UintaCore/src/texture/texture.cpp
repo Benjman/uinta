@@ -21,8 +21,10 @@ void uinta::Texture::upload(uint32_t width, uint32_t height, GLint internalForma
 }
 
 void uinta::Texture::bind() const {
-	glBindTexture(GL_TEXTURE_2D, _id);
-	glCheckError(GL_BIND_TEXTURE);
+	if (!gl_state::isActiveElseSet(gl_state::TEXTURE_2D, _id)) {
+		glBindTexture(GL_TEXTURE_2D, _id);
+		glCheckError(GL_BIND_TEXTURE);
+	}
 }
 
 void uinta::Texture::setParameter(GLenum name, GLint param) {
