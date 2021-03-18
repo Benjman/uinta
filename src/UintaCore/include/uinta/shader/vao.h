@@ -13,12 +13,13 @@ namespace uinta {
 		friend class VertexAttribute;
 
 		using AttributeCollection = std::vector<VertexAttribute *>;
-	public:
-		static Vao requestVao();
 
+	public:
 		static void unbind();
 
 	public:
+		Vao();
+
 		~Vao();
 
 		void bind() const;
@@ -32,9 +33,7 @@ namespace uinta {
 
 	private:
 		AttributeCollection _attributes;
-		vao_id_t _id{};
-
-		Vao() = default;
+		vao_id_t _id = GL_ZERO;
 
 		void removeAttribute(VertexAttribute *pAttribute);
 

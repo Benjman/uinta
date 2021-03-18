@@ -19,8 +19,6 @@ namespace uinta {
 	public:
 		void bind() const;
 
-		void appendData(const void *data, size_t size);
-
 		void storeData(const void *data, vbo_size_t size, vbo_size_t offset = 0);
 
 		void unbind() const;
@@ -32,8 +30,8 @@ namespace uinta {
 
 		void resize(vbo_size_t size, const void *data = nullptr);
 
-	};
+	}; // class Vbo
 
-}
+} // namespace uinta
 
 #endif //UINTA_VBO_H

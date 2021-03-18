@@ -331,9 +331,9 @@ void checkGlTexImage2D(GLenum err) {
 
 void checkGlTexParameteri(GLenum err) {
 	if (err == GL_INVALID_ENUM) {
-			std::cerr << "glTexParameteri GL_INVALID_ENUM: Either;";
-			std::cerr << "\n\t1) _target or pname is not one of the accepted defined values.";
-			std::cerr << "\n\t2) _params should have a defined constant value (based on the value of pname) and does not." << std::endl;
+		std::cerr << "glTexParameteri GL_INVALID_ENUM: Either;";
+		std::cerr << "\n\t1) _target or pname is not one of the accepted defined values.";
+		std::cerr << "\n\t2) _params should have a defined constant value (based on the value of pname) and does not." << std::endl;
 	} else {
 		std::cerr << "Unknown glTexParameteri error." << std::endl;
 	}

@@ -4,6 +4,8 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
+        src/debug/debug_controller.cpp
+        src/debug/debug_ui.cpp
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
         src/io/file.cpp
@@ -13,6 +15,7 @@ set(SOURCES ${SOURCES}
         src/shader/vertex_attribute.cpp
         src/text/font.cpp
         src/texture/texture.cpp
+        src/ui/ui_element.cpp
         )
 
 set(UINTA_CORE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -26,6 +29,9 @@ set(LIBRARIES ${LIBRARIES} ${OPENGL_opengl_LIBRARY})
 
 find_package(stb REQUIRED)
 set(INCLUDES ${INCLUDES} ${STB_INCLUDE})
+
+find_package(glm REQUIRED)
+set(INCLUDES ${INCLUDES} ${GLM_INCLUDE})
 
 include_directories(${INCLUDES})
 add_library(UintaCore STATIC ${SOURCES})

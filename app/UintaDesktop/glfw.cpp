@@ -1,6 +1,7 @@
-#include <uinta/os.h>
-
 #include "glfw.h"
+
+#include <uinta/os.h>
+#include <uinta/gl/gl_state.h>
 
 #include <iostream>
 #include <map>
@@ -36,6 +37,8 @@ bool uinta::glfw::initialize(GlfwDto &dto) {
 		std::cerr << "Failed to initialize GLAD." << std::endl;
 		return false;
 	}
+
+	gl_state::setCurrentAspectRatio((float_t) dto.getWidth() / (float_t) dto.getHeight());
 
 	std::cout << "Initialization complete" << std::endl;
 	printInfo();
@@ -80,6 +83,7 @@ void uinta::glfw::framebufferSizeChangedHandler(GLFWwindow *window, int width, i
 
 	dto->setViewportSize(width, height);
 	setGlViewport(*dto);
+	gl_state::setCurrentAspectRatio((float_t) width / (float_t) height);
 }
 
 void uinta::glfw::glfwErrorHandler(int error, const char *description) {

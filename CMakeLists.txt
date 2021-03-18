@@ -30,6 +30,9 @@ set(LIBRARIES ${LIBRARIES} Threads::Threads)
 find_path(ENTT_INCLUDE names "entt/entt.hpp" PATHS "${CMAKE_SOURCE_DIR}/dep/entt/src")
 set(INCLUDES ${INCLUDES} ${ENTT_INCLUDE})
 
+find_package(glm REQUIRED)
+set(INCLUDES ${INCLUDES} ${GLM_INCLUDE})
+
 add_subdirectory(src/UintaPlatform)
 add_subdirectory(src/UintaCore)
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO should the cmake builds be in release mode?
-
 [ ! -d dep ] && echo "configure must be run from base uinta directory" && return
 cd dep
 
@@ -10,14 +8,14 @@ git submodule update --init --recursive
 ### GLFW
 [ ! -d glfw ] && >&2 echo "dep/glfw missing" && return
 mkdir glfw/build 2> /dev/null
-cmake -B glfw/build -S glfw
+cmake -dCMAKE_BUILD_TYPE=RELEASE -B glfw/build -S glfw
 make --directory glfw/build -j 32
 
 
 ### GLAD
 if ! command -v glad &> /dev/null
 then
-	echo "`glad` command not found. Please install glad and ensure it's in the path"
+	echo "`glad` command not found. Install glad by running `cd dep/glad && sudo python setup.py install`, then re-run this configuration."
 	return
 fi
 glad --profile core --out-path glad/build --api gles2=3.2 --spec gl --generator c

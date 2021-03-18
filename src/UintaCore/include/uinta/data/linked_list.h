@@ -12,7 +12,7 @@ namespace uinta {
 
 		}; // class Node
 
-		Node *head;
+		Node *head = nullptr;
 
 	public:
 		void append(uint32_t data) {

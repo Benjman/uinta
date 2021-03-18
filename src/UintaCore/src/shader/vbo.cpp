@@ -35,7 +35,7 @@ void uinta::Vbo::resize(vbo_size_t size, const void *data) {
 }
 
 void uinta::Vbo::storeData(const void *data, vbo_size_t size, vbo_size_t offset) {
-	if (size > _size) {
+	if (size > _size || _size == 0) {
 		resize(size, data);
 	} else {
 		bind();
@@ -45,14 +45,14 @@ void uinta::Vbo::storeData(const void *data, vbo_size_t size, vbo_size_t offset)
 }
 
 void uinta::Vbo::bind() const {
-	if (!isActiveElseSet(BUFFER_BOUND, _target, _id)) {
+	if (!isActiveElseSet(BOUND_BUFFER, _target, _id)) {
 		glBindBuffer(_target, _id);
 		glCheckError(GL_BIND_BUFFER);
 	}
 }
 
 void uinta::Vbo::unbind(uinta::vbo_target_t target) {
-	if (!isActiveElseSet(BUFFER_BOUND, target, 0)) {
+	if (!isActiveElseSet(BOUND_BUFFER, target, 0)) {
 		glBindBuffer(target, 0);
 		// No need fo GL error checking. Binding 0 is always permitted.
 	}
@@ -60,8 +60,4 @@ void uinta::Vbo::unbind(uinta::vbo_target_t target) {
 
 void uinta::Vbo::unbind() const {
 	Vbo::unbind(_target);
-}
-
-void uinta::Vbo::appendData(const void *data, size_t size) {
-	storeData(data, _size + size, _size);
 }
