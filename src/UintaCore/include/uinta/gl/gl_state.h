@@ -17,11 +17,11 @@ namespace uinta::gl_state {
 		VIEWPORT_SIZE,
 	};
 
-	extern bool isActive(GlStateType type, size_t key, size_t secondary = 0);
+	extern bool isActive(GlStateType type, size_t key, size_t secondary = INT32_MAX);
 
 	extern bool isActiveElseSet(GlStateType type, size_t key, size_t secondary = INT32_MAX);
 
-	extern bool containsState(GlStateType type, bool insert = false, size_t key = 0);
+	extern bool containsState(GlStateType type, bool insert = false, size_t key = INT32_MAX);
 
 	extern size_t getState(GlStateType type, size_t key = 0);
 
