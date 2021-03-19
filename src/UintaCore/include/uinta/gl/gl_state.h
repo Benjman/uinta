@@ -1,13 +1,9 @@
 #ifndef UINTA_GL_STATE_H
 #define UINTA_GL_STATE_H
 
-#include "gl_types.h"
-
 #include <uinta/types.h>
 
 namespace uinta::gl_state {
-
-	static const uint8_t MAX_GL_STATE_TYPES = 100;
 
 	enum GlStateType {
 		BOUND_BUFFER,
@@ -16,6 +12,8 @@ namespace uinta::gl_state {
 		SHADER_IN_USE,
 		VIEWPORT_SIZE,
 	};
+
+	extern const uint8_t MAX_GL_STATE_TYPES;
 
 	extern bool isActive(GlStateType type, size_t key, size_t secondary = INT32_MAX);
 

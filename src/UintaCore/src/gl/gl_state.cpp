@@ -9,6 +9,7 @@ namespace uinta::gl_state {
 
 #define VIEWPORT_SIZE_WIDTH 0
 #define VIEWPORT_SIZE_HEIGHT 1
+	const uint8_t MAX_GL_STATE_TYPES = 100;
 
 	void safeKvp(size_t &key, size_t &secondary);
 
@@ -26,7 +27,6 @@ namespace uinta::gl_state {
 	}
 
 	bool isActiveElseSet(GlStateType type, size_t key, size_t secondary) {
-		safeKvp(key, secondary);
 		bool vIsActive = isActive(type, key, secondary);
 		if (!vIsActive) {
 			setState(type, key, secondary);
