@@ -38,7 +38,7 @@ bool uinta::glfw::initialize(GlfwDto &dto) {
 		return false;
 	}
 
-	gl_state::setCurrentAspectRatio((float_t) dto.getWidth() / (float_t) dto.getHeight());
+	gl_state::setViewportSize(dto.getWidth(), dto.getHeight());
 
 	std::cout << "Initialization complete" << std::endl;
 	printInfo();
@@ -83,7 +83,7 @@ void uinta::glfw::framebufferSizeChangedHandler(GLFWwindow *window, int width, i
 
 	dto->setViewportSize(width, height);
 	setGlViewport(*dto);
-	gl_state::setCurrentAspectRatio((float_t) width / (float_t) height);
+	gl_state::setViewportSize(width, height);
 }
 
 void uinta::glfw::glfwErrorHandler(int error, const char *description) {

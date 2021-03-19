@@ -21,7 +21,13 @@ namespace uinta {
 	class DebugUi {
 		friend class DebugController;
 
+		UiElement _element;
 		DebugUiVao _vao;
+
+		DebugUi();
+
+	public:
+		void updateBuffer();
 	}; // class DebugUi
 
 } // namespace uinta

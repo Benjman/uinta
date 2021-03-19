@@ -19,13 +19,14 @@ namespace uinta::glfw {
     class GlfwDto {
         GlfwStatus _status = Initializing;
         GLFWwindow *_window = nullptr;
-        int16_t _width = 0,
+        int32_t _width = 0,
                 _height = 0;
         std::string _title;
         bool _headless = false;
+        bool _viewportChanged = false;
 
     public:
-        GlfwDto(int16_t width, int16_t height, std::string title)
+        GlfwDto(int32_t width, int32_t height, std::string title)
                 : _width(width), _height(height), _title(std::move(title)) {
         }
 
@@ -45,15 +46,16 @@ namespace uinta::glfw {
             _window = window;
         }
 
-        int16_t &getWidth() {
+        int32_t &getWidth() {
             return _width;
         }
 
-        int16_t &getHeight() {
+        int32_t &getHeight() {
             return _height;
         }
 
-        void setViewportSize(int16_t width, int16_t height) {
+        void setViewportSize(int32_t width, int32_t height) {
+        	_viewportChanged = _width != width || _height != height;
             _width = width;
             _height = height;
         }
@@ -74,7 +76,15 @@ namespace uinta::glfw {
             _headless = headless;
         }
 
-    };
+		[[nodiscard]] bool isViewportChanged() const {
+			return _viewportChanged;
+		}
+
+		void resetViewportChanged() {
+        	_viewportChanged = false;
+        }
+
+	};
 
     extern bool initialize(GlfwDto &dto);
 

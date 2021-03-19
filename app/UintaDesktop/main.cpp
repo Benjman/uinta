@@ -12,7 +12,7 @@ using namespace uinta::glfw;
 void exitHandler();
 
 int main() {
-	GlfwDto dto(1920, 1080, "Test Window Creation");
+	GlfwDto dto(1000, 1000, "Test Window Creation");
 //    dto.setHeadless(true);
 
 	if (!initialize(dto) || dto.getStatus() == Error) {
@@ -27,6 +27,11 @@ int main() {
 	while (!shouldClose(dto)) {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		if (dto.isViewportChanged()) {
+			debugController.getUi().updateBuffer();
+			dto.resetViewportChanged();
+		}
 
 		shader.use();
 		debugController.bind();
