@@ -4,10 +4,15 @@
 #include <glm/glm.hpp>
 
 namespace uinta {
+	
+	// TODO parent child relationship
+	// TODO Left, center, right anchoring
 
 	class UiElement {
+		UiElement *_parent;
 		glm::uvec2 _position{};
 		glm::uvec2 _size{};
+		float_t _scale = 1.f;
 
 	public:
 		static size_t getVertexCount() {
@@ -24,9 +29,10 @@ namespace uinta {
 		 * @param widthPx size relative to UI_BASE_WIDTH (1920)
 		 * @param heightPx size relative to UI_BASE_HEIGHT (1080)
 		 */
-		UiElement(size_t xPx, size_t yPx, size_t widthPx, size_t heightPx) :
-				_position(glm::uvec2(xPx, yPx)),
-				_size(glm::uvec2(widthPx, heightPx)) {}
+		UiElement(UiElement *parent, size_t xPx, size_t yPx, size_t widthPx, size_t heightPx) :
+			_parent(parent),
+			_position(glm::uvec2(xPx, yPx)),
+			_size(glm::uvec2(widthPx, heightPx)) {}
 
 		/**
 		 * @param x size relative to UI_BASE_WIDTH (1920)

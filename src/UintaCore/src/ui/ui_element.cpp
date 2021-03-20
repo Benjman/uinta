@@ -19,16 +19,35 @@ namespace uinta {
 		float_t y = _position.y;
 		float_t h = y + _size.y;
 
-		x /= viewportWidth;
-		w /= viewportWidth;
-		y /= viewportHeight;
-		h /= viewportHeight;
+		if (_parent != nullptr) {
+			x += _parent->_position.x;
+			y += _parent->_position.y;
+		}
+
+		x /= UI_BASE_SIZE;
+		w /= UI_BASE_SIZE;
+		y /= UI_BASE_SIZE;
+		h /= UI_BASE_SIZE;
+
+		float_t aspect = (float_t) viewportWidth / (float_t) viewportHeight;
+		if (aspect > 1) {
+			y *= aspect;
+			h *= aspect;
+		} else {
+			y *= aspect;
+			h *= aspect;
+		}
+
+		x *= _scale;
+		w *= _scale;
+		y *= _scale;
+		h *= _scale;
 
 		// convert them from unit space ( [0, 1] ) to gl ndc ( [-1, 1] )
 		// f(x) = 2x-1
 		float_t gl_x = 2 * x - 1;
 		float_t gl_w = 2 * w - 1;
-		// f(y) = -2x+1
+		// f(y) = -2y+1
 		float_t gl_y = -2 * y + 1;
 		float_t gl_h = -2 * h + 1;
 
@@ -36,7 +55,8 @@ namespace uinta {
 		 v0  _____  v3
 			|     |
 			|     |
-		 v1  -----  v2
+			|_____|
+		 v1         v2
 		 */
 		const float_t buf[8]{
 				gl_x, gl_y,

@@ -9,7 +9,7 @@ namespace uinta {
 		createAttribute(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	}
 
-	DebugUi::DebugUi() : _element(UiElement(100, 100, 100, 100)) {
+	DebugUi::DebugUi() : _element(UiElement(nullptr, 100, 100, 100, 100)) {
 		updateBuffer();
 	}
 

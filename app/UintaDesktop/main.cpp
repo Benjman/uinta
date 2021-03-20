@@ -11,6 +11,18 @@ using namespace uinta::glfw;
 
 void exitHandler();
 
+static const char *fragShader = "#version 300 es\n" \
+								 "out lowp vec4 outColor;" \
+								 "void main() {" \
+								 "	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);" \
+								 "}";
+
+static const char *vertShader = "#version 300 es\n" \
+								 "layout (location = 0) in lowp vec2 inPos;" \
+								 "void main() {" \
+								 "	gl_Position = vec4(inPos, 0.0, 1.0);" \
+								 "}";
+
 int main() {
 	GlfwDto dto(1000, 1000, "Test Window Creation");
 //    dto.setHeadless(true);
@@ -21,7 +33,7 @@ int main() {
 
 	DebugController debugController;
 
-	ShaderDto shaderDto("/home/ben/Documents/shader.vert", "/home/ben/Documents/shader.frag");
+	ShaderDto shaderDto(vertShader,fragShader, Raw);
 	Shader shader = Shader::createShader(shaderDto);
 
 	while (!shouldClose(dto)) {
@@ -51,3 +63,4 @@ int main() {
 void exitHandler() {
 	terminate();
 }
+
