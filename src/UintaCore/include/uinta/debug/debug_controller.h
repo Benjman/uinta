@@ -13,8 +13,8 @@ namespace uinta {
 
 		DebugUi &getUi() { return _ui; }
 
-		void bind() {
-			_ui._vao.bind();
+		void render() {
+			_ui.render();
 		}
 
 	}; // class DebugController 

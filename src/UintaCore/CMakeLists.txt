@@ -9,6 +9,7 @@ set(SOURCES ${SOURCES}
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
         src/io/file.cpp
+        src/render/i_render_controller.cpp
         src/shader/shader.cpp
         src/shader/vao.cpp
         src/shader/vbo.cpp

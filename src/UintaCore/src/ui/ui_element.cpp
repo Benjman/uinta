@@ -1,10 +1,9 @@
-#include "uinta/gl/gl_state.h"
-#include <cstring>
+#include <uinta/gl.h>
 #include <uinta/types.h>
 #include <uinta/ui/ui.h>
 #include <uinta/ui/ui_element.h>
 
-#include <iostream>
+#include <cstring>
 
 namespace uinta {
 
@@ -71,6 +70,11 @@ namespace uinta {
 
 		std::memcpy(data, buf, sizeof(buf));
 		std::memcpy(indices, idx, sizeof(idx));
+	}
+
+	void UiElement::render() {
+		glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, (const void *)getOffset());
+		glCheckError(GL_DRAW_ELEMENTS);
 	}
 
 }

@@ -1,50 +1,60 @@
 #ifndef UINTA_UI_MESH_GENERATOR_H
 #define UINTA_UI_MESH_GENERATOR_H
 
+#include <uinta/render/i_renderable.h>
+
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace uinta {
 	
 	// TODO parent child relationship
 	// TODO Left, center, right anchoring
 
-	class UiElement {
+	class UiElement : public IRenderable {
+		using Children = std::vector<UiElement*>;
+
 		UiElement *_parent;
 		glm::uvec2 _position{};
 		glm::uvec2 _size{};
 		float_t _scale = 1.f;
+		Children _children;
 
 	public:
-		static size_t getVertexCount() {
+
+		size_t getVertexCount() override {
 			return 4;
 		}
 
-		static size_t getIndexCount() {
+		size_t getIndexCount() override {
 			return 6;
 		}
 
+		void render() override;
+
 		/**
-		 * @param xPx size relative to UI_BASE_WIDTH (1920)
-		 * @param yPx size relative to UI_BASE_HEIGHT (1080)
-		 * @param widthPx size relative to UI_BASE_WIDTH (1920)
-		 * @param heightPx size relative to UI_BASE_HEIGHT (1080)
+		 * @param xPx size relative to UI_BASE_SIZE (1080)
+		 * @param yPx size relative to UI_BASE_SIZE (1080)
+		 * @param widthPx size relative to UI_BASE_SIZE (1080)
+		 * @param heightPx size relative to UI_BASE_SIZE (1080)
 		 */
-		UiElement(UiElement *parent, size_t xPx, size_t yPx, size_t widthPx, size_t heightPx) :
+		UiElement(UiElement *parent, size_t xPx, size_t yPx, size_t widthPx, size_t heightPx, size_t offset = 0) :
+			IRenderable(offset),
 			_parent(parent),
 			_position(glm::uvec2(xPx, yPx)),
 			_size(glm::uvec2(widthPx, heightPx)) {}
 
 		/**
-		 * @param x size relative to UI_BASE_WIDTH (1920)
-		 * @param y size relative to UI_BASE_HEIGHT (1080)
+		 * @param x size relative to UI_BASE_SIZE (1080)
+		 * @param y size relative to UI_BASE_SIZE (1080)
 		 */
 		void setPositionPx(uint16_t x, uint16_t y) {
 			_position = glm::uvec2(x, y);
 		}
 
 		/**
-		 * @param x size relative to UI_BASE_WIDTH (1920)
-		 * @param y size relative to UI_BASE_HEIGHT (1080)
+		 * @param x size relative to UI_BASE_SIZE (1080)
+		 * @param y size relative to UI_BASE_SIZE (1080)
 		 */
 		void setSizePx(uint16_t x, uint16_t y) {
 			_size = glm::uvec2(x, y);

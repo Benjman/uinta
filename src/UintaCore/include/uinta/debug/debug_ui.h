@@ -1,6 +1,7 @@
 #ifndef UINTA_DEBUG_UI_H
 #define UINTA_DEBUG_UI_H
 
+#include <uinta/render/i_render_controller.h>
 #include <uinta/shader/vao.h>
 #include <uinta/shader/vbo.h>
 #include <uinta/types.h>
@@ -18,13 +19,18 @@ namespace uinta {
 		DebugUiVao();
 	};
 
-	class DebugUi {
+	class DebugUi : public IRenderController {
 		friend class DebugController;
 
 		UiElement _element;
 		DebugUiVao _vao;
 
 		DebugUi();
+
+		void render() override {
+			_vao.bind();
+			IRenderController::render();
+		}
 
 	public:
 		void updateBuffer();

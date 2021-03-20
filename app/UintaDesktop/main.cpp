@@ -46,10 +46,7 @@ int main() {
 		}
 
 		shader.use();
-		debugController.bind();
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glCheckError(GL_DRAW_ELEMENTS);
+		debugController.render();
 
 		glfwSwapBuffers(dto.getWindow());
 

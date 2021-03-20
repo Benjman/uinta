@@ -10,12 +10,13 @@ namespace uinta {
 	}
 
 	DebugUi::DebugUi() : _element(UiElement(nullptr, 100, 100, 100, 100)) {
+		addRenderable(&_element);
 		updateBuffer();
 	}
 
 	void DebugUi::updateBuffer() {
-		float_t vertices[UiElement::getVertexCount() * 2];
-		uint32_t indices[UiElement::getIndexCount()];
+		float_t vertices[_element.getVertexCount() * 2];
+		uint32_t indices[_element.getIndexCount()];
 
 		_element.generateMesh(vertices, indices);
 
