@@ -3,7 +3,7 @@
 [ ! -d dep ] && echo "configure must be run from base uinta directory" && return
 cd dep
 
-git submodule update --init --recursive
+git submodule update --init --recursive --jobs 12
 
 ### GLFW
 [ ! -d glfw ] && >&2 echo "dep/glfw missing" && return
