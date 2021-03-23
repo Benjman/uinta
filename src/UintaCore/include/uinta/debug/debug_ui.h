@@ -12,6 +12,7 @@
 
 namespace uinta {
 
+	// TODO remove this struct and move buffers to the DebugUi class. May re-add later, but we should reduce complexity for now.
 	struct DebugUiVao : Vao {
 		Vbo vertexBuffer;
 		Vbo indexBuffer;
