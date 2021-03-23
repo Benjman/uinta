@@ -64,7 +64,7 @@ namespace uinta::gl_state {
 	}
 
 	void sanitizeKeyValuePair(size_t &key, size_t &value) {
-		/** If a state only has one value (such as GL_ARRAY_BUFFERS is set to _n), set key to zero.
+		/* If a state only has one value (such as GL_ARRAY_BUFFERS is set to _n), set key to zero.
 		   Else, if a state is a thruple relationship (such as the currently bound vbo) we need to
 		   track the state for all available options.
 
