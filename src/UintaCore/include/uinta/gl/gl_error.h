@@ -4,6 +4,7 @@
 namespace uinta {
 
 	enum gl_error_check_type {
+		GL_ACTIVATE_TEXTURE,
 		GL_ATTACH_SHADER,
 		GL_BIND_BUFFER,
 		GL_BIND_TEXTURE,

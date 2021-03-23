@@ -3,6 +3,14 @@
 
 #include <iostream> // TODO remove when logging is implemented
 
+void checkGlActivateTexture(GLenum err) {
+	if (err == GL_INVALID_ENUM) {
+		std::cerr << "_texture is not one of GL_TEXTURE_i, where _i ranges from zero to the value of GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS minus one." << std::endl;
+	} else {
+		std::cerr << "Unknown glActivateTexture error." << std::endl;
+	}
+}
+
 void checkGlAttachShader(GLenum err) {
 	switch (err) {
 		case GL_INVALID_VALUE:
@@ -389,6 +397,9 @@ void uinta::glCheckError(gl_error_check_type type) {
 	if (!err) return;
 
 	switch (type) {
+		case GL_ACTIVATE_TEXTURE:
+			checkGlActivateTexture(err);
+			break;
 		case GL_ATTACH_SHADER:
 			checkGlAttachShader(err);
 			break;
