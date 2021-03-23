@@ -3,56 +3,71 @@
 
 #include <uinta/text/font.h>
 #include <uinta/gl.h>
-#include <uinta/io.h>
-#include <uinta/texture.h>
-#include <uinta/util/assert.h>
+
+#include <iostream>
+
+#ifndef UINTA_TRUETYPE_LOADED
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_RECT_PACK_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include <stb_rect_pack.h>
 #include <stb_truetype.h>
+#include <stb_image_write.h>
 
 #undef STB_TRUETYPE_IMPLEMENTATION
 #undef STB_RECT_PACK_IMPLEMENTATION
+#undef STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include <string>
-#include <iostream>
+#define UINTA_TRUETYPE_LOADED 1
+#endif // UINTA_TRUETYPE_LOADED
 
 namespace uinta {
 
 	struct FontLoader {
-		static Font loadFond(const char *trueTypePath) {
-			u_char _atlasData[1024 * 1024]{};
-			u_char _fontData[1048576]{};
-			stbtt_packedchar charInfo[95];
+		static Font loadFond(const char *trueTypePath, size_t fontSize) {
+			static Font font;
+			Font::STBTTDto &dto = font._tt;
 
-			// TODO convert to uinta file
 			FILE *file = fopen(trueTypePath, "rb");
-			fread(_fontData, 1, sizeof(_fontData), file);
+			if (!file) {
+				std::cerr << "TrueType file at path `" << trueTypePath << "` not found." << std::endl;
+			}
+			fread(font._fontData, 1, MEGABYTES(1), file);
 			fclose(file);
 
-			stbtt_pack_context context;
-			if (!stbtt_PackBegin(&context, _atlasData, 1024, 1024, 0, 1, nullptr)) {
-				std::cerr << "Error beginning packing with stb_truetype." << std::endl;
+			if (!stbtt_PackBegin(&dto.context, font._atlasData, Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, 0, 1, nullptr)) {
+				// TODO exception
+				std::cerr << "Failed to start packing font with stb_truetype." << std::endl;
 			}
 
-			if (!stbtt_PackFontRange(&context, _fontData, 0, 195, 32, 95, charInfo)) {
-				std::cerr << "Error packing ranges with stb_truetype." << std::endl;
+			if (!stbtt_PackFontRange(&dto.context, font._fontData, 0, fontSize, 32, 95, dto.charInfo)) {
+				// TODO exception
+				std::cerr << "Failed to pack font with stb_truetype." << std::endl;
 			}
 
-			stbtt_PackEnd(&context);
+			stbtt_PackEnd(&dto.context);
 
-			Texture texture = createTexture(_atlasData);
+			// load properties
+			stbtt_InitFont(&dto.info, (const u_char *) &font._fontData, 0);
+			font._scale = stbtt_ScaleForPixelHeight(&dto.info, 32);
+			int32_t advanceBuffer = 0, leftSideBeringBuffer = 0;
+			stbtt_GetCodepointHMetrics(&dto.info, ' ', &advanceBuffer, &leftSideBeringBuffer);
 
-			return Font(texture);
+			font._texture = createTexture(font._atlasData);
+
+			stbi_write_jpg("test.jpg", Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, 1, font._atlasData, 100);
+
+			return font;
 		}
 
 	private:
-		static Texture createTexture(const u_char *_atlasData) {
-			Texture texture = Texture::requestTexture(1024, 1024, GL_RED, GL_UNSIGNED_BYTE, _atlasData);
+		static Texture createTexture(const u_char *data) {
+			static Texture texture = Texture::requestTexture(1024, 1024, GL_RED, GL_UNSIGNED_BYTE, data);
 			texture.linear();
-			glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0); // TODO feels like this should be in the Texture class
+			glCheckError(GL_ACTIVATE_TEXTURE);
 			return texture;
 		}
 	};

@@ -5,8 +5,6 @@
 
 namespace uinta::gl_state {
 
-	extern const size_t GL_STATE_INVALID_ID;
-
 	enum GlStateType {
 		BOUND_BUFFER,
 		BOUND_TEXTURE_2D,
@@ -14,6 +12,8 @@ namespace uinta::gl_state {
 		SHADER_IN_USE,
 		VIEWPORT_SIZE,
 	};
+
+	extern const size_t GL_STATE_INVALID_ID;
 
 	extern const uint8_t MAX_GL_STATE_TYPES;
 

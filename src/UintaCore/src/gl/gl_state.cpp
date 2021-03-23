@@ -13,6 +13,7 @@ namespace uinta::gl_state {
 	const size_t GL_STATE_INVALID_ID = INT64_MAX;
 	const uint8_t MAX_GL_STATE_TYPES = 100;
 
+	// TODO should this be exposed in the header so we can create tests for it?
 	void sanitizeKeyValuePair(size_t &key, size_t &value);
 
 	namespace internal {
@@ -71,7 +72,8 @@ namespace uinta::gl_state {
 		   For example, the currently bound vbo (BOUND_BUFFER) has vbo id's for each separate _target;
 		  		the BOUND_BUFFER for target GL_ARRAY_BUFFER might be _n, and;
 		  		the BOUND_BUFFER for target GL_ELEMENT_ARRAY_BUFFER might be _n+1.
-		   This allows for either option to be passed to us. */
+
+		   This allows for either option to be passed to us: */
 		if (value == GL_STATE_INVALID_ID) {
 			value = key;
 			key = 0;

@@ -21,8 +21,6 @@ namespace uinta {
 
 		void linear() const;
 
-	private:
-		Texture() = default;
 	};
 
 }

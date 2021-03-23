@@ -1,15 +1,18 @@
 #ifndef UINTA_UI_MESH_GENERATOR_H
 #define UINTA_UI_MESH_GENERATOR_H
 
+#include "ui.h"
+
 #include <uinta/render/i_renderable.h>
 
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 #include <vector>
 
 namespace uinta {
-	
+
 	// TODO parent child relationship
 	// TODO Left, center, right anchoring
+	// TODO Top to bottom, or bottom to top mesh generation
 
 	class UiElement : public IRenderable {
 		using Children = std::vector<UiElement*>;
@@ -19,6 +22,10 @@ namespace uinta {
 		glm::uvec2 _size{};
 		float_t _scale = 1.f;
 		Children _children;
+
+		// ------------------------------
+		// 	style stuff
+
 
 	public:
 
@@ -42,7 +49,24 @@ namespace uinta {
 			IRenderable(offset),
 			_parent(parent),
 			_position(glm::uvec2(xPx, yPx)),
-			_size(glm::uvec2(widthPx, heightPx)) {}
+			_size(glm::uvec2(widthPx, heightPx)) {
+			if (_parent == nullptr && MAIN_UI_ELEMENT != nullptr) {
+				_parent = MAIN_UI_ELEMENT;
+			}
+			if (_parent != nullptr) {
+				_parent->addChild(this);
+			}
+		}
+
+		void addChild(UiElement *element);
+
+		void removeChild(UiElement *element);
+
+		~UiElement() {
+			if (_parent != nullptr) {
+				_parent->removeChild(this);
+			}
+		}
 
 		/**
 		 * @param x size relative to UI_BASE_SIZE (1080)
@@ -69,6 +93,15 @@ namespace uinta {
 		}
 
 		void generateMesh(float_t *data, uint32_t *indices);
+
+		[[nodiscard]] float_t getScale() const {
+			return _scale;
+		}
+
+		void setScale(float_t scale) {
+			_scale = scale;
+		}
+
 	}; // struct UiElement
 
 } // namespace uinta

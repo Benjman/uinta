@@ -1,54 +1,55 @@
 #include <uinta/gl.h>
-#include <uinta/types.h>
-#include <uinta/ui/ui.h>
 #include <uinta/ui/ui_element.h>
 
+#include <glm/glm.hpp>
+#include <algorithm>
 #include <cstring>
 
 namespace uinta {
 
+	inline void applyAspectRatio(glm::vec4 &vec) {
+		glm::mediump_u64vec4 viewport;
+		gl_state::getViewportSize(&viewport.x, &viewport.y);
+
+		float_t aspect = (float_t) viewport.x / (float_t) viewport.y;
+		if (aspect > 1) {
+			// horizontal
+			vec.x *= aspect;
+			vec.z *= aspect;
+		} else {
+			// vertical
+			vec.y *= aspect;
+			vec.w *= aspect;
+		}
+	}
+
+	inline glm::vec4 toUnitSpace(glm::uvec4 &dimensions) {
+		return glm::vec4(
+				dimensions.x / UI_BASE_SIZE,
+				dimensions.y / UI_BASE_SIZE,
+				dimensions.z / UI_BASE_SIZE,
+				dimensions.w / UI_BASE_SIZE
+		);
+	}
+
+	inline void scale(UiElement &element, glm::vec4 &vec) {
+		vec.x *= element.getScale();
+		vec.y *= element.getScale();
+		vec.z *= element.getScale();
+		vec.w *= element.getScale();
+	}
+
 	void UiElement::generateMesh(float_t *data, uint32_t *indices) {
-		size_t viewportWidth = 0,
-				viewportHeight = 0;
-		gl_state::getViewportSize(&viewportWidth, &viewportHeight);
-
-		float_t x = _position.x;
-		float_t w = x + _size.x;
-
-		float_t y = _position.y;
-		float_t h = y + _size.y;
+		glm::uvec4 dimensions(_position.x, _position.y, _size.x, _size.y);
 
 		if (_parent != nullptr) {
-			x += _parent->_position.x;
-			y += _parent->_position.y;
+			dimensions.x += _parent->_position.x;
+			dimensions.y += _parent->_position.y;
 		}
 
-		x /= UI_BASE_SIZE;
-		w /= UI_BASE_SIZE;
-		y /= UI_BASE_SIZE;
-		h /= UI_BASE_SIZE;
-
-		float_t aspect = (float_t) viewportWidth / (float_t) viewportHeight;
-		if (aspect > 1) {
-			y *= aspect;
-			h *= aspect;
-		} else {
-			y *= aspect;
-			h *= aspect;
-		}
-
-		x *= _scale;
-		w *= _scale;
-		y *= _scale;
-		h *= _scale;
-
-		// convert them from unit space ( [0, 1] ) to gl ndc ( [-1, 1] )
-		// f(x) = 2x-1
-		float_t gl_x = 2 * x - 1;
-		float_t gl_w = 2 * w - 1;
-		// f(y) = -2y+1
-		float_t gl_y = -2 * y + 1;
-		float_t gl_h = -2 * h + 1;
+		glm::vec4 unitSpace = toUnitSpace(dimensions);
+		applyAspectRatio(unitSpace);
+		scale(*this, unitSpace);
 
 		/*
 		 v0  _____  v3
@@ -58,16 +59,15 @@ namespace uinta {
 		 v1         v2
 		 */
 		const float_t buf[8]{
-				gl_x, gl_y,
-				gl_x, gl_h,
-				gl_w, gl_h,
-				gl_w, gl_y
+			TO_GL_NDC_X(unitSpace.x), TO_GL_NDC_Y(unitSpace.y),
+			TO_GL_NDC_X(unitSpace.x), TO_GL_NDC_Y(unitSpace.w),
+			TO_GL_NDC_X(unitSpace.z), TO_GL_NDC_Y(unitSpace.w),
+			TO_GL_NDC_X(unitSpace.z), TO_GL_NDC_Y(unitSpace.y)
 		};
 		const uint32_t idx[6]{
 				0, 1, 3,
 				1, 2, 3
 		};
-
 		std::memcpy(data, buf, sizeof(buf));
 		std::memcpy(indices, idx, sizeof(idx));
 	}
@@ -75,6 +75,25 @@ namespace uinta {
 	void UiElement::render() {
 		glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, (const void *)getOffset());
 		glCheckError(GL_DRAW_ELEMENTS);
+	}
+
+	void UiElement::removeChild(UiElement *element) {
+		auto iterator = std::find(_children.begin(), _children.end(), element);
+		if (iterator != _children.end()) {
+			_children.erase(iterator);
+			element->_parent = nullptr;
+		}
+	}
+
+	void UiElement::addChild(UiElement *element) {
+		_children.push_back(element);
+		element->_parent = this;
+		if (element->_size.x == 0) {
+			element->_size.x = _size.x;
+		}
+		if (element->_size.y == 0) {
+			element->_size.y = _size.y;
+		}
 	}
 
 }
