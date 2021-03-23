@@ -27,9 +27,9 @@ namespace uinta::gl_state {
 
 	extern void setState(GlStateType type, size_t key, size_t secondary = GL_STATE_INVALID_ID);
 
-	extern void setViewportSize(uint64_t width, uint64_t height);
+	extern void setViewportSize(size_t width, size_t height);
 
-	extern void getViewportSize(uint64_t *width, uint64_t *height);
+	extern void getViewportSize(size_t *width, size_t *height);
 
 }
 

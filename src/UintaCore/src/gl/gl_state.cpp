@@ -53,12 +53,12 @@ namespace uinta::gl_state {
 		glStates[type][key] = secondary;
 	}
 
-	void setViewportSize(uint32_t width, uint32_t height) {
+	void setViewportSize(size_t width, size_t height) {
 		setState(VIEWPORT_SIZE, VIEWPORT_SIZE_WIDTH, width);
 		setState(VIEWPORT_SIZE, VIEWPORT_SIZE_HEIGHT, height);
 	}
 
-	void getViewportSize(uint32_t *widthPtr, uint32_t *heightPtr) {
+	void getViewportSize(size_t *widthPtr, size_t *heightPtr) {
 		*widthPtr = getState(VIEWPORT_SIZE, VIEWPORT_SIZE_WIDTH);
 		*heightPtr = getState(VIEWPORT_SIZE, VIEWPORT_SIZE_HEIGHT);
 	}
