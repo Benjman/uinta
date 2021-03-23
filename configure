@@ -15,6 +15,9 @@ make --directory glfw/build -j 32
 ### GLAD
 if ! command -v glad &> /dev/null
 then
+	# TODO	This seems wrong to expect glad to be on the path.
+	#       See if building from dep folder would create a glad executable.
+	#       That would also remove the need to run a `sudo` command.
 	echo "`glad` command not found. Install glad by running `cd dep/glad && sudo python setup.py install`, then re-run this configuration."
 	return
 fi
