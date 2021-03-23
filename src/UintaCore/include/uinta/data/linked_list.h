@@ -5,6 +5,7 @@ namespace uinta {
 
 	class LinkedList {
 		struct Node {
+			// TODO change from uint32_t to void *
 			uint32_t data;
 			Node *next;
 
