@@ -9,9 +9,11 @@ namespace uinta::gl_state {
 
 #define VIEWPORT_SIZE_WIDTH 0
 #define VIEWPORT_SIZE_HEIGHT 1
+
+	const size_t GL_STATE_INVALID_ID = INT64_MAX;
 	const uint8_t MAX_GL_STATE_TYPES = 100;
 
-	void safeKvp(size_t &key, size_t &secondary);
+	void sanitizeKeyValuePair(size_t &key, size_t &value);
 
 	namespace internal {
 		extern std::map<size_t, size_t> glStates[MAX_GL_STATE_TYPES];
@@ -21,7 +23,7 @@ namespace uinta::gl_state {
 	using namespace uinta::gl_state::internal;
 
 	bool isActive(GlStateType type, size_t key, size_t secondary) {
-		safeKvp(key, secondary);
+		sanitizeKeyValuePair(key, secondary);
 		containsState(type, true, key);
 		return glStates[type][key] == secondary;
 	}
@@ -47,23 +49,31 @@ namespace uinta::gl_state {
 	}
 
 	void setState(GlStateType type, size_t key, size_t secondary) {
-		safeKvp(key, secondary);
+		sanitizeKeyValuePair(key, secondary);
 		glStates[type][key] = secondary;
 	}
 
-	void setViewportSize(size_t width, size_t height) {
+	void setViewportSize(uint32_t width, uint32_t height) {
 		setState(VIEWPORT_SIZE, VIEWPORT_SIZE_WIDTH, width);
 		setState(VIEWPORT_SIZE, VIEWPORT_SIZE_HEIGHT, height);
 	}
 
-	void getViewportSize(size_t *widthPtr, size_t *heightPtr) {
+	void getViewportSize(uint32_t *widthPtr, uint32_t *heightPtr) {
 		*widthPtr = getState(VIEWPORT_SIZE, VIEWPORT_SIZE_WIDTH);
 		*heightPtr = getState(VIEWPORT_SIZE, VIEWPORT_SIZE_HEIGHT);
 	}
 
-	void safeKvp(size_t &key, size_t &secondary) {
-		if (secondary == INT32_MAX) {
-			secondary = key;
+	void sanitizeKeyValuePair(size_t &key, size_t &value) {
+		/** If a state only has one value (such as GL_ARRAY_BUFFERS is set to _n), set key to zero.
+		   Else, if a state is a thruple relationship (such as the currently bound vbo) we need to
+		   track the state for all available options.
+
+		   For example, the currently bound vbo (BOUND_BUFFER) has vbo id's for each separate _target;
+		  		the BOUND_BUFFER for target GL_ARRAY_BUFFER might be _n, and;
+		  		the BOUND_BUFFER for target GL_ELEMENT_ARRAY_BUFFER might be _n+1.
+		   This allows for either option to be passed to us. */
+		if (value == GL_STATE_INVALID_ID) {
+			value = key;
 			key = 0;
 		}
 	}
