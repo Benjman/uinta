@@ -15,7 +15,9 @@ set(SOURCES ${SOURCES}
         src/shader/vbo.cpp
         src/shader/vertex_attribute.cpp
         src/text/font.cpp
+        src/text/text.cpp
         src/texture/texture.cpp
+        src/ui/ui.cpp
         src/ui/ui_element.cpp
         )
 
@@ -34,7 +36,10 @@ set(INCLUDES ${INCLUDES} ${STB_INCLUDE})
 find_package(glm REQUIRED)
 set(INCLUDES ${INCLUDES} ${GLM_INCLUDE})
 
-include_directories(${INCLUDES})
 add_library(UintaCore STATIC ${SOURCES})
 
+include_directories(AFTER ${INCLUDES})
 target_link_libraries(UintaCore ${LIBRARIES})
+
+# TODO why tf aren't STBs in the include path unless we use this target_include_directories?
+target_include_directories(UintaCore PUBLIC ${STB_INCLUDE})
