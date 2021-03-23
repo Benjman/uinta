@@ -86,10 +86,10 @@ namespace uinta {
 
 		static void processQuad(const Text &text, const TexturedQuadDto &quadInfo, float_t *data, uint32_t *indices) {
 			float_t d[16] {
-					TO_GL_NDC_X(quadInfo.x0),  TO_GL_NDC_Y(quadInfo.y0),   quadInfo.s0, quadInfo.t1,
-					TO_GL_NDC_X(quadInfo.x0), TO_GL_NDC_Y(quadInfo.y1),   quadInfo.s0, quadInfo.t0,
-					TO_GL_NDC_X(quadInfo.x1), TO_GL_NDC_Y(quadInfo.y1),   quadInfo.s1, quadInfo.t0,
-					TO_GL_NDC_X(quadInfo.x1),  TO_GL_NDC_Y(quadInfo.y0),   quadInfo.s1, quadInfo.t1
+					TO_GL_NDC_X(quadInfo.x0),  TO_GL_NDC_Y(quadInfo.y0),   quadInfo.s0, quadInfo.t0,
+					TO_GL_NDC_X(quadInfo.x0), TO_GL_NDC_Y(quadInfo.y1),   quadInfo.s0, quadInfo.t1,
+					TO_GL_NDC_X(quadInfo.x1), TO_GL_NDC_Y(quadInfo.y1),   quadInfo.s1, quadInfo.t1,
+					TO_GL_NDC_X(quadInfo.x1),  TO_GL_NDC_Y(quadInfo.y0),   quadInfo.s1, quadInfo.t0
 			};
 			uint32_t i[6] {
 				0, 1, 3,
