@@ -64,6 +64,12 @@ namespace uinta::gl_state {
 		*heightPtr = getState(VIEWPORT_SIZE, VIEWPORT_SIZE_HEIGHT);
 	}
 
+	float_t getViewportAspectRatio() {
+		size_t viewportW, viewportH;
+		gl_state::getViewportSize(&viewportW, &viewportH);
+		return (float_t) viewportW / (float_t) viewportH;
+	}
+
 	void sanitizeKeyValuePair(size_t &key, size_t &value) {
 		/* If a state only has one value (such as GL_ARRAY_BUFFERS is set to _n), set key to zero.
 		   Else, if a state is a thruple relationship (such as the currently bound vbo) we need to

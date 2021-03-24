@@ -31,6 +31,8 @@ namespace uinta::gl_state {
 
 	extern void getViewportSize(size_t *width, size_t *height);
 
+	extern float_t getViewportAspectRatio();
+
 }
 
 #endif //UINTA_GL_STATE_H
