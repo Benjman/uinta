@@ -15,8 +15,8 @@ namespace uinta {
 	using TexturedQuadDto = stbtt_aligned_quad;
 
 	class Font {
-		static const size_t ATLAS_WIDTH = 1024;
-		static const size_t ATLAS_HEIGHT = 1024;
+		static const size_t ATLAS_WIDTH = 512;
+		static const size_t ATLAS_HEIGHT = 512;
 
 		struct STBTTDto {
 			stbtt_packedchar charInfo[95];
@@ -27,12 +27,10 @@ namespace uinta {
 		friend class FontLoader;
 
 	public:
-		static Font loadFont(const char *trueTypePath, size_t fontSize);
+		static Font loadFont(const char *trueTypePath);
 
 	public:
-		void getCharWidth(int c, float_t *advance, float_t *leftSideBearing);
-
-		TexturedQuadDto getTexturedQuadInfo(const char c, float_t xCursor, float_t yCursor);
+		TexturedQuadDto getTexturedQuadInfo(char c, float_t *xCursor, float_t *yCursor);
 
 		[[nodiscard]] size_t getLineHeight() const {
 			return _lineHeight;
@@ -42,11 +40,11 @@ namespace uinta {
 		Texture _texture{};
 		STBTTDto _tt{};
 
-		u_char _atlasData[1024 * 1024]{};
+		u_char _atlasData[ATLAS_WIDTH * ATLAS_HEIGHT]{};
 		u_char _fontData[MEGABYTES(1)]{};
 
 		float_t _scale = 1;
-		const size_t _lineHeight = 64;
+		const size_t _lineHeight = 32;
 
 		Font() = default;
 

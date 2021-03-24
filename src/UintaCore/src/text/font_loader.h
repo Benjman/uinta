@@ -26,7 +26,7 @@
 namespace uinta {
 
 	struct FontLoader {
-		static Font loadFond(const char *trueTypePath, size_t fontSize) {
+		static Font loadFond(const char *trueTypePath) {
 			static Font font;
 			Font::STBTTDto &dto = font._tt;
 
@@ -42,7 +42,7 @@ namespace uinta {
 				std::cerr << "Failed to start packing font with stb_truetype." << std::endl;
 			}
 
-			if (!stbtt_PackFontRange(&dto.context, font._fontData, 0, fontSize, 32, 95, dto.charInfo)) {
+			if (!stbtt_PackFontRange(&dto.context, font._fontData, 0, font.getLineHeight(), 32, 95, dto.charInfo)) {
 				// TODO exception
 				std::cerr << "Failed to pack font with stb_truetype." << std::endl;
 			}
@@ -51,20 +51,21 @@ namespace uinta {
 
 			// load properties
 			stbtt_InitFont(&dto.info, (const u_char *) &font._fontData, 0);
-			font._scale = stbtt_ScaleForPixelHeight(&dto.info, 32);
+			font._scale = stbtt_ScaleForPixelHeight(&dto.info, font.getLineHeight());
 			int32_t advanceBuffer = 0, leftSideBeringBuffer = 0;
 			stbtt_GetCodepointHMetrics(&dto.info, ' ', &advanceBuffer, &leftSideBeringBuffer);
 
 			font._texture = createTexture(font._atlasData);
 
-			stbi_write_jpg("test.jpg", Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, 1, font._atlasData, 100);
+			// Write the atlas to an image file for debugging purposes
+//			stbi_write_jpg("test.jpg", Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, 1, font._atlasData, 100);
 
 			return font;
 		}
 
 	private:
 		static Texture createTexture(const u_char *data) {
-			static Texture texture = Texture::requestTexture(1024, 1024, GL_RED, GL_UNSIGNED_BYTE, data);
+			static Texture texture = Texture::requestTexture(Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, data);
 			texture.linear();
 			glActiveTexture(GL_TEXTURE0); // TODO feels like this should be in the Texture class
 			glCheckError(GL_ACTIVATE_TEXTURE);

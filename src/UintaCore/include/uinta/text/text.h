@@ -21,6 +21,11 @@ namespace uinta {
 		static const size_t VERTICES_PER_CHAR = 8;
 		static const size_t INDICES_PER_CHAR = 6;
 
+		static void generateMesh(Text &text, float_t *data, uint32_t *indices);
+
+		static size_t getNonSpaceCharacterCount(Text &text);
+
+	public:
 		Text(const char *value, Font *font, UiElement *parent = nullptr) :
 				UiElement(parent, 0, 0, 0, 0, 0),
 				_value(value), _font(font) {}
@@ -29,13 +34,9 @@ namespace uinta {
 			return _font;
 		}
 
-		void generateMesh(float_t *data, uint32_t *indices, size_t *vertexCount, size_t *indexCount);
-
-		static void generateMesh(Text &text, float_t *data, uint32_t *indices, size_t *vertexCount, size_t *indexCount);
+		void generateMesh(float_t *data, uint32_t *indices) override;
 
 		size_t getNonSpaceCharacterCount();
-
-		static size_t getNonSpaceCharacterCount(Text &text);
 
 	};
 

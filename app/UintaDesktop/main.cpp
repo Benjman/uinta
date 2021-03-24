@@ -36,15 +36,13 @@ int main() {
 //	ShaderDto shaderDto(vertShader, fragShader, Raw);
 	ShaderDto shaderDto("/home/ben/Documents/shader.vert", "/home/ben/Documents/shader.frag");
 	Shader shader = Shader::createShader(shaderDto);
-	Font font = Font::loadFont("/usr/share/fonts/TTF/DejaVuSans.ttf", 95);
+	Font font = Font::loadFont("/usr/share/fonts/TTF/DejaVuSans.ttf");
 
-	Text text("a", &font);
+	Text text("Better, but let's fix alignment.", &font);
 	size_t charCount = text.getNonSpaceCharacterCount();
 	float_t interleavedData[charCount * Text::VERTICES_PER_CHAR * 2];
 	uint32_t indices[charCount * Text::INDICES_PER_CHAR];
-	size_t vertexCount = 0;
-	size_t indexCount = 0;
-	text.generateMesh(interleavedData, indices, &vertexCount, &indexCount);
+	text.generateMesh(interleavedData, indices);
 
 	Vao vao;
 	Vbo vertexBuffer = Vbo::requestVbo(&vao, GL_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(interleavedData), interleavedData);
@@ -57,14 +55,14 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		if (dto.isViewportChanged()) {
-			debugController.getUi().updateBuffer();
-			dto.resetViewportChanged();
+			/* debugController.getUi().updateBuffer(); */
+			/* dto.resetViewportChanged(); */
 		}
 
 		shader.use();
 //		debugController.render();
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, charCount * 6, GL_UNSIGNED_INT, 0);
 		glCheckError(GL_DRAW_ELEMENTS);
 
 		glfwSwapBuffers(dto.getWindow());

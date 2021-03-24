@@ -6,12 +6,12 @@
 
 namespace uinta {
 
-	void Text::generateMesh(float_t *data, uint32_t *indices, size_t *vertexCount, size_t *indexCount) {
-		Text::generateMesh(*this, data, indices, vertexCount, indexCount);
+	void Text::generateMesh(float_t *data, uint32_t *indices) {
+		Text::generateMesh(*this, data, indices);
 	}
 
-	void Text::generateMesh(Text &text, float_t *data, uint32_t *indices, size_t *vertexCount, size_t *indexCount) {
-		TextMeshGenerator::generateMesh(text, data, indices, vertexCount, indexCount);
+	void Text::generateMesh(Text &text, float_t *data, uint32_t *indices) {
+		TextMeshGenerator::generateMesh(text, data, indices);
 	}
 
 	size_t Text::getNonSpaceCharacterCount() {

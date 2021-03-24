@@ -7,36 +7,42 @@
 #include <cstring>
 #include <uinta/text.h>
 #include <uinta/gl/gl_macros.h>
+#include <uinta/gl/gl_state.h>
 
 namespace uinta {
 
+	struct GenerationContext {
+		const Text &text;
+		float_t *vBuffer;
+		uint32_t *iBuffer;
+		float_t cursorX;
+		float_t cursorY;
+		float_t aspectRatio;
+		float_t scale;
+		uint32_t dataPointer;
+
+		GenerationContext(const Text &text, float_t *vBuffer, uint32_t *iBuffer)
+				: text(text),
+				  vBuffer(vBuffer),
+				  iBuffer(iBuffer) {
+			cursorX = 0;
+			cursorY = text.getFont()->getLineHeight();
+			aspectRatio = gl_state::getViewportAspectRatio();
+			scale = (float_t) text.getFont()->getLineHeight() / UI_BASE_SIZE;
+			dataPointer = 0;
+		}
+	};
+
 	struct TextMeshGenerator {
-		static void generateMesh(Text &text,
-				float_t *data,
-				uint32_t *indices,
-				size_t *vertexCount,
-				size_t *indexCount) {
-			size_t charCount = 0;
-			std::vector<Line *> lines = generateStructure(text, &charCount);
-
-			*vertexCount = charCount * 4;
-			*indexCount = charCount * 6;
-
-			float_t cursorY = 0;
-			for (auto line : lines) {
-				processLine(text, *line, data, indices, cursorY);
-				cursorY += text._font->getLineHeight();
-				delete line;
-			}
-
+		static void generateMesh(Text &text, float_t *data, uint32_t *indices) {
+			const std::vector<Line *> &lines = generateStructure(text);
+			GenerationContext context(text, data, indices);
+			processLines(lines, context);
 		}
 
 	private:
-		static std::vector<Line *> generateStructure(Text &text, size_t *charCount) {
+		static std::vector<Line *> generateStructure(Text &text) {
 			std::vector<Line *> lines;
-			float_t a = 0,
-					lsb = 0;
-
 			if (!text._value.empty()) {
 				Line *line = new Line(text.getSize().x);
 				lines.push_back(line);
@@ -52,9 +58,9 @@ namespace uinta {
 						word = new Word;
 						continue;
 					}
-					text._font->getCharWidth(c, &a, &lsb);
-					word->addChar(c, a + lsb);
-					(*charCount)++;
+					float_t cursorX = 0, cursorY = 0;
+					TexturedQuadDto quadInfo = text.getFont()->getTexturedQuadInfo(c, &cursorX, &cursorY);
+					word->addChar(c, quadInfo.x1 - quadInfo.x0);
 				}
 				if (!line->tryAddWord(*word)) {
 					line = new Line(text.getSize().x);
@@ -66,37 +72,60 @@ namespace uinta {
 			return lines;
 		}
 
-		static void processLine(const Text &text, const Line &line, float_t *data, uint32_t *indices, float_t cursorY) {
-			float_t cursorX = text.getPosition().x;
+		static void processLines(const std::vector<Line *> &lines, GenerationContext &context) {
+			for (auto line : lines) {
+				processLine(*line, context);
+				context.cursorY += context.text.getFont()->getLineHeight();
+				delete line;
+			}
+		}
+
+		static void processLine(const Line &line, GenerationContext &context) {
+			context.cursorX = context.text.getPosition().x;
 			for (size_t i = 0, size = line.words.size(); i < size; i++) {
-				processWord(text, *line.words[i], line, data, indices, cursorX, cursorY);
+				processWord(*line.words[i], context);
 				if (i + 1 < size) {
-					const TexturedQuadDto quadInfo = text._font->getTexturedQuadInfo(' ', cursorX, cursorY);
-					processQuad(text, quadInfo, data, indices);
+					// add space
+					//	really just advancing the cursorX
+					context.text.getFont()->getTexturedQuadInfo(' ', &context.cursorX, &context.cursorY);
 				}
 			}
 		}
 
-		static void processWord(const Text &text, const Word &word, const Line &line, float_t *data, uint32_t *indices, float_t cursorX, float_t cursorY) {
+		static void processWord(const Word &word, GenerationContext &context) {
 			for (char c : word.characters) {
-				const TexturedQuadDto quadInfo = text._font->getTexturedQuadInfo(c, cursorX, cursorY);
-				processQuad(text, quadInfo, data, indices);
+				const TexturedQuadDto quadInfo = context.text.getFont()->getTexturedQuadInfo(c, &context.cursorX, &context.cursorY);
+				processQuad(quadInfo, context);
 			}
 		}
 
-		static void processQuad(const Text &text, const TexturedQuadDto &quadInfo, float_t *data, uint32_t *indices) {
-			float_t d[16] {
-					TO_GL_NDC_X(quadInfo.x0),  TO_GL_NDC_Y(quadInfo.y0),   quadInfo.s0, quadInfo.t0,
-					TO_GL_NDC_X(quadInfo.x0), TO_GL_NDC_Y(quadInfo.y1),   quadInfo.s0, quadInfo.t1,
-					TO_GL_NDC_X(quadInfo.x1), TO_GL_NDC_Y(quadInfo.y1),   quadInfo.s1, quadInfo.t1,
-					TO_GL_NDC_X(quadInfo.x1),  TO_GL_NDC_Y(quadInfo.y0),   quadInfo.s1, quadInfo.t0
+		static void processQuad(const TexturedQuadDto &quadInfo, GenerationContext &context) {
+			float_t arX = context.aspectRatio < 1 ? context.aspectRatio : 1;
+			float_t arY = context.aspectRatio > 1 ? context.aspectRatio : 1;
+			float_t vertices[16]{
+					TO_GL_NDC_X(quadInfo.x0 * arX * context.scale), TO_GL_NDC_Y(quadInfo.y0 * arY * context.scale),
+					quadInfo.s0, quadInfo.t0,
+
+					TO_GL_NDC_X(quadInfo.x0 * arX * context.scale), TO_GL_NDC_Y(quadInfo.y1 * arY * context.scale),
+					quadInfo.s0, quadInfo.t1,
+
+					TO_GL_NDC_X(quadInfo.x1 * arX * context.scale), TO_GL_NDC_Y(quadInfo.y1 * arY * context.scale),
+					quadInfo.s1, quadInfo.t1,
+
+					TO_GL_NDC_X(quadInfo.x1 * arX * context.scale), TO_GL_NDC_Y(quadInfo.y0 * arY * context.scale),
+					quadInfo.s1, quadInfo.t0
 			};
-			uint32_t i[6] {
-				0, 1, 3,
-				1, 2, 3
+			uint32_t indices[6]{
+					0, 1, 3,
+					1, 2, 3
 			};
-			std::memcpy(data, d, sizeof(d));
-			std::memcpy(indices, i, sizeof(i));
+			// add to indices according to current buffer position
+			for (size_t i = 0, size = sizeof(indices) / sizeof(uint32_t); i < size; i++) {
+				indices[i] += context.dataPointer * 4;
+			}
+			std::memcpy(&context.vBuffer[context.dataPointer * 16], vertices, sizeof(vertices));
+			std::memcpy(&context.iBuffer[context.dataPointer * 6], indices, sizeof(indices));
+			context.dataPointer++;
 		}
 
 	}; // class FontMeshGenerator
