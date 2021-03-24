@@ -92,7 +92,7 @@ namespace uinta {
 			return _size;
 		}
 
-		void generateMesh(float_t *data, uint32_t *indices);
+		virtual void generateMesh(float_t *data, uint32_t *indices);
 
 		[[nodiscard]] float_t getScale() const {
 			return _scale;

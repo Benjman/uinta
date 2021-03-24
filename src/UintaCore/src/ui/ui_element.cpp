@@ -8,10 +8,7 @@
 namespace uinta {
 
 	inline void applyAspectRatio(glm::vec4 &vec) {
-		glm::mediump_u64vec4 viewport;
-		gl_state::getViewportSize(&viewport.x, &viewport.y);
-
-		float_t aspect = (float_t) viewport.x / (float_t) viewport.y;
+		float_t aspect = gl_state::getViewportAspectRatio();
 		if (aspect > 1) {
 			// horizontal
 			vec.x *= aspect;
