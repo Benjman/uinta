@@ -17,5 +17,5 @@ uinta::File uinta::File::requestFile(const char *path) {
 
 uinta::File::File(const char *contents, file_size_t contentLength): _contentLength(contentLength) {
 	_contents = new char[contentLength + 1];
-	strcpy(_contents, contents);
+	strncpy(_contents, contents, contentLength - 1);
 }
