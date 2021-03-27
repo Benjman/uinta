@@ -28,7 +28,6 @@ namespace uinta {
 	struct FontLoader {
 		static Font loadFond(const char *trueTypePath) {
 			static Font font;
-			Font::STBTTDto &dto = font._tt;
 
 			FILE *file = fopen(trueTypePath, "rb");
 			if (!file) {
@@ -37,23 +36,17 @@ namespace uinta {
 			fread(font._fontData, 1, MEGABYTES(1), file);
 			fclose(file);
 
-			if (!stbtt_PackBegin(&dto.context, font._atlasData, Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, 0, 1, nullptr)) {
-				// TODO exception
-				std::cerr << "Failed to start packing font with stb_truetype." << std::endl;
-			}
+			int32_t ascent, descent, lineGap;
 
-			if (!stbtt_PackFontRange(&dto.context, font._fontData, 0, font.getLineHeight(), 32, 95, dto.charInfo)) {
-				// TODO exception
-				std::cerr << "Failed to pack font with stb_truetype." << std::endl;
-			}
+			stbtt_InitFont_internal(&font._stbttFontInfo, font._fontData, 0);
+			stbtt_BakeFontBitmap(font._fontData, 0, Font::LINE_HEIGHT, font._atlasData, Font::ATLAS_WIDTH,
+								 Font::ATLAS_HEIGHT, 32, 96, font._stbttBakedChar);
+			stbtt_GetFontVMetrics(&font._stbttFontInfo, &ascent, &descent, &lineGap);
 
-			stbtt_PackEnd(&dto.context);
-
-			// load properties
-			stbtt_InitFont(&dto.info, (const u_char *) &font._fontData, 0);
-			font._scale = stbtt_ScaleForPixelHeight(&dto.info, font.getLineHeight());
-			int32_t advanceBuffer = 0, leftSideBeringBuffer = 0;
-			stbtt_GetCodepointHMetrics(&dto.info, ' ', &advanceBuffer, &leftSideBeringBuffer);
+			font._scale = stbtt_ScaleForPixelHeight(&font._stbttFontInfo, Font::LINE_HEIGHT);
+			font._ascent = ascent * font._scale;
+			font._lineGap = lineGap * font._scale;
+			font._descent = descent * font._scale;
 
 			font._texture = createTexture(font._atlasData);
 
@@ -65,7 +58,8 @@ namespace uinta {
 
 	private:
 		static Texture createTexture(const u_char *data) {
-			static Texture texture = Texture::requestTexture(Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, data);
+			static Texture texture = Texture::requestTexture(Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, GL_RED,
+															 GL_UNSIGNED_BYTE, data);
 			texture.linear();
 			glActiveTexture(GL_TEXTURE0); // TODO feels like this should be in the Texture class
 			glCheckError(GL_ACTIVATE_TEXTURE);

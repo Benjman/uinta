@@ -36,9 +36,9 @@ int main() {
 //	ShaderDto shaderDto(vertShader, fragShader, Raw);
 	ShaderDto shaderDto("/home/ben/Documents/shader.vert", "/home/ben/Documents/shader.frag");
 	Shader shader = Shader::createShader(shaderDto);
-	Font font = Font::loadFont("/usr/share/fonts/TTF/DejaVuSans.ttf");
+	Font font = Font::loadFont("/usr/share/fonts/TTF/Hack-Bold.ttf");
 
-	Text text("Better, but let's fix alignment.", &font);
+	Text text("I am happy to finally see the beginnings of text rendering.", &font);
 	size_t charCount = text.getNonSpaceCharacterCount();
 	float_t interleavedData[charCount * Text::VERTICES_PER_CHAR * 2];
 	uint32_t indices[charCount * Text::INDICES_PER_CHAR];
@@ -61,6 +61,9 @@ int main() {
 
 		shader.use();
 //		debugController.render();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glDrawElements(GL_TRIANGLES, charCount * 6, GL_UNSIGNED_INT, 0);
 		glCheckError(GL_DRAW_ELEMENTS);
