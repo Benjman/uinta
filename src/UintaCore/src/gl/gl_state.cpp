@@ -70,6 +70,14 @@ namespace uinta::gl_state {
 		return (float_t) viewportW / (float_t) viewportH;
 	}
 
+	size_t getViewportHeight() {
+		return getState(VIEWPORT_SIZE, VIEWPORT_SIZE_WIDTH);
+	}
+
+	size_t getViewportWidth() {
+		return getState(VIEWPORT_SIZE, VIEWPORT_SIZE_WIDTH);
+	}
+
 	void sanitizeKeyValuePair(size_t &key, size_t &value) {
 		/* If a state only has one value (such as GL_ARRAY_BUFFERS is set to _n), set key to zero.
 		   Else, if a state is a thruple relationship (such as the currently bound vbo) we need to
