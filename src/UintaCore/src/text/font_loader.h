@@ -32,6 +32,7 @@ namespace uinta {
 			FILE *file = fopen(trueTypePath, "rb");
 			if (!file) {
 				std::cerr << "TrueType file at path `" << trueTypePath << "` not found." << std::endl;
+				return font;
 			}
 			fread(font._fontData, 1, MEGABYTES(1), file);
 			fclose(file);

@@ -7,7 +7,7 @@
 namespace uinta {
 
 	struct Word {
-		size_t width = 0;
+		float_t width = 0;
 		std::vector<char> characters;
 
 		void addChar(char c, float_t widthPx) {

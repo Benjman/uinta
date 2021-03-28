@@ -51,10 +51,11 @@ namespace uinta {
 				lines.push_back(line);
 				Word *word = new Word;
 
-				for (char c : text._value) {
+				for (size_t i = 0, len = text._value.size(); i < len; i++) {
+					char c = text._value[i];
 					if (c == ' ') {
 						if (!line->tryAddWord(*word)) {
-							line = new Line(text.getSize().x);
+							line = new Line(gl_state::getViewportWidth());
 							lines.push_back(line);
 							line->tryAddWord(*word);
 						}
@@ -64,8 +65,13 @@ namespace uinta {
 						word = new Word;
 						continue;
 					}
-					float_t tmpx = 0, tmpy = 0;
+					float_t tmpx = 0, tmpy = 0, kern = 0;
 					text._font->getTexturedQuadInfo(c, &tmpx, &tmpy);
+					if (i + 1 != len) {
+						kern = (float_t) stbtt_GetCodepointKernAdvance(&text._font->_stbttFontInfo, c,
+																		text._value[i + 1]);
+					}
+					tmpx += kern;
 					word->addChar(c, tmpx);
 				}
 
@@ -104,14 +110,13 @@ namespace uinta {
 				const stbtt_aligned_quad quad = context.text._font->getTexturedQuadInfo(word.characters[i],
 																						&context.xcursor,
 																						&context.ycursor);
+				processQuad(quad, context);
 				if (i + 1 != len) {
 					// kerning
 					context.xcursor += (float_t) stbtt_GetCodepointKernAdvance(&context.text._font->_stbttFontInfo,
 																			   word.characters[i],
-																			   word.characters[i + 1]) *
-									   context.text._font->_scale;
+																			   word.characters[i + 1]);
 				}
-				processQuad(quad, context);
 			}
 		}
 

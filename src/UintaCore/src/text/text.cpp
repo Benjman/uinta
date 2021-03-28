@@ -21,7 +21,7 @@ namespace uinta {
 	size_t Text::getNonSpaceCharacterCount(Text &text) {
 		// TODO these need tests for each special character
 		// TODO cache this value?
-		std::regex rx("[a-zA-Z0-9!\"#$%&'()*+,-./:;<>=?@\\\\^_`{}~\\[\\]]"); // all ascii characters from 32-127
+		std::regex rx("[a-zA-Z0-9!\"#$%&'()*+,-./:;<>=?@\\\\^_`{}~\\[\\]\r]"); // all ascii characters from 32-127
 		return std::ptrdiff_t(std::distance(std::sregex_iterator(text._value.begin(), text._value.end(), rx),
 											std::sregex_iterator()));
 	}
