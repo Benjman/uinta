@@ -28,6 +28,7 @@ uinta::Vbo uinta::Vbo::requestVbo(Vao *vao, vbo_target_t target, vbo_usage_t usa
 }
 
 void uinta::Vbo::resize(vbo_size_t size, const void *data) {
+	// TODO this needs to copy current contents to new buffer (on GPU side) https://stackoverflow.com/a/28056825
 	bind();
 	glBufferData(_target, size, data, _usage);
 	glCheckError(GL_BUFFER_DATA);
