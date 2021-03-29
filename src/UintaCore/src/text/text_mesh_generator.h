@@ -60,13 +60,13 @@ namespace uinta {
 							line->tryAddWord(*word);
 						}
 						float_t tmpx = 0, tmpy = 0;
-						text._font->getTexturedQuadInfo(' ', &tmpx, &tmpy);
+						text._font->getQuadInfo(' ', &tmpx, &tmpy);
 						line->lineWidthPx += tmpx;
 						word = new Word;
 						continue;
 					}
 					float_t tmpx = 0, tmpy = 0, kern = 0;
-					text._font->getTexturedQuadInfo(c, &tmpx, &tmpy);
+					text._font->getQuadInfo(c, &tmpx, &tmpy);
 					if (i + 1 != len) {
 						kern = (float_t) stbtt_GetCodepointKernAdvance(&text._font->_stbttFontInfo, c,
 																		text._value[i + 1]);
@@ -100,16 +100,16 @@ namespace uinta {
 				if (i + 1 < size) {
 					// add space
 					//	really just advancing the xcursor
-					context.text._font->getTexturedQuadInfo(' ', &context.xcursor, &context.ycursor);
+					context.text._font->getQuadInfo(' ', &context.xcursor, &context.ycursor);
 				}
 			}
 		}
 
 		static void processWord(const Word &word, GenerationContext &context) {
 			for (size_t i = 0, len = word.characters.size(); i < len; i++) {
-				const stbtt_aligned_quad quad = context.text._font->getTexturedQuadInfo(word.characters[i],
-																						&context.xcursor,
-																						&context.ycursor);
+				const stbtt_aligned_quad quad = context.text._font->getQuadInfo(word.characters[i],
+																				&context.xcursor,
+																				&context.ycursor);
 				processQuad(quad, context);
 				if (i + 1 != len) {
 					// kerning

@@ -25,7 +25,7 @@ namespace uinta {
 		static Font loadFont(const char *trueTypePath);
 
 	public:
-		stbtt_aligned_quad getTexturedQuadInfo(char c, float_t *xCursor, float_t *yCursor);
+		stbtt_aligned_quad getQuadInfo(const char c, float_t *xCursor, float_t *yCursor);
 
 	private:
 		Texture _texture{};
