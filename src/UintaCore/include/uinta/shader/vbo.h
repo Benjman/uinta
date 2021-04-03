@@ -12,7 +12,7 @@ namespace uinta {
 		vbo_size_t _size;
 
 	public:
-		static Vbo requestVbo(Vao *vao, vbo_target_t target, vbo_usage_t usage, vbo_size_t size = 0, const void *data = nullptr);
+		static Vbo *requestVbo(Vao *vao, vbo_target_t target, vbo_usage_t usage, vbo_size_t size = 0, const void *data = nullptr);
 
 		static void unbind(vbo_target_t target);
 

@@ -2,38 +2,48 @@
 
 #include <uinta/gl.h>
 
-uinta::Texture uinta::Texture::requestTexture(const uint32_t width, const uint32_t height, GLint internalFormat, GLenum type, const void *data) {
-	Texture texture;
+namespace uinta {
+	using namespace gl_state;
 
-	glGenTextures(0, &texture._id);
-	glCheckError(GL_GEN_TEXTURES);
+	Texture *Texture::requestTexture(const uint32_t width, const uint32_t height, GLint internalFormat, GLenum type,
+									 const void *data) {
+		auto texture = new Texture;
 
-	texture.bind();
-	texture.upload(width, height, internalFormat, type, data);
+		glGenTextures(1, &texture->_id);
+		glCheckError(GL_GEN_TEXTURES);
 
-	return texture;
-}
+		texture->bind();
+		texture->upload(width, height, internalFormat, type, data);
 
-void uinta::Texture::upload(uint32_t width, uint32_t height, GLint internalFormat, GLenum type, const void *data) {
-	bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, type, data);
-	glCheckError(GL_TEX_IMAGE2D);
-}
-
-void uinta::Texture::bind() const {
-	if (!gl_state::isActiveElseSet(gl_state::BOUND_TEXTURE_2D, _id)) {
-		glBindTexture(GL_TEXTURE_2D, _id);
-		glCheckError(GL_BIND_TEXTURE);
+		return texture;
 	}
-}
 
-void uinta::Texture::setParameter(GLenum name, GLint param) {
-	glTexParameteri(GL_TEXTURE_2D, name, param);
-	glCheckError(GL_TEX_PARAMETERI);
-}
+	void Texture::upload(uint32_t width, uint32_t height, GLint internalFormat, GLenum type, const void *data) const {
+		bind();
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, type, data);
+		glCheckError(GL_TEX_IMAGE2D);
+	}
 
-void uinta::Texture::linear() const {
-	bind();
-	setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	void Texture::bind() const {
+		if (!isActiveElseSet(BOUND_TEXTURE, GL_TEXTURE_2D, _id)) {
+			glBindTexture(GL_TEXTURE_2D, _id);
+			glCheckError(GL_BIND_TEXTURE);
+		}
+	}
+
+	void Texture::setParameter(GLenum name, GLint param) {
+		glTexParameteri(GL_TEXTURE_2D, name, param);
+		glCheckError(GL_TEX_PARAMETERI);
+	}
+
+	void Texture::linear() const {
+		bind();
+		setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
+	Texture::~Texture() {
+		glDeleteTextures(1, &_id);
+	}
+
 }

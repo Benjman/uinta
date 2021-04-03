@@ -4,8 +4,8 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
-        src/debug/debug_controller.cpp
-        src/debug/debug_ui.cpp
+        src/debug/debug_ui_controller.cpp
+        src/debug/debug_ui_view.cpp
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
         src/io/file.cpp
@@ -15,7 +15,7 @@ set(SOURCES ${SOURCES}
         src/shader/vbo.cpp
         src/shader/vertex_attribute.cpp
         src/text/font.cpp
-        src/text/text.cpp
+        src/text/text_controller.cpp
         src/texture/texture.cpp
         src/ui/ui.cpp
         src/ui/ui_element.cpp
@@ -30,15 +30,12 @@ set(INCLUDES ${INCLUDES} PARENT_SCOPE)
 find_package(OpenGL REQUIRED)
 set(LIBRARIES ${LIBRARIES} ${OPENGL_opengl_LIBRARY})
 
-find_package(stb REQUIRED)
-set(INCLUDES ${INCLUDES} ${STB_INCLUDE})
-
 find_package(glm REQUIRED)
 set(INCLUDES ${INCLUDES} ${GLM_INCLUDE})
 
 add_library(UintaCore STATIC ${SOURCES})
 
-include_directories(AFTER ${INCLUDES})
+include_directories(${INCLUDES})
 target_link_libraries(UintaCore ${LIBRARIES})
 
 # TODO why tf aren't STBs in the include path unless we use this target_include_directories?

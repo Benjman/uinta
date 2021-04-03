@@ -17,9 +17,9 @@ namespace uinta {
 	public:
 		static void unbind();
 
-	public:
-		Vao();
+		static Vao *requestVao();
 
+	public:
 		~Vao();
 
 		void bind() const;
@@ -34,6 +34,8 @@ namespace uinta {
 	private:
 		AttributeCollection _attributes;
 		vao_id_t _id = GL_ZERO;
+
+		Vao();
 
 		void removeAttribute(VertexAttribute *pAttribute);
 

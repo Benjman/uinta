@@ -26,45 +26,37 @@
 namespace uinta {
 
 	struct FontLoader {
-		static Font loadFond(const char *trueTypePath) {
-			static Font font;
+		static Font *loadFond(const char *trueTypePath) {
+			auto font = new Font;
 
 			FILE *file = fopen(trueTypePath, "rb");
 			if (!file) {
 				std::cerr << "TrueType file at path `" << trueTypePath << "` not found." << std::endl;
 				return font;
 			}
-			fread(font._fontData, 1, MEGABYTES(1), file);
+			fread(font->_fontData, 1, MEGABYTES(1), file);
 			fclose(file);
 
 			int32_t ascent, descent, lineGap;
 
-			stbtt_InitFont_internal(&font._stbttFontInfo, font._fontData, 0);
-			stbtt_BakeFontBitmap(font._fontData, 0, Font::LINE_HEIGHT, font._atlasData, Font::ATLAS_WIDTH,
-								 Font::ATLAS_HEIGHT, 32, 96, font._stbttBakedChar);
-			stbtt_GetFontVMetrics(&font._stbttFontInfo, &ascent, &descent, &lineGap);
+			stbtt_InitFont_internal(&font->_stbttFontInfo, font->_fontData, 0);
+			stbtt_BakeFontBitmap(font->_fontData, 0, Font::LINE_HEIGHT, font->_atlasData, Font::ATLAS_WIDTH,
+								 Font::ATLAS_HEIGHT, 32, 96, font->_stbttBakedChar);
+			stbtt_GetFontVMetrics(&font->_stbttFontInfo, &ascent, &descent, &lineGap);
 
-			font._scale = stbtt_ScaleForPixelHeight(&font._stbttFontInfo, Font::LINE_HEIGHT);
-			font._ascent = ascent * font._scale;
-			font._lineGap = lineGap * font._scale;
-			font._descent = descent * font._scale;
+			font->_scale = stbtt_ScaleForPixelHeight(&font->_stbttFontInfo, Font::LINE_HEIGHT);
 
-			font._texture = createTexture(font._atlasData);
-
-			// Write the atlas to an image file for debugging purposes
-//			stbi_write_jpg("test.jpg", Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, 1, font._atlasData, 100);
-
-			return font;
-		}
-
-	private:
-		static Texture createTexture(const u_char *data) {
-			static Texture texture = Texture::requestTexture(Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, GL_RED,
-															 GL_UNSIGNED_BYTE, data);
-			texture.linear();
+			font->_texture = Texture::requestTexture(Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, GL_RED,
+												   GL_UNSIGNED_BYTE, font->_atlasData);
+			font->_texture->linear();
 			glActiveTexture(GL_TEXTURE0); // TODO feels like this should be in the Texture class
 			glCheckError(GL_ACTIVATE_TEXTURE);
-			return texture;
+
+
+			// Write the atlas to an image file for debugging purposes
+//			stbi_write_jpg("getWhitespaceCount.jpg", Font::ATLAS_WIDTH, Font::ATLAS_HEIGHT, 1, font._atlasData, 100);
+
+			return font;
 		}
 	};
 

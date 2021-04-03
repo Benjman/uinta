@@ -8,7 +8,7 @@ namespace uinta::gl_state {
 	enum GlStateType {
 		BLEND_FUNC,
 		BOUND_BUFFER,
-		BOUND_TEXTURE_2D,
+		BOUND_TEXTURE,
 		BOUND_VERTEX_ARRAY,
 		ENABLE,
 		SHADER_IN_USE,

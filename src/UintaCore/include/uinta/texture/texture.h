@@ -10,12 +10,14 @@ namespace uinta {
 		texture_id_t _id = GL_ZERO;
 
 	public:
-		static Texture requestTexture(uint32_t width, uint32_t height, GLint internalFormat, GLenum type, const void *data);
+		static Texture *requestTexture(uint32_t width, uint32_t height, GLint internalFormat, GLenum type, const void *data);
 
 		static void setParameter(GLenum name, GLint param);
 
 	public:
-		void upload(uint32_t width, uint32_t height, GLint internalFormat, GLenum type, const void *data);
+		~Texture();
+
+		void upload(uint32_t width, uint32_t height, GLint internalFormat, GLenum type, const void *data) const;
 
 		void bind() const;
 

@@ -1,6 +1,7 @@
 #ifndef UINTA_SHADER_H
 #define UINTA_SHADER_H
 
+#include "shader_dto.h"
 #include <uinta/gl/gl_types.h>
 
 namespace uinta {
@@ -11,7 +12,7 @@ namespace uinta {
 		friend class ShaderLoader;
 
 	public:
-		static Shader createShader(ShaderDto &dto);
+		static Shader *createShader(const char *vertex, const char *fragment, ShaderSourceType type);
 
 		[[nodiscard]] program_id_t getProgramId() const { return _id; }
 

@@ -5,67 +5,69 @@
 
 #include <algorithm>
 
-namespace uinta {
-	using namespace gl_state;
+using namespace uinta;
+using namespace gl_state;
 
-	Vao::Vao() {
-		glGenVertexArrays(1, &_id);
-		glCheckError(GL_GEN_VERTEX_ARRAYS);
-		bind();
+Vao *Vao::requestVao() {
+	return new Vao;
+}
+
+Vao::Vao() {
+	glGenVertexArrays(1, &_id);
+	glCheckError(GL_GEN_VERTEX_ARRAYS);
+	bind();
+}
+
+void Vao::bind() const {
+	if (!isActiveElseSet(BOUND_VERTEX_ARRAY, _id)) {
+		glBindVertexArray(_id);
+		glCheckError(GL_BIND_VERTEX_ARRAY);
 	}
+}
 
-	void Vao::bind() const {
-		if (!isActiveElseSet(BOUND_VERTEX_ARRAY, _id)) {
-			glBindVertexArray(_id);
-			glCheckError(GL_BIND_VERTEX_ARRAY);
-		}
+void Vao::unbind() {
+	if (!isActiveElseSet(BOUND_VERTEX_ARRAY, 0)) {
+		glBindVertexArray(0);
+		// No need fo GL error checking. Binding 0 is always permitted.
 	}
+}
 
-	void Vao::unbind() {
-		if (!isActiveElseSet(BOUND_VERTEX_ARRAY, 0)) {
-			glBindVertexArray(0);
-			// No need fo GL error checking. Binding 0 is always permitted.
-		}
+VertexAttribute *Vao::createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
+									  attrib_normalize_t normalized, attrib_stride_t stride,
+									  const void *offset) {
+	bind();
+	auto *attribute = new VertexAttribute(index, size, type, normalized, stride, offset);
+	_attributes.emplace_back(attribute);
+	return attribute;
+}
+
+void Vao::disableAllAttributes() {
+	for (auto attribute : _attributes) {
+		attribute->disable();
 	}
+}
 
-	VertexAttribute *Vao::createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
-										  attrib_normalize_t normalized, attrib_stride_t stride,
-										  const void *offset) {
-		bind();
-		auto *attribute = new VertexAttribute(index, size, type, normalized, stride, offset);
-		_attributes.emplace_back(attribute);
-		return attribute;
+void Vao::enableAllAttributes() {
+	for (auto attribute : _attributes) {
+		attribute->enable();
 	}
+}
 
-	void Vao::disableAllAttributes() {
-		for (auto attribute : _attributes) {
-			attribute->disable();
-		}
+void Vao::removeAttribute(VertexAttribute *attribute) {
+	auto element = std::find(_attributes.begin(), _attributes.end(), attribute);
+	if (element != _attributes.end()) {
+		attribute->disable();
+		_attributes.erase(element);
+		// TODO getWhitespaceCount to see if attribute is deallocated
 	}
+}
 
-	void Vao::enableAllAttributes() {
-		for (auto attribute : _attributes) {
-			attribute->enable();
-		}
+Vao::~Vao() {
+	glDeleteVertexArrays(1, &_id);
+	glCheckError(GL_DELETE_VERTEX_ARRAYS);
+
+	for (auto attribute : _attributes) {
+		attribute->disable();
+		delete attribute;
 	}
-
-	void Vao::removeAttribute(VertexAttribute *attribute) {
-		auto element = std::find(_attributes.begin(), _attributes.end(), attribute);
-		if (element != _attributes.end()) {
-			attribute->disable();
-			_attributes.erase(element);
-			// TODO test to see if attribute is deallocated
-		}
-	}
-
-	Vao::~Vao() {
-		glDeleteVertexArrays(1, &_id);
-		glCheckError(GL_DELETE_VERTEX_ARRAYS);
-
-		for (auto attribute : _attributes) {
-			attribute->disable();
-			delete attribute;
-		}
-	}
-
 }

@@ -14,7 +14,8 @@ namespace uinta {
 	struct TextMeshGenerator {
 
 		struct GenerationContext {
-			const Text &text;
+			Text &text;
+			Font &font;
 			float_t *vBuffer{};
 			float_t aspectRatio = 0.f;
 			float_t xcursor = 0.f;
@@ -24,8 +25,9 @@ namespace uinta {
 			uint32_t dataPointer = 0;
 			uint32_t *iBuffer{};
 
-			GenerationContext(const Text &text, float_t *vBuffer, uint32_t *iBuffer)
+			GenerationContext(Text &text, Font &font, float_t *vBuffer, uint32_t *iBuffer)
 					: text(text),
+					  font(font),
 					  vBuffer(vBuffer),
 					  iBuffer(iBuffer) {
 				aspectRatio = gl_state::getViewportAspectRatio();
@@ -37,22 +39,24 @@ namespace uinta {
 			}
 		};
 
-		static void generateMesh(Text &text, float_t *data, uint32_t *indices) {
-			const std::vector<Line *> &lines = generateStructure(text);
-			GenerationContext context(text, data, indices);
+		static void generateMesh(Text &text, Font &font, float_t *data, uint32_t *indices) {
+			GenerationContext context(text, font, data, indices);
+			const std::vector<Line *> &lines = generateStructure(context);
 			processLines(lines, context);
 		}
 
 	private:
-		static std::vector<Line *> generateStructure(Text &text) {
+		static std::vector<Line *> generateStructure(GenerationContext &context) {
 			std::vector<Line *> lines;
-			if (!text._value.empty()) {
+			Text &text = context.text;
+			const Font &font = context.font;
+			if (!text.getValue().empty()) {
 				Line *line = new Line(gl_state::getViewportWidth());
 				lines.push_back(line);
 				Word *word = new Word;
 
-				for (size_t i = 0, len = text._value.size(); i < len; i++) {
-					char c = text._value[i];
+				for (size_t i = 0, len = text.getValue().size(); i < len; i++) {
+					char c = text.getValue()[i];
 					if (c == ' ') {
 						if (!line->tryAddWord(*word)) {
 							line = new Line(gl_state::getViewportWidth());
@@ -60,16 +64,16 @@ namespace uinta {
 							line->tryAddWord(*word);
 						}
 						float_t tmpx = 0, tmpy = 0;
-						text._font->getQuadInfo(' ', &tmpx, &tmpy);
+						font.getQuadInfo(' ', &tmpx, &tmpy);
 						line->lineWidthPx += tmpx;
 						word = new Word;
 						continue;
 					}
 					float_t tmpx = 0, tmpy = 0, kern = 0;
-					text._font->getQuadInfo(c, &tmpx, &tmpy);
+					font.getQuadInfo(c, &tmpx, &tmpy);
 					if (i + 1 != len) {
-						kern = (float_t) stbtt_GetCodepointKernAdvance(&text._font->_stbttFontInfo, c,
-																		text._value[i + 1]);
+						kern = (float_t) stbtt_GetCodepointKernAdvance(&font._stbttFontInfo, c,
+																	   text.getValue()[i + 1]);
 					}
 					tmpx += kern;
 					word->addChar(c, tmpx);
@@ -100,20 +104,20 @@ namespace uinta {
 				if (i + 1 < size) {
 					// add space
 					//	really just advancing the xcursor
-					context.text._font->getQuadInfo(' ', &context.xcursor, &context.ycursor);
+					context.font.getQuadInfo(' ', &context.xcursor, &context.ycursor);
 				}
 			}
 		}
 
 		static void processWord(const Word &word, GenerationContext &context) {
 			for (size_t i = 0, len = word.characters.size(); i < len; i++) {
-				const stbtt_aligned_quad quad = context.text._font->getQuadInfo(word.characters[i],
+				const stbtt_aligned_quad quad = context.font.getQuadInfo(word.characters[i],
 																				&context.xcursor,
 																				&context.ycursor);
 				processQuad(quad, context);
 				if (i + 1 != len) {
 					// kerning
-					context.xcursor += (float_t) stbtt_GetCodepointKernAdvance(&context.text._font->_stbttFontInfo,
+					context.xcursor += (float_t) stbtt_GetCodepointKernAdvance(&context.font._stbttFontInfo,
 																			   word.characters[i],
 																			   word.characters[i + 1]);
 				}

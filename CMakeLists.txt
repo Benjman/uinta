@@ -33,6 +33,9 @@ set(INCLUDES ${INCLUDES} ${ENTT_INCLUDE})
 find_package(glm REQUIRED)
 set(INCLUDES ${INCLUDES} ${GLM_INCLUDE})
 
+find_package(stb REQUIRED)
+set(INCLUDES ${INCLUDES} ${STB_INCLUDE})
+
 add_subdirectory(src/UintaPlatform)
 add_subdirectory(src/UintaCore)
 

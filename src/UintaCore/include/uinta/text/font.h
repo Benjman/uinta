@@ -22,18 +22,24 @@ namespace uinta {
 	public:
 		static const size_t LINE_HEIGHT = 32;
 
-		static Font loadFont(const char *trueTypePath);
+		static Font *loadFont(const char *trueTypePath);
 
 	public:
-		stbtt_aligned_quad getQuadInfo(const char c, float_t *xCursor, float_t *yCursor);
+		~Font() {
+			delete _texture;
+		}
+
+		stbtt_aligned_quad getQuadInfo(char c, float_t *xCursor, float_t *yCursor) const;
+
+		void bind() const {
+			_texture->bind();
+		}
 
 	private:
-		Texture _texture{};
+		Texture *_texture{};
 
 		stbtt_fontinfo _stbttFontInfo{};
 		stbtt_bakedchar _stbttBakedChar[96]{};
-
-		float_t _ascent = 0, _descent = 0, _lineGap = 0;
 
 		u_char _atlasData[ATLAS_WIDTH * ATLAS_HEIGHT]{};
 		u_char _fontData[MEGABYTES(1)]{};

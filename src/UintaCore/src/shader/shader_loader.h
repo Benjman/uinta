@@ -15,7 +15,7 @@ namespace uinta {
 
 	struct ShaderLoader {
 
-		static Shader loadShader(ShaderDto &dto) {
+		static Shader *loadShader(ShaderDto &dto) {
 			if (dto.sourceType == IO) {
 				loadSources(dto);
 			}
@@ -27,7 +27,7 @@ namespace uinta {
 			GLuint fragId = compileShader(GL_FRAGMENT_SHADER, dto.fragSource);
 			GLuint programId = linkProgram(vertId, fragId);
 
-			return Shader(programId);
+			return new Shader(programId);
 		}
 
 	private:
