@@ -1,6 +1,6 @@
 ### Primary goals
 
-- Render a terrain (Perhaps primitive cubes, or simple terrain heightmap (Perf getWhitespaceCount the two?))
+- Render a terrain (Perhaps primitive cubes, or simple terrain heightmap (Perf test the two?))
 - Render basic flora; Shrubs, flowers, etc.?
 - Measure how large of an area can be rendered in 1/60th of a second (1 FPS) on both android and desktop.
 - Basic debugging UI, including buttons, text input fields, and truetype font rendering.
