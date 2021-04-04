@@ -30,7 +30,7 @@ Vbo *Vbo::requestVbo(Vao *vao, vbo_target_t target, vbo_usage_t usage, vbo_size_
 }
 
 void Vbo::resize(vbo_size_t size, const void *data) {
-	// TODO this needs to copy current contents to new buffer (on GPU side) https://stackoverflow.com/a/28056825
+	// TODO this needs to copy current contents to new buffer (pref on the gpu only) https://stackoverflow.com/a/28056825
 	bind();
 	glBufferData(_target, size, data, _usage);
 	glCheckError(GL_BUFFER_DATA);

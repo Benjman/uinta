@@ -1,70 +1,53 @@
 #ifndef UINTA_TEXT_CONTROLLER_H
 #define UINTA_TEXT_CONTROLLER_H
 
-#include <uinta/controller/controller.h>
+#include <uinta/controller/buffer_controller.h>
+
+#include <uinta/gl/gl_types.h>
 
 namespace uinta {
 
 	class TextController : public Controller {
+	public:
 		static const size_t VERTICES_PER_CHAR = 4;
 		static const size_t INDICES_PER_CHAR = 6;
+		static const size_t ELEMENTS_PER_VERTEX = 4; // vec2 position, vec2 uv
 
+		Text *_text;
 		Font *_font;
 
-		float_t *_vBuffer{};
-		size_t _vBufferSize = 0;
-
-		uint32_t *_iBuffer{};
-		size_t _iBufferSize = 0;
-
-		size_t _vertexCount = 0;
 		size_t _charCount = 0;
-		size_t _charCountRenderable = 0;
+		size_t _maxChars = 0;
 
-		void updateVertexCount() {
-			_vertexCount = _charCount * VERTICES_PER_CHAR;
-		}
+		size_t _vOffset = 0;
+		size_t _iOffset = 0;
+		size_t _idxOffset = 0;
 
-		void updateCharCount() {
-			_charCount = _text->getValue().size();
-			_charCountRenderable = _text->getValue().size() - findWhitespaceCount();
-		}
-
-		void updateCounts() {
-			updateCharCount();
-			updateVertexCount();
-		}
-
-		void updateBuffers();
-
-	protected:
-		Text *_text;
-
-	public:
-		explicit TextController(const Controller *parent, Text &text, Font *font);
-
-		~TextController() {
-			delete[] _vBuffer;
-			delete[] _iBuffer;
-		}
-
-		size_t findWhitespaceCount();
+		explicit TextController(const BufferController *parent, Text &text, Font *font);
 
 		void initialize() override;
 
+		[[nodiscard]] const Font *getFont() const { return _font; }
 		[[nodiscard]] const Text *getText() const { return _text; }
-		[[nodiscard]] float_t *getVertexBuffer() const { return _vBuffer; }
 		[[nodiscard]] size_t getCharCount() const { return _charCount; }
-		[[nodiscard]] size_t getCharCountRenderable() const { return _charCountRenderable; }
-		[[nodiscard]] size_t getIndexBufferSize() const { return _iBufferSize; }
-		[[nodiscard]] size_t getVertexBufferSize() const { return _vBufferSize; }
-		[[nodiscard]] size_t getVertexCount() const { return _vertexCount; }
-		[[nodiscard]] uint32_t *getIndexBuffer() const { return _iBuffer; }
+		[[nodiscard]] size_t getIdxCount() const { return _maxChars * VERTICES_PER_CHAR; }
+		[[nodiscard]] size_t getIBufferLen() const { return _maxChars * INDICES_PER_CHAR; }
+		[[nodiscard]] size_t getIBufferSize() const { return getIBufferLen() * sizeof(GLuint); }
+		[[nodiscard]] size_t getVBufferLen() const { return _maxChars * VERTICES_PER_CHAR * ELEMENTS_PER_VERTEX; }
+		[[nodiscard]] size_t getVBufferSize() const { return getVBufferLen() * sizeof(GLfloat); }
 
-		void setTextAndInit(const char *value) {
-			_text->getValue() = value;
-			initialize();
+		void setValue(const char *value, bool updateMetadata = true) {
+			_text->_value = value;
+			if (updateMetadata) {
+				doUpdateMetadata();
+			}
 		}
+
+		void generateMesh(GLfloat *vBuffer, GLuint *iBuffer, size_t iOffset = 0) const;
+
+		void doUpdateMetadata();
+
+		void render() override;
 
 	}; // class TextController
 

@@ -4,6 +4,7 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
+        src/controller/buffer_controller.cpp
         src/debug/debug_ui_controller.cpp
         src/debug/debug_ui_view.cpp
         src/gl/gl_error.cpp
@@ -37,6 +38,3 @@ add_library(UintaCore STATIC ${SOURCES})
 
 include_directories(${INCLUDES})
 target_link_libraries(UintaCore ${LIBRARIES})
-
-# TODO why tf aren't STBs in the include path unless we use this target_include_directories?
-target_include_directories(UintaCore PUBLIC ${STB_INCLUDE})

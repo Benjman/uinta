@@ -8,7 +8,7 @@
 namespace uinta {
 
 	class DebugUiProto : public Proto {
-		DebugUiController controller{};
+		DebugUiController controller = DebugUiController(this);
 
 	public:
 		DebugUiProto() {
@@ -23,7 +23,7 @@ namespace uinta {
 			controller.render();
 		}
 
-	}; // class DebugUi
+	}; // class DebugUiProto
 
 } // namespace uinta
 

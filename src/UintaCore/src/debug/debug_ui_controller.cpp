@@ -1,105 +1,144 @@
-#include <uinta/debug.h>
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-slicing"
 
-#include <uinta/gl.h>
+#include "uinta/debug/debug_ui_controller.h"
+
 #include <uinta/shader.h>
-#include <uinta/text/font.h>
-#include <uinta/data/arr_utils.h>
-#include <uinta/debug/debug_ui_controller.h>
+#include <uinta/text.h>
+#include <uinta/gl.h>
 
+namespace uinta::debuguicontroller {
 
-namespace uinta {
+	static const char *vertexShader =
+			"#version 300 es\n"
+			"layout (location = 0) in lowp vec2 inPos;"
+			"layout (location = 1) in lowp vec2 inTexCoord;"
+			"out lowp vec2 passTexCoord;"
+			"void main() {"
+			"	gl_Position = vec4(inPos, 0.0, 1.0);"
+			"	passTexCoord = vec2(inTexCoord.x, inTexCoord.y);"
+			"}";
 
-	namespace debuguicontroller {
+	static const char *fragShader =
+			"#version 300 es\n"
+			"in lowp vec2 passTexCoord;"
+			"out lowp vec4 outColor;"
+			"uniform sampler2D texture1;"
+			"void main() {"
+			"	outColor = vec4(texture(texture1, passTexCoord).r);"
+			"}";
 
-		static const char *vertexShader =
-				"#version 300 es\n"
-				"layout (location = 0) in lowp vec2 inPos;"
-				"layout (location = 1) in lowp vec2 inTexCoord;"
-				"out lowp vec2 passTexCoord;"
-				"void main() {"
-				"	gl_Position = vec4(inPos, 0.0, 1.0);"
-				"	passTexCoord = vec2(inTexCoord.x, inTexCoord.y);"
-				"}";
+}
+using namespace uinta;
+using namespace uinta::gl_state;
+using namespace uinta::debuguicontroller;
 
-		static const char *fragShader =
-				"#version 300 es\n"
-				"in lowp vec2 passTexCoord;"
-				"out lowp vec4 outColor;"
-				"uniform sampler2D texture1;"
-				"void main() {"
-				"	outColor = vec4(texture(texture1, passTexCoord).r);"
-				"}";
+DebugUiController::DebugUiController(Controller *parent) : BufferController(parent, KILOBYTES(5) * sizeof(GLfloat), KILOBYTES(2) * sizeof(GLuint)),
+														   _shader(Shader::createShader(vertexShader, fragShader, Raw)),
+														   _font(Font::loadFont(
+																   "/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
+	_controllerCount = 2;
+	_controllers = new TextController *[_controllerCount]{ // TODO this is ugly af
+			&_fps,
+			&_fpsLabel,
+	};
 
-	}
-	using namespace debuguicontroller;
+	vBuffer = new GLfloat[vSize / sizeof(GLfloat)];
+	iBuffer = new GLuint[iSize / sizeof(GLuint)];
+}
 
-	DebugUiController::DebugUiController() :
-			_shader(Shader::createShader(vertexShader, fragShader, Raw)),
-			_font(Font::loadFont("/usr/share/fonts/TTF/DejaVuSans-Bold.ttf")) {
-	}
+void DebugUiController::FpsTextController::update(float_t dt) {
+	Controller::update(dt);
+	timeToNextUpdate -= dt;
+	if (timeToNextUpdate <= 0) {
+		const std::string &fpsStr = std::to_string((size_t) std::ceil(frameCount * (1 / INTERVAL)));
 
-	void DebugUiController::initialize() {
-		initializeControllers();
-		initializeBuffers();
-	}
+		if (fpsStr != _text->getValue()) {
+			setValue(fpsStr.c_str());
 
-	void DebugUiController::initializeControllers() { initFps(); }
-
-	void DebugUiController::initFps() {
-		_fpsLbl.initialize();
-		_fps.initialize();
-		shiftArr<uint32_t>(_fpsLbl.getCharCount() * 4, _fps.getIndexBuffer(), _fps.getCharCount() * 6);
-
-		_vertexBufferSize += _fps.getVertexBufferSize() + _fpsLbl.getVertexBufferSize();
-		_indexBufferSize += _fps.getIndexBufferSize() + _fpsLbl.getIndexBufferSize();
-	}
-
-	void DebugUiController::update(float_t dt) {
-		_fps.update(dt);
-	}
-
-	void DebugUiController::render() {
-		_fps.frameRendered();
-
-		_shader->use();
-		_font->bind();
-		glDrawElements(GL_TRIANGLES, 6 * _fpsLbl.getCharCount(), GL_UNSIGNED_INT, (void *) (0 * sizeof(GLuint)));
-		glDrawElements(GL_TRIANGLES, 6 * _fps.getCharCount(), GL_UNSIGNED_INT, (void *) (_fpsLbl.getIndexBufferSize()));
-		glCheckError(GL_DRAW_ELEMENTS);
-	}
-
-	DebugUiController::~DebugUiController() {
-		delete _font;
-		delete _shader;
-		delete _vao;
-		delete _vertexBuffer;
-		delete _indexBuffer;
-	}
-
-	void DebugUiController::initializeBuffers() {
-		_vao = Vao::requestVao();
-
-		_vertexBuffer = Vbo::requestVbo(_vao, GL_ARRAY_BUFFER, GL_STATIC_DRAW, _vertexBufferSize);
-		_vertexBuffer->storeData(_fpsLbl.getVertexBuffer(), _fpsLbl.getVertexBufferSize());
-		_vertexBuffer->storeData(_fps.getVertexBuffer(), _fps.getVertexBufferSize(), _fpsLbl.getVertexBufferSize());
-
-		_indexBuffer = Vbo::requestVbo(_vao, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, _indexBufferSize);
-		_indexBuffer->storeData(_fpsLbl.getIndexBuffer(), _fpsLbl.getIndexBufferSize());
-		_indexBuffer->storeData(_fps.getIndexBuffer(), _fps.getIndexBufferSize(), _fpsLbl.getIndexBufferSize());
-
-		_vao->createAttribute(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float_t), (void *) (0 * sizeof(float_t)));
-		_vao->createAttribute(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float_t), (void *) (2 * sizeof(float_t)));
-	}
-
-	void DebugUiController::FpsTextController::update(float_t dt) {
-		timeToNextUpdate -= dt;
-		if (timeToNextUpdate <= 0) {
-			_text->getValue() = std::to_string((size_t) std::ceil(frameCount * (1 / INTERVAL)));
-			timeToNextUpdate += INTERVAL;
-			initialize();
-			DebugUiController *parent = ((DebugUiController*)getParent());
-			parent->_vertexBuffer->storeData(getVertexBuffer(), getVertexBufferSize(), parent->_fpsLbl.getVertexBufferSize());
-			frameCount = 0;
+			DebugUiController *parent = ((DebugUiController *) getParent());
+			generateMesh(&parent->vBuffer[_vOffset], &parent->iBuffer[_iOffset], _idxOffset);
+			parent->uploadMesh(&parent->vBuffer[_vOffset], getVBufferSize(), _vOffset, &parent->iBuffer[_iOffset], getIBufferSize(), _iOffset);
 		}
+
+		frameCount = 0;
+		timeToNextUpdate += INTERVAL;
 	}
 }
+
+void DebugUiController::FpsTextController::initialize() {
+	TextController::initialize();
+}
+
+void DebugUiController::initialize() {
+	BufferController::initialize();
+	initializeControllers();
+	initializeBuffers();
+	generateMeshes();
+	uploadMeshes();
+}
+
+void DebugUiController::initializeControllers() {
+	for (size_t i = 0; i < _controllerCount; i++) {
+		_controllers[i]->initialize();
+	}
+}
+
+void DebugUiController::generateMeshes() {
+	size_t vPointer = 0, iPointer = 0, idxPointer = 0;
+
+	for (size_t i = 0; i < _controllerCount; i++) {
+		TextController *controller = _controllers[i];
+
+		controller->_vOffset = vPointer;
+		controller->_iOffset = iPointer;
+		controller->_idxOffset = idxPointer;
+
+		controller->generateMesh(&vBuffer[vPointer], &iBuffer[iPointer], idxPointer);
+
+		vPointer += controller->getVBufferLen();
+		iPointer += controller->getIBufferLen();
+		idxPointer += controller->getIdxCount();
+	}
+}
+
+void DebugUiController::initializeBuffers() {
+	vao->createAttribute(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
+	vao->createAttribute(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
+}
+
+void DebugUiController::uploadMeshes() {
+	uploadMesh(vBuffer, vSize, 0, iBuffer, iSize, 0);
+}
+
+DebugUiController::~DebugUiController() {
+	delete _font;
+	delete _shader;
+	delete[] _controllers;
+}
+
+void DebugUiController::render() {
+	if (!isActiveElseSet(ENABLE, GL_BLEND, GL_TRUE)) {
+		glEnable(GL_BLEND);
+		glCheckError(GL_ENABLE);
+	}
+
+	if (!isActiveElseSet(BLEND_FUNC, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)) {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glCheckError(GL_BLEND_FUNC);
+	}
+
+	_shader->use();
+	_font->bind();
+
+	for (size_t i = 0; i < _controllerCount; i++) {
+		_controllers[i]->render();
+	}
+}
+
+void DebugUiController::update(float_t dt) {
+	Controller::update(dt);
+	_fps.update(dt);
+}
+
+#pragma clang diagnostic pop

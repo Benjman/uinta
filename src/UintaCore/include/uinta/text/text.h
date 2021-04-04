@@ -13,6 +13,8 @@ namespace uinta {
 	class Font;
 
 	class Text : public UiElement {
+		friend class TextController;
+
 		std::string _value;
 
 	public:

@@ -2,35 +2,41 @@
 
 #include <uinta/text.h>
 
-#include <regex>
-#include <string>
+#include <uinta/text/text_controller.h>
+#include <uinta/gl/gl_error.h>
+
+#include <iostream>
+
 
 using namespace uinta;
 
-TextController::TextController(const Controller *parent, Text &text, Font *font) :
+TextController::TextController(const BufferController *parent, Text &text, Font *font) :
 		Controller(parent),
 		_text(&text),
 		_font(font) {
-	updateCounts();
-}
-
-size_t TextController::findWhitespaceCount() {
-	std::regex regex("\\s");
-	return std::distance(std::sregex_iterator(_text->getValue().begin(), _text->getValue().end(), regex),
-						 std::sregex_iterator());
 }
 
 void TextController::initialize() {
-	updateCounts();
-	updateBuffers();
+	doUpdateMetadata();
 }
 
-void TextController::updateBuffers() {
-	_vBuffer = new float_t[_vertexCount * 4];
-	_vBufferSize = _vertexCount * 4 * sizeof(float_t);
+void TextController::generateMesh(GLfloat *vBuffer, GLuint *iBuffer, size_t iOffset) const {
+	TextMeshGenerator::generateMesh(*_text, *_font, vBuffer, iBuffer, iOffset);
+}
 
-	_iBuffer = new uint32_t[_charCountRenderable * 6];
-	_iBufferSize = _charCountRenderable * 6 * sizeof(uint32_t);
+void TextController::doUpdateMetadata() {
+	_charCount = _text->getValue().size();
+	if (_maxChars == 0) {
+		_maxChars = _charCount;
+	}
+	if (_charCount > _maxChars) {
+		// Buffers are written up to _maxChars. Extra chars are ignored.
+		std::cerr << "_charCount exceeded _maxChars\n";
+		_charCount = _maxChars;
+	}
+}
 
-	TextMeshGenerator::generateMesh(*_text, *_font, _vBuffer, _iBuffer);
+void TextController::render() {
+	glDrawElements(GL_TRIANGLES, _charCount * INDICES_PER_CHAR, GL_UNSIGNED_INT, (void *)(_iOffset * sizeof(GLuint)));
+	glCheckError(GL_DRAW_ELEMENTS);
 }

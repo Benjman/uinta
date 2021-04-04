@@ -9,10 +9,10 @@ namespace uinta {
 		const Controller *_parent;
 
 	protected:
-		Controller(const Controller *parent = nullptr) : _parent(parent) {}
+		explicit Controller(const Controller *parent = nullptr) : _parent(parent) {}
 
 	public:
-		const Controller *getParent() const {
+		[[nodiscard]] const Controller *getParent() const {
 			return _parent;
 		}
 
@@ -21,6 +21,7 @@ namespace uinta {
 		virtual void update(float_t dt) {}
 
 		virtual void render() {}
+
 	}; // class Controller
 
 } // namespace uinta

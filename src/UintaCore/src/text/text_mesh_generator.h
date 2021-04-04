@@ -22,16 +22,17 @@ namespace uinta {
 			float_t ycursor = 0.f;
 			float_t lineHeight = 0.f;
 			float_t viewportHeight = 0.f;
-			uint32_t dataPointer = 0;
+			uint32_t pointer = 0;
 			uint32_t *iBuffer{};
+			size_t indexOffset = 0;
 
-			GenerationContext(Text &text, Font &font, float_t *vBuffer, uint32_t *iBuffer)
+			GenerationContext(Text &text, Font &font, float_t *vBuffer, uint32_t *iBuffer, size_t indexOffset)
 					: text(text),
 					  font(font),
 					  vBuffer(vBuffer),
-					  iBuffer(iBuffer) {
+					  iBuffer(iBuffer),
+					  indexOffset(indexOffset) {
 				aspectRatio = gl_state::getViewportAspectRatio();
-				dataPointer = 0;
 				viewportHeight = gl_state::getViewportHeight();
 				lineHeight = Font::LINE_HEIGHT;
 				xcursor = text.getPosition().x;
@@ -39,8 +40,8 @@ namespace uinta {
 			}
 		};
 
-		static void generateMesh(Text &text, Font &font, float_t *data, uint32_t *indices) {
-			GenerationContext context(text, font, data, indices);
+		static void generateMesh(Text &text, Font &font, float_t *data, uint32_t *indices, size_t indexOffset) {
+			GenerationContext context(text, font, data, indices, indexOffset);
 			const std::vector<Line *> &lines = generateStructure(context);
 			processLines(lines, context);
 		}
@@ -99,21 +100,17 @@ namespace uinta {
 		}
 
 		static void processLine(const Line &line, GenerationContext &context) {
-			for (size_t i = 0, size = line.words.size(); i < size; i++) {
-				processWord(*line.words[i], context);
-				if (i + 1 < size) {
-					// add space
-					//	really just advancing the xcursor
-					context.font.getQuadInfo(' ', &context.xcursor, &context.ycursor);
-				}
+			for (auto word : line.words) {
+				processWord(*word, context);
+				context.font.getQuadInfo(' ', &context.xcursor, &context.ycursor);
 			}
 		}
 
 		static void processWord(const Word &word, GenerationContext &context) {
 			for (size_t i = 0, len = word.characters.size(); i < len; i++) {
 				const stbtt_aligned_quad quad = context.font.getQuadInfo(word.characters[i],
-																				&context.xcursor,
-																				&context.ycursor);
+																		 &context.xcursor,
+																		 &context.ycursor);
 				processQuad(quad, context);
 				if (i + 1 != len) {
 					// kerning
@@ -158,18 +155,19 @@ namespace uinta {
 					x1, y0,
 					quad.s1, quad.t0
 			};
-			std::memcpy(&context.vBuffer[context.dataPointer * 16], vertices, sizeof(vertices));
+			std::memcpy(&context.vBuffer[context.pointer * 16], vertices, sizeof(vertices));
 
 			uint32_t indices[6]{
 					0, 1, 3,
 					1, 2, 3
 			};
 			for (uint32_t &index : indices) {
-				index += context.dataPointer * 4;
+				index += context.pointer * 4;
+				index += context.indexOffset;
 			}
-			std::memcpy(&context.iBuffer[context.dataPointer * 6], indices, sizeof(indices));
+			std::memcpy(&context.iBuffer[context.pointer * 6], indices, sizeof(indices));
 
-			context.dataPointer++;
+			context.pointer++;
 		}
 
 	}; // class FontMeshGenerator

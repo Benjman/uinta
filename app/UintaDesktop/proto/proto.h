@@ -2,19 +2,16 @@
 #define UINTA_PROTOTYPE_H
 
 #include <uinta/types.h>
+#include <uinta/controller/controller.h>
 
 namespace uinta {
 
-	class Proto {
+	class Proto : public Controller {
 	public:
-		virtual void update(float_t dt) = 0;
-
-		virtual void render() = 0;
-
 		virtual void viewportChanged(size_t width, size_t height) {}
 
-	}; // class DebugUi 
+	}; // class DebugUi
 
-} // namespace uinta 
+} // namespace uinta
 
 #endif // UINTA_PROTOTYPE_H
