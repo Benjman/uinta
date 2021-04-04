@@ -1,9 +1,9 @@
 #ifndef UINTA_DEBUG_UI_CONTROLLER_H
 #define UINTA_DEBUG_UI_CONTROLLER_H
 
-#include <uinta/debug/debug_ui_view.h>
-
 #include <uinta/controller/buffer_controller.h>
+#include <uinta/debug/debug_ui_view.h>
+#include <uinta/render/i_render_controller.h>
 #include <uinta/text/text_controller.h>
 
 namespace uinta {
@@ -11,14 +11,14 @@ namespace uinta {
 	class Shader;
 	class Font;
 
-	class DebugUiController : public BufferController {
+	class DebugUiController : public BufferController, IRenderController {
 
 		struct FpsTextController : TextController {
-			constexpr static const float_t INTERVAL = 0.25f;
+			constexpr static const float_t INTERVAL = 0.5f;
 			float_t timeToNextUpdate = INTERVAL;
 			size_t frameCount = 0;
 
-			FpsTextController(const DebugUiController *parent, Text &text, Font *font, const DebugUiView &view) : TextController(parent, (Text &) view.fps, (Font *) font) {
+			FpsTextController(DebugUiController *parent, Text &text, Font *font, const DebugUiView &view) : TextController(parent, (Text &) view.fps, (Font *) font) {
 				_maxChars = 3;
 			}
 
@@ -34,9 +34,6 @@ namespace uinta {
 
 		const Shader *_shader{};
 		const Font *_font{};
-
-		TextController **_controllers;
-		size_t _controllerCount = 0;
 
 		const DebugUiView _view = DebugUiView();
 

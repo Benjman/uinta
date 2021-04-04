@@ -4,12 +4,14 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
+        src/controller/controller.cpp
         src/controller/buffer_controller.cpp
         src/debug/debug_ui_controller.cpp
         src/debug/debug_ui_view.cpp
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
         src/io/file.cpp
+        src/render/i_renderable.cpp
         src/render/i_render_controller.cpp
         src/shader/shader.cpp
         src/shader/vao.cpp

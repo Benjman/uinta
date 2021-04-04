@@ -29,10 +29,6 @@ namespace uinta {
 
 	public:
 
-		size_t getVertexCount() override {
-			return 4;
-		}
-
 		size_t getIndexCount() override {
 			return 6;
 		}
@@ -46,10 +42,10 @@ namespace uinta {
 		 * @param heightPx size relative to UI_BASE_SIZE (1080)
 		 */
 		UiElement(UiElement *parent, size_t xPx, size_t yPx, size_t widthPx, size_t heightPx, size_t offset = 0) :
-			IRenderable(offset),
 			_parent(parent),
 			_position(glm::uvec2(xPx, yPx)),
 			_size(glm::uvec2(widthPx, heightPx)) {
+			_offset = offset;
 			if (_parent == nullptr && MAIN_UI_ELEMENT != nullptr) {
 				_parent = MAIN_UI_ELEMENT;
 			}

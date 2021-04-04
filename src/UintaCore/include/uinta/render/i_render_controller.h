@@ -11,10 +11,10 @@ namespace uinta {
 
 		using Renderables = std::vector<IRenderable *>;
 
-	public:
-
+	protected:
 		Renderables _renderables;
 
+	public:
 		void addRenderable(IRenderable *renderable) {
 			if (_storageSize + 1 >= _renderables.size()) {
 				_storageSize += _storageStep;
@@ -29,9 +29,9 @@ namespace uinta {
 		size_t _numRenderables = 0;
 		size_t _storageSize = 0;
 		size_t _storageStep = 10;
-	}; // class IRenderController 
+	}; // class IRenderController
 
-} // namespace uinta 
+} // namespace uinta
 
 
 

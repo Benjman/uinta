@@ -3,20 +3,32 @@
 
 #include <uinta/types.h>
 
+#include <vector>
+
 namespace uinta {
 
 	class Controller {
-		const Controller *_parent;
+		Controller *_parent;
+		std::vector<Controller *> _children;
 
 	protected:
-		explicit Controller(const Controller *parent = nullptr) : _parent(parent) {}
-
-	public:
-		[[nodiscard]] const Controller *getParent() const {
-			return _parent;
+		explicit Controller(Controller *parent = nullptr) : _parent(parent) {
+			if (_parent) {
+				_parent->_children.emplace_back(this);
+			}
 		}
 
-		virtual void initialize() {}
+	public:
+		[[nodiscard]] const Controller *getParent() const { return _parent; }
+		[[nodiscard]] const std::vector<Controller *> &getChildren() const { return _children; }
+
+		~Controller();
+
+		virtual void initialize() {
+			for (auto child : _children) {
+				child->initialize();
+			}
+		}
 
 		virtual void update(float_t dt) {}
 

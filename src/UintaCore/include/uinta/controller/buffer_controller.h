@@ -7,7 +7,6 @@
 namespace uinta {
 
 	class Vao;
-
 	class Vbo;
 
 	class BufferController : public Controller {

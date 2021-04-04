@@ -16,7 +16,7 @@ namespace uinta {
 	using namespace debuguiview;
 
 	DebugUiView::DebugUiView() :
-			fps(initialize("0", 90, 0)), // keep spaces to allocate enough space on gpu for 3 chars long FPS value
+			fps(initialize("0", 70, 0)), // keep spaces to allocate enough space on gpu for 3 chars long FPS value
 			fpsLbl(initialize("FPS:", 15, 0)) {
 	}
 

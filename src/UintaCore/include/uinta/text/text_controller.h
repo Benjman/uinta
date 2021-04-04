@@ -7,32 +7,35 @@
 
 namespace uinta {
 
-	class TextController : public Controller {
-	public:
-		static const size_t VERTICES_PER_CHAR = 4;
-		static const size_t INDICES_PER_CHAR = 6;
-		static const size_t ELEMENTS_PER_VERTEX = 4; // vec2 position, vec2 uv
+	class Mesh;
 
+	class TextController : public Controller, public IRenderable {
+	protected:
 		Text *_text;
 		Font *_font;
+		Mesh *_mesh;
 
 		size_t _charCount = 0;
 		size_t _maxChars = 0;
 
-		size_t _vOffset = 0;
-		size_t _iOffset = 0;
-		size_t _idxOffset = 0;
+	public:
+		static const size_t VERTICES_PER_CHAR = 4;
+		static const size_t INDICES_PER_CHAR = 6;
+		static const size_t ELEMENTS_PER_VERTEX = 4; // vec2 position, vec2 uv // TODO add color
 
-		explicit TextController(const BufferController *parent, Text &text, Font *font);
+		explicit TextController(BufferController *parent, Text &text, Font *font);
+
+		~TextController();
 
 		void initialize() override;
 
-		[[nodiscard]] const Font *getFont() const { return _font; }
-		[[nodiscard]] const Text *getText() const { return _text; }
+		[[nodiscard]] Mesh *getMesh() const { return _mesh; }
 		[[nodiscard]] size_t getCharCount() const { return _charCount; }
-		[[nodiscard]] size_t getIdxCount() const { return _maxChars * VERTICES_PER_CHAR; }
 		[[nodiscard]] size_t getIBufferLen() const { return _maxChars * INDICES_PER_CHAR; }
 		[[nodiscard]] size_t getIBufferSize() const { return getIBufferLen() * sizeof(GLuint); }
+		[[nodiscard]] size_t getICount() const { return _charCount * INDICES_PER_CHAR; }
+		[[nodiscard]] size_t getMaxChars() const { return _maxChars; }
+		[[nodiscard]] size_t getMaxIdxCount() const { return _maxChars * VERTICES_PER_CHAR; }
 		[[nodiscard]] size_t getVBufferLen() const { return _maxChars * VERTICES_PER_CHAR * ELEMENTS_PER_VERTEX; }
 		[[nodiscard]] size_t getVBufferSize() const { return getVBufferLen() * sizeof(GLfloat); }
 

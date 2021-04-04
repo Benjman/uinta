@@ -3,29 +3,30 @@
 
 #include "uinta/debug/debug_ui_controller.h"
 
+#include <uinta/gl.h>
+#include <uinta/render.h>
 #include <uinta/shader.h>
 #include <uinta/text.h>
-#include <uinta/gl.h>
 
 namespace uinta::debuguicontroller {
 
 	static const char *vertexShader =
 			"#version 300 es\n"
 			"layout (location = 0) in lowp vec2 inPos;"
-			"layout (location = 1) in lowp vec2 inTexCoord;"
-			"out lowp vec2 passTexCoord;"
+			"layout (location = 1) in lowp vec2 inUv;"
+			"out lowp vec2 passUv;"
 			"void main() {"
 			"	gl_Position = vec4(inPos, 0.0, 1.0);"
-			"	passTexCoord = vec2(inTexCoord.x, inTexCoord.y);"
+			"	passUv = vec2(inUv.x, inUv.y);"
 			"}";
 
 	static const char *fragShader =
 			"#version 300 es\n"
-			"in lowp vec2 passTexCoord;"
+			"in lowp vec2 passUv;"
 			"out lowp vec4 outColor;"
 			"uniform sampler2D texture1;"
 			"void main() {"
-			"	outColor = vec4(texture(texture1, passTexCoord).r);"
+			"	outColor = vec4(texture(texture1, passUv).r);"
 			"}";
 
 }
@@ -33,16 +34,11 @@ using namespace uinta;
 using namespace uinta::gl_state;
 using namespace uinta::debuguicontroller;
 
-DebugUiController::DebugUiController(Controller *parent) : BufferController(parent, KILOBYTES(5) * sizeof(GLfloat), KILOBYTES(2) * sizeof(GLuint)),
+DebugUiController::DebugUiController(Controller *parent) : BufferController(parent, KILOBYTES(5) * sizeof(GLfloat),
+																			KILOBYTES(2) * sizeof(GLuint)),
 														   _shader(Shader::createShader(vertexShader, fragShader, Raw)),
 														   _font(Font::loadFont(
 																   "/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
-	_controllerCount = 2;
-	_controllers = new TextController *[_controllerCount]{ // TODO this is ugly af
-			&_fps,
-			&_fpsLabel,
-	};
-
 	vBuffer = new GLfloat[vSize / sizeof(GLfloat)];
 	iBuffer = new GLuint[iSize / sizeof(GLuint)];
 }
@@ -57,8 +53,8 @@ void DebugUiController::FpsTextController::update(float_t dt) {
 			setValue(fpsStr.c_str());
 
 			DebugUiController *parent = ((DebugUiController *) getParent());
-			generateMesh(&parent->vBuffer[_vOffset], &parent->iBuffer[_iOffset], _idxOffset);
-			parent->uploadMesh(&parent->vBuffer[_vOffset], getVBufferSize(), _vOffset, &parent->iBuffer[_iOffset], getIBufferSize(), _iOffset);
+			generateMesh(_mesh->vBuffer, _mesh->iBuffer, _mesh->getOffset());
+			parent->uploadMesh(_mesh->vBuffer, getVBufferSize(), 0, _mesh->iBuffer, getIBufferSize(), 0);
 		}
 
 		frameCount = 0;
@@ -79,26 +75,29 @@ void DebugUiController::initialize() {
 }
 
 void DebugUiController::initializeControllers() {
-	for (size_t i = 0; i < _controllerCount; i++) {
-		_controllers[i]->initialize();
+	for (auto child : getChildren()) {
+		child->initialize();
 	}
+	addRenderable(&_fps);
+	addRenderable(&_fpsLabel);
 }
 
 void DebugUiController::generateMeshes() {
 	size_t vPointer = 0, iPointer = 0, idxPointer = 0;
+	for (auto child : getChildren()) {
+		auto *controller = (TextController *) child; // TODO totally radical casting... fix unsafeness.
+		Mesh *mesh = controller->getMesh();
 
-	for (size_t i = 0; i < _controllerCount; i++) {
-		TextController *controller = _controllers[i];
+		mesh->vBuffer = &vBuffer[vPointer];
+		mesh->iBuffer = &iBuffer[iPointer];
+		mesh->setIndexCount(controller->getICount());
+		mesh->setOffset(iPointer);
 
-		controller->_vOffset = vPointer;
-		controller->_iOffset = iPointer;
-		controller->_idxOffset = idxPointer;
-
-		controller->generateMesh(&vBuffer[vPointer], &iBuffer[iPointer], idxPointer);
+		controller->generateMesh(mesh->vBuffer, mesh->iBuffer, idxPointer);
 
 		vPointer += controller->getVBufferLen();
 		iPointer += controller->getIBufferLen();
-		idxPointer += controller->getIdxCount();
+		idxPointer += controller->getMaxIdxCount();
 	}
 }
 
@@ -114,7 +113,6 @@ void DebugUiController::uploadMeshes() {
 DebugUiController::~DebugUiController() {
 	delete _font;
 	delete _shader;
-	delete[] _controllers;
 }
 
 void DebugUiController::render() {
@@ -131,9 +129,7 @@ void DebugUiController::render() {
 	_shader->use();
 	_font->bind();
 
-	for (size_t i = 0; i < _controllerCount; i++) {
-		_controllers[i]->render();
-	}
+	IRenderController::render();
 }
 
 void DebugUiController::update(float_t dt) {

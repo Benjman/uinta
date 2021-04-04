@@ -1,19 +1,17 @@
 #include "text_mesh_generator.h"
 
 #include <uinta/text.h>
-
-#include <uinta/text/text_controller.h>
-#include <uinta/gl/gl_error.h>
+#include <uinta/render.h>
 
 #include <iostream>
 
-
 using namespace uinta;
 
-TextController::TextController(const BufferController *parent, Text &text, Font *font) :
+TextController::TextController(BufferController *parent, Text &text, Font *font) :
 		Controller(parent),
 		_text(&text),
-		_font(font) {
+		_font(font),
+		_mesh(new Mesh) {
 }
 
 void TextController::initialize() {
@@ -34,9 +32,13 @@ void TextController::doUpdateMetadata() {
 		std::cerr << "_charCount exceeded _maxChars\n";
 		_charCount = _maxChars;
 	}
+	_mesh->setIndexCount(getICount());
 }
 
 void TextController::render() {
-	glDrawElements(GL_TRIANGLES, _charCount * INDICES_PER_CHAR, GL_UNSIGNED_INT, (void *)(_iOffset * sizeof(GLuint)));
-	glCheckError(GL_DRAW_ELEMENTS);
+	_mesh->render();
+}
+
+TextController::~TextController() {
+	delete _mesh;
 }

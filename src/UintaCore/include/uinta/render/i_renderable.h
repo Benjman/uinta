@@ -7,15 +7,14 @@ namespace uinta {
 
 	class IRenderable {
 	public:
-
-		IRenderable(size_t offset = 0) : _offset(offset) {}
-
-		virtual void render() = 0;
-
-		virtual size_t getVertexCount() = 0;
+		virtual void render();
 
 		virtual size_t getIndexCount() {
 			return _indexCount;
+		}
+
+		void setIndexCount(size_t indexCount) {
+			_indexCount = indexCount;
 		}
 
 		virtual size_t getOffset() {
@@ -26,11 +25,11 @@ namespace uinta {
 			_offset = offset;
 		}
 
-	private:
-		size_t _offset;
-		size_t _indexCount;
+	protected:
+		size_t _offset = 0;
+		size_t _indexCount = 0;
 
-	}; // class IRenderable 
+	}; // class IRenderable
 
 } // namespace uinta
 
