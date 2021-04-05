@@ -1,8 +1,7 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-slicing"
 
-#include "uinta/debug/debug_ui_controller.h"
-
+#include <uinta/debug/debug_ui_controller.h>
 #include <uinta/gl.h>
 #include <uinta/render.h>
 #include <uinta/shader.h>
@@ -43,9 +42,9 @@ DebugUiController::DebugUiController(Controller *parent) : BufferController(pare
 	iBuffer = new GLuint[iSize / sizeof(GLuint)];
 }
 
-void DebugUiController::FpsTextController::update(float_t dt) {
-	Controller::update(dt);
-	timeToNextUpdate -= dt;
+void DebugUiController::FpsTextController::update(const EngineState &state) {
+	Controller::update(state);
+	timeToNextUpdate -= state.delta;
 	if (timeToNextUpdate <= 0) {
 		const std::string &fpsStr = std::to_string((size_t) std::ceil(frameCount * (1 / INTERVAL)));
 
@@ -132,9 +131,9 @@ void DebugUiController::render() {
 	IRenderController::render();
 }
 
-void DebugUiController::update(float_t dt) {
-	Controller::update(dt);
-	_fps.update(dt);
+void DebugUiController::update(const EngineState &state) {
+	Controller::update(state);
+	_fps.update(state);
 }
 
 #pragma clang diagnostic pop

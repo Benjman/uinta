@@ -2,7 +2,6 @@
 #define UINTA_TEXT_CONTROLLER_H
 
 #include <uinta/controller/buffer_controller.h>
-
 #include <uinta/gl/gl_types.h>
 
 namespace uinta {

@@ -1,3 +1,4 @@
+#include <uinta/engine_state.h>
 #include "glfw.h"
 #include "proto/protos.h"
 
@@ -19,20 +20,21 @@ int main() {
 	}
 
 	DebugUiProto proto;
+	EngineState state;
 
-	float_t runtime = 0, delta;
 	while (!shouldClose(dto)) {
+		state.tick++;
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		delta = glfwGetTime() - runtime;
-		runtime += delta;
+		state.delta = glfwGetTime() - state.runtime;
+		state.runtime += state.delta;
 
 		if (dto.isViewportChanged()) {
 			proto.viewportChanged(dto.getWidth(), dto.getHeight());
 		}
 
-		proto.update(delta);
+		proto.update(state);
 		proto.render();
 
 		glfwSwapBuffers(dto.getWindow());

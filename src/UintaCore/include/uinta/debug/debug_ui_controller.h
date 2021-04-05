@@ -22,7 +22,7 @@ namespace uinta {
 				_maxChars = 3;
 			}
 
-			void update(float_t dt) override;
+			void update(const EngineState &state) override;
 
 			void initialize() override;
 
@@ -55,7 +55,7 @@ namespace uinta {
 
 		void initializeControllers();
 
-		void update(float_t dt) override;
+		void update(const EngineState &state) override;
 
 		void uploadMeshes();
 

@@ -15,8 +15,8 @@ namespace uinta {
 			controller.initialize();
 		}
 
-		void update(float_t dt) override {
-			controller.update(dt);
+		void update(const EngineState &state) override {
+			controller.update(state);
 		}
 
 		void render() override {

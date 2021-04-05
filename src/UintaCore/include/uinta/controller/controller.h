@@ -2,6 +2,7 @@
 #define UINTA_CONTROLLER_H
 
 #include <uinta/types.h>
+#include <uinta/engine_state.h>
 
 #include <vector>
 
@@ -30,7 +31,7 @@ namespace uinta {
 			}
 		}
 
-		virtual void update(float_t dt) {}
+		virtual void update(const EngineState &state) {}
 
 		virtual void render() {}
 
