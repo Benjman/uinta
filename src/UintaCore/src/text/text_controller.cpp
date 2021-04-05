@@ -15,6 +15,7 @@ TextController::TextController(BufferController *parent, Text &text, Font *font)
 }
 
 void TextController::initialize() {
+	Controller::initialize();
 	doUpdateMetadata();
 }
 

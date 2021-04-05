@@ -9,10 +9,6 @@ namespace uinta {
 		DebugUiController controller = DebugUiController(this);
 
 	public:
-		void update(const EngineState &state) override {
-			controller.update(state);
-		}
-
 		void render() override {
 			controller.render();
 		}

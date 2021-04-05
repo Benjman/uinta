@@ -126,9 +126,4 @@ void DebugUiController::render() {
 	IRenderController::render();
 }
 
-void DebugUiController::update(const EngineState &state) {
-	Controller::update(state);
-	_fps.update(state);
-}
-
 #pragma clang diagnostic pop

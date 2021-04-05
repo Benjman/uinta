@@ -31,7 +31,11 @@ namespace uinta {
 			}
 		}
 
-		virtual void update(const EngineState &state) {}
+		virtual void update(const EngineState &state) {
+			for (auto child : _children) {
+				child->update(state);
+			}
+		}
 
 	}; // class Controller
 

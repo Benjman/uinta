@@ -55,8 +55,6 @@ namespace uinta {
 
 		void addRenderables();
 
-		void update(const EngineState &state) override;
-
 		void uploadMeshes();
 
 	};
