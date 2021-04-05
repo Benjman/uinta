@@ -1,13 +1,15 @@
 #ifndef UINTA_I_RENDER_CONTROLLER_H
 #define UINTA_I_RENDER_CONTROLLER_H
 
+#include "i_renderable.h"
+
 #include <vector>
 
 namespace uinta {
 
 	class IRenderable;
 
-	class IRenderController {
+	class IRenderController : public IRenderable {
 
 		using Renderables = std::vector<IRenderable *>;
 
@@ -23,9 +25,10 @@ namespace uinta {
 			_renderables.at(_numRenderables++) = renderable;
 		}
 
-		virtual void render();
+		void render() override;
 
 	private:
+		// TODO why the fuck are we tracking it like this? Is pre-allocating really worth this mess?
 		size_t _numRenderables = 0;
 		size_t _storageSize = 0;
 		size_t _storageStep = 10;

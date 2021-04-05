@@ -13,23 +13,23 @@ namespace uinta {
 
 	class DebugUiController : public BufferController, IRenderController {
 
-		struct FpsTextController : TextController {
+		class FpsTextController : public TextController {
 			constexpr static const float_t INTERVAL = 0.5f;
 			float_t timeToNextUpdate = INTERVAL;
 			size_t frameCount = 0;
 
+		public:
 			FpsTextController(DebugUiController *parent, Text &text, Font *font, const DebugUiView &view) : TextController(parent, (Text &) view.fps, (Font *) font) {
 				_maxChars = 3;
 			}
 
 			void update(const EngineState &state) override;
 
-			void initialize() override;
-
 			void render() override {
 				TextController::render();
 				frameCount++;
 			}
+
 		};
 
 		const Shader *_shader{};
@@ -53,7 +53,7 @@ namespace uinta {
 
 		void initializeBuffers() override;
 
-		void initializeControllers();
+		void addRenderables();
 
 		void update(const EngineState &state) override;
 

@@ -57,26 +57,21 @@ void DebugUiController::FpsTextController::update(const EngineState &state) {
 		}
 
 		frameCount = 0;
-		timeToNextUpdate += INTERVAL;
+		timeToNextUpdate = INTERVAL;
 	}
-}
-
-void DebugUiController::FpsTextController::initialize() {
-	TextController::initialize();
 }
 
 void DebugUiController::initialize() {
 	BufferController::initialize();
-	initializeControllers();
+
 	initializeBuffers();
 	generateMeshes();
 	uploadMeshes();
+
+	addRenderables();
 }
 
-void DebugUiController::initializeControllers() {
-	for (auto child : getChildren()) {
-		child->initialize();
-	}
+void DebugUiController::addRenderables() {
 	addRenderable(&_fps);
 	addRenderable(&_fpsLabel);
 }

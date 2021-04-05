@@ -33,8 +33,6 @@ namespace uinta {
 
 		virtual void update(const EngineState &state) {}
 
-		virtual void render() {}
-
 	}; // class Controller
 
 } // namespace uinta

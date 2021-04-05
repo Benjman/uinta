@@ -19,26 +19,25 @@ int main() {
 		return -1;
 	}
 
-	DebugUiProto proto;
 	EngineState state;
 
+	DebugUiProto proto;
+	proto.initialize();
+
 	while (!shouldClose(dto)) {
-		state.tick++;
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		state.delta = glfwGetTime() - state.runtime;
 		state.runtime += state.delta;
 
-		if (dto.isViewportChanged()) {
-			proto.viewportChanged(dto.getWidth(), dto.getHeight());
-		}
-
 		proto.update(state);
 		proto.render();
 
 		glfwSwapBuffers(dto.getWindow());
 		glfwPollEvents();
+
+		state.tick++;
 	}
 
 	std::atexit(exitHandler);

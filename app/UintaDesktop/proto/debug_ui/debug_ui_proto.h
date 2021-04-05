@@ -1,20 +1,14 @@
 #ifndef UINTA_DEBUGUI_H
 #define UINTA_DEBUGUI_H
 
-#include "../proto.h"
-
 #include <uinta/debug.h>
 
 namespace uinta {
 
-	class DebugUiProto : public Proto {
+	class DebugUiProto : public Controller, public IRenderable {
 		DebugUiController controller = DebugUiController(this);
 
 	public:
-		DebugUiProto() {
-			controller.initialize();
-		}
-
 		void update(const EngineState &state) override {
 			controller.update(state);
 		}
