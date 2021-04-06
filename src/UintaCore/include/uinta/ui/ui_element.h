@@ -10,9 +10,8 @@
 
 namespace uinta {
 
-	// TODO parent child relationship
+	// TODO parent child relationship -- getRelativePosition() and getScreenPosition()
 	// TODO Left, center, right anchoring
-	// TODO Top to bottom, or bottom to top mesh generation
 
 	class UiElement : public IRenderable {
 		using Children = std::vector<UiElement*>;
