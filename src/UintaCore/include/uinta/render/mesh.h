@@ -9,9 +9,14 @@ namespace uinta {
 
 	struct Mesh : public IRenderable {
 
-		// We are NOT the owner these buffers, do not deallocate
+		// We are NOT the owner these buffers, do not deallocate.
 		GLfloat *vBuffer{};
 		GLuint *iBuffer{};
+
+		size_t vParentOffsetBytes = 0;
+		size_t iParentOffsetBytes = 0;
+
+		size_t idxOffset = 0;
 
 	}; // struct Mesh
 

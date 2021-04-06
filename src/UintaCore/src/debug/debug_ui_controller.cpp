@@ -33,32 +33,12 @@ using namespace uinta;
 using namespace uinta::gl_state;
 using namespace uinta::debuguicontroller;
 
-DebugUiController::DebugUiController(Controller *parent) : BufferController(parent, KILOBYTES(5) * sizeof(GLfloat),
-																			KILOBYTES(2) * sizeof(GLuint)),
-														   _shader(Shader::createShader(vertexShader, fragShader, Raw)),
-														   _font(Font::loadFont(
-																   "/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
+DebugUiController::DebugUiController(Controller *parent)
+		: BufferController(parent, KILOBYTES(5) * sizeof(GLfloat), KILOBYTES(2) * sizeof(GLuint)),
+		  _shader(Shader::createShader(vertexShader, fragShader, Raw)),
+		  _font(Font::loadFont( "/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
 	vBuffer = new GLfloat[vSize / sizeof(GLfloat)];
 	iBuffer = new GLuint[iSize / sizeof(GLuint)];
-}
-
-void DebugUiController::FpsTextController::update(const EngineState &state) {
-	Controller::update(state);
-	timeToNextUpdate -= state.delta;
-	if (timeToNextUpdate <= 0) {
-		const std::string &fpsStr = std::to_string((size_t) std::ceil(frameCount * (1 / INTERVAL)));
-
-		if (fpsStr != _text->getValue()) {
-			setValue(fpsStr.c_str());
-
-			DebugUiController *parent = ((DebugUiController *) getParent());
-			generateMesh(_mesh->vBuffer, _mesh->iBuffer, _mesh->getOffset());
-			parent->uploadMesh(_mesh->vBuffer, getVBufferSize(), 0, _mesh->iBuffer, getIBufferSize(), 0);
-		}
-
-		frameCount = 0;
-		timeToNextUpdate = INTERVAL;
-	}
 }
 
 void DebugUiController::initialize() {
@@ -72,22 +52,36 @@ void DebugUiController::initialize() {
 }
 
 void DebugUiController::addRenderables() {
-	addRenderable(&_fps);
-	addRenderable(&_fpsLabel);
+	IRenderable *renderables[] {
+		&_fps,
+		&_fpsLabel,
+
+		&_tick,
+		&_tickLabel,
+	};
+
+	for (auto renderable : renderables) {
+		addRenderable(renderable);
+	}
 }
 
 void DebugUiController::generateMeshes() {
 	size_t vPointer = 0, iPointer = 0, idxPointer = 0;
 	for (auto child : getChildren()) {
-		auto *controller = (TextController *) child; // TODO totally radical casting... fix unsafeness.
+		auto *controller = (TextController *) child; // TODO not everything is going to be a TextController. Need a way around this unsafe casting. (Maybe this should be in TextController?)
 		Mesh *mesh = controller->getMesh();
 
 		mesh->vBuffer = &vBuffer[vPointer];
 		mesh->iBuffer = &iBuffer[iPointer];
+
+		mesh->vParentOffsetBytes = vPointer * sizeof(GLfloat);
+		mesh->iParentOffsetBytes = iPointer * sizeof(GLuint);
+		mesh->idxOffset = idxPointer;
+
 		mesh->setIndexCount(controller->getICount());
 		mesh->setOffset(iPointer);
 
-		controller->generateMesh(mesh->vBuffer, mesh->iBuffer, idxPointer);
+		controller->populateMesh();
 
 		vPointer += controller->getVBufferLen();
 		iPointer += controller->getIBufferLen();
@@ -96,6 +90,7 @@ void DebugUiController::generateMeshes() {
 }
 
 void DebugUiController::initializeBuffers() {
+	// TODO there should be a TextShader that manages these attributes
 	vao->createAttribute(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
 	vao->createAttribute(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
 }

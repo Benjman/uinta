@@ -9,10 +9,17 @@ namespace uinta {
 	class DebugUiController;
 
 	struct DebugUiView {
-		const Text fpsLbl;
-		Text fps;
+		const Text fpsLbl = initializeComponent("FPS:", 10, 0);
+		Text fps = initializeComponent("", 70, 0);
+		const Text tickLabel = initializeComponent("Tick:", 10, 25);
+		Text tick = initializeComponent("", 70, 25);
 
-		DebugUiView();
+	private:
+		static Text initializeComponent(const char *v, size_t x, size_t y) {
+			Text t(v);
+			t.setPositionPx(x, y);
+			return t;
+		}
 
 	}; // struct DebugUiView
 

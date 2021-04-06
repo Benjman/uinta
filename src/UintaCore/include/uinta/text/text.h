@@ -26,6 +26,10 @@ namespace uinta {
 			return _value;
 		}
 
+		size_t getCharCount() {
+			return _value.size();
+		}
+
 	}; // class Text
 
 } // namespace uinta

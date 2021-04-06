@@ -4,14 +4,17 @@
 #include <uinta/render.h>
 
 #include <iostream>
+#include <uinta/text/text_controller.h>
+
 
 using namespace uinta;
 
-TextController::TextController(BufferController *parent, Text &text, Font *font) :
+TextController::TextController(BufferController *parent, Text &text, Font *font, size_t maxChars) :
 		Controller(parent),
 		_text(&text),
 		_font(font),
-		_mesh(new Mesh) {
+		_mesh(new Mesh),
+		_maxChars(maxChars) {
 }
 
 void TextController::initialize() {
@@ -19,19 +22,18 @@ void TextController::initialize() {
 	doUpdateMetadata();
 }
 
-void TextController::generateMesh(GLfloat *vBuffer, GLuint *iBuffer, size_t iOffset) const {
-	TextMeshGenerator::generateMesh(*_text, *_font, vBuffer, iBuffer, iOffset);
+void TextController::populateMesh() const {
+	TextMeshGenerator::generateMesh(*_text, *_font, _mesh->vBuffer, _mesh->iBuffer, _mesh->idxOffset);
 }
 
 void TextController::doUpdateMetadata() {
-	_charCount = _text->getValue().size();
+	size_t charCount = _text->getCharCount();
 	if (_maxChars == 0) {
-		_maxChars = _charCount;
+		_maxChars = charCount;
 	}
-	if (_charCount > _maxChars) {
+	if (charCount > _maxChars) {
 		// Buffers are written up to _maxChars. Extra chars are ignored.
-		std::cerr << "_charCount exceeded _maxChars\n";
-		_charCount = _maxChars;
+		std::cerr << "charCount exceeded _maxChars. Buffers are written up to _maxChars. Extra chars are ignored.\n";
 	}
 	_mesh->setIndexCount(getICount());
 }
@@ -42,4 +44,20 @@ void TextController::render() {
 
 TextController::~TextController() {
 	delete _mesh;
+}
+
+void TextController::setTextValue(const char *value, bool updateMetadata) {
+	_text->_value = value;
+	if (updateMetadata) {
+		doUpdateMetadata();
+	}
+}
+
+size_t TextController::getICount() const {
+	return _text->getCharCount() * INDICES_PER_CHAR;
+}
+
+void TextController::uploadMesh(BufferController *controller) const {
+	controller->uploadMesh(_mesh->vBuffer, getVBufferSize(), _mesh->vParentOffsetBytes, _mesh->iBuffer,
+						   getIBufferSize(), _mesh->iParentOffsetBytes);
 }

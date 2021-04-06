@@ -12,7 +12,7 @@ using namespace uinta::glfw;
 void exitHandler();
 
 int main() {
-	GlfwDto dto(1920, 1080, "Test Window Creation");
+	GlfwDto dto(1282, 532, "Test Window Creation");
 //	dto.setHeadless(true);
 
 	if (!initialize(dto) || dto.getStatus() == Error) {
