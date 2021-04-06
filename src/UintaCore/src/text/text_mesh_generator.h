@@ -14,19 +14,19 @@ namespace uinta {
 	struct TextMeshGenerator {
 
 		struct GenerationContext {
-			Text &text;
-			Font &font;
-			float_t *vBuffer{};
 			float_t aspectRatio = 0.f;
+			Font &font;
+			GLuint *iBuffer{};
+			size_t indexOffset = 0;
+			float_t lineHeight = 0.f;
+			size_t pointer = 0;
+			Text &text;
+			GLfloat *vBuffer{};
+			float_t viewportHeight = 0.f;
 			float_t xcursor = 0.f;
 			float_t ycursor = 0.f;
-			float_t lineHeight = 0.f;
-			float_t viewportHeight = 0.f;
-			uint32_t pointer = 0;
-			uint32_t *iBuffer{};
-			size_t indexOffset = 0;
 
-			GenerationContext(Text &text, Font &font, float_t *vBuffer, uint32_t *iBuffer, size_t indexOffset)
+			GenerationContext(Text &text, Font &font, GLfloat *vBuffer, GLuint *iBuffer, size_t indexOffset)
 					: text(text),
 					  font(font),
 					  vBuffer(vBuffer),
@@ -40,9 +40,13 @@ namespace uinta {
 			}
 		};
 
-		static void generateMesh(Text &text, Font &font, float_t *data, uint32_t *indices, size_t indexOffset) {
+		static void generateMesh(Text &text, Font &font, GLfloat *data, GLuint *indices, size_t indexOffset) {
 			GenerationContext context(text, font, data, indices, indexOffset);
 			const std::vector<Line *> &lines = generateStructure(context);
+			if (lines.empty()) {
+				setIndices(context);
+				return;
+			}
 			processLines(lines, context);
 		}
 
@@ -108,24 +112,23 @@ namespace uinta {
 
 		static void processWord(const Word &word, GenerationContext &context) {
 			for (size_t i = 0, len = word.characters.size(); i < len; i++) {
-				const stbtt_aligned_quad quad = context.font.getQuadInfo(word.characters[i],
-																		 &context.xcursor,
-																		 &context.ycursor);
+				const stbtt_aligned_quad quad = context.font.getQuadInfo(word.characters[i], &context.xcursor, &context.ycursor);
 				processQuad(quad, context);
 				if (i + 1 != len) {
 					// kerning
-					context.xcursor += (float_t) stbtt_GetCodepointKernAdvance(&context.font._stbttFontInfo,
-																			   word.characters[i],
-																			   word.characters[i + 1]);
+					char ch1 = word.characters[i];
+					char ch2 = word.characters[i + 1];
+					int advance = stbtt_GetCodepointKernAdvance(&context.font._stbttFontInfo, ch1, ch2);
+					context.xcursor += (float_t) advance * context.font._scale;
 				}
 			}
 		}
 
 		static void processQuad(const stbtt_aligned_quad &quad, GenerationContext &context) {
-			float_t x0 = quad.x0;
-			float_t x1 = quad.x1;
-			float_t y0 = context.lineHeight + quad.y0;
-			float_t y1 = context.lineHeight + quad.y1;
+			GLfloat x0 = quad.x0;
+			GLfloat x1 = quad.x1;
+			GLfloat y0 = context.lineHeight + quad.y0;
+			GLfloat y1 = context.lineHeight + quad.y1;
 
 			x0 /= context.viewportHeight;
 			x1 /= context.viewportHeight;
@@ -142,7 +145,7 @@ namespace uinta {
 			y0 = TO_GL_NDC_Y(y0);
 			y1 = TO_GL_NDC_Y(y1);
 
-			const float_t vertices[16]{
+			const GLfloat vertices[TextController::VERTICES_PER_CHAR * TextController::ELEMENTS_PER_VERTEX]{
 					x0, y0,
 					quad.s0, quad.t0,
 
@@ -157,17 +160,21 @@ namespace uinta {
 			};
 			std::memcpy(&context.vBuffer[context.pointer * 16], vertices, sizeof(vertices));
 
-			uint32_t indices[6]{
+			setIndices(context);
+
+			context.pointer++;
+		}
+
+		static void setIndices(GenerationContext &context) {
+			GLuint indices[]{
 					0, 1, 3,
 					1, 2, 3
 			};
-			for (uint32_t &index : indices) {
+			for (GLuint &index : indices) {
 				index += context.pointer * 4;
 				index += context.indexOffset;
 			}
-			std::memcpy(&context.iBuffer[context.pointer * 6], indices, sizeof(indices));
-
-			context.pointer++;
+			memcpy(&context.iBuffer[context.pointer * 6], indices, sizeof(indices));
 		}
 
 	}; // class FontMeshGenerator
