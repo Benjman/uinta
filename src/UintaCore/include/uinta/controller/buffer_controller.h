@@ -24,8 +24,9 @@ namespace uinta {
 		virtual void initializeBuffers() = 0;
 
 	public:
-		BufferController(Controller *parent, size_t vSize, GLuint iSize) : Controller(parent), vSize(vSize),
-																		   iSize(iSize) {}
+		BufferController(Controller *parent, size_t vSize, GLuint iSize)
+				: Controller(parent), vSize(vSize),
+				  iSize(iSize) {}
 
 		~BufferController();
 
