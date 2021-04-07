@@ -16,11 +16,8 @@ void FpsController::update(const EngineState &state) {
 	Controller::update(state);
 	_timeToNextUpdate -= state.delta;
 	if (_timeToNextUpdate <= 0) {
-		const std::string &fpsStr = std::to_string((size_t) std::ceil(_frameCount * (1 / INTERVAL)));
-
-		if (fpsStr != _text->getValue()) {
-			setTextValue(fpsStr.c_str());
-
+		if (_curFps != _frameCount) {
+			setTextValue(std::to_string((size_t) std::ceil(_frameCount * (1 / INTERVAL))).c_str());
 			populateMesh();
 			uploadMesh(_parent);
 		}

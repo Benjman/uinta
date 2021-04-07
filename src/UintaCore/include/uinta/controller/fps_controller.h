@@ -11,6 +11,7 @@ namespace uinta {
 		constexpr static const float_t INTERVAL = 0.5f;
 		float_t _timeToNextUpdate = INTERVAL;
 		size_t _frameCount = 0;
+		size_t _curFps = 0;
 		BufferController *_parent;
 
 	public:
