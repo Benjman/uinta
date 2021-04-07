@@ -36,7 +36,7 @@ using namespace uinta::debuguicontroller;
 DebugUiController::DebugUiController(Controller *parent)
 		: BufferController(parent, KILOBYTES(5) * sizeof(GLfloat), KILOBYTES(2) * sizeof(GLuint)),
 		  _shader(Shader::createShader(vertexShader, fragShader, Raw)),
-		  _font(Font::loadFont( "/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
+		  _font(Font::loadFont("/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
 	vBuffer = new GLfloat[vSize / sizeof(GLfloat)];
 	iBuffer = new GLuint[iSize / sizeof(GLuint)];
 }
@@ -52,12 +52,12 @@ void DebugUiController::initialize() {
 }
 
 void DebugUiController::addRenderables() {
-	IRenderable *renderables[] {
-		&_fps,
-		&_fpsLabel,
+	IRenderable *renderables[]{
+			&_fps,
+			&_fpsLabel,
 
-		&_tick,
-		&_tickLabel,
+			&_tick,
+			&_tickLabel,
 	};
 
 	for (auto renderable : renderables) {
@@ -86,6 +86,8 @@ void DebugUiController::generateMeshes() {
 		vPointer += controller->getVBufferLen();
 		iPointer += controller->getIBufferLen();
 		idxPointer += controller->getMaxIdxCount();
+
+		// TODO check if vPointer or iPointer exceeds main buffer's limits (defined in constructor)
 	}
 }
 
