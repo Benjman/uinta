@@ -12,6 +12,7 @@ set(SOURCES ${SOURCES}
         src/controller/tick_controller.cpp
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
+        src/input/input_manager.cpp
         src/io/file.cpp
         src/render/i_renderable.cpp
         src/render/i_render_controller.cpp

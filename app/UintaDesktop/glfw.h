@@ -1,6 +1,8 @@
 #ifndef UINTA_GLFW_H
 #define UINTA_GLFW_H
 
+#include <uinta/input/input_manager.h>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -24,6 +26,9 @@ namespace uinta::glfw {
 		std::string _title;
 		bool _headless = false;
 		bool _viewportChanged = false;
+
+		size_t _numInputEvents = 0;
+		InputEvent _inputEvents[InputManager::MAX_KEYS_DOWN];
 
 	public:
 		GlfwDto(int32_t width, int32_t height, std::string title)
@@ -82,6 +87,24 @@ namespace uinta::glfw {
 
 		void resetViewportChanged() {
 			_viewportChanged = false;
+		}
+
+		void addInputEvent(InputEvent &event);
+
+		[[nodiscard]] size_t getNumInputEvents() const {
+			return _numInputEvents;
+		}
+
+		void setNumInputEvents(size_t numInputEvents) {
+			_numInputEvents = numInputEvents;
+		}
+
+		[[nodiscard]] InputEvent *getInputEvents() {
+			return _inputEvents;
+		}
+
+		void resetInputEvents() {
+			_numInputEvents = 0;
 		}
 
 	};
