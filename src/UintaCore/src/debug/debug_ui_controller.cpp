@@ -68,7 +68,7 @@ void DebugUiController::addRenderables() {
 void DebugUiController::generateMeshes() {
 	size_t vPointer = 0, iPointer = 0, idxPointer = 0;
 	for (auto child : getChildren()) {
-		auto *controller = (TextController *) child; // TODO not everything is going to be a TextController. Need a way around this unsafe casting. (Maybe this should be in TextController?)
+		auto *controller = (TextController *) child; // TODO not everything is going to be a TextController. Need a way around this unsafe casting.
 		Mesh *mesh = controller->getMesh();
 
 		mesh->vBuffer = &vBuffer[vPointer];
@@ -87,7 +87,7 @@ void DebugUiController::generateMeshes() {
 		iPointer += controller->getIBufferLen();
 		idxPointer += controller->getMaxIdxCount();
 
-		// TODO check if vPointer or iPointer exceeds main buffer's limits (defined in constructor)
+		// TODO validate vPointer or iPointer don't exceed limits of primary buffers (defined in constructor)
 	}
 }
 
