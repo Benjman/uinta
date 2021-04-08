@@ -1,6 +1,8 @@
+#include <uinta/gl/gl_error.h>
 #include "glfw.h"
-#include "proto/protos.h"
 
+#include <uinta/controller/scene/scene_controller.h>
+#include <uinta/debug/debug_ui_controller.h>
 #include <uinta/engine_state.h>
 #include <uinta/input/input_manager.h>
 #include <uinta/shader.h>
@@ -8,6 +10,26 @@
 
 using namespace uinta;
 using namespace uinta::glfw;
+
+class MainController : public Controller, public IRenderController {
+	DebugUiController debugUi = DebugUiController(this);
+	SceneController scene = SceneController(this);
+
+public:
+	MainController() : Controller(nullptr) {
+	}
+
+	void render() override {
+		scene.render();
+		debugUi.render();
+	}
+
+	void initialize() override {
+		glEnable(GL_DEPTH_TEST);
+		glCheckError(GL_ENABLE);
+	}
+
+};
 
 int main() {
 	GlfwDto glfw(1282, 532, "Test Window Creation");
@@ -17,21 +39,21 @@ int main() {
 		return -1;
 	}
 
+	MainController controller;
+	controller.initialize();
+
 	InputManager inputManager;
 	EngineState state(&inputManager);
 
-	DebugUiProto proto;
-	proto.initialize();
-
 	while (!shouldClose(glfw)) {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		state.delta = glfwGetTime() - state.runtime;
 		state.runtime += state.delta;
 
-		proto.update(state);
-		proto.render();
+		controller.update(state);
+		controller.render();
 
 		glfwSwapBuffers(glfw.getWindow());
 

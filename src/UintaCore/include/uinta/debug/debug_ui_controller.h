@@ -1,21 +1,20 @@
 #ifndef UINTA_DEBUG_UI_CONTROLLER_H
 #define UINTA_DEBUG_UI_CONTROLLER_H
 
-#include "uinta/controller/fps_controller.h"
-#include "uinta/controller/tick_controller.h"
 #include <uinta/controller/buffer_controller.h>
-
+#include <uinta/controller/fps_controller.h>
+#include <uinta/controller/tick_controller.h>
 #include <uinta/debug/debug_ui_view.h>
 #include <uinta/render/i_render_controller.h>
+#include <uinta/shader/shader.h>
 #include <uinta/text/text_controller.h>
 
 namespace uinta {
 
-	class Shader;
 	class Font;
 
 	class DebugUiController : public BufferController, IRenderController {
-		const Shader *_shader{};
+		const Shader _shader;
 		const Font *_font{};
 
 		const DebugUiView _view;
@@ -37,11 +36,9 @@ namespace uinta {
 
 		void initialize() override;
 
-		void initializeBuffers() override;
+		void initializeAttributes();
 
 		void addRenderables();
-
-		void uploadMeshes();
 
 	};
 

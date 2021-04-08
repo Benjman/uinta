@@ -17,7 +17,7 @@ namespace uinta::debuguicontroller {
 			"void main() {"
 			"	gl_Position = vec4(inPos, 0.0, 1.0);"
 			"	passUv = vec2(inUv.x, inUv.y);"
-			"}";
+			"}\0";
 
 	static const char *fragShader =
 			"#version 300 es\n"
@@ -26,7 +26,7 @@ namespace uinta::debuguicontroller {
 			"uniform sampler2D texture1;"
 			"void main() {"
 			"	outColor = vec4(texture(texture1, passUv).r);"
-			"}";
+			"}\0";
 
 }
 using namespace uinta;
@@ -35,18 +35,16 @@ using namespace uinta::debuguicontroller;
 
 DebugUiController::DebugUiController(Controller *parent)
 		: BufferController(parent, KILOBYTES(5) * sizeof(GLfloat), KILOBYTES(2) * sizeof(GLuint)),
-		  _shader(Shader::createShader(vertexShader, fragShader, Raw)),
+		  _shader(vertexShader, fragShader, Raw),
 		  _font(Font::loadFont("/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
-	vBuffer = new GLfloat[vSize / sizeof(GLfloat)];
-	iBuffer = new GLuint[iSize / sizeof(GLuint)];
 }
 
 void DebugUiController::initialize() {
 	BufferController::initialize();
 
-	initializeBuffers();
+	initializeAttributes();
 	generateMeshes();
-	uploadMeshes();
+	uploadBuffers();
 
 	addRenderables();
 }
@@ -91,19 +89,14 @@ void DebugUiController::generateMeshes() {
 	}
 }
 
-void DebugUiController::initializeBuffers() {
+void DebugUiController::initializeAttributes() {
 	// TODO there should be a TextShader that manages these attributes
 	vao->createAttribute(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
 	vao->createAttribute(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
 }
 
-void DebugUiController::uploadMeshes() {
-	uploadMesh(vBuffer, vSize, 0, iBuffer, iSize, 0);
-}
-
 DebugUiController::~DebugUiController() {
 	delete _font;
-	delete _shader;
 }
 
 void DebugUiController::render() {
@@ -117,8 +110,9 @@ void DebugUiController::render() {
 		glCheckError(GL_BLEND_FUNC);
 	}
 
-	_shader->use();
+	_shader.use();
 	_font->bind();
+	vao->bind();
 
 	IRenderController::render();
 }
