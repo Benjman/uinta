@@ -245,6 +245,14 @@ void checkGlDrawElements(GLenum err) {
 	}
 }
 
+void checkGlEnable(GLenum err) {
+	if (err == GL_INVALID_VALUE) {
+		std::cerr << "glEnable  GL_INVALID_ENUM: _cap is not one of the values listed previously.";
+	} else {
+		std::cerr << "Unknown glEnable error." << std::endl;
+	}
+}
+
 void checkGlEnableVertexAttribArray(GLenum err) {
 	if (err == GL_INVALID_VALUE) {
 		std::cerr << "glEnableVertexAttribArray  GL_INVALID_VALUE: _index is greater than or equal to ";
@@ -344,6 +352,29 @@ void checkGlTexParameteri(GLenum err) {
 		std::cerr << "\n\t2) _params should have a defined constant value (based on the value of pname) and does not." << std::endl;
 	} else {
 		std::cerr << "Unknown glTexParameteri error." << std::endl;
+	}
+}
+
+void checkGlUniform(GLenum err) {
+	switch (err) {
+		case GL_INVALID_OPERATION:
+			std::cerr << "glUniform GL_INVALID_OPERATION: Either;";
+			std::cerr << "\n\t1) There is no current program object. Or,";
+			std::cerr << "\n\t2) The size of the uniform variable declared in the shader does not match the size indicated by the glUniform command. Or,";
+			std::cerr << "\n\t3) One of the integer variants of this function is used to load a uniform variable of type float, vec2, vec3, vec4, or an array of these, or if one of the floating-point variants of this function is used to load a uniform variable of type int, ivec2, ivec3, or ivec4, or an array of these. Or,";
+			std::cerr << "\n\t4) _location is an invalid uniform location for the current program object and location is not equal to -1. Or,";
+			std::cerr << "\n\t5) _count is greater than 1 and the indicated uniform variable is not an array variable. Or,";
+			std::cerr << "\n\t6) A sampler is loaded using a command other than glUniform1i and glUniform1iv.";
+			break;
+		case GL_INVALID_VALUE:
+			std::cerr << "glUniform GL_INVALID_VALUE: Either;";
+			std::cerr << "\n\t1) _count is less than 0. Or,";
+			std::cerr << "\n\t2) _transpose is not GL_FALSE.";
+			break;
+
+		default:
+			std::cerr << "Unknown glUniform error." << std::endl;
+			break;
 	}
 }
 
@@ -447,6 +478,9 @@ void uinta::glCheckError(gl_error_check_type type) {
 			break;
 		case GL_DRAW_ELEMENTS:
 			checkGlDrawElements(err);
+		case GL_ENABLE:
+			checkGlEnable(err);
+			break;
 		case GL_ENABLE_VERTEX_ATTRIB_ARRAY:
 			checkGlEnableVertexAttribArray(err);
 			break;
@@ -467,6 +501,9 @@ void uinta::glCheckError(gl_error_check_type type) {
 			break;
 		case GL_TEX_PARAMETERI:
 			checkGlTexParameteri(err);
+			break;
+		case GL_UNIFORM:
+			checkGlUniform(err);
 			break;
 		case GL_USE_PROGRAM:
 			checkGlUseProgram(err);
