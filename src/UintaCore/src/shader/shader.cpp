@@ -9,9 +9,9 @@
 using namespace uinta;
 using namespace uinta::gl_state;
 
-Shader *Shader::createShader(const char *vertex, const char *fragment, ShaderSourceType type) {
+Shader::Shader(const char *vertex, const char *fragment, ShaderSourceType type) {
 	ShaderDto dto(vertex, fragment, type);
-	return ShaderLoader::loadShader(dto);
+	_id = ShaderLoader::loadShader(dto);
 }
 
 void Shader::use() const {

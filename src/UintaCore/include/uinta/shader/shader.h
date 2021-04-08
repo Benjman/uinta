@@ -12,16 +12,21 @@ namespace uinta {
 		friend class ShaderLoader;
 
 	public:
-		static Shader *createShader(const char *vertex, const char *fragment, ShaderSourceType type);
+		Shader(const char *vertex, const char *fragment, ShaderSourceType type);
 
 		[[nodiscard]] program_id_t getProgramId() const { return _id; }
 
 		void use() const;
 
-	private:
-		const program_id_t _id;
+		void initialize() {
+			use();
+			loadUniforms();
+		}
 
-		explicit Shader(program_id_t programId) : _id(programId) {}
+	protected:
+		program_id_t _id = GL_ZERO;
+
+		virtual void loadUniforms() {}
 
 	};
 
