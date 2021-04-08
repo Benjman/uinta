@@ -21,12 +21,13 @@ namespace uinta {
 		size_t vSize = 0;
 		size_t iSize = 0;
 
-		virtual void initializeBuffers() = 0;
-
 	public:
 		BufferController(Controller *parent, size_t vSize, GLuint iSize)
 				: Controller(parent), vSize(vSize),
-				  iSize(iSize) {}
+				  iSize(iSize) {
+			vBuffer = new GLfloat[vSize / sizeof(GLfloat)];
+			iBuffer = new GLuint[iSize / sizeof(GLuint)];
+		}
 
 		~BufferController();
 
@@ -34,6 +35,10 @@ namespace uinta {
 
 		void uploadMesh(GLfloat *pVBuffer, size_t pVSize, size_t pVOffset, GLuint *pIBuffer, size_t pISize,
 						GLuint pIOffset = 0);
+
+		void uploadBuffers() {
+			uploadMesh(vBuffer, vSize, 0, iBuffer, iSize, 0);
+		}
 
 	}; // class BufferController
 
