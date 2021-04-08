@@ -25,6 +25,7 @@ public:
 	}
 
 	void initialize() override {
+		Controller::initialize();
 		glEnable(GL_DEPTH_TEST);
 		glCheckError(GL_ENABLE);
 	}
