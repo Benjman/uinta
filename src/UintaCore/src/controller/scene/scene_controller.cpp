@@ -22,47 +22,47 @@ void SceneController::initialize() {
 	shader._projection.load(glm::mat4(1));
 
 	GLfloat vertices[] = {
-			-0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-			0.5f,  0.5f, -0.5f,
-			0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+			0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+			0.5f,  0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+			0.5f,  0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+			-0.5f,  0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
 
-			-0.5f, -0.5f,  0.5f,
-			0.5f, -0.5f,  0.5f,
-			0.5f,  0.5f,  0.5f,
-			0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+			0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+			0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+			0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
 
-			0.5f,  0.5f,  0.5f,
-			0.5f,  0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f,  0.5f,
-			0.5f,  0.5f,  0.5f,
+			0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+			0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+			0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
 
-			-0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f,  0.5f,
-			0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+			0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+			0.5f, -0.5f,  0.5f, 0.0f, -1.0f, 0.0f,
+			0.5f, -0.5f,  0.5f, 0.0f, -1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f, 0.0f, -1.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
 
-			-0.5f,  0.5f, -0.5f,
-			0.5f,  0.5f, -0.5f,
-			0.5f,  0.5f,  0.5f,
-			0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
 	};
 
 	const GLuint indices[]{
@@ -73,7 +73,8 @@ void SceneController::initialize() {
 	std::memcpy(vBuffer, vertices, sizeof(vertices));
 	std::memcpy(iBuffer, indices, sizeof(indices));
 
-	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
+	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
+	vao->createAttribute(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));
 
 	uploadBuffers();
 }
@@ -93,6 +94,9 @@ void SceneController::render() {
 	shader._model.load(model);
 	shader._view.load(view);
 	shader._projection.load(projection);
+
+	glEnable(GL_DEPTH_TEST);
+	glCheckError(GL_ENABLE);
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glCheckError(GL_DRAW_ARRAYS);
