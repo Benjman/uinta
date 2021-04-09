@@ -9,12 +9,15 @@
 
 namespace uinta {
 
+	class CameraController;
+
 	class SceneController : public BufferController, public IRenderController {
+		const CameraController *_camera;
 		SceneShader shader;
-		float_t _running = 0.f;
+		float_t _runtime = 0.f;
 
 	public:
-		explicit SceneController(Controller *parent);
+		explicit SceneController(Controller *parent, const CameraController *camera);
 
 		void initialize() override;
 

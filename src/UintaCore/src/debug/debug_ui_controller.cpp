@@ -103,11 +103,16 @@ void DebugUiController::render() {
 	if (!isActiveElseSet(ENABLE, GL_BLEND, GL_TRUE)) {
 		glEnable(GL_BLEND);
 		glCheckError(GL_ENABLE);
+
+		if (!isActiveElseSet(BLEND_FUNC, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)) {
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glCheckError(GL_BLEND_FUNC);
+		}
 	}
 
-	if (!isActiveElseSet(BLEND_FUNC, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)) {
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glCheckError(GL_BLEND_FUNC);
+	if (isActiveElseSet(ENABLE, GL_DEPTH_TEST, GL_FALSE)) {
+		glDisable(GL_DEPTH_TEST);
+		glCheckError(GL_ENABLE);
 	}
 
 	_shader.use();

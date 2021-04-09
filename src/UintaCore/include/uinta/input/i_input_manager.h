@@ -134,6 +134,8 @@ namespace uinta {
 	static const key_code_t KEY_RIGHT_ALT = 346;
 	static const key_code_t KEY_RIGHT_SUPER = 347;
 	static const key_code_t KEY_MENU = 348;
+	static const key_code_t KEY_FIRST = KEY_SPACE;
+	static const key_code_t KEY_LAST = KEY_MENU;
 	static const key_code_t INVALID_KEY = std::numeric_limits<key_code_t>::max();
 
 	static const mouse_code_t MOUSE_BUTTON_1 = 0;

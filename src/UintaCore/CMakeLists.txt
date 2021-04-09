@@ -4,6 +4,7 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
+        src/camera/camera_controller.cpp
         src/controller/buffer_controller.cpp
         src/controller/controller.cpp
         src/controller/fps_controller.cpp

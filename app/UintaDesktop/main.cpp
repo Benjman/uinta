@@ -1,6 +1,6 @@
-#include <uinta/gl/gl_error.h>
 #include "glfw.h"
 
+#include <uinta/camera.h>
 #include <uinta/controller/scene/scene_controller.h>
 #include <uinta/debug/debug_ui_controller.h>
 #include <uinta/engine_state.h>
@@ -13,7 +13,8 @@ using namespace uinta::glfw;
 
 class MainController : public Controller, public IRenderController {
 	DebugUiController debugUi = DebugUiController(this);
-	SceneController scene = SceneController(this);
+	CameraController camera = CameraController(this);
+	SceneController scene = SceneController(this, &camera);
 
 public:
 	MainController() : Controller(nullptr) {
@@ -22,10 +23,6 @@ public:
 	void render() override {
 		scene.render();
 		debugUi.render();
-	}
-
-	void initialize() override {
-		Controller::initialize();
 	}
 
 };

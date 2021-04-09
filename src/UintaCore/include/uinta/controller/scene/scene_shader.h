@@ -9,9 +9,9 @@ namespace uinta {
 	class SceneShader : public Shader {
 		friend class SceneController;
 
-		UniformMatrix4fv _model = UniformMatrix4fv("model", 1);
-		UniformMatrix4fv _view = UniformMatrix4fv("view", 1);
-		UniformMatrix4fv _projection = UniformMatrix4fv("projection", 1);
+		UniformMatrix4fv _model = UniformMatrix4fv("model");
+		UniformMatrix4fv _view = UniformMatrix4fv("view");
+		UniformMatrix4fv _projection = UniformMatrix4fv("projection");
 
 	public:
 		SceneShader();

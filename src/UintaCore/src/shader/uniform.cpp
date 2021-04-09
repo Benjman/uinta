@@ -72,37 +72,37 @@ void Uniform4ui::doLoad() {
 	glCheckError(GL_UNIFORM);
 }
 
-void Uniform1fv::doLoad() {
-	glUniform1fv(_id, _count, _value);
+void Uniform1fv::load(GLfloat* value) {
+	glUniform1fv(_id, 1, value);
 	glCheckError(GL_UNIFORM);
 }
 
-void Uniform2fv::doLoad() {
-	glUniform2fv(_id, _count, _value);
+void Uniform2fv::load(GLfloat* value) {
+	glUniform2fv(_id, 1, value);
 	glCheckError(GL_UNIFORM);
 }
 
-void Uniform3fv::doLoad() {
-	glUniform3fv(_id, _count, _value);
+void Uniform3fv::load(GLfloat* value) {
+	glUniform3fv(_id, 1, value);
 	glCheckError(GL_UNIFORM);
 }
 
-void Uniform4fv::doLoad() {
-	glUniform4fv(_id, _count, _value);
+void Uniform4fv::load(GLfloat* value) {
+	glUniform4fv(_id, 1, value);
 	glCheckError(GL_UNIFORM);
 }
 
-void UniformMatrix2fv::doLoad() {
-	glUniformMatrix2fv(_id, _count, GL_FALSE, _value);
+void UniformMatrix2fv::load(glm::mat2 value) {
+	glUniformMatrix2fv(_id, 1, GL_FALSE, &value[0][0]);
 	glCheckError(GL_UNIFORM);
 }
 
-void UniformMatrix3fv::doLoad() {
-	glUniformMatrix3fv(_id, _count, GL_FALSE, _value);
+void UniformMatrix3fv::load(glm::mat3 value) {
+	glUniformMatrix3fv(_id, 1, GL_FALSE, &value[0][0]);
 	glCheckError(GL_UNIFORM);
 }
 
-void UniformMatrix4fv::doLoad() {
-	glUniformMatrix4fv(_id, _count, GL_FALSE, _value);
+void UniformMatrix4fv::load(glm::mat4 value) {
+	glUniformMatrix4fv(_id, 1, GL_FALSE, &value[0][0]);
 	glCheckError(GL_UNIFORM);
 }

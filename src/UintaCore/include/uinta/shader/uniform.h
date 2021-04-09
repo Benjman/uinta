@@ -46,23 +46,10 @@ namespace uinta {
 	template<typename T>
 	class Uniformv : public IUniform {
 	public:
-		void load(T value) {
-			GLfloat vals[16];
-			const auto *glmVals = (const GLfloat*) glm::value_ptr(value);
-			for (int i = 0; i < 16; i++) {
-				vals[i] = glmVals[i];
-			}
-			memcpy(_value, vals, sizeof(vals));
-			doLoad();
-		}
+		virtual void load(T value) = 0;
 
 	protected:
-		size_t _count = 0;
-		GLfloat _value[16]{};
-
-		Uniformv(const char *name, size_t count) : IUniform(name), _count(count) {}
-
-		virtual void doLoad() = 0;
+		Uniformv(const char *name) : IUniform(name) {}
 
 	}; // class Uniformv
 
@@ -138,66 +125,59 @@ namespace uinta {
 
 	}; // class Uniform4ui
 
-	class Uniform1fv : public Uniformv<GLfloat*> {
+	class Uniform1fv : public Uniformv<GLfloat *> {
 	public:
-		explicit Uniform1fv(const char *name, size_t count) : Uniformv<GLfloat*>(name, count) {}
+		explicit Uniform1fv(const char *name) : Uniformv<GLfloat *>(name) {}
 
-	protected:
-		void doLoad() override;
+		void load(GLfloat *value) override;
 
 	}; // class Uniform1fv
 
-	class Uniform2fv : public Uniformv<GLfloat*> {
+	class Uniform2fv : public Uniformv<GLfloat *> {
 	public:
-		explicit Uniform2fv(const char *name, size_t count) : Uniformv<GLfloat*>(name, count) {}
+		explicit Uniform2fv(const char *name) : Uniformv<GLfloat *>(name) {}
 
-	protected:
-		void doLoad() override;
+		void load(GLfloat *value) override;
 
 	}; // class Uniform2fv
 
-	class Uniform3fv : public Uniformv<GLfloat*> {
+	class Uniform3fv : public Uniformv<GLfloat *> {
 	public:
-		explicit Uniform3fv(const char *name, size_t count) : Uniformv<GLfloat*>(name, count) {}
+		explicit Uniform3fv(const char *name) : Uniformv<GLfloat *>(name) {}
 
-	protected:
-		void doLoad() override;
+		void load(GLfloat *value) override;
 
 	}; // class Uniform3fv
 
-	class Uniform4fv : public Uniformv<GLfloat*> {
+	class Uniform4fv : public Uniformv<GLfloat *> {
 	public:
-		explicit Uniform4fv(const char *name, size_t count) : Uniformv<GLfloat *>(name, count) {}
+		explicit Uniform4fv(const char *name) : Uniformv<GLfloat *>(name) {}
 
-	protected:
-		void doLoad() override;
+		void load(GLfloat *value) override;
 
 	}; // class Uniform4fv
 
 	class UniformMatrix2fv : public Uniformv<glm::mat2> {
 	public:
-		explicit UniformMatrix2fv(const char *name, size_t count) : Uniformv<glm::mat2>(name, count) {}
+		explicit UniformMatrix2fv(const char *name) : Uniformv<glm::mat2>(name) {}
 
-	protected:
-		void doLoad() override;
+		void load(glm::mat2) override;
 
 	}; // class UniformMatrix2fv
 
 	class UniformMatrix3fv : public Uniformv<glm::mat3> {
 	public:
-		explicit UniformMatrix3fv(const char *name, size_t count) : Uniformv<glm::mat3>(name, count) {}
+		explicit UniformMatrix3fv(const char *name) : Uniformv<glm::mat3>(name) {}
 
-	protected:
-		void doLoad() override;
+		void load(glm::mat3) override;
 
 	}; // class UniformMatrix3fv
 
 	class UniformMatrix4fv : public Uniformv<glm::mat4> {
 	public:
-		explicit UniformMatrix4fv(const char *name, size_t count) : Uniformv<glm::mat4>(name, count) {}
+		explicit UniformMatrix4fv(const char *name) : Uniformv<glm::mat4>(name) {}
 
-	protected:
-		void doLoad() override;
+		void load(glm::mat4) override;
 
 	}; // class UniformMatrix4fv
 
