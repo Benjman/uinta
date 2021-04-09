@@ -292,7 +292,7 @@ namespace uinta::glfw {
 	}
 
 	void GlfwDto::addInputEvent(InputEvent &event) {
-		if (_numInputEvents + 1 > InputManager::MAX_KEYS_DOWN) {
+		if (_numInputEvents + 1 > 15) {
 			std::cerr << "Maximum inputs exceeded! Ignoring inputs.\n";
 			return;
 		}

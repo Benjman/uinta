@@ -53,7 +53,6 @@ int main() {
 
 		glfwSwapBuffers(glfw.getWindow());
 
-		inputManager.reset();
 		glfwPollEvents();
 		for (size_t i = 0; i < glfw.getNumInputEvents(); i++) {
 			inputManager.registerEvent(glfw.getInputEvents()[i]);

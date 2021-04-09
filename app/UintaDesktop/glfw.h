@@ -28,7 +28,7 @@ namespace uinta::glfw {
 		bool _viewportChanged = false;
 
 		size_t _numInputEvents = 0;
-		InputEvent _inputEvents[InputManager::MAX_KEYS_DOWN];
+		InputEvent _inputEvents[15];
 
 	public:
 		GlfwDto(int32_t width, int32_t height, std::string title)

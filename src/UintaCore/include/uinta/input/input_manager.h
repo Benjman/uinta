@@ -6,9 +6,7 @@
 namespace uinta {
 
 	struct InputManager : public IInputManager {
-		static const size_t MAX_KEYS_DOWN = 4;
-
-		key_code_t downKeys[MAX_KEYS_DOWN]{};
+		bool downKeys[KEY_LAST - KEY_FIRST]{};
 
 		InputManager();
 
@@ -17,19 +15,19 @@ namespace uinta {
 		void reset();
 
 		[[nodiscard]] bool isKeyDown(key_code_t key) const override {
-			for (uint16_t downKey : downKeys) {
-				if (downKey == key) return true;
-				if (downKey == INVALID_KEY) return false;
-			}
-			return false;
+			return downKeys[key - KEY_FIRST];
 		}
 
 	private:
-		void handlePressEvent(const InputEvent &event);
+		void handlePressEvent(const InputEvent &event) {
+			downKeys[event.key - KEY_FIRST] = true;
+		}
 
-		void handleReleaseEvent(const InputEvent &event);
+		void handleReleaseEvent(const InputEvent &event) {
+			downKeys[event.key - KEY_FIRST] = false;
+		}
 
-		void handleRepeatEvent(const InputEvent &event);
+		void handleRepeatEvent(const InputEvent &event) {}
 
 	}; // struct InputManager
 
