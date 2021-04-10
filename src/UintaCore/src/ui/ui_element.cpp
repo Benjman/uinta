@@ -22,10 +22,10 @@ inline void applyAspectRatio(glm::vec4 &vec) {
 
 inline glm::vec4 toUnitSpace(glm::uvec4 &dimensions) {
 	return glm::vec4(
-			dimensions.x / UI_BASE_SIZE,
-			dimensions.y / UI_BASE_SIZE,
-			dimensions.z / UI_BASE_SIZE,
-			dimensions.w / UI_BASE_SIZE
+			(float_t) dimensions.x / UI_BASE_SIZE,
+			(float_t) dimensions.y / UI_BASE_SIZE,
+			(float_t) dimensions.z / UI_BASE_SIZE,
+			(float_t) dimensions.w / UI_BASE_SIZE
 	);
 }
 

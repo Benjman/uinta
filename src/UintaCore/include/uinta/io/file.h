@@ -1,15 +1,15 @@
 #ifndef UINTA_FILE_H
 #define UINTA_FILE_H
 
-#include "file_types.h"
+#include <uinta/types.h>
 
 namespace uinta {
 
 	class File {
-		file_size_t _contentLength;
+		uint32_t _contentLength;
 		char *_contents;
 
-		File(const char *contents, file_size_t contentLength);
+		File(const char *contents, uint32_t contentLength);
 
 	public:
 		static File requestFile(const char *path);
@@ -18,7 +18,7 @@ namespace uinta {
 			delete[] _contents;
 		}
 
-		[[nodiscard]] file_size_t getContentLength() const {
+		[[nodiscard]] uint32_t getContentLength() const {
 			return _contentLength;
 		}
 

@@ -2,6 +2,7 @@
 #define UINTA_I_RENDERABLE_H
 
 #include <uinta/types.h>
+#include <uinta/gl_types.h>
 
 namespace uinta {
 
@@ -9,11 +10,11 @@ namespace uinta {
 	public:
 		virtual void render();
 
-		virtual size_t getIndexCount() {
+		virtual GLsizei getIndexCount() {
 			return _indexCount;
 		}
 
-		void setIndexCount(size_t indexCount) {
+		void setIndexCount(GLsizei indexCount) {
 			_indexCount = indexCount;
 		}
 
@@ -27,7 +28,7 @@ namespace uinta {
 
 	protected:
 		size_t _offset = 0;
-		size_t _indexCount = 0;
+		GLsizei _indexCount = 0;
 
 	}; // class IRenderable
 

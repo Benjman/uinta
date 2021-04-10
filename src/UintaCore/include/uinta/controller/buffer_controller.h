@@ -19,14 +19,14 @@ namespace uinta {
 		GLfloat *vBuffer = nullptr;
 		GLuint *iBuffer = nullptr;
 
-		size_t vSize = 0;
-		size_t iSize = 0;
+		GLsizeiptr vSize = 0;
+		GLsizeiptr iSize = 0;
 
 		size_t vIndex = 0;
 		size_t iIndex = 0;
 
 	public:
-		BufferController(Controller *parent, size_t vSize, GLuint iSize)
+		BufferController(Controller *parent, GLsizeiptr vSize, GLuint iSize)
 				: Controller(parent), vSize(vSize),
 				  iSize(iSize) {
 			vBuffer = new GLfloat[vSize / sizeof(GLfloat)];
@@ -37,16 +37,16 @@ namespace uinta {
 
 		void initialize() override;
 
-		void uploadMesh(GLfloat *pVBuffer, size_t pVSize, size_t pVOffset, GLuint *pIBuffer, size_t pISize,
-						GLuint pIOffset = 0);
+		void uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeiptr pVOffset, GLuint *pIBuffer,
+								  GLsizeiptr pISize, GLsizeiptr pIOffset = 0);
 
 		void uploadBuffers() {
 			uploadMesh(vBuffer, vSize, 0, iBuffer, iSize, 0);
 		}
 
-		void requestIBufferArena(size_t len, GLuint **ptr, size_t *offsetBytes);
+		void requestIBufferArena(size_t len, GLuint **ptr, GLsizeiptr  *offsetBytes);
 
-		void requestVBufferArena(size_t len, GLfloat **ptr, size_t *offsetBytes);
+		void requestVBufferArena(size_t len, GLfloat **ptr, GLsizeiptr  *offsetBytes);
 
 	}; // class BufferController
 

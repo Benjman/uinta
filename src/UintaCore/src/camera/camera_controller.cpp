@@ -66,18 +66,18 @@ void CameraController::calculateAngle(const EngineState &state) {
 }
 
 float_t CameraController::calculateDistanceHorizontal() const {
-	return camera._dist * cos(rad(camera._pitch));
+	return camera._dist * (float_t) cos(rad(camera._pitch));
 }
 
 float_t CameraController::calculateDistanceVertical() const {
-	return camera._dist * sin(rad(camera._pitch));
+	return camera._dist * (float_t) sin(rad(camera._pitch));
 }
 
 void CameraController::calculateCameraPosition() {
 	float_t hDist = calculateDistanceHorizontal();
 	float_t vDist = calculateDistanceVertical();
-	float_t xOffset = hDist * sin(rad(camera._angle));
-	float_t zOffset = hDist * cos(rad(camera._angle));
+	float_t xOffset = hDist * (float_t) sin(rad(camera._angle));
+	float_t zOffset = hDist * (float_t) cos(rad(camera._angle));
 
 	camera._position.x = camera._target.x - xOffset;
 	camera._position.y = camera._target.y + vDist;

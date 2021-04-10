@@ -41,4 +41,4 @@ namespace uinta {
 
 }
 
-#endif //UINTASHADERDTOH
+#endif // UINTA_SHADER_DTO_H

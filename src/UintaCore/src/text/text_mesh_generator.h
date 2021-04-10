@@ -34,10 +34,10 @@ namespace uinta {
 					  iBuffer(iBuffer),
 					  indexOffset(indexOffset) {
 				aspectRatio = gl_state::getViewportAspectRatio();
-				viewportHeight = gl_state::getViewportHeight();
+				viewportHeight = (float_t) gl_state::getViewportHeight();
 				lineHeight = Font::LINE_HEIGHT;
-				xcursor = text.getPosition().x;
-				ycursor = text.getPosition().y;
+				xcursor = (float_t) text.getPosition().x;
+				ycursor = (float_t) text.getPosition().y;
 			}
 		};
 
@@ -57,7 +57,7 @@ namespace uinta {
 			Text &text = context.text;
 			const Font &font = context.font;
 			if (!text.getValue().empty()) {
-				Line *line = new Line(gl_state::getViewportWidth());
+				Line *line = new Line((float_t) gl_state::getViewportWidth());
 				lines.push_back(line);
 				Word *word = new Word;
 
@@ -65,7 +65,7 @@ namespace uinta {
 					char c = text.getValue()[i];
 					if (c == ' ') {
 						if (!line->tryAddWord(*word)) {
-							line = new Line(gl_state::getViewportWidth());
+							line = new Line((float_t) gl_state::getViewportWidth());
 							lines.push_back(line);
 							line->tryAddWord(*word);
 						}

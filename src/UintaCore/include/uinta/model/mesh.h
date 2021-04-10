@@ -13,8 +13,8 @@ namespace uinta {
 		GLfloat *vBuffer{};
 		GLuint *iBuffer{};
 
-		size_t vParentOffsetBytes = 0;
-		size_t iParentOffsetBytes = 0;
+		GLsizeiptr vParentOffsetBytes = 0;
+		GLsizeiptr iParentOffsetBytes = 0;
 
 		size_t idxOffset = 0;
 

@@ -45,7 +45,7 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		state.delta = glfwGetTime() - state.runtime;
+		state.delta = (float_t) glfwGetTime() - state.runtime;
 		state.runtime += state.delta;
 
 		controller.update(state);

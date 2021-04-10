@@ -24,14 +24,14 @@ BufferController::~BufferController() {
 	delete[] iBuffer;
 }
 
-void BufferController::uploadMesh(GLfloat *pVBuffer, size_t pVSize, size_t pVOffset, GLuint *pIBuffer, size_t pISize,
-								  GLuint pIOffset) {
+void BufferController::uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeiptr pVOffset, GLuint *pIBuffer,
+								  GLsizeiptr pISize, GLsizeiptr pIOffset) {
 	vao->bind();
 	vbo->storeData(pVBuffer, pVSize, pVOffset);
 	ibo->storeData(pIBuffer, pISize, pIOffset);
 }
 
-void BufferController::requestIBufferArena(size_t len, GLuint **ptr, size_t *offsetBytes) {
+void BufferController::requestIBufferArena(size_t len, GLuint **ptr, GLsizeiptr  *offsetBytes) {
 	if (len + iIndex > iSize) {
 		std::cerr << "Buffer overflow. More space needed.\n";
 		return;
@@ -41,7 +41,7 @@ void BufferController::requestIBufferArena(size_t len, GLuint **ptr, size_t *off
 	iIndex += len;
 }
 
-void BufferController::requestVBufferArena(size_t len, GLfloat **ptr, size_t *offsetBytes) {
+void BufferController::requestVBufferArena(size_t len, GLfloat **ptr, GLsizeiptr  *offsetBytes) {
 	if (len + vIndex > vSize) {
 		std::cerr << "Buffer overflow. More space needed.\n";
 		return;

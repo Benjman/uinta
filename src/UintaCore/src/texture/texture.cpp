@@ -4,7 +4,7 @@
 using namespace uinta;
 using namespace uinta::gl_state;
 
-Texture *Texture::requestTexture(const uint32_t width, const uint32_t height, GLint internalFormat, GLenum type,
+Texture *Texture::requestTexture(const GLsizei width, const GLsizei height, GLint internalFormat, GLenum type,
 								 const void *data) {
 	auto texture = new Texture;
 
@@ -17,7 +17,7 @@ Texture *Texture::requestTexture(const uint32_t width, const uint32_t height, GL
 	return texture;
 }
 
-void Texture::upload(uint32_t width, uint32_t height, GLint internalFormat, GLenum type, const void *data) const {
+void Texture::upload(GLsizei width, GLsizei height, GLint internalFormat, GLenum type, const void *data) const {
 	bind();
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, type, data);
 	glCheckError(GL_TEX_IMAGE2D);

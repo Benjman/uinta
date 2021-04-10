@@ -24,9 +24,6 @@ namespace uinta {
 
 		void calculateCameraPosition();
 
-		void calculateYaw();
-
-
 	public:
 		explicit CameraController(Controller *parent) : Controller(parent) {}
 

@@ -8,14 +8,14 @@ uinta::File uinta::File::requestFile(const char *path) {
 	if (stream.fail()) {
 		throw FileNotFoundException(path);
 	}
-	size_t contentLength = stream.tellg();
+	std::streamsize contentLength = stream.tellg();
 	stream.seekg(0, std::ios::beg);
 	char contents[contentLength];
 	stream.read(contents, contentLength);
 	return File(contents, contentLength);
 }
 
-uinta::File::File(const char *contents, file_size_t contentLength): _contentLength(contentLength) {
+uinta::File::File(const char *contents, uint32_t contentLength): _contentLength(contentLength) {
 	_contents = new char[contentLength + 1];
 	strncpy(_contents, contents, contentLength - 1);
 }

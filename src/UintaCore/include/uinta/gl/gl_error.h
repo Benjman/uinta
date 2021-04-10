@@ -8,7 +8,7 @@
 #define UINTA_GL_ERROR_H
 
 #undef glCheckError
-#define glCheckError(m) { uinta::gl::uintaGlCheckError(m); }
+#define glCheckError(m) uinta::gl::uintaGlCheckError(m)
 
 #include <uinta/gl_types.h>
 
@@ -67,7 +67,7 @@ namespace uinta {
 
 		void checkGlCompileShader(GLenum err);
 
-		void checkGlCreateProgram(GLenum err);
+		void checkGlCreateProgram([[maybe_unused]] GLenum err);
 
 		void checkGlCreateShader(GLenum err);
 

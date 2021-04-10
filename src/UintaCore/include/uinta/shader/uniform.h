@@ -9,14 +9,14 @@
 
 namespace uinta {
 
-	static const GLuint INVALID_UNIFORM_ID = -1;
+	static const GLint INVALID_UNIFORM_ID = -1;
 
 	class IUniform {
 	protected:
 		bool _loaded = false;
 		const char *_name;
 
-		GLuint _id = INVALID_UNIFORM_ID;
+		GLint _id = INVALID_UNIFORM_ID;
 
 	public:
 		explicit IUniform(const char *name) : _name(name) { }
@@ -49,7 +49,7 @@ namespace uinta {
 		virtual void load(T value) = 0;
 
 	protected:
-		Uniformv(const char *name) : IUniform(name) {}
+		explicit Uniformv(const char *name) : IUniform(name) {}
 
 	}; // class Uniformv
 

@@ -11,10 +11,10 @@ namespace uinta {
 
 	struct Line {
  		float_t lineWidthPx = 0;
- 		size_t maxWidthPx = 0;
+ 		float_t maxWidthPx = 0;
 		std::vector<Word *> words;
 
-		Line(size_t maxWidth) : maxWidthPx(maxWidth) {}
+		explicit Line(float_t maxWidth) : maxWidthPx(maxWidth) {}
 
 		bool tryAddWord(Word &word) {
 			if (word.width + lineWidthPx > maxWidthPx) {

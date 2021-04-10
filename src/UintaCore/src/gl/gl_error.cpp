@@ -140,15 +140,9 @@ void uinta::gl::checkGlCompileShader(GLenum err) {
 	}
 }
 
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnusedLocalVariable" // disables `err` unused warning
-
-void uinta::gl::checkGlCreateProgram(GLenum err) {
+void uinta::gl::checkGlCreateProgram([[maybe_unused]] GLenum err) {
 	// Intentionally empty. This method does not throw any errors as of OpenGL 4.5.
 }
-
-#pragma clang diagnostic pop
 
 void uinta::gl::checkGlCreateShader(GLenum err) {
 	if (err == GL_INVALID_ENUM) {

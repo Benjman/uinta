@@ -54,7 +54,7 @@ void TextController::setTextValue(const char *value, bool updateMetadata) {
 	}
 }
 
-size_t TextController::getICount() const {
+GLuint TextController::getICount() const {
 	return _text->getCharCount() * INDICES_PER_CHAR;
 }
 

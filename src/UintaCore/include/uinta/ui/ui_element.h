@@ -28,7 +28,7 @@ namespace uinta {
 
 	public:
 
-		size_t getIndexCount() override {
+		GLsizei getIndexCount() override {
 			return 6;
 		}
 
