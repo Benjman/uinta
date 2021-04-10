@@ -1,3 +1,5 @@
+#ifdef UINTA_DEBUG
+
 #include <uinta/gl/gl_error.h>
 #include <uinta/gl_types.h>
 
@@ -510,3 +512,5 @@ void uinta::gl::uintaGlCheckError(gl_error_check_type type) {
 	}
 #endif
 }
+
+#endif // UINTA_DEBUG
