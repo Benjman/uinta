@@ -7,7 +7,7 @@
 using namespace uinta;
 
 FpsController::FpsController(BufferController *parent, Text &text, Font *font)
-		: TextController(parent, text, (Font *) font, 2),
+		: TextController(parent, text, (Font *) font, 3),
 		  _parent(parent) {
 }
 

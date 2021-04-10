@@ -26,7 +26,7 @@ namespace uinta {
 		static const GLsizei INDICES_PER_CHAR = 6;
 		static const GLsizei ELEMENTS_PER_VERTEX = 4; // vec2 position, vec2 uv // TODO add color
 
-		explicit TextController(BufferController *parent, Text &text, Font *font, size_t maxChars = 0);
+		explicit TextController(BufferController *parent, Text &text, Font *font, GLsizei maxChars = 0);
 
 		~TextController();
 

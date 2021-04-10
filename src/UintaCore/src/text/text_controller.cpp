@@ -10,7 +10,7 @@
 
 using namespace uinta;
 
-TextController::TextController(BufferController *parent, Text &text, Font *font, size_t maxChars) :
+TextController::TextController(BufferController *parent, Text &text, Font *font, GLsizei maxChars) :
 		Controller(parent),
 		_text(&text),
 		_font(font),
@@ -30,13 +30,13 @@ void TextController::populateMesh() const {
 void TextController::doUpdateMetadata() {
 	size_t charCount = _text->getCharCount();
 	if (_maxChars == 0) {
-		_maxChars = charCount;
+		_maxChars = (GLsizei) charCount;
 	}
 	if (charCount > _maxChars) {
 		// Buffers are written up to _maxChars. Extra chars are ignored.
 		std::cerr << "charCount exceeded _maxChars. Buffers are written up to _maxChars. Extra chars are ignored.\n";
 	}
-	_mesh->setIndexCount(getICount());
+	_mesh->setIndexCount((GLsizei) getICount());
 }
 
 void TextController::render() {
