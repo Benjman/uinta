@@ -4,10 +4,11 @@
 #include "line.h"
 #include "word.h"
 
-#include <cstring>
-#include <uinta/text.h>
 #include <uinta/gl/gl_macros.h>
 #include <uinta/gl/gl_state.h>
+#include <uinta/text.h>
+
+#include <cstring> // for memcpy
 
 namespace uinta {
 

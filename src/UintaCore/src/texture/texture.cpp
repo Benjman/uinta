@@ -1,5 +1,4 @@
 #include <uinta/texture/texture.h>
-
 #include <uinta/gl.h>
 
 using namespace uinta;

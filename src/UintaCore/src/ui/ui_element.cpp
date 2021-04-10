@@ -2,8 +2,8 @@
 #include <uinta/ui/ui_element.h>
 
 #include <glm/glm.hpp>
-#include <algorithm>
-#include <cstring>
+#include <algorithm> // for std::find
+#include <cstring> // for memcpy
 
 using namespace uinta;
 

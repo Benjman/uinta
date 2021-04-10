@@ -2,6 +2,7 @@
 #define UINTA_WORD_H
 
 #include <uinta/types.h>
+
 #include <vector>
 
 namespace uinta {
