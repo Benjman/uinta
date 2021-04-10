@@ -25,7 +25,11 @@ namespace uinta {
 		TickController _tick = TickController(this, (Text &) _view.tick, (Font *) _font);
 		TextController _tickLabel = TextController(this, (Text &) _view.tickLabel, (Font *) _font);
 
-		void generateMeshes();
+		void initializeTextController();
+
+		void addRenderables();
+
+		void initializeAttributes();
 
 	public:
 		explicit DebugController(Controller *parent);
@@ -35,11 +39,6 @@ namespace uinta {
 		void render() override;
 
 		void initialize() override;
-
-		void initializeAttributes();
-
-		void addRenderables();
-
 	};
 
 } // namespace uinta

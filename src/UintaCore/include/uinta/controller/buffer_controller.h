@@ -24,6 +24,7 @@ namespace uinta {
 
 		size_t vIndex = 0;
 		size_t iIndex = 0;
+		size_t idxIndex = 0;
 
 	public:
 		BufferController(Controller *parent, GLsizeiptr vSize, GLuint iSize)
@@ -44,9 +45,7 @@ namespace uinta {
 			uploadMesh(vBuffer, vSize, 0, iBuffer, iSize, 0);
 		}
 
-		void requestIBufferArena(size_t len, GLuint **ptr, GLsizeiptr  *offsetBytes);
-
-		void requestVBufferArena(size_t len, GLfloat **ptr, GLsizeiptr  *offsetBytes);
+		void initializeMeshBuffers(Mesh &mesh, size_t vLen, size_t iLen);
 
 	}; // class BufferController
 

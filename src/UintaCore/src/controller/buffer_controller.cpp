@@ -1,6 +1,6 @@
 #include <uinta/controller/buffer_controller.h>
-
 #include <uinta/shader.h>
+#include <uinta/model/mesh.h>
 
 #include <iostream>
 
@@ -31,22 +31,14 @@ void BufferController::uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeip
 	ibo->storeData(pIBuffer, pISize, pIOffset);
 }
 
-void BufferController::requestIBufferArena(size_t len, GLuint **ptr, GLsizeiptr  *offsetBytes) {
-	if (len + iIndex > iSize) {
-		std::cerr << "Buffer overflow. More space needed.\n";
-		return;
-	}
-	*ptr = &iBuffer[iIndex];
-	*offsetBytes = iIndex * sizeof(GLuint);
-	iIndex += len;
-}
+void BufferController::initializeMeshBuffers(Mesh &mesh, size_t vLen, size_t iLen) {
+	// TODO validate against buffer overflows
+	mesh.vBuffer = &vBuffer[vIndex];
+	mesh.iBuffer = &iBuffer[iIndex];
 
-void BufferController::requestVBufferArena(size_t len, GLfloat **ptr, GLsizeiptr  *offsetBytes) {
-	if (len + vIndex > vSize) {
-		std::cerr << "Buffer overflow. More space needed.\n";
-		return;
-	}
-	*ptr = &vBuffer[vIndex];
-	*offsetBytes = vIndex * sizeof(GLfloat);
-	vIndex += len;
+	mesh.vParentOffsetBytes = vIndex * sizeof(GLfloat);
+	mesh.iParentOffsetBytes = iIndex * sizeof(GLuint);
+
+	vIndex += vLen;
+	iIndex += iLen;
 }

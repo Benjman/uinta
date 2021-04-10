@@ -41,11 +41,11 @@ DebugController::DebugController(Controller *parent)
 void DebugController::initialize() {
 	BufferController::initialize();
 
-	initializeAttributes();
-	generateMeshes();
+	initializeTextController();
 	uploadBuffers();
 
 	addRenderables();
+	initializeAttributes();
 }
 
 void DebugController::addRenderables() {
@@ -62,24 +62,27 @@ void DebugController::addRenderables() {
 	}
 }
 
-void DebugController::generateMeshes() {
-	size_t vPointer = 0, iPointer = 0, idxPointer = 0;
-	for (auto child : getChildren()) {
-		auto *controller = (TextController *) child; // TODO not everything is going to be a TextController. Need a way around this unsafe casting.
-		Mesh *mesh = controller->getMesh();
+void DebugController::initializeTextController() {
+	TextController *controllers[]{
+			&_fps,
+			&_fpsLabel,
 
-		requestVBufferArena(controller->getVBufferLen(), &mesh->vBuffer, &mesh->vParentOffsetBytes);
-		requestIBufferArena(controller->getIBufferLen(), &mesh->iBuffer, &mesh->iParentOffsetBytes);
+			&_tick,
+			&_tickLabel,
+	};
 
-		mesh->idxOffset = idxPointer;
-		mesh->setIndexCount(controller->getICount());
-		mesh->setOffset(iPointer);
+	for (TextController *controller : controllers) {
+		Mesh &mesh = *controller->getMesh();
+		size_t iPointer = iIndex;
+		initializeMeshBuffers(mesh, controller->getVBufferLen(), controller->getIBufferLen());
+
+		mesh.idxOffset = idxIndex;
+		idxIndex += controller->getMaxIdxCount();
+
+		mesh.setIndexCount((GLsizei) controller->getICount());
+		mesh.setOffset(iPointer);
 
 		controller->populateMesh();
-
-		vPointer += controller->getVBufferLen();
-		iPointer += controller->getIBufferLen();
-		idxPointer += controller->getMaxIdxCount();
 	}
 }
 
@@ -115,3 +118,4 @@ void DebugController::render() {
 
 	IRenderController::render();
 }
+
