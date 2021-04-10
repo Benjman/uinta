@@ -3,7 +3,6 @@
 #include <uinta/shader/shader.h>
 #include <uinta/shader/shader_dto.h>
 
-#include <uinta/gl/gl_error.h>
 #include <uinta/gl/gl_state.h>
 
 using namespace uinta;

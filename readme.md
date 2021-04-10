@@ -1,3 +1,5 @@
+An attempt at creating a rendering engine targeted for android on embedded systems.
+
 ### Primary goals
 
 - Render a terrain (Perhaps primitive cubes, or simple terrain heightmap (Perf test the two?))
