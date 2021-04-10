@@ -2,7 +2,7 @@
 #define UINTA_BUFFER_CONTROLLER_H
 
 #include "controller.h"
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 
 namespace uinta {
 

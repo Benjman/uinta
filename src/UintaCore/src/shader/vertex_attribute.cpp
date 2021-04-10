@@ -1,9 +1,8 @@
 #include <uinta/shader/vertex_attribute.h>
 #include <uinta/gl.h>
 
-uinta::VertexAttribute::VertexAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
-										attrib_normalize_t normalized, attrib_stride_t stride, const void *offset,
-										bool enabled)
+uinta::VertexAttribute::VertexAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
+										const void *offset, bool enabled)
 		: _index(index),
 		  _enabled(enabled) {
 	glVertexAttribPointer(_index, size, type, normalized, stride, offset);

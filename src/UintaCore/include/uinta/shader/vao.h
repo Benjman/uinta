@@ -1,7 +1,7 @@
 #ifndef UINTA_VAO_H
 #define UINTA_VAO_H
 
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 
 #include <vector>
 
@@ -24,8 +24,8 @@ namespace uinta {
 
 		void bind() const;
 
-		VertexAttribute *createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
-										attrib_normalize_t normalized, attrib_stride_t stride, const void *offset);
+		VertexAttribute *createAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
+										 const void *offset);
 
 		void enableAllAttributes();
 
@@ -33,7 +33,7 @@ namespace uinta {
 
 	private:
 		AttributeCollection _attributes;
-		vao_id_t _id = GL_ZERO;
+		GLuint _id = GL_ZERO;
 
 		Vao();
 

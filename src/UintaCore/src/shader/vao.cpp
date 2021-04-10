@@ -32,8 +32,7 @@ void Vao::unbind() {
 	}
 }
 
-VertexAttribute *Vao::createAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
-									  attrib_normalize_t normalized, attrib_stride_t stride,
+VertexAttribute *Vao::createAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
 									  const void *offset) {
 	bind();
 	auto *attribute = new VertexAttribute(index, size, type, normalized, stride, offset);

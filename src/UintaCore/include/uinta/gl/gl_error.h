@@ -10,7 +10,7 @@
 #undef glCheckError
 #define glCheckError(m) { uinta::gl::uintaGlCheckError(m); }
 
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 
 namespace uinta {
 

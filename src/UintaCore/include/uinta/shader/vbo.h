@@ -1,34 +1,34 @@
 #ifndef UINTA_VBO_H
 #define UINTA_VBO_H
 
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 
 namespace uinta {
 
 	class Vbo {
-		vbo_id_t _id = INVALID_VBO_ID;
-		vbo_target_t _target;
-		vbo_usage_t _usage;
-		vbo_size_t _size;
+		GLuint _id = GL_ZERO;
+		GLenum _target;
+		GLenum _usage;
+		GLsizeiptr _size;
 
 	public:
-		static Vbo *requestVbo(Vao *vao, vbo_target_t target, vbo_usage_t usage, vbo_size_t size = 0, const void *data = nullptr);
+		static Vbo *requestVbo(Vao *vao, GLenum target, GLenum usage, GLsizeiptr size = 0, const void *data = nullptr);
 
-		static void unbind(vbo_target_t target);
+		static void unbind(GLenum target);
 
 	public:
 		void bind() const;
 
-		void storeData(const void *data, vbo_size_t size, vbo_size_t offset = 0);
+		void storeData(const void *data, GLsizeiptr size, GLsizeiptr offset = 0);
 
 		void unbind() const;
 
 		~Vbo();
 
 	private:
-		Vbo(vbo_target_t target, vbo_usage_t usage, vbo_size_t size = 0) : _target(target), _usage(usage), _size(size) {}
+		Vbo(GLenum target, GLenum usage, GLsizeiptr size = 0) : _target(target), _usage(usage), _size(size) {}
 
-		void resize(vbo_size_t size, const void *data = nullptr);
+		void resize(GLsizeiptr size, const void *data = nullptr);
 
 	}; // class Vbo
 

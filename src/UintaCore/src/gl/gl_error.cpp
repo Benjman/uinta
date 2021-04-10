@@ -1,5 +1,5 @@
 #include <uinta/gl/gl_error.h>
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 
 #include <iostream> // TODO remove when logging is implemented
 

@@ -2,7 +2,7 @@
 #define UINTA_SHADER_H
 
 #include "shader_dto.h"
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 
 namespace uinta {
 
@@ -14,7 +14,7 @@ namespace uinta {
 	public:
 		Shader(const char *vertex, const char *fragment, ShaderSourceType type);
 
-		[[nodiscard]] program_id_t getProgramId() const { return _id; }
+		[[nodiscard]] GLuint getProgramId() const { return _id; }
 
 		void use() const;
 
@@ -24,7 +24,7 @@ namespace uinta {
 		}
 
 	protected:
-		program_id_t _id = GL_ZERO;
+		GLuint _id = GL_ZERO;
 
 		virtual void loadUniforms() {}
 

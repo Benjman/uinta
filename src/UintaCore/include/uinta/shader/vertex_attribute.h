@@ -1,7 +1,7 @@
 #ifndef UINTA_VERTEX_ATTRIBUTE_H
 #define UINTA_VERTEX_ATTRIBUTE_H
 
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 #include "vao.h"
 
 
@@ -10,7 +10,7 @@ namespace uinta {
 	class VertexAttribute {
 		friend class Vao;
 
-		attrib_index_t _index;
+		GLuint _index;
 		bool _enabled;
 
 	public:
@@ -19,8 +19,8 @@ namespace uinta {
 		void disable(bool force = false);
 
 	private:
-		VertexAttribute(attrib_index_t index, attrib_size_t size, gl_type_t type,
-						attrib_normalize_t normalized, attrib_stride_t stride, const void *offset, bool enable = true);
+		VertexAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
+						const void *offset, bool enable = true);
 
 	}; // class VertexAttribute
 

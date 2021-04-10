@@ -2,7 +2,7 @@
 #define UINTA_UNIFORM_H
 
 #include <uinta/types.h>
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

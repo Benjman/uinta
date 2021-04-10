@@ -1,7 +1,7 @@
 #ifndef UINTA_MESH_H
 #define UINTA_MESH_H
 
-#include <uinta/gl/gl_types.h>
+#include <uinta/gl_types.h>
 #include <uinta/types.h>
 #include <uinta/render/i_renderable.h>
 
