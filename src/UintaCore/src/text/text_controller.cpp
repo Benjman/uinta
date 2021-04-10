@@ -1,10 +1,11 @@
 #include "text_mesh_generator.h"
 
-#include <uinta/text.h>
+#include <uinta/model/mesh.h>
 #include <uinta/render.h>
+#include <uinta/text.h>
+#include <uinta/text/text_controller.h>
 
 #include <iostream>
-#include <uinta/text/text_controller.h>
 
 
 using namespace uinta;

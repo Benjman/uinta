@@ -1,5 +1,6 @@
 #include <uinta/debug/debug_controller.h>
 #include <uinta/gl.h>
+#include <uinta/model/mesh.h>
 #include <uinta/render.h>
 #include <uinta/shader.h>
 #include <uinta/text.h>

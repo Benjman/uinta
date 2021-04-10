@@ -1,6 +1,6 @@
 #include <uinta/controller/tick_controller.h>
 
-#include <uinta/render/mesh.h>
+#include <uinta/model/mesh.h>
 
 #include <string>
 

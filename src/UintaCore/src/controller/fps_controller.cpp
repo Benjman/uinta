@@ -1,6 +1,5 @@
 #include <uinta/controller/fps_controller.h>
-#include <uinta/debug/debug_controller.h>
-#include <uinta/render/mesh.h>
+#include <uinta/model/mesh.h>
 #include <uinta/text/text.h>
 
 #include <string>
