@@ -6,7 +6,7 @@
 
 namespace uinta {
 
-	class DebugUiController;
+	class DebugController;
 
 	struct DebugUiView {
 		const Text fpsLbl = initializeComponent("FPS:", 10, 0);

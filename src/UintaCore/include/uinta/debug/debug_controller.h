@@ -1,5 +1,5 @@
-#ifndef UINTA_DEBUG_UI_CONTROLLER_H
-#define UINTA_DEBUG_UI_CONTROLLER_H
+#ifndef UINTA_DEBUG_CONTROLLER_H
+#define UINTA_DEBUG_CONTROLLER_H
 
 #include <uinta/controller/buffer_controller.h>
 #include <uinta/controller/fps_controller.h>
@@ -13,7 +13,7 @@ namespace uinta {
 
 	class Font;
 
-	class DebugUiController : public BufferController, IRenderController {
+	class DebugController : public BufferController, IRenderController {
 		const Shader _shader;
 		const Font *_font{};
 
@@ -28,9 +28,9 @@ namespace uinta {
 		void generateMeshes();
 
 	public:
-		explicit DebugUiController(Controller *parent);
+		explicit DebugController(Controller *parent);
 
-		~DebugUiController();
+		~DebugController();
 
 		void render() override;
 
@@ -44,4 +44,4 @@ namespace uinta {
 
 } // namespace uinta
 
-#endif //UINTA_DEBUG_UI_CONTROLLER_H
+#endif //UINTA_DEBUG_CONTROLLER_H

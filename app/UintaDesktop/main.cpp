@@ -2,7 +2,7 @@
 
 #include <uinta/camera.h>
 #include <uinta/controller/scene/scene_controller.h>
-#include <uinta/debug/debug_ui_controller.h>
+#include <uinta/debug/debug_controller.h>
 #include <uinta/engine_state.h>
 #include <uinta/input/input_manager.h>
 #include <uinta/shader.h>
@@ -12,7 +12,7 @@ using namespace uinta;
 using namespace uinta::glfw;
 
 class MainController : public Controller, public IRenderController {
-	DebugUiController debugUi = DebugUiController(this);
+	DebugController debugUi = DebugController(this);
 	CameraController camera = CameraController(this);
 	SceneController scene = SceneController(this, &camera);
 

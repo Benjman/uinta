@@ -1,4 +1,4 @@
-#include <uinta/debug/debug_ui_controller.h>
+#include <uinta/debug/debug_controller.h>
 #include <uinta/gl.h>
 #include <uinta/render.h>
 #include <uinta/shader.h>
@@ -31,13 +31,13 @@ using namespace uinta;
 using namespace uinta::gl_state;
 using namespace uinta::debuguicontroller;
 
-DebugUiController::DebugUiController(Controller *parent)
+DebugController::DebugController(Controller *parent)
 		: BufferController(parent, KILOBYTES(5) * sizeof(GLfloat), KILOBYTES(2) * sizeof(GLuint)),
 		  _shader(vertexShader, fragShader, Raw),
 		  _font(Font::loadFont("/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
 }
 
-void DebugUiController::initialize() {
+void DebugController::initialize() {
 	BufferController::initialize();
 
 	initializeAttributes();
@@ -47,7 +47,7 @@ void DebugUiController::initialize() {
 	addRenderables();
 }
 
-void DebugUiController::addRenderables() {
+void DebugController::addRenderables() {
 	IRenderable *renderables[]{
 			&_fps,
 			&_fpsLabel,
@@ -61,7 +61,7 @@ void DebugUiController::addRenderables() {
 	}
 }
 
-void DebugUiController::generateMeshes() {
+void DebugController::generateMeshes() {
 	size_t vPointer = 0, iPointer = 0, idxPointer = 0;
 	for (auto child : getChildren()) {
 		auto *controller = (TextController *) child; // TODO not everything is going to be a TextController. Need a way around this unsafe casting.
@@ -82,17 +82,17 @@ void DebugUiController::generateMeshes() {
 	}
 }
 
-void DebugUiController::initializeAttributes() {
+void DebugController::initializeAttributes() {
 	// TODO there should be a DebugShader that manages these attributes
 	vao->createAttribute(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
 	vao->createAttribute(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
 }
 
-DebugUiController::~DebugUiController() {
+DebugController::~DebugController() {
 	delete _font;
 }
 
-void DebugUiController::render() {
+void DebugController::render() {
 	if (!isActiveElseSet(ENABLE, GL_BLEND, GL_TRUE)) {
 		glEnable(GL_BLEND);
 		glCheckError(GL_ENABLE);

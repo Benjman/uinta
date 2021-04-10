@@ -11,8 +11,7 @@ set(SOURCES ${SOURCES}
         src/controller/scene/scene_controller.cpp
         src/controller/scene/scene_shader.cpp
         src/controller/tick_controller.cpp
-        src/debug/debug_ui_controller.cpp
-        src/debug/debug_ui_controller.cpp
+        src/debug/debug_controller.cpp
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
         src/input/input_manager.cpp
