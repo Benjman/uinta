@@ -8,6 +8,7 @@ namespace uinta {
 
 	class Vao;
 	class Vbo;
+	class Mesh;
 
 	class BufferController : public Controller {
 	protected:
@@ -20,6 +21,9 @@ namespace uinta {
 
 		size_t vSize = 0;
 		size_t iSize = 0;
+
+		size_t vIndex = 0;
+		size_t iIndex = 0;
 
 	public:
 		BufferController(Controller *parent, size_t vSize, GLuint iSize)
@@ -39,6 +43,10 @@ namespace uinta {
 		void uploadBuffers() {
 			uploadMesh(vBuffer, vSize, 0, iBuffer, iSize, 0);
 		}
+
+		void requestIBufferArena(size_t len, GLuint **ptr, size_t *offsetBytes);
+
+		void requestVBufferArena(size_t len, GLfloat **ptr, size_t *offsetBytes);
 
 	}; // class BufferController
 

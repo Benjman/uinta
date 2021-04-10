@@ -1,6 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-slicing"
-
 #include <uinta/debug/debug_ui_controller.h>
 #include <uinta/gl.h>
 #include <uinta/render.h>
@@ -9,6 +6,7 @@
 
 namespace uinta::debuguicontroller {
 
+	// TODO this should be in a DebugShader class
 	static const char *vertexShader =
 			"#version 300 es\n"
 			"layout (location = 0) in lowp vec2 inPos;"
@@ -69,13 +67,10 @@ void DebugUiController::generateMeshes() {
 		auto *controller = (TextController *) child; // TODO not everything is going to be a TextController. Need a way around this unsafe casting.
 		Mesh *mesh = controller->getMesh();
 
-		mesh->vBuffer = &vBuffer[vPointer];
-		mesh->iBuffer = &iBuffer[iPointer];
+		requestVBufferArena(controller->getVBufferLen(), &mesh->vBuffer, &mesh->vParentOffsetBytes);
+		requestIBufferArena(controller->getIBufferLen(), &mesh->iBuffer, &mesh->iParentOffsetBytes);
 
-		mesh->vParentOffsetBytes = vPointer * sizeof(GLfloat);
-		mesh->iParentOffsetBytes = iPointer * sizeof(GLuint);
 		mesh->idxOffset = idxPointer;
-
 		mesh->setIndexCount(controller->getICount());
 		mesh->setOffset(iPointer);
 
@@ -84,13 +79,11 @@ void DebugUiController::generateMeshes() {
 		vPointer += controller->getVBufferLen();
 		iPointer += controller->getIBufferLen();
 		idxPointer += controller->getMaxIdxCount();
-
-		// TODO validate vPointer or iPointer don't exceed limits of primary buffers (defined in constructor)
 	}
 }
 
 void DebugUiController::initializeAttributes() {
-	// TODO there should be a TextShader that manages these attributes
+	// TODO there should be a DebugShader that manages these attributes
 	vao->createAttribute(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
 	vao->createAttribute(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
 }
@@ -103,11 +96,11 @@ void DebugUiController::render() {
 	if (!isActiveElseSet(ENABLE, GL_BLEND, GL_TRUE)) {
 		glEnable(GL_BLEND);
 		glCheckError(GL_ENABLE);
+	}
 
-		if (!isActiveElseSet(BLEND_FUNC, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)) {
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glCheckError(GL_BLEND_FUNC);
-		}
+	if (!isActiveElseSet(BLEND_FUNC, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)) {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glCheckError(GL_BLEND_FUNC);
 	}
 
 	if (isActiveElseSet(ENABLE, GL_DEPTH_TEST, GL_FALSE)) {
@@ -121,5 +114,3 @@ void DebugUiController::render() {
 
 	IRenderController::render();
 }
-
-#pragma clang diagnostic pop

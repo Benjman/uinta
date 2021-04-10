@@ -5,7 +5,7 @@
 
 namespace uinta {
 
-	static constexpr float_t PI = 3.1415926535;
+	static constexpr float_t PI = 3.1415926535f;
 
 	inline float_t rad(float_t deg) {
 		return deg * (PI / 180.f);
