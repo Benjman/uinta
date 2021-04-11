@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[  -d dep ] && echo -e "\e[33mconfigure must be run from base uinta directory" && return
+[ ! -d dep ] && echo -e "\e[33mconfigure must be run from base uinta directory" && return
 cd dep
 
 git submodule update --init --recursive --jobs 12
@@ -38,4 +38,3 @@ glad --profile core --out-path glad/build --api gles2=3.2 --spec gl --generator 
 cd ..
 
 echo "Configuration successfully completed."
-\e[33m
