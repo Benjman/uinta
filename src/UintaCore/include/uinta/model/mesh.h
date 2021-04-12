@@ -18,6 +18,10 @@ namespace uinta {
 
 		size_t idxOffset = 0;
 
+		void render() override {
+			IRenderable::render();
+		}
+
 	}; // struct Mesh
 
 } // namespace uinta

@@ -1,2 +1,5 @@
 #include "debug/debug_controller.h"
+#include "debug/debug_ui_controller.h"
+#include "debug/debug_ui_shader.h"
 #include "debug/debug_ui_view.h"
+#include "debug/debug_world_shader.h"

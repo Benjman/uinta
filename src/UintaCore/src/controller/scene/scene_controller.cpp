@@ -67,13 +67,8 @@ void SceneController::initialize() {
 			-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
 	};
 
-	const GLuint indices[]{
-			0, 1, 3,
-			1, 2, 3
-	};
-
-	std::memcpy(vBuffer, vertices, sizeof(vertices));
-	std::memcpy(iBuffer, indices, sizeof(indices));
+	initializeMeshBuffers(_cube, sizeof(vertices) / sizeof(GLfloat));
+	memcpy(_cube.vBuffer, vertices, sizeof(vertices));
 
 	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
 	vao->createAttribute(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));

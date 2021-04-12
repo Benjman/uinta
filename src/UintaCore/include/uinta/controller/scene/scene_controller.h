@@ -6,6 +6,7 @@
 #include <uinta/controller/buffer_controller.h>
 #include <uinta/render/i_render_controller.h>
 #include <uinta/shader/shader.h>
+#include <uinta/model/mesh.h>
 
 namespace uinta {
 
@@ -15,6 +16,7 @@ namespace uinta {
 		const CameraController *_camera;
 		SceneShader shader;
 		float_t _runtime = 0.f;
+		Mesh _cube;
 
 	public:
 		explicit SceneController(Controller *parent, const CameraController *camera);
