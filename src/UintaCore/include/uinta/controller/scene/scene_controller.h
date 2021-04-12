@@ -27,6 +27,10 @@ namespace uinta {
 
 		void update(const EngineState &state) override;
 
+		[[nodiscard]] const CameraController *getCamera() const {
+			return _camera;
+		}
+
 	};
 
 }

@@ -72,17 +72,10 @@ void DebugUiController::initializeTextControllers() {
 }
 
 void DebugUiController::addRenderables() {
-	IRenderable *renderables[]{
-			&_fps,
-			&_fpsLabel,
-
-			&_tick,
-			&_tickLabel,
-	};
-
-	for (auto renderable : renderables) {
-		addRenderable(renderable);
-	}
+	addRenderable(&_fps);
+	addRenderable(&_fpsLabel);
+	addRenderable(&_tick);
+	addRenderable(&_tickLabel);
 }
 
 DebugUiController::~DebugUiController() {

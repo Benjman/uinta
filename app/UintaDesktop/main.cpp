@@ -12,8 +12,8 @@ using namespace uinta;
 using namespace uinta::glfw;
 
 class MainController : public Controller, public IRenderController {
-	DebugController debugUi = DebugController(this);
 	CameraController camera = CameraController(this);
+	DebugController debug = DebugController(this, &camera);
 	SceneController scene = SceneController(this, &camera);
 
 public:
@@ -22,7 +22,7 @@ public:
 
 	void render() override {
 		scene.render();
-		debugUi.render();
+		debug.render();
 	}
 
 };

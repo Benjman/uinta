@@ -81,9 +81,6 @@ void SceneController::render() {
 	vao->bind();
 
 	glm::mat4 model(1.f);
-	glm::mat4 view(1.f);
-	glm::mat4 projection(1.f);
-
 	model = glm::rotate(model, _runtime, glm::vec3(0.5f, 1.f, 0.f));
 
 	shader._model.load(model);

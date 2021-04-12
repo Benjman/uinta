@@ -40,28 +40,28 @@ void CameraController::updateMatrices() {
 
 void CameraController::calculateZoom(const EngineState &state) {
 	if (state.inputManager->isKeyDown(KEY_EQUAL)) {
-		camera._dist += state.delta * 2.5f;
+		camera._dist += state.delta * SPEED;
 	}
 	if (state.inputManager->isKeyDown(KEY_MINUS)) {
-		camera._dist -= state.delta * 2.5f;
+		camera._dist -= state.delta * SPEED;
 	}
 }
 
 void CameraController::calculatePitch(const EngineState &state) {
 	if (state.inputManager->isKeyDown(KEY_RIGHT_BRACKET)) {
-		camera._pitch += state.delta * 2.5f;
+		camera._pitch += state.delta * SPEED;
 	}
 	if (state.inputManager->isKeyDown(KEY_LEFT_BRACKET)) {
-		camera._pitch -= state.delta * 2.5f;
+		camera._pitch -= state.delta * SPEED;
 	}
 }
 
 void CameraController::calculateAngle(const EngineState &state) {
 	if (state.inputManager->isKeyDown(KEY_APOSTROPHE)) {
-		camera._angle += state.delta * 2.5f;
+		camera._angle += state.delta * SPEED;
 	}
 	if (state.inputManager->isKeyDown(KEY_SEMICOLON)) {
-		camera._angle -= state.delta * 2.5f;
+		camera._angle -= state.delta * SPEED;
 	}
 }
 

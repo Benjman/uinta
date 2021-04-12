@@ -10,16 +10,17 @@ namespace uinta {
 		friend class SceneController;
 
 		UniformMatrix4fv _model = UniformMatrix4fv("model");
-		UniformMatrix4fv _view = UniformMatrix4fv("view");
 		UniformMatrix4fv _projection = UniformMatrix4fv("projection");
+		UniformMatrix4fv _view = UniformMatrix4fv("view");
 
 	public:
 		SceneShader();
 
 		void loadUniforms() override {
+			use();
 			_model.storeLocation(_id);
-			_view.storeLocation(_id);
 			_projection.storeLocation(_id);
+			_view.storeLocation(_id);
 		}
 	};
 

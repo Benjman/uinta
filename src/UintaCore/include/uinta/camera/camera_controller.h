@@ -10,7 +10,7 @@ namespace uinta {
 	class CameraController : public Controller {
 		PerspectiveCamera camera;
 
-		static constexpr float_t SPEED = 2.5f;
+		static constexpr float_t SPEED = 15.f;
 
 		void calculateZoom(const EngineState &state);
 
@@ -35,10 +35,11 @@ namespace uinta {
 
 		void updateMatrices();
 
+		void calculateTarget(const EngineState &state);
+
 		[[nodiscard]] glm::mat4 getProjectionMatrix() const { return camera._projection; }
 		[[nodiscard]] glm::mat4 getViewMatrix() const { return camera._view; }
 
-		void calculateTarget(const EngineState &state);
 	}; // class CameraController
 
 } // namespace uinta

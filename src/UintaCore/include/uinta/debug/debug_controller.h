@@ -4,16 +4,18 @@
 #include "debug_ui_controller.h"
 #include "debug_world_controller.h"
 
+#include <uinta/camera/icamera.h>
+
 namespace uinta {
 
 	class Font;
 
 	class DebugController : public Controller {
 		DebugUiController _ui = DebugUiController(this);
-		DebugWorldController _world = DebugWorldController(this);
+		DebugWorldController _world;
 
 	public:
-		explicit DebugController(Controller *parent);
+		DebugController(Controller *parent, const CameraController *camera);
 
 		void render();
 
