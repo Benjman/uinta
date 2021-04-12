@@ -2,8 +2,6 @@
 #include <uinta/shader.h>
 #include <uinta/model/mesh.h>
 
-#include <iostream>
-
 using namespace uinta;
 
 void BufferController::initialize() {
@@ -32,13 +30,21 @@ void BufferController::uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeip
 }
 
 void BufferController::initializeMeshBuffers(Mesh &mesh, size_t vLen, size_t iLen) {
+	reserveBuffer(&mesh.vBuffer, vLen, &mesh.vParentOffsetBytes, &mesh.iBuffer, iLen, &mesh.iParentOffsetBytes);
+}
+
+void BufferController::reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeiptr *pVOffsetBytes,
+									 GLuint **pIBuffer, size_t pILen, GLsizeiptr *pIOffsetBytes) {
 	// TODO validate against buffer overflows
-	mesh.vBuffer = &vBuffer[vIndex];
-	mesh.iBuffer = &iBuffer[iIndex];
+	if (pVLen) {
+		*pVBuffer = &vBuffer[vIndex];
+		*pVOffsetBytes = (GLsizeiptr) (vIndex * sizeof(GLfloat));
+		vIndex += pVLen;
+	}
 
-	mesh.vParentOffsetBytes = vIndex * sizeof(GLfloat);
-	mesh.iParentOffsetBytes = iIndex * sizeof(GLuint);
-
-	vIndex += vLen;
-	iIndex += iLen;
+	if (pILen) {
+		*pIBuffer = &iBuffer[iIndex];
+		*pIOffsetBytes = (GLsizeiptr) (iIndex * sizeof(GLuint));
+		iIndex += pILen;
+	}
 }
