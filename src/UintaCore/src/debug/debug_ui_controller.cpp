@@ -58,8 +58,10 @@ void DebugUiController::initializeTextControllers() {
 
 	for (TextController *controller : controllers) {
 		Mesh &mesh = *controller->getMesh();
+		mesh.setVertexCount((GLsizei) controller->getVBufferLen());
+		mesh.setIndexCount((GLsizei) controller->getIBufferLen());
 		size_t iPointer = iIndex;
-		initializeMeshBuffers(mesh, controller->getVBufferLen(), controller->getIBufferLen());
+		initializeMeshBuffers(mesh);
 
 		mesh.idxOffset = idxIndex;
 		idxIndex += controller->getMaxIdxCount();

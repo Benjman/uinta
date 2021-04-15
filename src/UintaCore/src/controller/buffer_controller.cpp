@@ -29,8 +29,9 @@ void BufferController::uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeip
 	ibo->storeData(pIBuffer, pISize, pIOffset);
 }
 
-void BufferController::initializeMeshBuffers(Mesh &mesh, size_t vLen, size_t iLen) {
-	reserveBuffer(&mesh.vBuffer, vLen, &mesh.vParentOffsetBytes, &mesh.iBuffer, iLen, &mesh.iParentOffsetBytes);
+void BufferController::initializeMeshBuffers(Mesh &mesh) {
+	// TODO remove vLen and iLen. Use Mesh's IRenderable getVertexCount() and getIndexCount()
+	reserveBuffer(&mesh.vBuffer, mesh.getVertexCount(), &mesh.vParentOffsetBytes, &mesh.iBuffer, mesh.getIndexCount(), &mesh.iParentOffsetBytes);
 }
 
 void BufferController::reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeiptr *pVOffsetBytes,

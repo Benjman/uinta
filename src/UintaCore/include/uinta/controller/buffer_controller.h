@@ -45,7 +45,7 @@ namespace uinta {
 			uploadMesh(vBuffer, vSize, 0, iBuffer, iSize, 0);
 		}
 
-		void initializeMeshBuffers(Mesh &mesh, size_t vLen, size_t iLen = 0);
+		void initializeMeshBuffers(Mesh &mesh);
 
 		void reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeiptr *pVOffsetBytes,
 											 GLuint **pIBuffer, size_t pILen, GLsizeiptr *pIOffsetBytes);

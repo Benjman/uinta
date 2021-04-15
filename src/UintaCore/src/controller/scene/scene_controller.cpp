@@ -67,7 +67,9 @@ void SceneController::initialize() {
 			-1.f,  1.f, -1.f, 0.f, 1.f, 0.f,
 	};
 
-	initializeMeshBuffers(_cube, sizeof(vertices) / sizeof(GLfloat));
+	_cube.setVertexCount(sizeof(vertices) / sizeof(GLfloat));
+
+	initializeMeshBuffers(_cube);
 	memcpy(_cube.vBuffer, vertices, sizeof(vertices));
 
 	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
