@@ -1,7 +1,6 @@
 #include "shader_loader.h"
 
-#include <uinta/shader/shader.h>
-#include <uinta/shader/shader_dto.h>
+#include <uinta/shader.h>
 
 #include <uinta/gl/gl_state.h>
 
@@ -18,4 +17,8 @@ void Shader::use() const {
 		glUseProgram(_id);
 		glCheckError(GL_USE_PROGRAM);
 	}
+}
+
+void Shader::initializeAttributes(Vao *vao) {
+	vao->bind();
 }

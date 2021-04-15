@@ -26,9 +26,18 @@ namespace uinta {
 			_offset = offset;
 		}
 
+		[[nodiscard]] GLsizei getVertexCount() const {
+			return _vertexCount;
+		}
+
+		void setVertexCount(GLsizei vertexCount) {
+			_vertexCount = vertexCount;
+		}
+
 	protected:
 		size_t _offset = 0;
 		GLsizei _indexCount = 0;
+		GLsizei _vertexCount = 0;
 
 	}; // class IRenderable
 

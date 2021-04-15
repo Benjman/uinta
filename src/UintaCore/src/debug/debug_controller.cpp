@@ -9,6 +9,6 @@ DebugController::DebugController(Controller *parent, const CameraController *cam
 }
 
 void DebugController::render() {
-//	_ui.render();
+	_ui.render();
 	_world.render();
 }

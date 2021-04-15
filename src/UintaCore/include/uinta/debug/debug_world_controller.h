@@ -14,10 +14,19 @@ namespace uinta {
 	class DebugWorldController;
 
 	class Floor : public Mesh {
+		static const size_t COLS = 6;
+		static const size_t ROWS = 6;
+		static const size_t ELEMENTS_PER_VERT = 6; // 3d pos, color
+
+		static const GLuint VERTS_PER_CELL = 4;
+		static const GLuint INDICES_PER_CELL = 6;
+
+		static constexpr float_t CELL_SIZE = 1.f;
+
 	public:
 		void initialize(DebugWorldController *controller);
 
-	};
+	}; // class Floor
 
 	class DebugWorldController : public BufferController, public IRenderController {
 		const CameraController *_camera;

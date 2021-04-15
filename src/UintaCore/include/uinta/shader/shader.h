@@ -7,6 +7,7 @@
 namespace uinta {
 
 	class ShaderDto;
+	class Vao;
 
 	class Shader {
 		friend class ShaderLoader;
@@ -22,6 +23,8 @@ namespace uinta {
 			use();
 			loadUniforms();
 		}
+
+		virtual void initializeAttributes(Vao *vao);
 
 	protected:
 		GLuint _id = GL_ZERO;

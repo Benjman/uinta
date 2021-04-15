@@ -29,6 +29,8 @@ namespace uinta {
 			_view.load(view);
 		}
 
+		void initializeAttributes(Vao *vao) override;
+
 	}; // class DebugUiShader
 
 } // namespace uinta

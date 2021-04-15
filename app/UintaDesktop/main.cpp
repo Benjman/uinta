@@ -5,7 +5,6 @@
 #include <uinta/debug/debug_controller.h>
 #include <uinta/engine_state.h>
 #include <uinta/input/input_manager.h>
-#include <uinta/shader.h>
 #include <uinta/text.h>
 
 using namespace uinta;

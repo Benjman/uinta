@@ -1,7 +1,7 @@
+#include <uinta/camera/camera_controller.h>
+#include <uinta/colors.h>
 #include <uinta/debug/debug_controller.h>
 #include <uinta/debug/debug_world_controller.h>
-#include <uinta/shader/vao.h>
-#include <uinta/camera/camera_controller.h>
 #include <uinta/gl/gl_error.h>
 
 using namespace uinta;
@@ -9,18 +9,17 @@ using namespace uinta::gl;
 
 DebugWorldController::DebugWorldController(DebugController *parent, const CameraController *camera)
 		: BufferController(parent, KILOBYTES(5), KILOBYTES(2)),
-		_camera(camera) {
+		  _camera(camera) {
 }
 
 void DebugWorldController::initialize() {
 	BufferController::initialize();
 
 	_shader.initialize(glm::mat4(1), _camera->getProjectionMatrix(), _camera->getViewMatrix());
+	_shader.initializeAttributes(vao);
 	_floor.initialize(this);
 
 	uploadBuffers();
-
-	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
 }
 
 void DebugWorldController::render() {
@@ -36,27 +35,46 @@ void DebugWorldController::render() {
 }
 
 void Floor::initialize(DebugWorldController *controller) {
-	GLfloat vertices[] {
-		-1.f, -1.f, 0.f,
-		-1.f, 1.f, 0.f,
-		1.f, 1.f, 0.f,
-		1.f, -1.f, 0.f
-	};
+	setIndexCount(INDICES_PER_CELL * ROWS * COLS);
+	setVertexCount(VERTS_PER_CELL * ELEMENTS_PER_VERT * ROWS * COLS);
+	setOffset(0);
 
-	GLuint indices[] {
-		0, 1, 3,
-		1, 2, 3
-	};
-
-	size_t vLen = sizeof(vertices) / sizeof(GLfloat);
-	size_t iLen = sizeof(indices) / sizeof(GLuint);
-	controller->initializeMeshBuffers(*this, vLen, iLen);
-
-	memcpy(vBuffer, vertices, sizeof(vertices));
-	memcpy(iBuffer, indices, sizeof(indices));
-
+	controller->initializeMeshBuffers(*this, getVertexCount(), getIndexCount());
 	controller->addRenderable(this);
 
-	setIndexCount(6);
-	setOffset(0);
+	const glm::vec3 colors[]{ColorGrey300, ColorGrey500};
+	glm::vec3 color;
+
+	float_t xCursor, xEnd, yEnd;
+	float_t yCursor = ROWS * CELL_SIZE * -.5f;
+
+	for (GLuint y = 0, i = 0, iOff; y < ROWS; y++, i++) {
+		xCursor = ROWS * CELL_SIZE * -.5f;
+		yEnd = yCursor + CELL_SIZE;
+
+		for (GLuint x = 0; x < COLS; x++, i++) {
+			xEnd = xCursor + CELL_SIZE;
+			color = colors[i % 2];
+
+			GLfloat vertices[]{
+					xCursor, yCursor, 0.f, color.r, color.g, color.b,
+					xCursor, yEnd, 0.f, color.r, color.g, color.b,
+					xEnd, yEnd, 0.f, color.r, color.g, color.b,
+					xEnd, yCursor, 0.f, color.r, color.g, color.b,
+			};
+			memcpy(&vBuffer[(y * COLS * ELEMENTS_PER_VERT + x * ELEMENTS_PER_VERT) * VERTS_PER_CELL],
+				   vertices, sizeof(vertices));
+
+			iOff = (y * COLS + x) * VERTS_PER_CELL;
+			GLuint indices[]{
+					0 + iOff, 1 + iOff, 3 + iOff,
+					1 + iOff, 2 + iOff, 3 + iOff,
+			};
+			memcpy(&iBuffer[(y * COLS + x) * INDICES_PER_CELL], indices, sizeof(indices));
+
+			xCursor += CELL_SIZE;
+		}
+
+		yCursor += CELL_SIZE;
+	}
 }
