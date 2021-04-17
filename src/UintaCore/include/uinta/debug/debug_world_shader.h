@@ -8,9 +8,9 @@ namespace uinta {
 	class DebugWorldShader : public Shader {
 		friend class DebugWorldController;
 
-		UniformMatrix4fv _model = UniformMatrix4fv("model");
-		UniformMatrix4fv _projection = UniformMatrix4fv("projection");
-		UniformMatrix4fv _view = UniformMatrix4fv("view");
+		UniformMatrix4f _model = UniformMatrix4f("model");
+		UniformMatrix4f _projection = UniformMatrix4f("projection");
+		UniformMatrix4f _view = UniformMatrix4f("view");
 
 	public:
 		DebugWorldShader();

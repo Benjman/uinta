@@ -125,61 +125,29 @@ namespace uinta {
 
 	}; // class Uniform4ui
 
-	class Uniform1fv : public Uniformv<GLfloat *> {
+	class UniformMatrix2f : public Uniformv<glm::mat2> {
 	public:
-		explicit Uniform1fv(const char *name) : Uniformv<GLfloat *>(name) {}
-
-		void load(GLfloat *value) override;
-
-	}; // class Uniform1fv
-
-	class Uniform2fv : public Uniformv<GLfloat *> {
-	public:
-		explicit Uniform2fv(const char *name) : Uniformv<GLfloat *>(name) {}
-
-		void load(GLfloat *value) override;
-
-	}; // class Uniform2fv
-
-	class Uniform3fv : public Uniformv<GLfloat *> {
-	public:
-		explicit Uniform3fv(const char *name) : Uniformv<GLfloat *>(name) {}
-
-		void load(GLfloat *value) override;
-
-	}; // class Uniform3fv
-
-	class Uniform4fv : public Uniformv<GLfloat *> {
-	public:
-		explicit Uniform4fv(const char *name) : Uniformv<GLfloat *>(name) {}
-
-		void load(GLfloat *value) override;
-
-	}; // class Uniform4fv
-
-	class UniformMatrix2fv : public Uniformv<glm::mat2> {
-	public:
-		explicit UniformMatrix2fv(const char *name) : Uniformv<glm::mat2>(name) {}
+		explicit UniformMatrix2f(const char *name) : Uniformv<glm::mat2>(name) {}
 
 		void load(glm::mat2) override;
 
-	}; // class UniformMatrix2fv
+	}; // class UniformMatrix2f
 
-	class UniformMatrix3fv : public Uniformv<glm::mat3> {
+	class UniformMatrix3f : public Uniformv<glm::mat3> {
 	public:
-		explicit UniformMatrix3fv(const char *name) : Uniformv<glm::mat3>(name) {}
+		explicit UniformMatrix3f(const char *name) : Uniformv<glm::mat3>(name) {}
 
 		void load(glm::mat3) override;
 
-	}; // class UniformMatrix3fv
+	}; // class UniformMatrix3f
 
-	class UniformMatrix4fv : public Uniformv<glm::mat4> {
+	class UniformMatrix4f : public Uniformv<glm::mat4> {
 	public:
-		explicit UniformMatrix4fv(const char *name) : Uniformv<glm::mat4>(name) {}
+		explicit UniformMatrix4f(const char *name) : Uniformv<glm::mat4>(name) {}
 
 		void load(glm::mat4) override;
 
-	}; // class UniformMatrix4fv
+	}; // class UniformMatrix4f
 
 } // namespace uinta
 
