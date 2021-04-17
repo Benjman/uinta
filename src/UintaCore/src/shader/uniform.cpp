@@ -13,7 +13,7 @@ void IUniform::storeLocation(GLuint programId) {
 }
 
 void Uniform1f::doLoad() {
-	glUniform1f(_id, 1.f);
+	glUniform1f(_id, _value);
 	glCheckError(GL_UNIFORM);
 }
 
