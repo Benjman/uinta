@@ -4,84 +4,84 @@
 #include <uinta/math.h> // NOLINT(modernize-deprecated-headers)
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 using namespace uinta;
 
 void CameraController::update(const EngineState &state) {
-	Controller::update(state);
-	calculateAngle(state);
-	calculatePitch(state);
-	calculateZoom(state);
-	calculateCameraPosition();
-	calculateTarget(state);
-	updateMatrices();
+	updatePosition(state);
+	updateProjectionMatrix();
+	updateViewMatrix();
 }
 
-void CameraController::calculateTarget(const EngineState &state) {
-	float speed = SPEED * state.delta;
-	if (state.inputManager->isKeyDown(KEY_UP)) {
-		camera._target += speed * ICamera::FORWARD;
-	}
-	if (state.inputManager->isKeyDown(KEY_DOWN)) {
-		camera._target -= speed * ICamera::FORWARD;
-	}
-	if (state.inputManager->isKeyDown(KEY_RIGHT)) {
-		camera._target += speed * glm::normalize(glm::cross(ICamera::FORWARD, ICamera::UP));
-	}
-	if (state.inputManager->isKeyDown(KEY_LEFT)) {
-		camera._target -= speed * glm::normalize(glm::cross(ICamera::FORWARD, ICamera::UP));
+void CameraController::updateProjectionMatrix() {
+	_camera._projection = glm::perspective(rad(40.f), gl_state::getViewportAspectRatio(), 0.1f, 100.f);
+}
+
+void CameraController::updateViewMatrix() {
+	if (_viewDirty) {
+		_camera._view = glm::yawPitchRoll(rad(_camera._yaw), rad(_camera._pitch), 0.f);
+		_camera._view = glm::translate(_camera._view, _camera._position);
+		_viewDirty = false;
 	}
 }
 
-void CameraController::updateMatrices() {
-	camera._view = glm::translate(glm::mat4(1.f), camera._position);
-	camera._projection = glm::perspective(glm::radians(40.f), gl_state::getViewportAspectRatio(), 0.1f, 100.f);
+void CameraController::updateYaw() {
+	_camera._yaw = (360.f - _camera._angle);
+	fmod(_camera._yaw, 360.f);
 }
 
-void CameraController::calculateZoom(const EngineState &state) {
-	if (state.inputManager->isKeyDown(KEY_EQUAL)) {
-		camera._dist += state.delta * SPEED;
-	}
-	if (state.inputManager->isKeyDown(KEY_MINUS)) {
-		camera._dist -= state.delta * SPEED;
+void CameraController::updatePosition(const EngineState &state) {
+	updateZoom(state);
+	updatePitch(state);
+	updateAngle(state);
+	updateYaw();
+
+	if (!_viewDirty) return;
+
+	float_t hDist = _camera._dist * cosf(rad(_camera._pitch));
+	float_t vDist = _camera._dist * sinf(rad(_camera._pitch));
+
+	float_t xOff = hDist * sinf(rad(_camera._angle));
+	float_t zOff = hDist * cosf(rad(_camera._angle));
+
+	_camera._position.x = _target.x - xOff;
+	_camera._position.y = _target.y + vDist;
+	_camera._position.z = _target.z - zOff;
+}
+
+void CameraController::updateAngle(const EngineState &state) {
+	if (state.inputManager->isKeyDown(KEY_A)) {
+		if (state.inputManager->isKeyDown(KEY_LEFT)) {
+			_camera._angle -= _speed * state.delta;
+			_viewDirty = true;
+		} else if (state.inputManager->isKeyDown(KEY_RIGHT)) {
+			_camera._angle += _speed * state.delta;
+			_viewDirty = true;
+		}
 	}
 }
 
-void CameraController::calculatePitch(const EngineState &state) {
-	if (state.inputManager->isKeyDown(KEY_RIGHT_BRACKET)) {
-		camera._pitch += state.delta * SPEED;
-	}
-	if (state.inputManager->isKeyDown(KEY_LEFT_BRACKET)) {
-		camera._pitch -= state.delta * SPEED;
-	}
-}
-
-void CameraController::calculateAngle(const EngineState &state) {
-	if (state.inputManager->isKeyDown(KEY_APOSTROPHE)) {
-		camera._angle += state.delta * SPEED;
-	}
-	if (state.inputManager->isKeyDown(KEY_SEMICOLON)) {
-		camera._angle -= state.delta * SPEED;
+void CameraController::updateZoom(const EngineState &state) {
+	if (state.inputManager->isKeyDown(KEY_Z)) {
+		if (state.inputManager->isKeyDown(KEY_UP)) {
+			_camera._dist -= _speed * state.delta;
+			_viewDirty = true;
+		} else if (state.inputManager->isKeyDown(KEY_DOWN)) {
+			_camera._dist += _speed * state.delta;
+			_viewDirty = true;
+		}
 	}
 }
 
-float_t CameraController::calculateDistanceHorizontal() const {
-	return camera._dist * (float_t) cos(rad(camera._pitch));
-}
-
-float_t CameraController::calculateDistanceVertical() const {
-	return camera._dist * (float_t) sin(rad(camera._pitch));
-}
-
-void CameraController::calculateCameraPosition() {
-	float_t hDist = calculateDistanceHorizontal();
-	float_t vDist = calculateDistanceVertical();
-	float_t xOffset = hDist * (float_t) sin(rad(camera._angle));
-	float_t zOffset = hDist * (float_t) cos(rad(camera._angle));
-
-	camera._position.x = camera._target.x - xOffset;
-	camera._position.y = camera._target.y + vDist;
-	camera._position.z = camera._target.z - zOffset;
-
-	// TODO yaw
+void CameraController::updatePitch(const EngineState &state) {
+	if (state.inputManager->isKeyDown(KEY_A)) {
+		if (state.inputManager->isKeyDown(KEY_UP)) {
+			_camera._pitch -= _speed * state.delta;
+			_viewDirty = true;
+		} else if (state.inputManager->isKeyDown(KEY_DOWN)) {
+			_camera._pitch += _speed * state.delta;
+			_viewDirty = true;
+		}
+	}
 }

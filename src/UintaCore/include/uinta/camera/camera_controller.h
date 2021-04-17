@@ -8,21 +8,22 @@
 namespace uinta {
 
 	class CameraController : public Controller {
-		PerspectiveCamera camera;
+		PerspectiveCamera _camera;
+		glm::vec3 _target = glm::vec3(0);
 
-		static constexpr float_t SPEED = 15.f;
+		float_t _speed = 15.f;
 
-		void calculateZoom(const EngineState &state);
+		bool _viewDirty = true;
 
-		void calculatePitch(const EngineState &state);
+		void updateYaw();
 
-		void calculateAngle(const EngineState &state);
+		void updatePitch(const EngineState &state);
 
-		[[nodiscard]] float_t calculateDistanceHorizontal() const;
+		void updatePosition(const EngineState &state);
 
-		[[nodiscard]] float_t calculateDistanceVertical() const;
+		void updateAngle(const EngineState &state);
 
-		void calculateCameraPosition();
+		void updateZoom(const EngineState &state);
 
 	public:
 		explicit CameraController(Controller *parent) : Controller(parent) {}
@@ -30,15 +31,17 @@ namespace uinta {
 		void update(const EngineState &state) override;
 
 		void initialize() override {
-			updateMatrices();
+			updateProjectionMatrix();
+			updateViewMatrix();
+			_viewDirty = true; // update position in first update
 		}
 
-		void updateMatrices();
+		void updateProjectionMatrix();
 
-		void calculateTarget(const EngineState &state);
+		void updateViewMatrix();
 
-		[[nodiscard]] glm::mat4 getProjectionMatrix() const { return camera._projection; }
-		[[nodiscard]] glm::mat4 getViewMatrix() const { return camera._view; }
+		[[nodiscard]] glm::mat4 getProjectionMatrix() const { return _camera._projection; }
+		[[nodiscard]] glm::mat4 getViewMatrix() const { return _camera._view; }
 
 	}; // class CameraController
 
