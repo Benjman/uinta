@@ -1,4 +1,4 @@
-#include <uinta/controller/fps_controller.h>
+#include <uinta/debug/fps_controller.h>
 #include <uinta/model/mesh.h>
 #include <uinta/text/text.h>
 

@@ -3,6 +3,7 @@
 
 #include <uinta/types.h>
 #include <uinta/text/text.h>
+#include <uinta/text/font.h>
 
 namespace uinta {
 
@@ -11,8 +12,12 @@ namespace uinta {
 	struct DebugUiView {
 		const Text fpsLbl = initializeComponent("FPS:", 10, 0);
 		Text fps = initializeComponent("0", 70, 0);
-		const Text tickLabel = initializeComponent("Tick:", 10, 25);
-		Text tick = initializeComponent("0", 70, 25);
+
+		const Text tickLabel = initializeComponent("Tick:", 10, Font::LINE_HEIGHT);
+		Text tick = initializeComponent("0", 70, Font::LINE_HEIGHT);
+
+		const Text cursorXLabel = initializeComponent("Cursor X:", 10, Font::LINE_HEIGHT);
+		Text cursorX = initializeComponent("0", 70, Font::LINE_HEIGHT);
 
 	private:
 		static Text initializeComponent(const char *v, size_t x, size_t y) {
@@ -26,5 +31,3 @@ namespace uinta {
 } // namespace uinta
 
 #endif // UINTA_DEBUGUIVIEW_H
-
-

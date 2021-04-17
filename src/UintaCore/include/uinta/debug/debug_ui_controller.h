@@ -3,12 +3,12 @@
 
 #include "debug_ui_shader.h"
 #include "debug_ui_view.h"
+#include "fps_controller.h"
+#include "tick_controller.h"
 
 #include <uinta/controller/buffer_controller.h>
-#include <uinta/render/i_render_controller.h>
-#include <uinta/controller/fps_controller.h>
-#include <uinta/controller/tick_controller.h>
 #include <uinta/model/mesh.h>
+#include <uinta/render/i_render_controller.h>
 
 namespace uinta {
 

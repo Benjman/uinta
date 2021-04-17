@@ -1,5 +1,4 @@
-#include <uinta/controller/tick_controller.h>
-
+#include <uinta/debug/tick_controller.h>
 #include <uinta/model/mesh.h>
 
 #include <string>
