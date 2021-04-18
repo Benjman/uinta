@@ -173,8 +173,10 @@ namespace uinta {
 		[[nodiscard]] virtual bool isKeyDown(key_code_t key) const = 0;
 		[[nodiscard]] virtual int16_t getCursorX() const = 0;
 		[[nodiscard]] virtual int16_t getCursorDX() const = 0;
+		[[nodiscard]] virtual float_t getCursorXScroll() const = 0;
 		[[nodiscard]] virtual int16_t getCursorY() const = 0;
 		[[nodiscard]] virtual int16_t getCursorDY() const = 0;
+		[[nodiscard]] virtual float_t getCursorYScroll() const = 0;
 		[[nodiscard]] virtual bool isCursorDown(cursor_code_t code) const = 0;
 
 		[[nodiscard]] bool isShiftDown() const {

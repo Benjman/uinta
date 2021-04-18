@@ -25,6 +25,8 @@ namespace uinta::glfw {
 
 	void cursorPositionHandler(GLFWwindow *window, double xPos, double yPos);
 
+	void cursorScrollHandler(GLFWwindow *window, double xOff, double yOff);
+
 	void cursorButtonHandler(GLFWwindow *window, int button, int action, int mods);
 
 	void keyHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -332,9 +334,15 @@ namespace uinta::glfw {
 
 	void setCallbacks(GLFWwindow *window) {
 		glfwSetCursorPosCallback(window, &cursorPositionHandler);
-		glfwSetMouseButtonCallback(window, &cursorButtonHandler);
 		glfwSetFramebufferSizeCallback(window, &framebufferSizeChangedHandler);
 		glfwSetKeyCallback(window, &keyHandler);
+		glfwSetMouseButtonCallback(window, &cursorButtonHandler);
+		glfwSetScrollCallback(window, &cursorScrollHandler);
+	}
+
+	void cursorScrollHandler(GLFWwindow *window, double xOff, double yOff) {
+		GlfwDto *&dto = windows[window];
+		dto->updateCursorScroll(xOff, yOff);
 	}
 
 	void GlfwDto::addInputEvent(InputEvent &event) {

@@ -10,6 +10,8 @@ namespace uinta {
 		int16_t cursorDX = 0;
 		int16_t cursorY = 0;
 		int16_t cursorDY = 0;
+		float_t cursorXScroll = 0;
+		float_t cursorYScroll = 0;
 		bool cursorButtonsDown[8]{false};
 
 		bool downKeys[KEY_LAST - KEY_FIRST]{};
@@ -35,7 +37,7 @@ namespace uinta {
 			return downKeys[key - KEY_FIRST];
 		}
 
-		void setCursor(int16_t x, int16_t y, bool *cursorButtonsState);
+		void setCursor(int16_t x, int16_t y, int16_t xScroll, int16_t yScroll, bool *cursorButtonsState);
 
 		[[nodiscard]] int16_t getCursorX() const override {
 			return cursorX;
@@ -45,12 +47,20 @@ namespace uinta {
 			return cursorDX;
 		}
 
+		[[nodiscard]] float_t getCursorXScroll() const override {
+			return cursorXScroll;
+		}
+
 		[[nodiscard]] int16_t getCursorY() const override {
 			return cursorY;
 		}
 
 		[[nodiscard]] int16_t getCursorDY() const override {
 			return cursorDY;
+		}
+
+		[[nodiscard]] float_t getCursorYScroll() const override {
+			return cursorYScroll;
 		}
 
 		[[nodiscard]] bool isCursorDown(cursor_code_t code) const override {

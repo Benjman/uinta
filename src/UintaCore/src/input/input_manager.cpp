@@ -19,12 +19,15 @@ void InputManager::reset() {
 	std::fill(&downKeys[0], &downKeys[KEY_LAST - KEY_FIRST], false);
 }
 
-void InputManager::setCursor(int16_t x, int16_t y, bool *cursorButtonsState) {
+void InputManager::setCursor(int16_t x, int16_t y, int16_t xScroll, int16_t yScroll, bool *cursorButtonsState) {
 	cursorDX = x - cursorX;
 	cursorDY = y - cursorY;
 
 	cursorX = x;
 	cursorY = y;
+
+	cursorXScroll = xScroll;
+	cursorYScroll = yScroll;
 
 	memcpy(cursorButtonsDown, cursorButtonsState, sizeof(cursorButtonsDown));
 }

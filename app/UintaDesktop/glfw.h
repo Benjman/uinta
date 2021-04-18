@@ -31,6 +31,8 @@ namespace uinta::glfw {
 		size_t _numInputEvents = 0;
 		InputEvent _inputEvents[15];
 
+		float_t xCursorScroll = 0.f;
+		float_t yCursorScroll = 0.f;
 		int16_t xCursor = 0.f;
 		int16_t yCursor = 0.f;
 		bool cursorButtonsDown[8]{false};
@@ -96,6 +98,11 @@ namespace uinta::glfw {
 
 		void addInputEvent(InputEvent &event);
 
+		void updateCursorScroll(float_t x, float_t y) {
+			xCursorScroll = x;
+			yCursorScroll = y;
+		}
+
 		void updateCursorPos(int16_t x, int16_t y) {
 			xCursor = x;
 			yCursor = y;
@@ -111,7 +118,10 @@ namespace uinta::glfw {
 			}
 			_numInputEvents = 0;
 
-			inputManager->setCursor(xCursor, yCursor, cursorButtonsDown);
+			inputManager->setCursor(xCursor, yCursor, xCursorScroll, yCursorScroll, cursorButtonsDown);
+
+			xCursorScroll = 0;
+			yCursorScroll = 0;
 		}
 
 	};
