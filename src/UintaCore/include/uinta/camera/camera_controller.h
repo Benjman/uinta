@@ -9,7 +9,6 @@ namespace uinta {
 
 	class CameraController : public Controller {
 		PerspectiveCamera _camera;
-		glm::vec3 _target = glm::vec3(0);
 
 		float_t _speed = 15.f;
 
@@ -24,6 +23,8 @@ namespace uinta {
 		void updateAngle(const EngineState &state);
 
 		void updateZoom(const EngineState &state);
+
+		void updateTarget(const EngineState &state);
 
 	public:
 		explicit CameraController(Controller *parent) : Controller(parent) {}

@@ -32,6 +32,7 @@ void CameraController::updateYaw() {
 }
 
 void CameraController::updatePosition(const EngineState &state) {
+	updateTarget(state);
 	updateZoom(state);
 	updatePitch(state);
 	updateAngle(state);
@@ -45,20 +46,15 @@ void CameraController::updatePosition(const EngineState &state) {
 	float_t xOff = hDist * sinf(rad(_camera._angle));
 	float_t zOff = hDist * cosf(rad(_camera._angle));
 
-	_camera._position.x = _target.x - xOff;
-	_camera._position.y = _target.y + vDist;
-	_camera._position.z = _target.z - zOff;
+	_camera._position.x = _camera._target.x - xOff;
+	_camera._position.y = _camera._target.y + vDist;
+	_camera._position.z = _camera._target.z - zOff;
 }
 
 void CameraController::updateAngle(const EngineState &state) {
-	if (state.inputManager->isKeyDown(KEY_A)) {
-		if (state.inputManager->isKeyDown(KEY_LEFT)) {
-			_camera._angle -= _speed * state.delta;
-			_viewDirty = true;
-		} else if (state.inputManager->isKeyDown(KEY_RIGHT)) {
-			_camera._angle += _speed * state.delta;
-			_viewDirty = true;
-		}
+	if (state.inputManager->isCursorDown(CURSOR_BUTTON_RIGHT)) {
+		_camera._angle += (float_t) state.inputManager->getCursorDX() * state.delta;
+		_viewDirty = true;
 	}
 }
 
@@ -75,13 +71,16 @@ void CameraController::updateZoom(const EngineState &state) {
 }
 
 void CameraController::updatePitch(const EngineState &state) {
-	if (state.inputManager->isKeyDown(KEY_A)) {
-		if (state.inputManager->isKeyDown(KEY_UP)) {
-			_camera._pitch -= _speed * state.delta;
-			_viewDirty = true;
-		} else if (state.inputManager->isKeyDown(KEY_DOWN)) {
-			_camera._pitch += _speed * state.delta;
-			_viewDirty = true;
-		}
+	if (state.inputManager->isCursorDown(CURSOR_BUTTON_RIGHT)) {
+		_camera._pitch += (float_t) state.inputManager->getCursorDY() * state.delta;
+		_viewDirty = true;
+	}
+}
+
+void CameraController::updateTarget(const EngineState &state) {
+	if (state.inputManager->isCursorDown(CURSOR_BUTTON_LEFT)) {
+		_camera._target.x += state.inputManager->getCursorDX() * state.delta;
+		_camera._target.y += state.inputManager->getCursorDY() * state.delta;
+		_viewDirty = true;
 	}
 }
