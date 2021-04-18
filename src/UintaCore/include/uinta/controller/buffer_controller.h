@@ -22,6 +22,9 @@ namespace uinta {
 		GLsizeiptr vSize = 0;
 		GLsizeiptr iSize = 0;
 
+		size_t vMaxElements;
+		size_t iMaxElements;
+
 		size_t vIndex = 0;
 		size_t iIndex = 0;
 		size_t idxIndex = 0;
