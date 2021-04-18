@@ -31,6 +31,9 @@ namespace uinta::glfw {
 		size_t _numInputEvents = 0;
 		InputEvent _inputEvents[15];
 
+		int16_t xCursor = 0.f;
+		int16_t yCursor = 0.f;
+
 	public:
 		GlfwDto(int32_t width, int32_t height, std::string title)
 				: _width(width), _height(height), _title(std::move(title)) {
@@ -92,20 +95,18 @@ namespace uinta::glfw {
 
 		void addInputEvent(InputEvent &event);
 
-		[[nodiscard]] size_t getNumInputEvents() const {
-			return _numInputEvents;
+		void updateCursorPos(int16_t x, int16_t y) {
+			xCursor = x;
+			yCursor = y;
 		}
 
-		void setNumInputEvents(size_t numInputEvents) {
-			_numInputEvents = numInputEvents;
-		}
-
-		[[nodiscard]] InputEvent *getInputEvents() {
-			return _inputEvents;
-		}
-
-		void resetInputEvents() {
+		void updateInputState(InputManager *inputManager) {
+			for (size_t i = 0; i < _numInputEvents; i++) {
+				inputManager->registerEvent(_inputEvents[i]);
+			}
 			_numInputEvents = 0;
+
+			inputManager->setCursor(xCursor, yCursor);
 		}
 
 	};
@@ -113,8 +114,6 @@ namespace uinta::glfw {
 	extern bool initialize(GlfwDto &dto);
 
 	extern void createWindow(GlfwDto &dto);
-
-	extern void framebufferSizeChangedHandler(GLFWwindow *window, int width, int height);
 
 	extern void glfwErrorHandler(int error, const char *description);
 

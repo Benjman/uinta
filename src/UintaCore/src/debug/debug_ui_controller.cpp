@@ -49,9 +49,12 @@ void DebugUiController::initialize() {
 
 void DebugUiController::initializeTextControllers() {
 	TextController *controllers[]{
+			&_cursor,
+			&_cursorDelta,
+			&_cursorDeltaLabel,
+			&_cursorLabel,
 			&_fps,
 			&_fpsLabel,
-
 			&_tick,
 			&_tickLabel,
 	};
@@ -74,6 +77,10 @@ void DebugUiController::initializeTextControllers() {
 }
 
 void DebugUiController::addRenderables() {
+	addRenderable(&_cursor);
+	addRenderable(&_cursorDelta);
+	addRenderable(&_cursorDeltaLabel);
+	addRenderable(&_cursorLabel);
 	addRenderable(&_fps);
 	addRenderable(&_fpsLabel);
 	addRenderable(&_tick);

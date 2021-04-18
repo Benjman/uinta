@@ -10,17 +10,24 @@
 
 namespace uinta::glfw {
 
-	using namespace uinta::glfw;
-	using namespace uinta::gl_state;
-
-	void glfwKeyHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
-
 	namespace internal {
 		using WindowMap = std::map<GLFWwindow *, GlfwDto *>;
 		extern WindowMap windows;
+
+		WindowMap windows;
 	}
 
-	internal::WindowMap internal::windows;
+	using namespace glfw;
+	using namespace gl_state;
+	using namespace internal;
+
+	void setCallbacks(GLFWwindow *window);
+
+	void cursorPositionHandler(GLFWwindow *window, double xPos, double yPos);
+
+	void keyHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
+
+	void setMods(int mod, InputEvent &event);
 
 	bool initialize(GlfwDto &dto) {
 		initializeGlfw(dto);
@@ -44,7 +51,7 @@ namespace uinta::glfw {
 			return false;
 		}
 
-		glfwSetKeyCallback(dto.getWindow(), &glfwKeyHandler);
+		setCallbacks(dto.getWindow());
 		setViewportSize(dto.getWidth(), dto.getHeight());
 
 		std::cout << "Initialization complete" << std::endl;
@@ -73,16 +80,15 @@ namespace uinta::glfw {
 
 		dto.setWindow(window);
 		dto.setStatus(WindowCreated);
-		internal::windows.insert(std::pair<GLFWwindow *, GlfwDto *>(window, &dto));
+		windows.insert(std::pair<GLFWwindow *, GlfwDto *>(window, &dto));
 
-		glfwSetFramebufferSizeCallback(dto.getWindow(), framebufferSizeChangedHandler);
 		setContext(dto);
 
 		std::cout << "done" << std::endl;
 	}
 
 	void framebufferSizeChangedHandler(GLFWwindow *window, int width, int height) {
-		GlfwDto *&dto = internal::windows[window];
+		GlfwDto *&dto = windows[window];
 		if (dto == nullptr) {
 			// TODO warn logging
 			std::cerr << "Failed to respond to window resizing\n";
@@ -96,8 +102,6 @@ namespace uinta::glfw {
 	void glfwErrorHandler(int error, const char *description) {
 		std::cerr << "GLFW Error:\n\t" << description << "\n\n";
 	}
-
-	void setMods(int mod, InputEvent &event);
 
 	void initializeGlfw(GlfwDto &dto) {
 		std::cout << "Initializing GLFW... ";
@@ -282,13 +286,24 @@ namespace uinta::glfw {
 		}
 	}
 
-	void glfwKeyHandler(GLFWwindow *window, int key, int scancode, int action, int mods) {
+	void keyHandler(GLFWwindow *window, int key, int scancode, int action, int mods) {
 		InputEvent event;
 		setMods(mods, event);
 		event.key = findKey(key);
 		event.action = findAction(action);
-		GlfwDto *&dto = internal::windows[window];
+		GlfwDto *&dto = windows[window];
 		dto->addInputEvent(event);
+	}
+
+	void cursorPositionHandler(GLFWwindow *window, double xPos, double yPos) {
+		GlfwDto *&dto = windows[window];
+		dto->updateCursorPos((float_t) xPos, (float_t) yPos);
+	}
+
+	void setCallbacks(GLFWwindow *window) {
+		glfwSetCursorPosCallback(window, &cursorPositionHandler);
+		glfwSetFramebufferSizeCallback(window, &framebufferSizeChangedHandler);
+		glfwSetKeyCallback(window, &keyHandler);
 	}
 
 	void GlfwDto::addInputEvent(InputEvent &event) {
@@ -298,4 +313,5 @@ namespace uinta::glfw {
 		}
 		_inputEvents[_numInputEvents++] = InputEvent(event);
 	}
+
 }

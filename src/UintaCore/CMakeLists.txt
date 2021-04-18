@@ -9,6 +9,7 @@ set(SOURCES ${SOURCES}
         src/controller/controller.cpp
         src/controller/scene/scene_controller.cpp
         src/controller/scene/scene_shader.cpp
+        src/debug/cursor_controller.cpp
         src/debug/debug_controller.cpp
         src/debug/debug_ui_controller.cpp
         src/debug/debug_ui_shader.cpp

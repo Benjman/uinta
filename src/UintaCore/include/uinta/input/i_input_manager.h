@@ -7,7 +7,7 @@ namespace uinta {
 
 	using action_code_t = uint8_t;
 	using key_code_t = uint16_t;
-	using mouse_code_t = uint8_t;
+	using cursor_code_t = uint8_t;
 
 	static const action_code_t ACTION_RELEASE = 0;
 	static const action_code_t ACTION_PRESS = 1;
@@ -138,18 +138,18 @@ namespace uinta {
 	static const key_code_t KEY_LAST = KEY_MENU;
 	static const key_code_t INVALID_KEY = std::numeric_limits<key_code_t>::max();
 
-	static const mouse_code_t MOUSE_BUTTON_1 = 0;
-	static const mouse_code_t MOUSE_BUTTON_2 = 1;
-	static const mouse_code_t MOUSE_BUTTON_3 = 2;
-	static const mouse_code_t MOUSE_BUTTON_4 = 3;
-	static const mouse_code_t MOUSE_BUTTON_5 = 4;
-	static const mouse_code_t MOUSE_BUTTON_6 = 5;
-	static const mouse_code_t MOUSE_BUTTON_7 = 6;
-	static const mouse_code_t MOUSE_BUTTON_8 = 7;
-	static const mouse_code_t MOUSE_BUTTON_LAST = MOUSE_BUTTON_8;
-	static const mouse_code_t MOUSE_BUTTON_LEFT = MOUSE_BUTTON_1;
-	static const mouse_code_t MOUSE_BUTTON_RIGHT = MOUSE_BUTTON_2;
-	static const mouse_code_t MOUSE_BUTTON_MIDDLE = MOUSE_BUTTON_3;
+	static const cursor_code_t CURSOR_BUTTON_1 = 0;
+	static const cursor_code_t CURSOR_BUTTON_2 = 1;
+	static const cursor_code_t CURSOR_BUTTON_3 = 2;
+	static const cursor_code_t CURSOR_BUTTON_4 = 3;
+	static const cursor_code_t CURSOR_BUTTON_5 = 4;
+	static const cursor_code_t CURSOR_BUTTON_6 = 5;
+	static const cursor_code_t CURSOR_BUTTON_7 = 6;
+	static const cursor_code_t CURSOR_BUTTON_8 = 7;
+	static const cursor_code_t CURSOR_BUTTON_LAST = CURSOR_BUTTON_8;
+	static const cursor_code_t CURSOR_BUTTON_LEFT = CURSOR_BUTTON_1;
+	static const cursor_code_t CURSOR_BUTTON_RIGHT = CURSOR_BUTTON_2;
+	static const cursor_code_t CURSOR_BUTTON_MIDDLE = CURSOR_BUTTON_3;
 
 	struct InputEvent {
 		bool shiftDown = false;
@@ -162,6 +162,7 @@ namespace uinta {
 	};
 
 	class IInputManager {
+	protected:
 		bool shiftDown = false;
 		bool controlDown = false;
 		bool altDown = false;
@@ -169,6 +170,11 @@ namespace uinta {
 
 	public:
 		[[nodiscard]] virtual bool isKeyDown(key_code_t key) const = 0;
+		[[nodiscard]] virtual int16_t getCursorX() const = 0;
+		[[nodiscard]] virtual int16_t getCursorDX() const = 0;
+		[[nodiscard]] virtual int16_t getCursorY() const = 0;
+		[[nodiscard]] virtual int16_t getCursorDY() const = 0;
+		[[nodiscard]] virtual bool isCursorDown(cursor_code_t code) const = 0;
 
 		[[nodiscard]] bool isShiftDown() const {
 			return shiftDown;
