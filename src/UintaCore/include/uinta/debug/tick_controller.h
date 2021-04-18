@@ -9,12 +9,10 @@ namespace uinta {
 
 	class TickController : public TextController {
 		size_t _tick = 0;
-		BufferController *_parent;
 
 	public:
 		TickController(BufferController *parent, Text &text, Font *font)
-				: TextController(parent, text, font, 10),
-				_parent(parent) {
+				: TextController(parent, text, font, 10) {
 		}
 
 		void update(const EngineState &state) override;

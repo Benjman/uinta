@@ -10,5 +10,5 @@ void TickController::update(const EngineState &state) {
 	_tick = state.tick;
 	setTextValue(std::to_string(_tick).c_str());
 	populateMesh();
-	uploadMesh(_parent);
+	uploadMesh();
 }

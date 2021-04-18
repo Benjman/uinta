@@ -12,7 +12,6 @@ namespace uinta {
 		float_t _timeToNextUpdate = INTERVAL;
 		size_t _frameCount = 0;
 		size_t _curFps = 0;
-		BufferController *_parent;
 
 	public:
 		FpsController(BufferController *parent, Text &text, Font *font);

@@ -15,7 +15,8 @@ TextController::TextController(BufferController *parent, Text &text, Font *font,
 		_text(&text),
 		_font(font),
 		_mesh(new Mesh),
-		_maxChars(maxChars) {
+		_maxChars(maxChars),
+		_parent(parent) {
 }
 
 void TextController::initialize() {
@@ -49,6 +50,9 @@ TextController::~TextController() {
 
 void TextController::setTextValue(const char *value, bool updateMetadata) {
 	_text->_value = value;
+	if (_text->_value.length() > _maxChars) {
+		_text->_value = _text->_value.substr(0, _maxChars);
+	}
 	if (updateMetadata) {
 		doUpdateMetadata();
 	}
@@ -58,7 +62,7 @@ GLuint TextController::getICount() const {
 	return _text->getCharCount() * INDICES_PER_CHAR;
 }
 
-void TextController::uploadMesh(BufferController *controller) const {
-	controller->uploadMesh(_mesh->vBuffer, getVBufferSize(), _mesh->vParentOffsetBytes, _mesh->iBuffer,
+void TextController::uploadMesh() const {
+	_parent->uploadMesh(_mesh->vBuffer, getVBufferSize(), _mesh->vParentOffsetBytes, _mesh->iBuffer,
 						   getIBufferSize(), _mesh->iParentOffsetBytes);
 }

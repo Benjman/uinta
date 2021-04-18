@@ -18,6 +18,7 @@ namespace uinta {
 		Text *_text;
 		Font *_font;
 		Mesh *_mesh;
+		BufferController *_parent;
 
 		GLsizei _maxChars = 0;
 
@@ -38,7 +39,7 @@ namespace uinta {
 
 		void populateMesh() const;
 
-		void uploadMesh(BufferController *controller) const;
+		void uploadMesh() const;
 
 		void doUpdateMetadata();
 

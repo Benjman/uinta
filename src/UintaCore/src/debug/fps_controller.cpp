@@ -7,8 +7,7 @@
 using namespace uinta;
 
 FpsController::FpsController(BufferController *parent, Text &text, Font *font)
-		: TextController(parent, text, (Font *) font, 3),
-		  _parent(parent) {
+		: TextController(parent, text, (Font *) font, 3) {
 }
 
 void FpsController::update(const EngineState &state) {
@@ -18,7 +17,7 @@ void FpsController::update(const EngineState &state) {
 		if (_curFps != _frameCount) {
 			setTextValue(std::to_string((size_t) std::ceil((float_t) _frameCount * (1 / INTERVAL))).c_str());
 			populateMesh();
-			uploadMesh(_parent);
+			uploadMesh();
 		}
 
 		_frameCount = 0;
