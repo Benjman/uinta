@@ -150,6 +150,7 @@ namespace uinta {
 	static const cursor_code_t CURSOR_BUTTON_LEFT = CURSOR_BUTTON_1;
 	static const cursor_code_t CURSOR_BUTTON_RIGHT = CURSOR_BUTTON_2;
 	static const cursor_code_t CURSOR_BUTTON_MIDDLE = CURSOR_BUTTON_3;
+	static const cursor_code_t INVALID_CURSOR_BUTTON = std::numeric_limits<cursor_code_t>::max();
 
 	struct InputEvent {
 		bool shiftDown = false;

@@ -35,13 +35,7 @@ namespace uinta {
 			return downKeys[key - KEY_FIRST];
 		}
 
-		void setCursor(int16_t x, int16_t y) {
-			cursorDX = x - cursorX;
-			cursorDY = y - cursorY;
-
-			cursorX = x;
-			cursorY = y;
-		}
+		void setCursor(int16_t x, int16_t y, bool *cursorButtonsState);
 
 		[[nodiscard]] int16_t getCursorX() const override {
 			return cursorX;

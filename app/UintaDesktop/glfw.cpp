@@ -25,6 +25,8 @@ namespace uinta::glfw {
 
 	void cursorPositionHandler(GLFWwindow *window, double xPos, double yPos);
 
+	void cursorButtonHandler(GLFWwindow *window, int button, int action, int mods);
+
 	void keyHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 	void setMods(int mod, InputEvent &event);
@@ -99,7 +101,7 @@ namespace uinta::glfw {
 		gl_state::setViewportSize(width, height);
 	}
 
-	void glfwErrorHandler(int error, const char *description) {
+	void glfwErrorHandler([[maybe_unused]] int error, const char *description) {
 		std::cerr << "GLFW Error:\n\t" << description << "\n\n";
 	}
 
@@ -286,6 +288,29 @@ namespace uinta::glfw {
 		}
 	}
 
+	cursor_code_t findCursorCode(int code) {
+		switch (code) {
+			case GLFW_MOUSE_BUTTON_1:
+				return CURSOR_BUTTON_1;
+			case GLFW_MOUSE_BUTTON_2:
+				return CURSOR_BUTTON_2;
+			case GLFW_MOUSE_BUTTON_3:
+				return CURSOR_BUTTON_3;
+			case GLFW_MOUSE_BUTTON_4:
+				return CURSOR_BUTTON_4;
+			case GLFW_MOUSE_BUTTON_5:
+				return CURSOR_BUTTON_5;
+			case GLFW_MOUSE_BUTTON_6:
+				return CURSOR_BUTTON_6;
+			case GLFW_MOUSE_BUTTON_7:
+				return CURSOR_BUTTON_7;
+			case GLFW_MOUSE_BUTTON_8:
+				return CURSOR_BUTTON_8;
+			default:
+				return INVALID_CURSOR_BUTTON;
+		}
+	}
+
 	void keyHandler(GLFWwindow *window, int key, int scancode, int action, int mods) {
 		InputEvent event;
 		setMods(mods, event);
@@ -297,11 +322,17 @@ namespace uinta::glfw {
 
 	void cursorPositionHandler(GLFWwindow *window, double xPos, double yPos) {
 		GlfwDto *&dto = windows[window];
-		dto->updateCursorPos((float_t) xPos, (float_t) yPos);
+		dto->updateCursorPos((int16_t) xPos, (int16_t) yPos);
+	}
+
+	void cursorButtonHandler(GLFWwindow *window, int button, int action, int mods) {
+		GlfwDto *&dto = windows[window];
+		dto->updateCursorButton(findCursorCode(button), findAction(action) == GLFW_PRESS);
 	}
 
 	void setCallbacks(GLFWwindow *window) {
 		glfwSetCursorPosCallback(window, &cursorPositionHandler);
+		glfwSetMouseButtonCallback(window, &cursorButtonHandler);
 		glfwSetFramebufferSizeCallback(window, &framebufferSizeChangedHandler);
 		glfwSetKeyCallback(window, &keyHandler);
 	}

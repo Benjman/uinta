@@ -33,6 +33,7 @@ namespace uinta::glfw {
 
 		int16_t xCursor = 0.f;
 		int16_t yCursor = 0.f;
+		bool cursorButtonsDown[8]{false};
 
 	public:
 		GlfwDto(int32_t width, int32_t height, std::string title)
@@ -100,13 +101,17 @@ namespace uinta::glfw {
 			yCursor = y;
 		}
 
+		void updateCursorButton(cursor_code_t code, bool down) {
+			cursorButtonsDown[code] = down;
+		}
+
 		void updateInputState(InputManager *inputManager) {
 			for (size_t i = 0; i < _numInputEvents; i++) {
 				inputManager->registerEvent(_inputEvents[i]);
 			}
 			_numInputEvents = 0;
 
-			inputManager->setCursor(xCursor, yCursor);
+			inputManager->setCursor(xCursor, yCursor, cursorButtonsDown);
 		}
 
 	};
@@ -115,7 +120,7 @@ namespace uinta::glfw {
 
 	extern void createWindow(GlfwDto &dto);
 
-	extern void glfwErrorHandler(int error, const char *description);
+	extern void glfwErrorHandler([[maybe_unused]] int error, const char *description);
 
 	extern void initializeGlad(GlfwDto &dto);
 

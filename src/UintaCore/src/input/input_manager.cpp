@@ -1,6 +1,7 @@
 #include <uinta/input/input_manager.h>
 
 #include <array>
+#include <cstring> // for memcpy
 
 using namespace uinta;
 
@@ -16,4 +17,14 @@ void InputManager::registerEvent(const InputEvent &event) {
 
 void InputManager::reset() {
 	std::fill(&downKeys[0], &downKeys[KEY_LAST - KEY_FIRST], false);
+}
+
+void InputManager::setCursor(int16_t x, int16_t y, bool *cursorButtonsState) {
+	cursorDX = x - cursorX;
+	cursorDY = y - cursorY;
+
+	cursorX = x;
+	cursorY = y;
+
+	memcpy(cursorButtonsDown, cursorButtonsState, sizeof(cursorButtonsDown));
 }
