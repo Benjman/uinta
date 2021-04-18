@@ -33,6 +33,8 @@ namespace uinta {
 
 		void initialize() override;
 
+		virtual void initializeMeshBuffers(BufferController *buffer);
+
 		void render() override;
 
 		void setTextValue(const char *value, bool updateMetadata = true);
@@ -51,6 +53,7 @@ namespace uinta {
 		[[nodiscard]] Mesh *getMesh() const { return _mesh; }
 		[[nodiscard]] GLuint getVBufferLen() const { return getMaxChars() * VERTICES_PER_CHAR * ELEMENTS_PER_VERTEX; }
 		[[nodiscard]] GLuint getVBufferSize() const { return getVBufferLen() * sizeof(GLfloat); }
+		[[nodiscard]] BufferController *getParent() const override { return _parent; }
 
 	}; // class TextController
 

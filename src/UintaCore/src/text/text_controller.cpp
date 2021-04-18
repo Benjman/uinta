@@ -66,3 +66,18 @@ void TextController::uploadMesh() const {
 	_parent->uploadMesh(_mesh->vBuffer, getVBufferSize(), _mesh->vParentOffsetBytes, _mesh->iBuffer,
 						   getIBufferSize(), _mesh->iParentOffsetBytes);
 }
+
+void TextController::initializeMeshBuffers(BufferController *buffer) {
+	_mesh->setVertexCount((GLsizei) getVBufferLen());
+	_mesh->setIndexCount((GLsizei) getIBufferLen());
+	size_t iPointer = buffer->getIIndex();
+	buffer->initializeMeshBuffers(*_mesh);
+
+	_mesh->idxOffset = buffer->getIdxIndex();
+	buffer->addIdxIndex(getMaxIdxCount());
+
+	_mesh->setIndexCount((GLsizei) getICount());
+	_mesh->setOffset(iPointer);
+
+	populateMesh();
+}
