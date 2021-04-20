@@ -11,7 +11,7 @@ namespace uinta {
 	class Font;
 
 	class DebugController : public Controller {
-		DebugUiController _ui = DebugUiController(this);
+		DebugUiController _ui;
 		DebugWorldController _world;
 
 	public:

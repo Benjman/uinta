@@ -5,9 +5,8 @@
 
 using namespace uinta;
 
-CursorController::CursorController(BufferController *parent, Text &text, Font *font, TextController &delta)
-		: TextController(parent, text, (Font *) font, 12),
-		  _delta(delta) {
+CursorController::CursorController(BufferController *parent, Text &text, Font *font)
+		: TextController(parent, text, (Font *) font, 12) {
 }
 
 void CursorController::update(const EngineState &state) {
@@ -24,9 +23,4 @@ void CursorController::update(const EngineState &state) {
 
 	_dx = state.inputManager->getCursorDX();
 	_dy = state.inputManager->getCursorDY();
-
-	std::string delta = std::to_string(_dx) + "x" + std::to_string(_dy);
-	_delta.setTextValue(delta.c_str());
-	_delta.populateMesh();
-	_delta.uploadMesh();
 }

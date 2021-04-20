@@ -9,9 +9,44 @@
 using namespace uinta;
 using namespace uinta::gl_state;
 
-DebugUiController::DebugUiController(DebugController *parent)
-		: BufferController(parent, KILOBYTES(5), KILOBYTES(2)),
-		  _font(Font::loadFont("/usr/share/fonts/noto/NotoSans-Regular.ttf")) {
+DebugUiController::DebugUiController(DebugController *parent, const CameraController *cameraController)
+		: BufferController(parent, KILOBYTES(10), KILOBYTES(5)),
+		  _font(Font::loadFont("/usr/share/fonts/noto/NotoSans-Regular.ttf")),
+		  _camera(this, (Text &) _view.cameraPitch, (Font *) _font, (Text &) _view.cameraYaw, (Text &) _view.cameraZoom, cameraController) {
+}
+
+void DebugUiController::initialize() {
+	BufferController::initialize();
+
+	initializeTextControllers();
+	uploadBuffers();
+
+	addRenderables();
+	_shader.initialize(*vao);
+}
+
+void DebugUiController::initializeTextControllers() {
+	_camera.initializeMeshBuffers(this);
+	_cameraLabel.initializeMeshBuffers(this);
+	_cursor.initializeMeshBuffers(this);
+	_cursorLabel.initializeMeshBuffers(this);
+	_fps.initializeMeshBuffers(this);
+	_fpsLabel.initializeMeshBuffers(this);
+	_tick.initializeMeshBuffers(this);
+	_tickLabel.initializeMeshBuffers(this);
+}
+
+void DebugUiController::addRenderables() {
+	addRenderable(&_camera);
+	addRenderable(&_cameraLabel);
+	addRenderable((IRenderable*) &_camera.getYaw());
+	addRenderable((IRenderable*) &_camera.getZoom());
+	addRenderable(&_cursor);
+	addRenderable(&_cursorLabel);
+	addRenderable(&_fps);
+	addRenderable(&_fpsLabel);
+	addRenderable(&_tick);
+	addRenderable(&_tickLabel);
 }
 
 void DebugUiController::render() {
@@ -35,56 +70,6 @@ void DebugUiController::render() {
 	_shader.use();
 
 	IRenderController::render();
-}
-
-void DebugUiController::initialize() {
-	BufferController::initialize();
-
-	initializeTextControllers();
-	uploadBuffers();
-
-	addRenderables();
-	_shader.initialize(*vao);
-}
-
-void DebugUiController::initializeTextControllers() {
-	TextController *controllers[]{
-			&_cursor,
-			&_cursorDelta,
-			&_cursorDeltaLabel,
-			&_cursorLabel,
-			&_fps,
-			&_fpsLabel,
-			&_tick,
-			&_tickLabel,
-	};
-
-	for (TextController *controller : controllers) {
-		Mesh &mesh = *controller->getMesh();
-		mesh.setVertexCount((GLsizei) controller->getVBufferLen());
-		mesh.setIndexCount((GLsizei) controller->getIBufferLen());
-		size_t iPointer = iIndex;
-		initializeMeshBuffers(mesh);
-
-		mesh.idxOffset = idxIndex;
-		idxIndex += controller->getMaxIdxCount();
-
-		mesh.setIndexCount((GLsizei) controller->getICount());
-		mesh.setOffset(iPointer);
-
-		controller->populateMesh();
-	}
-}
-
-void DebugUiController::addRenderables() {
-	addRenderable(&_cursor);
-	addRenderable(&_cursorDelta);
-	addRenderable(&_cursorDeltaLabel);
-	addRenderable(&_cursorLabel);
-	addRenderable(&_fps);
-	addRenderable(&_fpsLabel);
-	addRenderable(&_tick);
-	addRenderable(&_tickLabel);
 }
 
 DebugUiController::~DebugUiController() {

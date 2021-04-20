@@ -22,8 +22,8 @@ namespace uinta {
 		GLsizeiptr vSize = 0;
 		GLsizeiptr iSize = 0;
 
-		size_t vMaxElements;
-		size_t iMaxElements;
+		size_t vMaxElements = 0;
+		size_t iMaxElements = 0;
 
 		size_t vIndex = 0;
 		size_t iIndex = 0;
@@ -52,6 +52,17 @@ namespace uinta {
 
 		void reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeiptr *pVOffsetBytes,
 											 GLuint **pIBuffer, size_t pILen, GLsizeiptr *pIOffsetBytes);
+
+		[[nodiscard]] GLfloat *getVBuffer() const { return vBuffer; }
+		[[nodiscard]] GLuint *getIBuffer() const { return iBuffer; }
+		[[nodiscard]] GLsizeiptr getVSize() const { return vSize; }
+		[[nodiscard]] GLsizeiptr getISize() const { return iSize; }
+		[[nodiscard]] size_t getVMaxElements() const { return vMaxElements; }
+		[[nodiscard]] size_t getIMaxElements() const { return iMaxElements; }
+		[[nodiscard]] size_t getVIndex() const { return vIndex; }
+		[[nodiscard]] size_t getIIndex() const { return iIndex; }
+		[[nodiscard]] size_t getIdxIndex() const { return idxIndex; }
+		void addIdxIndex(size_t amt) { idxIndex += amt; }
 
 	}; // class BufferController
 

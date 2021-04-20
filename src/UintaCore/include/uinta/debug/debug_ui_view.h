@@ -19,8 +19,10 @@ namespace uinta {
 		Text cursorLabel = initializeComponent("Cursor:", 10, Font::LINE_HEIGHT * 2);
 		Text cursor = initializeComponent("0x0", 100, Font::LINE_HEIGHT * 2);
 
-		Text cursordLabel = initializeComponent("delta:", 40, Font::LINE_HEIGHT * 3);
-		Text cursord = initializeComponent("0x0", 110, Font::LINE_HEIGHT * 3);
+		Text cameraLabel = initializeComponent("Camera:", 10, Font::LINE_HEIGHT * 3);
+		Text cameraPitch = initializeComponent("", 110, Font::LINE_HEIGHT * 3);
+		Text cameraYaw = initializeComponent("", 110, Font::LINE_HEIGHT * 4);
+		Text cameraZoom = initializeComponent("", 110, Font::LINE_HEIGHT * 5);
 
 	private:
 		static Text initializeComponent(const char *v, size_t x, size_t y) {

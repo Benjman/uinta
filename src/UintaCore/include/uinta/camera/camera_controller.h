@@ -10,8 +10,8 @@ namespace uinta {
 	class CameraController : public Controller {
 		PerspectiveCamera _camera;
 
-		float_t _speed = 15.f;
-
+		float_t _zoomSpeed = 12.f;
+		float_t _yawSpeed = 3.f;
 		bool _viewDirty = true;
 
 		void updateYaw();
@@ -34,13 +34,14 @@ namespace uinta {
 		void initialize() override {
 			updateProjectionMatrix();
 			updateViewMatrix();
-			_viewDirty = true; // update position in first update
+			_viewDirty = true; // forces update of position in first update
 		}
 
 		void updateProjectionMatrix();
 
 		void updateViewMatrix();
 
+		[[nodiscard]] const PerspectiveCamera &getCamera() const { return _camera; }
 		[[nodiscard]] glm::mat4 getProjectionMatrix() const { return _camera._projection; }
 		[[nodiscard]] glm::mat4 getViewMatrix() const { return _camera._view; }
 

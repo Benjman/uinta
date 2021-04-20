@@ -5,10 +5,11 @@ using namespace uinta;
 
 DebugController::DebugController(Controller *parent, const CameraController *camera)
 		: Controller(parent),
-		_world(this, camera) {
+		_world(this, camera),
+		_ui (this, camera) {
 }
 
 void DebugController::render() {
-	_ui.render();
 	_world.render();
+	_ui.render();
 }

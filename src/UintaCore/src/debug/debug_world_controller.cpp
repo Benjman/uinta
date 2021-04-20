@@ -57,10 +57,10 @@ void Floor::initialize(DebugWorldController *controller) {
 			color = colors[i % 2];
 
 			GLfloat vertices[]{
-					xCursor, yCursor, 0.f, color.r, color.g, color.b,
-					xCursor, yEnd, 0.f, color.r, color.g, color.b,
-					xEnd, yEnd, 0.f, color.r, color.g, color.b,
-					xEnd, yCursor, 0.f, color.r, color.g, color.b,
+					xCursor, 0.f, yCursor, color.r, color.g, color.b,
+					xCursor, 0.f, yEnd, color.r, color.g, color.b,
+					xEnd, 0.f, yEnd, color.r, color.g, color.b,
+					xEnd, 0.f, yCursor, color.r, color.g, color.b,
 			};
 			memcpy(&vBuffer[(y * COLS * ELEMENTS_PER_VERT + x * ELEMENTS_PER_VERT) * VERTS_PER_CELL],
 				   vertices, sizeof(vertices));

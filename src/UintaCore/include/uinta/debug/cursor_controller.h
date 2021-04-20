@@ -13,14 +13,12 @@ namespace uinta {
 		int16_t _x = 0, _y = 0;
 		int16_t _dx = 0, _dy = 0;
 
-		TextController &_delta;
-
 	public:
-		CursorController(BufferController *parent, Text &text, Font *font, TextController &delta);
+		CursorController(BufferController *parent, Text &text, Font *font);
 
 		void update(const EngineState &state) override;
 
-	}; // class MouseController
+	}; // class CursorController
 
 } // namespace uinta
 

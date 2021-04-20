@@ -20,7 +20,7 @@ namespace uinta {
 		}
 
 	public:
-		[[nodiscard]] const Controller *getParent() const { return _parent; }
+		[[nodiscard]] virtual const Controller *getParent() const { return _parent; }
 		[[nodiscard]] const std::vector<Controller *> &getChildren() const { return _children; }
 
 		~Controller();

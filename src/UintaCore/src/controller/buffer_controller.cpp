@@ -7,13 +7,14 @@
 using namespace uinta;
 
 void BufferController::initialize() {
-	Controller::initialize();
 	vao = Vao::requestVao();
 	vbo = Vbo::requestVbo(vao, GL_ARRAY_BUFFER, GL_STATIC_DRAW, vSize);
 	ibo = Vbo::requestVbo(vao, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, iSize);
 
 	vMaxElements = vSize / sizeof(GLfloat);
 	iMaxElements = iSize / sizeof(GLuint);
+
+	Controller::initialize();
 }
 
 BufferController::~BufferController() {
