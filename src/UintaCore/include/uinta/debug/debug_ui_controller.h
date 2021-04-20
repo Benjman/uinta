@@ -15,7 +15,7 @@
 namespace uinta {
 
 	class DebugController;
-	class CameraController;
+	class PerspectiveCamera;
 
 	class DebugUiController : public BufferController, public IRenderController {
 		const DebugUiView _view;
@@ -33,7 +33,7 @@ namespace uinta {
 		TextController _tickLabel = TextController(this, (Text &) _view.tickLabel, (Font *) _font);
 
 	public:
-		explicit DebugUiController(DebugController *parent, const CameraController *pController);
+		explicit DebugUiController(DebugController *parent, const PerspectiveCamera *pController);
 
 		~DebugUiController();
 

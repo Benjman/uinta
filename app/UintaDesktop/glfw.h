@@ -1,7 +1,7 @@
 #ifndef UINTA_GLFW_H
 #define UINTA_GLFW_H
 
-#include <uinta/input/input_manager.h>
+#include <uinta/input/input_manager_impl.h>
 
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
@@ -112,7 +112,7 @@ namespace uinta::glfw {
 			cursorButtonsDown[code] = down;
 		}
 
-		void updateInputState(InputManager *inputManager) {
+		void updateInputState(InputManagerImpl *inputManager) {
 			for (size_t i = 0; i < _numInputEvents; i++) {
 				inputManager->registerEvent(_inputEvents[i]);
 			}

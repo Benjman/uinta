@@ -9,7 +9,7 @@
 using namespace uinta;
 using namespace uinta::gl_state;
 
-DebugUiController::DebugUiController(DebugController *parent, const CameraController *cameraController)
+DebugUiController::DebugUiController(DebugController *parent, const PerspectiveCamera *cameraController)
 		: BufferController(parent, KILOBYTES(10), KILOBYTES(5)),
 		  _font(Font::loadFont("/usr/share/fonts/noto/NotoSans-Regular.ttf")),
 		  _camera(this, (Text &) _view.cameraPitch, (Font *) _font, (Text &) _view.cameraYaw, (Text &) _view.cameraZoom, cameraController) {

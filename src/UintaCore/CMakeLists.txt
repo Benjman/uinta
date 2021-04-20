@@ -4,7 +4,7 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
-        src/camera/camera_ui_controller.cpp
+        src/camera/perspective_camera.cpp
         src/controller/buffer_controller.cpp
         src/controller/controller.cpp
         src/controller/scene/scene_controller.cpp
@@ -20,7 +20,7 @@ set(SOURCES ${SOURCES}
         src/debug/tick_controller.cpp
         src/gl/gl_error.cpp
         src/gl/gl_state.cpp
-        src/input/input_manager.cpp
+        src/input/input_manager_impl.cpp
         src/io/file.cpp
         src/render/i_render_controller.cpp
         src/render/i_renderable.cpp

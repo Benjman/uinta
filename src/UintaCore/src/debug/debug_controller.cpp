@@ -3,7 +3,7 @@
 
 using namespace uinta;
 
-DebugController::DebugController(Controller *parent, const CameraController *camera)
+DebugController::DebugController(Controller *parent, const PerspectiveCamera *camera)
 		: Controller(parent),
 		_world(this, camera),
 		_ui (this, camera) {

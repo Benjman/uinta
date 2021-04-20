@@ -1,5 +1,5 @@
 #include <uinta/debug/cursor_controller.h>
-#include <uinta/input/i_input_manager.h>
+#include <uinta/input_manager.h>
 
 #include <string>
 

@@ -5,16 +5,16 @@
 
 namespace uinta {
 
-	class IInputManager;
+	class InputManager;
 
 	struct EngineState {
 		size_t tick = 0;
 		float_t runtime = 0.f;
 		float_t delta = 0.f;
 
-		const IInputManager *inputManager;
+		const InputManager *inputManager;
 
-		explicit EngineState(const IInputManager *manager) : inputManager(manager) {}
+		explicit EngineState(const InputManager *manager) : inputManager(manager) {}
 
 	}; // struct EngineState
 

@@ -1,5 +1,5 @@
-#ifndef UINTA_I_INPUT_MANAGER_H
-#define UINTA_I_INPUT_MANAGER_H
+#ifndef UINTA_INPUT_MANAGER_H
+#define UINTA_INPUT_MANAGER_H
 
 #include <uinta/types.h>
 
@@ -162,7 +162,7 @@ namespace uinta {
 		key_code_t key = 0;
 	};
 
-	class IInputManager {
+	class InputManager {
 	protected:
 		bool shiftDown = false;
 		bool controlDown = false;
@@ -195,8 +195,8 @@ namespace uinta {
 			return superDown;
 		}
 
-	}; // class IInputManager
+	}; // class InputManager
 
 } // namespace uinta
 
-#endif //UINTA_I_INPUT_MANAGER_H
+#endif //UINTA_INPUT_MANAGER_H

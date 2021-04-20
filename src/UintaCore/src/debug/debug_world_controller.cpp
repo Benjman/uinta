@@ -1,4 +1,3 @@
-#include <uinta/camera/camera_controller.h>
 #include <uinta/colors.h>
 #include <uinta/debug/debug_controller.h>
 #include <uinta/debug/debug_world_controller.h>
@@ -7,7 +6,7 @@
 using namespace uinta;
 using namespace uinta::gl;
 
-DebugWorldController::DebugWorldController(DebugController *parent, const CameraController *camera)
+DebugWorldController::DebugWorldController(DebugController *parent, const ICamera *camera)
 		: BufferController(parent, KILOBYTES(5), KILOBYTES(2)),
 		  _camera(camera) {
 }

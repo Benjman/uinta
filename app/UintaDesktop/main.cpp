@@ -4,19 +4,26 @@
 #include <uinta/controller/scene/scene_controller.h>
 #include <uinta/debug/debug_controller.h>
 #include <uinta/engine_state.h>
-#include <uinta/input/input_manager.h>
-#include <uinta/text.h>
+#include <uinta/input/input_manager_impl.h>
 
 using namespace uinta;
 using namespace uinta::glfw;
 
 class MainController : public Controller, public IRenderController {
-	CameraController camera = CameraController(this);
+	PerspectiveCamera camera;
+
 	DebugController debug = DebugController(this, &camera);
 	SceneController scene = SceneController(this, &camera);
 
 public:
 	MainController() : Controller(nullptr) {
+		camera.initialize();
+	}
+
+	void update(const EngineState &state) override {
+		camera.update(state);
+
+		Controller::update(state);
 	}
 
 	void render() override {
@@ -37,7 +44,7 @@ int main() {
 	MainController controller;
 	controller.initialize();
 
-	InputManager inputManager;
+	InputManagerImpl inputManager;
 	EngineState state(&inputManager);
 
 	while (!shouldClose(glfw)) {

@@ -2,7 +2,7 @@
 
 #include <uinta/os.h>
 #include <uinta/gl/gl_state.h>
-#include <uinta/input/input_manager.h>
+#include <uinta/input_manager.h>
 
 #include <iostream>
 #include <map>

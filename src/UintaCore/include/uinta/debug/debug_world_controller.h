@@ -3,13 +3,13 @@
 
 #include "debug_world_shader.h"
 
+#include <uinta/camera/icamera.h>
 #include <uinta/controller/buffer_controller.h>
-#include <uinta/render/i_render_controller.h>
 #include <uinta/model/mesh.h>
+#include <uinta/render/i_render_controller.h>
 
 namespace uinta {
 
-	class CameraController;
 	class DebugController;
 	class DebugWorldController;
 
@@ -29,12 +29,12 @@ namespace uinta {
 	}; // class Floor
 
 	class DebugWorldController : public BufferController, public IRenderController {
-		const CameraController *_camera;
+		const ICamera *_camera;
 		DebugWorldShader _shader;
 		Floor _floor;
 
 	public:
-		DebugWorldController(DebugController *parent, const CameraController *camera);
+		DebugWorldController(DebugController *parent, const ICamera *camera);
 
 		void initialize() override;
 

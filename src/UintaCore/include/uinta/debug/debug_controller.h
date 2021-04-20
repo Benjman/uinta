@@ -4,7 +4,7 @@
 #include "debug_ui_controller.h"
 #include "debug_world_controller.h"
 
-#include <uinta/camera/icamera.h>
+#include <uinta/camera/perspective_camera.h>
 
 namespace uinta {
 
@@ -15,7 +15,7 @@ namespace uinta {
 		DebugWorldController _world;
 
 	public:
-		DebugController(Controller *parent, const CameraController *camera);
+		DebugController(Controller *parent, const PerspectiveCamera *camera);
 
 		void render();
 

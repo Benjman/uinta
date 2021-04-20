@@ -1,4 +1,3 @@
-#include <uinta/camera/camera_controller.h>
 #include <uinta/controller/scene/scene_controller.h>
 #include <uinta/gl/gl_error.h>
 #include <uinta/gl/gl_state.h>
@@ -6,11 +5,10 @@
 
 #include <cstring>
 #include <glm/ext/matrix_transform.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
 
 using namespace uinta;
 
-SceneController::SceneController(Controller *parent, const CameraController *camera)
+SceneController::SceneController(Controller *parent, const ICamera *camera)
 		: BufferController(parent, KILOBYTES(5),
 						   KILOBYTES(2)),
 						   _camera(camera) {

@@ -1,11 +1,11 @@
 #ifndef UINTA_INPUT_H
 #define UINTA_INPUT_H
 
-#include "i_input_manager.h"
+#include "../input_manager.h"
 
 namespace uinta {
 
-	class InputManager : public IInputManager {
+	class InputManagerImpl : public InputManager {
 		int16_t cursorX = 0;
 		int16_t cursorDX = 0;
 		int16_t cursorY = 0;
@@ -27,7 +27,7 @@ namespace uinta {
 		void handleRepeatEvent(const InputEvent &event) {}
 
 	public:
-		InputManager();
+		InputManagerImpl();
 
 		void registerEvent(const InputEvent &event);
 

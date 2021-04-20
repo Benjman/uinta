@@ -6,18 +6,17 @@
 namespace uinta {
 
 	class BufferController;
-	class CameraController;
-	class CameraUiController;
+	class PerspectiveCamera;
 	class Font;
 	class Text;
 
 	class YawController : public TextController {
 		friend class CameraUiController;
 
-		const CameraController *_cameraController;
+		const PerspectiveCamera *_camera;
 		float_t _yaw = 0.f;
 
-		YawController(BufferController *parent, Text &text, Font *font, const CameraController *cameraController);
+		YawController(BufferController *parent, Text &text, Font *font, const PerspectiveCamera *camera);
 
 		void update(const EngineState &state) override;
 
@@ -26,24 +25,24 @@ namespace uinta {
 	class ZoomController : public TextController {
 		friend class CameraUiController;
 
-		const CameraController *_cameraController;
+		const PerspectiveCamera *_camera;
 		float_t _zoom = 0.f;
 
-		ZoomController(BufferController *parent, Text &text, Font *font, const CameraController *cameraController);
+		ZoomController(BufferController *parent, Text &text, Font *font, const PerspectiveCamera *camera);
 
 		void update(const EngineState &state) override;
 
 	}; // ZoomController
 
 	class CameraUiController : public TextController {
-		const CameraController *_cameraController;
+		const PerspectiveCamera *_camera;
 		YawController _yaw;
 		ZoomController _zoom;
 		float_t _pitch;
 
 	public:
 		CameraUiController(BufferController *parent, Text &position, Font *font, Text &yaw, Text &zoom,
-						   const CameraController *cameraController);
+						   const PerspectiveCamera *camera);
 
 		void initialize() override;
 

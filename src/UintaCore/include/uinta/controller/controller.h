@@ -3,6 +3,7 @@
 
 #include <uinta/types.h>
 #include <uinta/engine_state.h>
+#include <uinta/ecs.h>
 
 #include <vector>
 
