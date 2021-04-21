@@ -5,6 +5,7 @@
 
 #include <uinta/engine_state.h>
 #include <uinta/ecs.h>
+#include <uinta/data/smooth_float.h>
 
 namespace uinta {
 
@@ -14,13 +15,15 @@ namespace uinta {
 		static constexpr glm::vec3 WORLD_RIGHT = glm::vec3(1.f, 0.f, 0.f);
 		static constexpr glm::vec3 WORLD_UP = glm::vec3(0.f, 1.f, 0.f);
 
+		static constexpr float_t DIST_SENSITIVITY = 10.f;
+		static constexpr float_t YAW_SENSITIVITY = 10.f;
+		static constexpr float_t PITCH_SENSITIVITY = 10.f;
+
 		glm::vec3 _target = glm::vec3(0.f);
 
-		float_t _dist = 10.f;
-		float_t _pitch = 45.f;
-		float_t _yaw = 0.f;
-
-		bool _viewDirty = true;
+		SmoothFloat _dist = SmoothFloat(10.f, 15.f);
+		SmoothFloat _pitch = SmoothFloat(45.f, 15.f);
+		SmoothFloat _yaw = SmoothFloat(0.f, 15.f);
 
 		void updateDistance(const EngineState &state);
 		void updatePitch(const EngineState &state);
