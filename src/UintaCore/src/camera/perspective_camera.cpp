@@ -58,8 +58,8 @@ void PerspectiveCamera::updateTarget(const EngineState &state) {
 	float_t h = inputManager->getCursorDX();
 	float_t v = inputManager->getCursorDY();
 
-	_target.x = yawCos * h - yawSin * v;;
-	_target.z = yawCos * v + yawSin * h;
+	_target.x -= (yawCos * h - yawSin * v) * 0.018f;
+	_target.z -= (yawCos * v + yawSin * h) * 0.018f;
 
 	_viewDirty = true;
 }
