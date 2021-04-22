@@ -15,3 +15,7 @@
 [submodule "stb"]
 	path = dep/stb
 	url = https://github.com/nothings/stb.git
+[submodule "assimp"]
+	path = dep/assimp
+	url = https://github.com/assimp/assimp.git
+	branch = master

@@ -22,6 +22,7 @@ set(SOURCES ${SOURCES}
         src/gl/gl_state.cpp
         src/input/input_manager_impl.cpp
         src/io/file.cpp
+		src/model/model.cpp
         src/render/i_render_controller.cpp
         src/render/i_renderable.cpp
         src/shader/shader.cpp
@@ -47,6 +48,10 @@ set(LIBRARIES ${LIBRARIES} ${OPENGL_opengl_LIBRARY})
 
 find_package(glm REQUIRED)
 set(INCLUDES ${INCLUDES} ${GLM_INCLUDE})
+
+find_package(assimp REQUIRED)
+set(INCLUDES ${INCLUDES} ${ASSIMP_INCLUDE})
+set(LIBRARIES ${LIBRARIES} ${ASSIMP_LIB})
 
 add_library(UintaCore STATIC ${SOURCES})
 
