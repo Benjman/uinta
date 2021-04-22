@@ -15,7 +15,7 @@ namespace uinta {
 		static constexpr glm::vec3 WORLD_RIGHT = glm::vec3(1.f, 0.f, 0.f);
 		static constexpr glm::vec3 WORLD_UP = glm::vec3(0.f, 1.f, 0.f);
 
-		static constexpr float_t DIST_SENSITIVITY = 10.f;
+		static constexpr float_t DIST_SENSITIVITY = 80.f;
 		static constexpr float_t YAW_SENSITIVITY = 10.f;
 		static constexpr float_t PITCH_SENSITIVITY = 10.f;
 

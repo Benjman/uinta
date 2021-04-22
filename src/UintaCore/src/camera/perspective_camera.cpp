@@ -15,10 +15,8 @@ void PerspectiveCamera::update(const EngineState &state) {
 	updateDistance(state);
 	updateTarget(state);
 
-//	if (_viewDirty) {
-		updatePosition();
-		updateViewMatrix();
-//	}
+	updatePosition();
+	updateViewMatrix();
 }
 
 void PerspectiveCamera::initialize() {
