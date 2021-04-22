@@ -4,7 +4,6 @@
 #include <uinta/gl/gl_error.h>
 
 using namespace uinta;
-using namespace uinta::gl;
 
 DebugWorldController::DebugWorldController(DebugController *parent, const ICamera *camera)
 		: BufferController(parent, KILOBYTES(5), KILOBYTES(2)),

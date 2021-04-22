@@ -8,7 +8,7 @@ namespace uinta {
 
 	class IRenderable {
 	public:
-		virtual void render();
+		virtual void render(); // TODO make const
 
 		virtual GLsizei getIndexCount() {
 			return _indexCount;

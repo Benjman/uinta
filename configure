@@ -8,8 +8,9 @@ git submodule update --init --recursive --jobs 12
 ### assimp
 [ ! -d assimp ] && >&2 echo -e "\e[33mdep/assimp missing" && return
 mkdir assimp/build 2> /dev/null
-cmake -D CMAKE_BUILD_TYPE=Release -B assimp/build -S assimp
-make --directory assimp/build -j 32
+cd assimp
+cmake CMakeLists.txt
+cmake --build . -j 32
 
 ### GLFW
 [ ! -d glfw ] && >&2 echo -e "\e[33mdep/glfw missing" && return

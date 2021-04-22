@@ -15,7 +15,6 @@ namespace uinta {
 
 	class SceneController : public BufferController, public IRenderController {
 		const ICamera *_camera;
-		Mesh _cube;
 		SceneShader shader;
 		float_t _runtime = 0.f;
 

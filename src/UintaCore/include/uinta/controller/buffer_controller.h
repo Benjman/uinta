@@ -41,6 +41,8 @@ namespace uinta {
 
 		void initialize() override;
 
+		void uploadMesh(Mesh &mesh);
+
 		void uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeiptr pVOffset, GLuint *pIBuffer,
 								  GLsizeiptr pISize, GLsizeiptr pIOffset = 0);
 

@@ -5,24 +5,23 @@
 #include <uinta/debug/debug_controller.h>
 #include <uinta/engine_state.h>
 #include <uinta/input/input_manager_impl.h>
+#include <uinta/model.h>
 
 using namespace uinta;
 using namespace uinta::glfw;
 
-class MainController : public Controller, public IRenderController {
+struct MainController : public Controller, public IRenderController {
 	PerspectiveCamera camera;
 
 	DebugController debug = DebugController(this, &camera);
 	SceneController scene = SceneController(this, &camera);
 
-public:
 	MainController() : Controller(nullptr) {
 		camera.initialize();
 	}
 
 	void update(const EngineState &state) override {
 		camera.update(state);
-
 		Controller::update(state);
 	}
 
@@ -34,7 +33,7 @@ public:
 };
 
 int main() {
-	GlfwDto glfw(1282, 532, "Test Window Creation");
+	GlfwDto glfw(1920, 1080, "Test Window Creation");
 //	glfw.setHeadless(true);
 
 	if (!initialize(glfw) || glfw.getStatus() == Error) {
@@ -43,6 +42,9 @@ int main() {
 
 	MainController controller;
 	controller.initialize();
+
+	const Model &model = Model::loadModel("/home/ben/src/uinta/res/models/suzanne.obj", &controller.scene);
+	controller.scene.addRenderable((IRenderable *) &model);
 
 	InputManagerImpl inputManager;
 	EngineState state(&inputManager);

@@ -36,7 +36,8 @@ void BufferController::uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeip
 }
 
 void BufferController::initializeMeshBuffers(Mesh &mesh) {
-	reserveBuffer(&mesh.vBuffer, mesh.getVertexCount(), &mesh.vParentOffsetBytes, &mesh.iBuffer, mesh.getIndexCount(), &mesh.iParentOffsetBytes);
+	reserveBuffer(&mesh.vBuffer, mesh.getVertexCount(), &mesh.vParentOffsetBytes,
+				  &mesh.iBuffer, mesh.getIndexCount(), &mesh.iParentOffsetBytes);
 }
 
 void BufferController::reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeiptr *pVOffsetBytes,
@@ -62,4 +63,9 @@ void BufferController::reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeipt
 		*pIOffsetBytes = (GLsizeiptr) (iIndex * sizeof(GLuint));
 		iIndex += pILen;
 	}
+}
+
+void BufferController::uploadMesh(Mesh &mesh) {
+	uploadMesh(mesh.vBuffer, (GLsizeiptr) (mesh.getVertexCount() * sizeof(GLfloat)), mesh.vParentOffsetBytes,
+			   mesh.iBuffer, (GLsizeiptr) (mesh.getIndexCount() * sizeof(GLuint)), mesh.iParentOffsetBytes);
 }

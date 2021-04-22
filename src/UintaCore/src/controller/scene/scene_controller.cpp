@@ -9,8 +9,8 @@
 using namespace uinta;
 
 SceneController::SceneController(Controller *parent, const ICamera *camera)
-		: BufferController(parent, KILOBYTES(5),
-						   KILOBYTES(2)),
+		: BufferController(parent, MEGABYTES(5),
+						   MEGABYTES(3)),
 						   _camera(camera) {
 }
 
@@ -20,55 +20,6 @@ void SceneController::initialize() {
 	shader._model.load(glm::mat4(1));
 	shader._view.load(_camera->getViewMatrix());
 	shader._projection.load(_camera->getProjectionMatrix());
-
-	GLfloat vertices[] = {
-			-1.f, -1.f, -1.f, 0.f, 0.f, -1.f,
-			1.f, -1.f, -1.f, 0.f, 0.f, -1.f,
-			1.f,  1.f, -1.f, 0.f, 0.f, -1.f,
-			1.f,  1.f, -1.f, 0.f, 0.f, -1.f,
-			-1.f,  1.f, -1.f, 0.f, 0.f, -1.f,
-			-1.f, -1.f, -1.f, 0.f, 0.f, -1.f,
-
-			-1.f, -1.f,  1.f, 0.f, 0.f, 1.f,
-			1.f, -1.f,  1.f, 0.f, 0.f, 1.f,
-			1.f,  1.f,  1.f, 0.f, 0.f, 1.f,
-			1.f,  1.f,  1.f, 0.f, 0.f, 1.f,
-			-1.f,  1.f,  1.f, 0.f, 0.f, 1.f,
-			-1.f, -1.f,  1.f, 0.f, 0.f, 1.f,
-
-			-1.f,  1.f,  1.f, 1.f, 0.f, 0.f,
-			-1.f,  1.f, -1.f, 1.f, 0.f, 0.f,
-			-1.f, -1.f, -1.f, 1.f, 0.f, 0.f,
-			-1.f, -1.f, -1.f, 1.f, 0.f, 0.f,
-			-1.f, -1.f,  1.f, 1.f, 0.f, 0.f,
-			-1.f,  1.f,  1.f, 1.f, 0.f, 0.f,
-
-			1.f,  1.f,  1.f, 1.f, 0.f, 0.f,
-			1.f,  1.f, -1.f, 1.f, 0.f, 0.f,
-			1.f, -1.f, -1.f, 1.f, 0.f, 0.f,
-			1.f, -1.f, -1.f, 1.f, 0.f, 0.f,
-			1.f, -1.f,  1.f, 1.f, 0.f, 0.f,
-			1.f,  1.f,  1.f, 1.f, 0.f, 0.f,
-
-			-1.f, -1.f, -1.f, 0.f, -1.f, 0.f,
-			1.f, -1.f, -1.f, 0.f, -1.f, 0.f,
-			1.f, -1.f,  1.f, 0.f, -1.f, 0.f,
-			1.f, -1.f,  1.f, 0.f, -1.f, 0.f,
-			-1.f, -1.f,  1.f, 0.f, -1.f, 0.f,
-			-1.f, -1.f, -1.f, 0.f, -1.f, 0.f,
-
-			-1.f,  1.f, -1.f, 0.f, 1.f, 0.f,
-			1.f,  1.f, -1.f, 0.f, 1.f, 0.f,
-			1.f,  1.f,  1.f, 0.f, 1.f, 0.f,
-			1.f,  1.f,  1.f, 0.f, 1.f, 0.f,
-			-1.f,  1.f,  1.f, 0.f, 1.f, 0.f,
-			-1.f,  1.f, -1.f, 0.f, 1.f, 0.f,
-	};
-
-	_cube.setVertexCount(sizeof(vertices) / sizeof(GLfloat));
-
-	initializeMeshBuffers(_cube);
-	memcpy(_cube.vBuffer, vertices, sizeof(vertices));
 
 	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
 	vao->createAttribute(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));
@@ -90,8 +41,7 @@ void SceneController::render() {
 	glEnable(GL_DEPTH_TEST);
 	glCheckError(GL_ENABLE);
 
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glCheckError(GL_DRAW_ARRAYS);
+	IRenderController::render();
 }
 
 void SceneController::update(const EngineState &state) {
