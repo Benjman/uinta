@@ -110,7 +110,6 @@ Model Model::loadModel(const char *path, BufferController *buffer) {
 	calcMeshCount(&meshCount, scene->mRootNode);
 
 	Mesh **meshes = new Mesh*[meshCount];
-
 	processNode(scene->mRootNode, scene, buffer, meshes);
 
 	return Model(meshes, meshCount);
@@ -120,6 +119,7 @@ Model::~Model() {
 	for (size_t i = 0; i < _numChildren; i++) {
 		delete _children[i];
 	}
+	delete[] _children;
 }
 
 Model::Model(Mesh **children, size_t numChildren) : _children(children), _numChildren(numChildren) {
