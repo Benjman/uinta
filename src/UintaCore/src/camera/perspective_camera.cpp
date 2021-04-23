@@ -39,24 +39,24 @@ void PerspectiveCamera::updatePosition() {
 	float_t xDist = _dist * cosf(rad(_pitch));
 	float_t yDist = _dist * sinf(rad(_pitch));
 
-	_position.x = _target.x + xDist * sinf(rad(-_yaw));
-	_position.y = _target.y + yDist;
-	_position.z = _target.z + xDist * cosf(rad(-_yaw));
+	_position.x = _target.current.x + xDist * sinf(rad(-_yaw));
+	_position.y = _target.current.y + yDist;
+	_position.z = _target.current.z + xDist * cosf(rad(-_yaw));
 }
 
 void PerspectiveCamera::updateTarget(const EngineState &state) {
 	const InputManager *inputManager = state.inputManager;
-	if (!inputManager->isCursorDown(CURSOR_BUTTON_LEFT))
-		return;
+	if (inputManager->isCursorDown(CURSOR_BUTTON_LEFT)) {
+		float_t yawCos = cosf(rad(_yaw));
+		float_t yawSin = sinf(rad(_yaw));
 
-	float_t yawCos = cosf(rad(_yaw));
-	float_t yawSin = sinf(rad(_yaw));
+		float_t h = inputManager->getCursorDX();
+		float_t v = inputManager->getCursorDY();
 
-	float_t h = inputManager->getCursorDX();
-	float_t v = inputManager->getCursorDY();
-
-	_target.x -= (yawCos * h - yawSin * v) * 0.018f;
-	_target.z -= (yawCos * v + yawSin * h) * 0.018f;
+		_target.target.x -= (yawCos * h - yawSin * v) * POSITION_SENSITIVITY;
+		_target.target.z -= (yawCos * v + yawSin * h) * POSITION_SENSITIVITY;
+	}
+	_target.update(state.delta);
 }
 
 void PerspectiveCamera::updateYaw(const EngineState &state) {

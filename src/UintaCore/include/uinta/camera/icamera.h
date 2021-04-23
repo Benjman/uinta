@@ -1,7 +1,8 @@
 #ifndef UINTA_CAMERA_H
 #define UINTA_CAMERA_H
 
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace uinta {
 
