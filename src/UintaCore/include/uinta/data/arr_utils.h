@@ -4,11 +4,19 @@
 namespace uinta {
 
 	template<typename T>
-	void shiftArr(T shift, T *arr, size_t count) {
+	void arrShift(T *arr, T shift, size_t count) {
 		while (count > 0) {
 			arr[count - 1] += shift;
 			count--;
 		}
+	}
+
+	void arrShift(GLuint *arr, GLuint shift, size_t count) {
+		arrShift<GLuint>(arr, shift, count);
+	}
+
+	void arrShift(GLfloat *arr, GLfloat shift, size_t count) {
+		arrShift<GLfloat>(arr, shift, count);
 	}
 
 } // namespace uinta
