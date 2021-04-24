@@ -70,11 +70,7 @@ void TextController::uploadMesh() const {
 void TextController::initializeMeshBuffers(BufferController *buffer) {
 	_mesh->setVertexCount((GLsizei) getVBufferLen());
 	_mesh->setIndexCount((GLsizei) getIBufferLen());
-	size_t iPointer = buffer->getIIndex();
 	buffer->initializeMeshBuffers(*_mesh, getMaxIdxCount());
-
-	_mesh->setIndexCount((GLsizei) getICount());
-	_mesh->setOffset(iPointer);
 
 	populateMesh();
 }
