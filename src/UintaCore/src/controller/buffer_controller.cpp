@@ -28,17 +28,17 @@ BufferController::~BufferController() {
 	delete[] iBuffer;
 }
 
-void BufferController::uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeiptr pVOffset, GLuint *pIBuffer,
-								  GLsizeiptr pISize, GLsizeiptr pIOffset) {
+void BufferController::upload(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeiptr pVOffset,
+							  GLuint *pIBuffer, GLsizeiptr pISize, GLsizeiptr pIOffset) {
 	vao->bind();
 	vbo->storeData(pVBuffer, pVSize, pVOffset);
 	ibo->storeData(pIBuffer, pISize, pIOffset);
 }
 
-void BufferController::initializeMeshBuffers(Mesh &mesh, size_t overrideIndexLen) {
+void BufferController::initializeMeshBuffers(Mesh &mesh, size_t maxIdxCount) {
 	mesh.setOffset(iIndex);
 	mesh.idxOffset = idxIndex;
-	idxIndex += overrideIndexLen ? overrideIndexLen : mesh.getIndexCount();
+	idxIndex += maxIdxCount;
 	reserveBuffer(&mesh.vBuffer, mesh.getVertexCount(), &mesh.vParentOffsetBytes,
 				  &mesh.iBuffer, mesh.getIndexCount(), &mesh.iParentOffsetBytes);
 }
@@ -69,6 +69,6 @@ void BufferController::reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeipt
 }
 
 void BufferController::uploadMesh(Mesh &mesh) {
-	uploadMesh(mesh.vBuffer, (GLsizeiptr) (mesh.getVertexCount() * sizeof(GLfloat)), mesh.vParentOffsetBytes,
-			   mesh.iBuffer, (GLsizeiptr) (mesh.getIndexCount() * sizeof(GLuint)), mesh.iParentOffsetBytes);
+	upload(mesh.vBuffer, (GLsizeiptr) (mesh.getVertexCount() * sizeof(GLfloat)), mesh.vParentOffsetBytes,
+		   mesh.iBuffer, (GLsizeiptr) (mesh.getIndexCount() * sizeof(GLuint)), mesh.iParentOffsetBytes);
 }

@@ -63,14 +63,13 @@ GLuint TextController::getICount() const {
 }
 
 void TextController::uploadMesh() const {
-	_parent->uploadMesh(_mesh->vBuffer, getVBufferSize(), _mesh->vParentOffsetBytes, _mesh->iBuffer,
-						   getIBufferSize(), _mesh->iParentOffsetBytes);
+	_parent->upload(_mesh->vBuffer, getVBufferSize(), _mesh->vParentOffsetBytes, _mesh->iBuffer,
+					getIBufferSize(), _mesh->iParentOffsetBytes);
 }
 
 void TextController::initializeMeshBuffers(BufferController *buffer) {
 	_mesh->setVertexCount((GLsizei) getVBufferLen());
 	_mesh->setIndexCount((GLsizei) getIBufferLen());
 	buffer->initializeMeshBuffers(*_mesh, getMaxIdxCount());
-
 	populateMesh();
 }
