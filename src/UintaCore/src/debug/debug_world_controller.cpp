@@ -37,7 +37,7 @@ void Floor::initialize(DebugWorldController *controller) {
 	setVertexCount(VERTS_PER_CELL * ELEMENTS_PER_VERT * ROWS * COLS);
 	setOffset(0);
 
-	controller->initializeMeshBuffers(*this);
+	controller->initializeMeshBuffers(*this, getIndexCount());
 	controller->addRenderable(this);
 
 	const glm::vec3 colors[]{ColorGrey300, ColorGrey500};

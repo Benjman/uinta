@@ -21,8 +21,9 @@ void SceneController::initialize() {
 	shader._view.load(_camera->getViewMatrix());
 	shader._projection.load(_camera->getProjectionMatrix());
 
-	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
-	vao->createAttribute(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));
+	vao->createAttribute(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void *) (0 * sizeof(GLfloat)));
+	vao->createAttribute(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));
+	vao->createAttribute(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void *) (6 * sizeof(GLfloat)));
 
 	uploadBuffers();
 }
@@ -32,7 +33,7 @@ void SceneController::render() {
 	vao->bind();
 
 	glm::mat4 model(1.f);
-	model = glm::rotate(model, _runtime, glm::vec3(0.5f, 1.f, 0.f));
+//	model = glm::rotate(model, _runtime, glm::vec3(0.5f, 1.f, 0.f));
 
 	shader._model.load(model);
 	shader._view.load(_camera->getViewMatrix());

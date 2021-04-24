@@ -43,7 +43,7 @@ int main() {
 	MainController controller;
 	controller.initialize();
 
-	const Model &model = Model::loadModel("/home/ben/src/uinta/res/models/suzanne.obj", &controller.scene);
+	const Model &model = Model::loadModel("/home/ben/src/uinta/res/models/tree.obj", &controller.scene);
 	controller.scene.addRenderable((IRenderable *) &model);
 
 	InputManagerImpl inputManager;
