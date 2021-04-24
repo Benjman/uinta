@@ -35,9 +35,14 @@ void BufferController::uploadMesh(GLfloat *pVBuffer, GLsizeiptr pVSize, GLsizeip
 	ibo->storeData(pIBuffer, pISize, pIOffset);
 }
 
-void BufferController::initializeMeshBuffers(Mesh &mesh) {
+void BufferController::initializeMeshBuffers(Mesh &mesh, size_t overrideIndexLen) {
+	if (!overrideIndexLen) {
+		overrideIndexLen = mesh.getIndexCount();
+	}
+	mesh.idxOffset = idxIndex;
 	reserveBuffer(&mesh.vBuffer, mesh.getVertexCount(), &mesh.vParentOffsetBytes,
 				  &mesh.iBuffer, mesh.getIndexCount(), &mesh.iParentOffsetBytes);
+	idxIndex += overrideIndexLen;
 }
 
 void BufferController::reserveBuffer(GLfloat **pVBuffer, size_t pVLen, GLsizeiptr *pVOffsetBytes,
