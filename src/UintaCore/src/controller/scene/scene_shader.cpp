@@ -23,10 +23,10 @@ static const char *fragShader =
 		"out lowp vec4 outColor;"
 		"in lowp vec3 passNormal;"
 		"in lowp vec3 passColor;"
-		"const lowp vec3 lightDir = normalize(vec3(-1.0f, 1.0f, 1.0f));"
-		"const lowp float lightIntensity = 2.f;"
+		"const lowp vec3 lightDir = normalize(vec3(-0.33f, 1.0f, 0.5f));"
+		"const lowp float lightIntensity = 2.0f;"
 		"void main() {"
-		"	lowp float brightness = max(dot(lightDir, passNormal), 0.4f) * lightIntensity;"
+		"	lowp float brightness = max(dot(lightDir, passNormal), 0.33f) * lightIntensity;"
 		"	outColor = vec4(passColor * brightness, 1.0f);"
 		"}\0";
 

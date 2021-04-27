@@ -15,7 +15,7 @@ void DebugWorldController::initialize() {
 
 	_shader.initialize(glm::mat4(1), _camera->getProjectionMatrix(), _camera->getViewMatrix());
 	_shader.initializeAttributes(vao);
-	_floor.initialize(this);
+//	_floor.initialize(this);
 
 	uploadBuffers();
 }

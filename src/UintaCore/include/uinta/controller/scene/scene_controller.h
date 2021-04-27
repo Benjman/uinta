@@ -2,6 +2,7 @@
 #define UINTA_SCENE_CONTROLLER_H
 
 #include "scene_shader.h"
+#include "terrain.h"
 
 #include <uinta/camera/icamera.h>
 #include <uinta/controller/buffer_controller.h>
@@ -11,11 +12,10 @@
 
 namespace uinta {
 
-	class CameraController;
-
 	class SceneController : public BufferController, public IRenderController {
 		const ICamera *_camera;
-		SceneShader shader;
+		SceneShader _shader;
+		Terrain _terrain;
 		float_t _runtime = 0.f;
 
 	public:

@@ -21,9 +21,9 @@ namespace uinta {
 		static constexpr float_t YAW_SENSITIVITY = 10.f;
 
 		SmoothVector3 _target = SmoothVector3(glm::vec3(0.f, 0.f, 0.f), 10.f);
-		SmoothFloat _dist = SmoothFloat(15.f, 15.f);
+		SmoothFloat _dist = SmoothFloat(10.f, 15.f);
 		SmoothFloat _pitch = SmoothFloat(35.f, 15.f);
-		SmoothFloat _yaw = SmoothFloat(30.f, 15.f);
+		SmoothFloat _yaw = SmoothFloat(345.f, 15.f);
 
 		void updateDistance(const EngineState &state);
 		void updatePitch(const EngineState &state);

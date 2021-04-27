@@ -31,7 +31,7 @@ namespace uinta {
 	class DebugWorldController : public BufferController, public IRenderController {
 		const ICamera *_camera;
 		DebugWorldShader _shader;
-		Floor _floor;
+//		Floor _floor;
 
 	public:
 		DebugWorldController(DebugController *parent, const ICamera *camera);

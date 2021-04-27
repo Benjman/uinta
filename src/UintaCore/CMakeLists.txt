@@ -4,11 +4,13 @@ project(UintaCore
         VERSION 0.1)
 
 set(SOURCES ${SOURCES}
+		src/controller/scene/scene_controller.cpp
+		src/controller/scene/scene_shader.cpp
+		src/model/model.cpp
         src/camera/perspective_camera.cpp
         src/controller/buffer_controller.cpp
         src/controller/controller.cpp
-        src/controller/scene/scene_controller.cpp
-        src/controller/scene/scene_shader.cpp
+		src/controller/scene/terrain.cpp
         src/debug/camera_ui_controller.cpp
         src/debug/cursor_controller.cpp
         src/debug/debug_controller.cpp
@@ -22,7 +24,6 @@ set(SOURCES ${SOURCES}
         src/gl/gl_state.cpp
         src/input/input_manager_impl.cpp
         src/io/file.cpp
-		src/model/model.cpp
         src/render/i_render_controller.cpp
         src/render/i_renderable.cpp
         src/shader/shader.cpp

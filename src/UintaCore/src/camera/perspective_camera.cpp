@@ -3,7 +3,6 @@
 #include <uinta/input/input_manager_impl.h>
 #include <uinta/math.h> // NOLINT(modernize-deprecated-headers)
 
-#include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace uinta;
@@ -60,10 +59,13 @@ void PerspectiveCamera::updateTarget(const EngineState &state) {
 }
 
 void PerspectiveCamera::updateYaw(const EngineState &state) {
+	if (!state.inputManager->isKeyDown(KEY_SPACE)) {
+		_yaw += 15.f * state.delta;
+	}
 	const InputManager *inputManager = state.inputManager;
 	if (inputManager->isCursorDown(CURSOR_BUTTON_RIGHT)) {
 		float_t yawDelta = (float_t) inputManager->getCursorDX() * state.delta * YAW_SENSITIVITY;
-		_yaw = std::fmod(_yaw + yawDelta, 360.f);
+		_yaw += yawDelta;
 	}
 	_yaw.update(state.delta);
 }

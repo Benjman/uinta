@@ -9,13 +9,19 @@ namespace uinta {
 	class Mesh;
 
 	class Model : public IRenderable {
+		BufferController *_buffer;
+		const char *_path;
 		Mesh **_children{};
-		const size_t _numChildren;
+		size_t _numChildren{};
 
-		Model(Mesh **children, size_t numChildren);
+		void loadModel();
 
 	public:
-		static Model loadModel(const char *path, BufferController *buffer);
+		explicit Model(BufferController *buffer, const char *path) : _buffer(buffer), _path(path) {}
+
+		virtual void initialize() {
+			loadModel();
+		}
 
 		~Model();
 

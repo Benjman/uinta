@@ -33,7 +33,7 @@ struct MainController : public Controller, public IRenderController {
 };
 
 int main() {
-	GlfwDto glfw(1920, 1080, "Test Window Creation");
+	GlfwDto glfw(800, 600, "Test Window Creation");
 //	glfw.setHeadless(true);
 
 	if (!initialize(glfw) || glfw.getStatus() == Error) {
@@ -43,7 +43,8 @@ int main() {
 	MainController controller;
 	controller.initialize();
 
-	const Model &model = Model::loadModel("/home/ben/src/uinta/res/models/tree.obj", &controller.scene);
+	Model model(&controller.scene, "/home/ben/src/uinta/res/models/tree.obj");
+	model.initialize();
 	controller.scene.addRenderable((IRenderable *) &model);
 
 	InputManagerImpl inputManager;

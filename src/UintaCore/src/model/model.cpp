@@ -108,10 +108,10 @@ namespace uinta::internal {
 using namespace uinta;
 using namespace uinta::internal;
 
-Model Model::loadModel(const char *path, BufferController *buffer) {
+void Model::loadModel() {
 	Importer importer;
 
-	const aiScene *scene = importer.ReadFile(path,
+	const aiScene *scene = importer.ReadFile(_path,
 											 aiProcess_Triangulate |
 											 aiProcess_FlipUVs |
 											 aiProcess_JoinIdenticalVertices);
@@ -120,18 +120,15 @@ Model Model::loadModel(const char *path, BufferController *buffer) {
 		|| scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
 		|| !scene->mRootNode) {
 		// One reason a model will fail to load is either the obj file isn't found, or an associated material file isn't present.
-		std::cerr << "Failed to load model '" << path << "'\n";
-		return Model(nullptr, 0);
+		std::cerr << "Failed to load model '" << _path << "'\n";
+		return;
 	}
 
-	size_t meshCount = 0;
-	calcMeshCount(&meshCount, scene->mRootNode);
+	calcMeshCount(&_numChildren, scene->mRootNode);
 
 	size_t meshIndex = 0;
-	Mesh **meshes = new Mesh*[meshCount];
-	processNode(scene->mRootNode, scene, buffer, meshes, &meshIndex);
-
-	return Model(meshes, meshCount);
+	_children = new Mesh*[_numChildren];
+	processNode(scene->mRootNode, scene, _buffer, _children, &meshIndex);
 }
 
 Model::~Model() {
@@ -139,9 +136,6 @@ Model::~Model() {
 		delete _children[i];
 	}
 	delete[] _children;
-}
-
-Model::Model(Mesh **children, size_t numChildren) : _children(children), _numChildren(numChildren) {
 }
 
 void Model::render() {
