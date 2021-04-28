@@ -2,6 +2,7 @@
 #define UINTA_FILE_H
 
 #include <uinta/types.h>
+#include <string>
 
 namespace uinta {
 
@@ -12,7 +13,7 @@ namespace uinta {
 		File(const char *contents, uint32_t contentLength);
 
 	public:
-		static File requestFile(const char *path);
+		static File requestFile(const char *relativePath);
 
 		~File() {
 			delete[] _contents;
@@ -25,6 +26,8 @@ namespace uinta {
 		[[nodiscard]] const char *getContents() const {
 			return _contents;
 		}
+
+		static std::string getFilePath(const char *relativePath);
 
 	}; // class File
 

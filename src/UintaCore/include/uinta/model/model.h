@@ -2,6 +2,7 @@
 #define UINTA_MODEL_H
 
 #include <uinta/render/i_renderable.h>
+#include <uinta/io/file.h>
 
 namespace uinta {
 
@@ -10,14 +11,14 @@ namespace uinta {
 
 	class Model : public IRenderable {
 		BufferController *_buffer;
-		const char *_path;
+		std::string _path;
 		Mesh **_children{};
 		size_t _numChildren{};
 
 		void loadModel();
 
 	public:
-		explicit Model(BufferController *buffer, const char *path) : _buffer(buffer), _path(path) {}
+		explicit Model(BufferController *buffer, const char *path) : _buffer(buffer), _path(File::getFilePath(path)) {}
 
 		virtual void initialize() {
 			loadModel();

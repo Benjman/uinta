@@ -36,6 +36,9 @@ set(INCLUDES ${INCLUDES} ${GLM_INCLUDE})
 find_package(stb REQUIRED)
 set(INCLUDES ${INCLUDES} ${STB_INCLUDE})
 
+file(INSTALL res DESTINATION ${CMAKE_BINARY_DIR})
+add_compile_definitions(UINTA_RES_PATH=\"${CMAKE_BINARY_DIR}/res/\")
+
 add_subdirectory(src/UintaPlatform)
 add_subdirectory(src/UintaCore)
 

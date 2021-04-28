@@ -4,6 +4,6 @@
 
 using namespace uinta;
 
-Terrain::Terrain(SceneController *controller) : Model(controller, "/home/ben/src/uinta/res/models/terrain.obj") {
+Terrain::Terrain(SceneController *controller) : Model(controller, "models/terrain.obj") {
 	controller->addRenderable(this);
 }

@@ -3,7 +3,11 @@
 
 #include <fstream>
 
-uinta::File uinta::File::requestFile(const char *path) {
+using namespace uinta;
+
+File File::requestFile(const char *relativePath) {
+	std::string path = UINTA_RES_PATH;
+	path += relativePath;
 	std::ifstream stream(path, std::ios::binary | std::ios::ate);
 	if (stream.fail()) {
 		throw FileNotFoundException(path);
@@ -15,7 +19,11 @@ uinta::File uinta::File::requestFile(const char *path) {
 	return File(contents, contentLength);
 }
 
-uinta::File::File(const char *contents, uint32_t contentLength): _contentLength(contentLength) {
+File::File(const char *contents, uint32_t contentLength): _contentLength(contentLength) {
 	_contents = new char[contentLength + 1];
 	strncpy(_contents, contents, contentLength - 1);
+}
+
+std::string File::getFilePath(const char *relativePath) {
+	return std::string(UINTA_RES_PATH) + relativePath;
 }

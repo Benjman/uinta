@@ -1,11 +1,12 @@
 #include "font_loader.h"
 
+#include <uinta/io/file.h>
 #include <uinta/text/font.h>
 
 using namespace uinta;
 
 Font *Font::loadFont(const char *trueTypePath) {
-	return FontLoader::loadFond(trueTypePath);
+	return FontLoader::loadFond(File::getFilePath(trueTypePath));
 }
 
 stbtt_aligned_quad Font::getQuadInfo(const char c, float_t *xCursor, float_t *yCursor) const {

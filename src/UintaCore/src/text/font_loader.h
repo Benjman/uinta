@@ -26,10 +26,10 @@
 namespace uinta {
 
 	struct FontLoader {
-		static Font *loadFond(const char *trueTypePath) {
+		static Font *loadFond(std::string trueTypePath) {
 			auto font = new Font;
 
-			FILE *file = fopen(trueTypePath, "rb");
+			FILE *file = fopen(trueTypePath.c_str(), "rb");
 			if (!file) {
 				std::cerr << "TrueType file at path `" << trueTypePath << "` not found." << std::endl;
 				return font;

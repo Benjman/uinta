@@ -43,7 +43,7 @@ int main() {
 	MainController controller;
 	controller.initialize();
 
-	Model model(&controller.scene, "/home/ben/src/uinta/res/models/tree.obj");
+	Model model(&controller.scene, "models/tree.obj");
 	model.initialize();
 	controller.scene.addRenderable((IRenderable *) &model);
 
