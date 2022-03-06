@@ -2,6 +2,7 @@
 
 #include <math.h> // for ceil
 #include <memory.h> // for memcpy
+#include <iostream>
 
 void validateQuad(const quad &quad) {
     // validate bounds are whole numbers
@@ -40,6 +41,7 @@ quad::quad() : quad(vec2(0.0), vec2(MIN_CELL_SIZE)) {}
 
 quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned char minCellSize)
     : topLeftBounds(vec2(topLeftBounds)), bottomRightBounds(vec2(bottomRightBounds)), minCellSize(minCellSize) {
+    parent = nullptr;
     topLeft = nullptr;
     topRight = nullptr;
     bottomLeft = nullptr;
@@ -101,7 +103,7 @@ const entt::entity* quad::get(const vec2 &pos, char* count) const noexcept {
         return entityStore;
     }
 
-    quad *q = findQuad(pos);
+    auto q = findQuad(pos);
 
     if (q == nullptr) {
         *count = 0;
@@ -115,7 +117,7 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
     if (!isInBounds(pos))
         return;
 
-    if ((topLeftBounds - bottomRightBounds) <= vec2(MIN_CELL_SIZE)) {
+    if ((bottomRightBounds - topLeftBounds) <= vec2(MIN_CELL_SIZE)) {
         addEntity(entity);
         return;
     }
@@ -130,12 +132,14 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
                 topLeft = new quad(vec2(topLeftBounds.x, topLeftBounds.y),
                 vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0,
                 (topLeftBounds.y + bottomRightBounds.y) / 2.0));
+                topLeft->parent = this;
             }
             topLeft->insert(entity, pos);
         } else {
             if (bottomLeft == nullptr) {
                 bottomLeft = new quad(vec2(topLeftBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                 vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y));
+                bottomLeft->parent = this;
             }
             bottomLeft->insert(entity, pos);
         }
@@ -144,12 +148,14 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
             if (topRight == nullptr) {
                 topRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, topLeftBounds.y),
                 vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0));
+                topRight->parent = this;
             }
             topRight->insert(entity, pos);
         } else {
             if (bottomRight == nullptr) {
                 bottomRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                 vec2(bottomRightBounds.x, bottomRightBounds.y));
+                bottomRight->parent = this;
             }
             bottomRight->insert(entity, pos);
         }
@@ -183,9 +189,36 @@ void quad::removeEntity(entt::entity entity) {
         if (entityStore[i] == entity) {
             entityCount--;
             entityStore[i] = entityStore[entityCount];
+
+            if (entityCount == 0 && parent) {
+                parent->removeQuad(this);
+            }
             return;
         }
     }
-    // TODO logging - warning
     // std::cerr << "Entity " << std::to_string((int) entity) << " not found in store.\n"; // TODO logging
+}
+
+void quad::removeQuad(const quad *quad) {
+    if (quad == bottomLeft) {
+        delete bottomLeft;
+        bottomLeft = nullptr;
+    } else if (quad == bottomRight) {
+        delete bottomRight;
+        bottomRight = nullptr;
+    } else if (quad == topLeft) {
+        delete topLeft;
+        topLeft = nullptr;
+    } else if (quad == topRight) {
+        delete topRight;
+        topRight = nullptr;
+    }
+
+    if (bottomLeft == nullptr
+        && bottomRight == nullptr
+        && topLeft == nullptr
+        && topRight == nullptr
+        && parent) {
+        parent->removeQuad(this);
+    }
 }

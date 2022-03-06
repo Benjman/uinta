@@ -8,10 +8,11 @@ struct quad final {
     static const inline char MIN_CELL_SIZE = 1;
     static const inline char ENTITY_STORE_SIZE_STEP = 2;
 
-    quad *topLeft;
-    quad *topRight;
+    quad *parent;
     quad *bottomLeft;
     quad *bottomRight;
+    quad *topLeft;
+    quad *topRight;
 
     entt::entity *entityStore;
 
@@ -40,6 +41,8 @@ private:
     void addEntity(entt::entity entity);
 
     void removeEntity(entt::entity entity);
+
+    void removeQuad(const quad *quad);
 
 };
 
