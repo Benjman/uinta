@@ -4,7 +4,7 @@ project(uinta)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(uinta src/main.cpp src/quadTree.h)
+add_library(uinta STATIC ./src/quadtree.cpp)
 
 # dependencies
 find_package(GTest REQUIRED)

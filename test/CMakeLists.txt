@@ -1,14 +1,15 @@
 find_package(Threads REQUIRED)
 
-include_directories(../src)
+include_directories(../include)
 
 add_executable(test
     ./main.cpp
-    ./quadTreeTests.cpp
+    ./quadtreeTests.cpp
     ./vecTests.cpp
     )
 
 target_link_libraries(test
+    uinta
     EnTT::EnTT
     GTest::GTest
     GTest::Main)

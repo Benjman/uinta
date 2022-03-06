@@ -1,106 +1,110 @@
 #ifndef UINTA_POS_H
 #define UINTA_POS_H
 
-struct vec2d final {
-    float x = 0.0;
-    float y = 0.0;
+struct vec2 final {
+    float x;
+    float y;
 
-    vec2d() = default;
+    vec2() noexcept : vec2(0.0) {}
 
-    vec2d(float x, float y) {
+    vec2(float v) noexcept : vec2(v, v) {}
+
+    vec2(float x, float y) noexcept {
         this->x = x;
         this->y = y;
     }
 
-    vec2d(const vec2d &vec) {
+    vec2(const vec2 &vec) noexcept {
         *this = vec;
     }
 
-    vec2d& operator=(const vec2d &vec) {
-        x = vec.x;
-        y = vec.y;
+    vec2& operator=(const vec2 &rhs) noexcept {
+        x = rhs.x;
+        y = rhs.y;
         return *this;
     }
 
-    vec2d operator+(const vec2d &other) {
-        return vec2d(x + other.x, y + other.y);
+    vec2 operator+(const vec2 &rhs) const noexcept {
+        return vec2(x + rhs.x, y + rhs.y);
     }
 
-    vec2d operator-(const vec2d &other) {
-        return vec2d(x - other.x, y - other.y);
+    vec2 operator-(const vec2 &rhs) const noexcept {
+        return vec2(x - rhs.x, y - rhs.y);
     }
 
-    bool operator>(const vec2d &rhs) const {
+    bool operator>(const vec2 &rhs) const noexcept {
         return x > rhs.x && y > rhs.y;
     }
 
-    bool operator<(const vec2d &rhs) const {
+    bool operator<(const vec2 &rhs) const noexcept {
         return x < rhs.x && y < rhs.y;
     }
 
-    bool operator>=(const vec2d &rhs) const {
+    bool operator>=(const vec2 &rhs) const noexcept {
         return x >= rhs.x && y >= rhs.y;
     }
 
-    bool operator<=(const vec2d &rhs) const {
+    bool operator<=(const vec2 &rhs) const noexcept {
         return x <= rhs.x && y <= rhs.y;
     }
 
-    bool operator==(const vec2d &rhs) const {
+    bool operator==(const vec2 &rhs) const noexcept {
         return x == rhs.x && y == rhs.y;
     }
 
 };
 
-struct vec3d final {
-    float x = 0.0;
-    float y = 0.0;
-    float z = 0.0;
+struct vec3 final {
+    float x;
+    float y;
+    float z;
 
-    vec3d() = default;
+    vec3() noexcept : vec3(0.0) {}
 
-    vec3d(float x, float y, float z) {
+    vec3(float v) noexcept : vec3(v, v, v) {}
+
+    vec3(float x, float y, float z) noexcept {
         this->x = x;
         this->y = y;
         this->z = z;
     }
 
-    vec3d(const vec3d& vec) {
+    vec3(const vec3& vec) noexcept {
         *this = vec;
     }
 
-    vec3d& operator=(const vec3d& vec) {
+    vec3& operator=(const vec3& vec) noexcept {
         x = vec.x;
         y = vec.y;
         z = vec.z;
         return *this;
     }
 
-    vec3d operator+(const vec3d &other) {
-        return vec3d(x + other.x, y + other.y, z + other.z);
+    vec3 operator+(const vec3 &other) noexcept {
+        return vec3(x + other.x, y + other.y, z + other.z);
     }
 
-    vec3d operator-(const vec3d &other) {
-        return vec3d(x - other.x, y - other.y, z - other.z);
+    vec3 operator-(const vec3 &other) noexcept {
+        return vec3(x - other.x, y - other.y, z - other.z);
     }
 
-    bool operator>(const vec3d &rhs) const {
+    bool operator>(const vec3 &rhs) const noexcept {
         return x > rhs.x && y > rhs.y && z > rhs.z;
     }
 
-    bool operator<(const vec3d &rhs) const {
+    bool operator<(const vec3 &rhs) const noexcept {
         return x < rhs.x && y < rhs.y && z < rhs.z;
     }
 
-    bool operator>=(const vec3d &rhs) const {
+    bool operator>=(const vec3 &rhs) const noexcept {
         return x >= rhs.x && y >= rhs.y && z >= rhs.z;
     }
 
-    bool operator<=(const vec3d &rhs) const {
+    bool operator<=(const vec3 &rhs) const noexcept {
         return x <= rhs.x && y <= rhs.y && z <= rhs.z;
     }
 
-    bool operator==(const vec3d &rhs) const {
+    bool operator==(const vec3 &rhs) const noexcept {
         return x == rhs.x && y == rhs.y && z == rhs.z;
     }
 
