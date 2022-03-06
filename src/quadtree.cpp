@@ -1,10 +1,7 @@
 #include <quadtree.h>
 
-#include <exception> // for runtime_error
 #include <math.h> // for ceil
 #include <memory.h> // for memcpy
-#include <iostream> // for cerr
-#include <string> // for std::to_string
 
 void validateQuad(const quad &quad) {
     // validate bounds are whole numbers
@@ -41,7 +38,7 @@ void validateQuad(const quad &quad) {
 
 quad::quad() : quad(vec2(0.0), vec2(MIN_CELL_SIZE)) {}
 
-quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const char minCellSize)
+quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned char minCellSize)
     : topLeftBounds(vec2(topLeftBounds)), bottomRightBounds(vec2(bottomRightBounds)), minCellSize(minCellSize) {
     topLeft = nullptr;
     topRight = nullptr;
@@ -56,7 +53,7 @@ quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const char 
 }
 
 quad::~quad() {
-    delete entityStore;
+    delete[] entityStore;
     entityStore = nullptr;
 
     // TODO when pooling is implemented, these deletes shouldn't be happening here.
@@ -119,7 +116,7 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
         return;
 
     if ((topLeftBounds - bottomRightBounds) <= vec2(MIN_CELL_SIZE)) {
-        // store_add(entity);
+        addEntity(entity);
         return;
     }
 
@@ -166,13 +163,14 @@ bool quad::isInBounds(const vec2 &pos) const noexcept {
 void quad::addEntity(entt::entity entity) {
     if (entityStoreSize == 0 ||
         entityCount + 1 == entityStoreSize) {
-        auto *arr = new entt::entity[entityStoreSize + quad::ENTITY_STORE_SIZE_STEP];
+        // TODO validate store size doesn't exceed uchar max
+        auto arr = new entt::entity[entityStoreSize + quad::ENTITY_STORE_SIZE_STEP];
         entityStoreSize += quad::ENTITY_STORE_SIZE_STEP;
 
         if (entityCount > 0)
             memcpy(arr, entityStore, sizeof(entt::entity) * entityCount);
 
-        delete entityStore;
+        delete[] entityStore;
         entityStore = arr;
     }
 
@@ -188,5 +186,6 @@ void quad::removeEntity(entt::entity entity) {
             return;
         }
     }
-    std::cerr << "Entity " << std::to_string((int) entity) << " not found in store.\n"; // TODO logging
+    // TODO logging - warning
+    // std::cerr << "Entity " << std::to_string((int) entity) << " not found in store.\n"; // TODO logging
 }
