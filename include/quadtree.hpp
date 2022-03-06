@@ -2,7 +2,7 @@
 #define UINTA_QUAD_TREE_H
 
 #include <entt/entity/fwd.hpp>
-#include <vec.h>
+#include <vec.hpp>
 
 struct quad final {
     static const inline char MIN_CELL_SIZE = 1;

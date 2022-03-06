@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <vec.h>
+#include <vec.hpp>
 
 TEST(vector, vec2) {
     ASSERT_EQ(vec2(0.0, 0.0), vec2()) << "vec2 initial values incorrect.";

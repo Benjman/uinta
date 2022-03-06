@@ -1,4 +1,4 @@
-#include <quadtree.h>
+#include <quadtree.hpp>
 
 #include <math.h> // for ceil
 #include <memory.h> // for memcpy
