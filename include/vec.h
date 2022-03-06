@@ -52,6 +52,10 @@ struct vec2 final {
         return x == rhs.x && y == rhs.y;
     }
 
+    bool operator!=(const vec2 &rhs) const noexcept {
+        return x != rhs.x || y != rhs.y;
+    }
+
 };
 
 struct vec3 final {
@@ -106,6 +110,10 @@ struct vec3 final {
 
     bool operator==(const vec3 &rhs) const noexcept {
         return x == rhs.x && y == rhs.y && z == rhs.z;
+    }
+
+    bool operator!=(const vec3 &rhs) const noexcept {
+        return x != rhs.x || y != rhs.y || z == rhs.z;
     }
 
 };
