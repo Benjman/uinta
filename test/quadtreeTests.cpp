@@ -18,10 +18,6 @@ TEST(quadtree, constructorValidations_spatialAlignment) {
     }
     ASSERT_TRUE(thrown) << "bounds alignment validation not executed";
 
-    quad q;
-    vec3 v;
-    std::cout << sizeof(v) << std::endl;
-
     try {
         quad(vec2(8.0), vec2(18.0, 2.0));
     } catch (const std::runtime_error e) {
@@ -80,9 +76,9 @@ TEST(quadtree, constructorValidations_minBoundarySize) {
 }
 
 TEST(quadtree, constructorValidations_wholeNumberedBounds) {
-    // The reason this test is commented out is because all validations are in one method, so we can't validate everything.
-    // Uncomment this test if we isolate the validations.
-
+    // The reason this test is commented out is because all validations are in one method, so we can't validate everything without
+    // breaking another test that is done either after, or before this one. Not great, but until validations are isolated, this is
+    // the workaround. Uncomment this test if we isolate the validations.
 
     // bool thrown = false;
     //
@@ -132,7 +128,7 @@ TEST(quadtree, isInBounds) {
     ASSERT_TRUE(q.isInBounds(vec2(10.0))) << "quad.isInBounds check failed.";
     ASSERT_TRUE(q.isInBounds(vec2(10.0, 2.0))) << "quad.isInBounds check failed.";
     ASSERT_TRUE(q.isInBounds(vec2(7.0))) << "quad.isInBounds check failed.";
-    ASSERT_TRUE(q.isInBounds(vec2(2.1, 10.0))) << "quad.isInBounds inside greater than x-axis check failed.";
+    ASSERT_TRUE(q.isInBounds(vec2(2.1, 10.0))) << "quad.isInBounds check has failed.";
 
     ASSERT_TRUE(q.isInBounds(vec2(2.1))) << "quad.isInBounds inside top-left check failed.";
     ASSERT_TRUE(q.isInBounds(vec2(2.1, 9.9))) << "quad.isInBounds inside bottom-left check failed.";
@@ -150,7 +146,7 @@ TEST(quadtree, isInBounds) {
 }
 
 TEST(quadtree, initialState) {
-    ASSERT_EQ(2.0, quad::MIN_CELL_SIZE) << "Default minimum cell size should be 2 to accommodate power of 2 rule.";
+    ASSERT_EQ(1.0, quad::MIN_CELL_SIZE);
 
     quad noParams;
     ASSERT_EQ(nullptr, noParams.bottomRight) << "quad.bottomRight should be initialized to null.";
