@@ -1,5 +1,5 @@
-#ifndef UINTA_POS_H
-#define UINTA_POS_H
+#ifndef UINTA_VEC_H
+#define UINTA_VEC_H
 
 struct vec2 final {
     float x;
@@ -110,4 +110,4 @@ struct vec3 final {
 
 };
 
-#endif // UINTA_vec_H
+#endif // UINTA_VEC_H
