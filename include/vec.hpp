@@ -32,6 +32,30 @@ struct vec2 final {
         return vec2(x - rhs.x, y - rhs.y);
     }
 
+    vec2 operator*(const vec2 &rhs) const noexcept {
+        return vec2(x * rhs.x, y * rhs.y);
+    }
+
+    vec2 operator*(float v) const noexcept {
+        return vec2(x * v, y * v);
+    }
+
+    vec2 operator*=(const vec2 &rhs) noexcept {
+        x *= rhs.x;
+        y *= rhs.y;
+        return *this;
+    }
+
+    vec2 operator/(const vec2 &rhs) noexcept {
+        return vec2(x / rhs.x, y / rhs.y);
+    }
+
+    vec2 operator/=(const vec2 &rhs) noexcept {
+        x /= rhs.x;
+        y /= rhs.y;
+        return *this;
+    }
+
     bool operator>(const vec2 &rhs) const noexcept {
         return x > rhs.x && y > rhs.y;
     }
@@ -90,6 +114,32 @@ struct vec3 final {
 
     vec3 operator-(const vec3 &other) noexcept {
         return vec3(x - other.x, y - other.y, z - other.z);
+    }
+
+    vec3 operator*(const vec3 &rhs) const noexcept {
+        return vec3(x * rhs.x, y * rhs.y, z * rhs.z);
+    }
+
+    vec3 operator*(float v) const noexcept {
+        return vec3(x * v, y * v, y * v);
+    }
+
+    vec3 operator*=(const vec3 &rhs) noexcept {
+        x *= rhs.x;
+        y *= rhs.y;
+        z *= rhs.z;
+        return *this;
+    }
+
+    vec3 operator/(const vec3 &rhs) noexcept {
+        return vec3(x / rhs.x, y / rhs.y, z / rhs.z);
+    }
+
+    vec3 operator/=(const vec3 &rhs) noexcept {
+        x /= rhs.x;
+        y /= rhs.y;
+        z /= rhs.z;
+        return *this;
     }
 
     bool operator>(const vec3 &rhs) const noexcept {
