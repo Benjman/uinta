@@ -1,9 +1,7 @@
 #include <quadtree.hpp>
 
-#include <math.h> // for ceil
+#include <math.h> // for ceilf
 #include <memory.h> // for memcpy
-#include <string>
-#include <iostream>
 
 void validateQuad(const quad &quad) {
     // validate bounds are whole numbers
@@ -119,8 +117,6 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
         return;
 
     if ((bottomRightBounds - topLeftBounds) <= vec2(minCellSize)) {
-        vec2 tmp = (bottomRightBounds - topLeftBounds);
-        std::cout << "tl: (" << tmp.x << ", " << tmp.y << ")\tmin: " << std::to_string((int) minCellSize) << "\n";
         addEntity(entity);
         return;
     }
