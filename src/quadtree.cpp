@@ -2,6 +2,7 @@
 
 #include <math.h> // for ceil
 #include <memory.h> // for memcpy
+#include <string>
 #include <iostream>
 
 void validateQuad(const quad &quad) {
@@ -98,7 +99,7 @@ const entt::entity* quad::get(const vec2 &pos, char* count) const noexcept {
         return nullptr;
     }
 
-    if ((topLeftBounds - bottomRightBounds) <= vec2(MIN_CELL_SIZE)) {
+    if ((topLeftBounds - bottomRightBounds) <= vec2(minCellSize)) {
         *count = entityCount;
         return entityStore;
     }
@@ -117,7 +118,9 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
     if (!isInBounds(pos))
         return;
 
-    if ((bottomRightBounds - topLeftBounds) <= vec2(MIN_CELL_SIZE)) {
+    if ((bottomRightBounds - topLeftBounds) <= vec2(minCellSize)) {
+        vec2 tmp = (bottomRightBounds - topLeftBounds);
+        std::cout << "tl: (" << tmp.x << ", " << tmp.y << ")\tmin: " << std::to_string((int) minCellSize) << "\n";
         addEntity(entity);
         return;
     }
@@ -131,14 +134,16 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
             if (topLeft == nullptr) {
                 topLeft = new quad(vec2(topLeftBounds.x, topLeftBounds.y),
                 vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0,
-                (topLeftBounds.y + bottomRightBounds.y) / 2.0));
+                (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                minCellSize);
                 topLeft->parent = this;
             }
             topLeft->insert(entity, pos);
         } else {
             if (bottomLeft == nullptr) {
                 bottomLeft = new quad(vec2(topLeftBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y));
+                vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y),
+                minCellSize);
                 bottomLeft->parent = this;
             }
             bottomLeft->insert(entity, pos);
@@ -147,14 +152,16 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
         if (y >= pos.y) {
             if (topRight == nullptr) {
                 topRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, topLeftBounds.y),
-                vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0));
+                vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                minCellSize);
                 topRight->parent = this;
             }
             topRight->insert(entity, pos);
         } else {
             if (bottomRight == nullptr) {
                 bottomRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                vec2(bottomRightBounds.x, bottomRightBounds.y));
+                vec2(bottomRightBounds.x, bottomRightBounds.y),
+                minCellSize);
                 bottomRight->parent = this;
             }
             bottomRight->insert(entity, pos);
