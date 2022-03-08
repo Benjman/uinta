@@ -121,7 +121,7 @@ struct vec3 final {
     }
 
     vec3 operator*(float v) const noexcept {
-        return vec3(x * v, y * v, y * v);
+        return vec3(x * v, y * v, z * v);
     }
 
     vec3 operator*=(const vec3 &rhs) noexcept {
