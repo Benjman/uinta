@@ -5,13 +5,11 @@
 #include <quadtree.hpp>
 #include <window.hpp>
 
-unsigned int window::width = 1200;
-unsigned int window::height = 1200;
+unsigned int window::width = 1088;
+unsigned int window::height = 1088;
 
 float vertices[4096];
 unsigned int indices[4096];
-unsigned int vertexCount = 0;
-unsigned int indexOffset = 0;
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec2 aPos;\n"
@@ -82,8 +80,15 @@ int main(const int argc, const char **argv) {
     glDeleteShader(fragmentShader);
 
     auto qt = quad(vec2(32), vec2(1056), 8);
-    qt.insert((entt::entity) 1, vec2(400, 715));
-    generateMesh(&qt, vertices, indices, &vertexCount, &indexOffset);
+    qt.insert((entt::entity) 5, vec2(32));
+    qt.insert((entt::entity) 1, vec2(700, 215));
+    qt.insert((entt::entity) 1, vec2(1056));
+    qt.insert((entt::entity) 1, vec2(32, 1056));
+
+    auto vertexCount = 0u;
+    auto indexCount = 0u;
+    auto indexOffset = 0u;
+    generateMesh(&qt, vertices, indices, &vertexCount, &indexCount, &indexOffset);
 
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -107,7 +112,7 @@ int main(const int argc, const char **argv) {
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
 
-    glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
 
