@@ -2,7 +2,7 @@
 #include <quadtree.hpp>
 #include <window.hpp>
 
-const inline auto LINE_SIZE = 1;
+const inline auto LINE_SIZE = 4;
 
 extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *indexBuffer, unsigned int *vertexCount, unsigned int *indexCount, unsigned int *indexOffset) noexcept {
     if (qt == nullptr)
@@ -86,21 +86,14 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
         }
     }
 
-    if (qt->bottomLeft != nullptr) {
+    if (qt->bottomLeft && qt->bottomLeft->isActive())
         generateMesh(qt->bottomLeft , &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
-    }
-
-    if (qt->bottomRight != nullptr) {
+    if (qt->bottomRight && qt->bottomRight->isActive())
         generateMesh(qt->bottomRight, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
-    }
-
-    if (qt->topLeft != nullptr) {
+    if (qt->topLeft && qt->topLeft->isActive())
         generateMesh(qt->topLeft, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
-    }
-
-    if (qt->topRight != nullptr) {
+    if (qt->topRight && qt->topRight->isActive())
         generateMesh(qt->topRight, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
-    }
 
     *vertexCount += localVertexCount;
     *indexCount += localIndexCount;

@@ -147,7 +147,7 @@ TEST(quadtree, isInBounds) {
 }
 
 TEST(quadtree, initialState) {
-    ASSERT_EQ(1.0, quad::MIN_CELL_SIZE);
+    ASSERT_EQ(1.0, QUAD_MIN_CELL_SIZE);
 
     quad noParams;
     ASSERT_EQ(nullptr, noParams.bottomRight) << "quad.bottomRight should be initialized to null.";
@@ -155,7 +155,7 @@ TEST(quadtree, initialState) {
     ASSERT_EQ(nullptr, noParams.topRight) << "quad.topRight should be initialized to null.";
     ASSERT_EQ(nullptr, noParams.topLeft) << "quad.topLeft should be initialized to null.";
     ASSERT_EQ(vec2(0.0), noParams.topLeftBounds) << "quad.topRightBounds should initialize to vec2(0.0).";
-    ASSERT_EQ(vec2(quad::MIN_CELL_SIZE), noParams.bottomRightBounds)  << "quad.topRightBounds should initialize to vec2(quad::MIN_CELL_SIZE).";
+    ASSERT_EQ(vec2(QUAD_MIN_CELL_SIZE), noParams.bottomRightBounds)  << "quad.topRightBounds should initialize to vec2(QUAD_MIN_CELL_SIZE).";
     ASSERT_EQ(nullptr, noParams.entityStore) << "quad.topLeft should be initialized to null.";
     ASSERT_EQ(0, noParams.entityCount) << "quad.entityCount should initialize to 0.";
 
@@ -175,7 +175,7 @@ TEST(quadtree, addEntity) {
     qt.addEntity(entity);
     ASSERT_EQ(qt.entityStore[0], entity);
     ASSERT_EQ(1, qt.entityCount);
-    ASSERT_EQ(quad::ENTITY_STORE_SIZE_STEP, qt.entityStoreSize);
+    ASSERT_EQ(QUAD_ENTITY_STORE_SIZE_STEP, qt.entityStoreSize);
 
     entt::entity entity2 = registry.create();
     qt.addEntity(entity2);
@@ -187,7 +187,7 @@ TEST(quadtree, addEntity) {
         qt.addEntity(registry.create());
     }
 
-    ASSERT_EQ(quad::ENTITY_STORE_SIZE_STEP * 2, qt.entityStoreSize);
+    ASSERT_EQ(QUAD_ENTITY_STORE_SIZE_STEP * 2, qt.entityStoreSize);
 }
 
 TEST(quadtree, removeEntity) {
@@ -268,20 +268,6 @@ TEST(quadtree, insert_recursive) {
     }
 }
 
-TEST(quadtree, removeEntity_deleteWhenEmpty) {
-    entt::registry registry;
-    entt::entity entity = registry.create();
-    quad qt(vec2(), vec2(2));
-    qt.insert(entity, vec2(1));
-
-    ASSERT_NE(nullptr, qt.topLeft);
-    ASSERT_EQ(1, qt.topLeft->entityCount);
-    ASSERT_EQ(entity, qt.topLeft->entityStore[0]);
-
-    qt.topLeft->removeEntity(entity);
-    ASSERT_EQ(nullptr, qt.topLeft) << "After a quad has had all entities removed, it should delete itself.";
-}
-
 TEST(quadtree, removeEntity_parentHeirarchy) {
     entt::registry registry;
     entt::entity entity = registry.create();
@@ -291,4 +277,6 @@ TEST(quadtree, removeEntity_parentHeirarchy) {
     ASSERT_NE(nullptr, qt.topLeft);
     ASSERT_EQ(&qt, qt.topLeft->parent);
     ASSERT_EQ(qt.topLeft, qt.topLeft->topLeft->parent);
+
+    // TODO wtf this doesn't even test removeEntity
 }

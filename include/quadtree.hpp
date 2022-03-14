@@ -4,28 +4,28 @@
 #include <entt/entity/fwd.hpp>
 #include <vec.hpp>
 
-struct quad final {
-    static const inline char MIN_CELL_SIZE = 1;
-    static const inline char ENTITY_STORE_SIZE_STEP = 2;
+static const inline char QUAD_MIN_CELL_SIZE = 1;
+static const inline char QUAD_ENTITY_STORE_SIZE_STEP = 2;
 
+struct quad final {
     quad *parent;
     quad *bottomLeft;
     quad *bottomRight;
     quad *topLeft;
     quad *topRight;
 
-    entt::entity *entityStore;
+    entt::entity *entityStore = nullptr;
 
     const vec2 topLeftBounds;
     const vec2 bottomRightBounds;
 
-    const unsigned char minCellSize;
+    const unsigned int minCellSize;
     unsigned char entityStoreSize;
     unsigned char entityCount;
 
     quad();
 
-    quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned char minCellSize = MIN_CELL_SIZE);
+    quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned int minCellSize = QUAD_MIN_CELL_SIZE);
 
     ~quad();
 
@@ -37,13 +37,17 @@ struct quad final {
 
     bool isInBounds(const vec2 &pos) const noexcept;
 
+    bool isActive() const noexcept;
+
+    void clear() noexcept;
+
 private:
-    void addEntity(entt::entity entity);
+    void addEntity(entt::entity entity) noexcept;
 
-    void removeEntity(entt::entity entity);
+    void removeEntity(entt::entity entity) noexcept;
 
-    void removeQuad(const quad *quad);
-
+    void removeQuad(const quad *quad) noexcept;
+     
 };
 
 #endif // UINTA_QUAD_TREE_H

@@ -2,6 +2,9 @@
 
 #include <math.h> // for ceilf
 #include <memory.h> // for memcpy
+#include <cstdio> // for printf
+
+static unsigned int maxCount = 0;
 
 void validateQuad(const quad &quad) {
     // validate bounds are whole numbers
@@ -36,9 +39,9 @@ void validateQuad(const quad &quad) {
         throw std::runtime_error("quad size must be a power of 2");
 }
 
-quad::quad() : quad(vec2(0.0), vec2(MIN_CELL_SIZE)) {}
+quad::quad() : quad(vec2(0.0), vec2(QUAD_MIN_CELL_SIZE)) {}
 
-quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned char minCellSize)
+quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned int minCellSize)
     : topLeftBounds(vec2(topLeftBounds)), bottomRightBounds(vec2(bottomRightBounds)), minCellSize(minCellSize) {
     parent = nullptr;
     topLeft = nullptr;
@@ -54,6 +57,8 @@ quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsig
 }
 
 quad::~quad() {
+    parent = nullptr;
+
     delete[] entityStore;
     entityStore = nullptr;
 
@@ -169,12 +174,12 @@ bool quad::isInBounds(const vec2 &pos) const noexcept {
     return pos >= topLeftBounds && pos <= bottomRightBounds;
 }
 
-void quad::addEntity(entt::entity entity) {
+void quad::addEntity(entt::entity entity) noexcept {
     if (entityStoreSize == 0 ||
         entityCount + 1 == entityStoreSize) {
         // TODO validate store size doesn't exceed uchar max
-        auto arr = new entt::entity[entityStoreSize + quad::ENTITY_STORE_SIZE_STEP];
-        entityStoreSize += quad::ENTITY_STORE_SIZE_STEP;
+        auto arr = new entt::entity[entityStoreSize + QUAD_ENTITY_STORE_SIZE_STEP];
+        entityStoreSize += QUAD_ENTITY_STORE_SIZE_STEP;
 
         if (entityCount > 0)
             memcpy(arr, entityStore, sizeof(entt::entity) * entityCount);
@@ -187,22 +192,19 @@ void quad::addEntity(entt::entity entity) {
     entityCount++;
 }
 
-void quad::removeEntity(entt::entity entity) {
-    for (int i = 0; i < entityCount; i++) {
+void quad::removeEntity(entt::entity entity) noexcept {
+    for (unsigned char i = 0; i < entityCount; i++) {
         if (entityStore[i] == entity) {
-            entityCount--;
-            entityStore[i] = entityStore[entityCount];
-
-            if (entityCount == 0 && parent) {
-                parent->removeQuad(this);
+            if (--entityCount > 0) {
+                entityStore[i] = entityStore[entityCount];
             }
             return;
         }
     }
-    // std::cerr << "Entity " << std::to_string((int) entity) << " not found in store.\n"; // TODO logging
+    printf("[WARN] Failed to find entity to remove.\n"); // TODO logging
 }
 
-void quad::removeQuad(const quad *quad) {
+void quad::removeQuad(const quad *quad) noexcept {
     if (quad == bottomLeft) {
         delete bottomLeft;
         bottomLeft = nullptr;
@@ -216,12 +218,26 @@ void quad::removeQuad(const quad *quad) {
         delete topRight;
         topRight = nullptr;
     }
+}
 
-    if (bottomLeft == nullptr
-        && bottomRight == nullptr
-        && topLeft == nullptr
-        && topRight == nullptr
-        && parent) {
-        parent->removeQuad(this);
-    }
+void quad::clear() noexcept {
+    for (auto i = 0; i < entityCount; i++)
+        removeEntity(entityStore[i]);
+
+    if (bottomLeft != nullptr)
+        bottomLeft->clear();
+    if (bottomRight != nullptr)
+        bottomRight->clear();
+    if (topLeft != nullptr)
+        topLeft->clear();
+    if (topRight != nullptr)
+        topRight->clear();
+}
+
+bool quad::isActive() const noexcept {
+    return entityCount > 0
+        || topLeft && topLeft->isActive()
+        || topRight && topRight->isActive()
+        || bottomLeft && bottomLeft->isActive()
+        || bottomRight && bottomRight->isActive();
 }
