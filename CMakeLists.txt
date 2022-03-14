@@ -9,17 +9,22 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-add_library(uinta STATIC 
-    ./src/mesh.cpp
-    ./src/quadtree.cpp)
-
-include_directories(./include)
-
 # dependencies
+find_package(GLFW REQUIRED)
 find_package(GTest REQUIRED)
 add_subdirectory(./lib/entt)
 
-target_link_libraries(uinta PUBLIC EnTT::EnTT)
+add_library(uinta STATIC 
+    ./src/mesh.cpp
+    ./src/quadtree.cpp
+    ./src/runner.cpp
+    ./src/window.cpp
+    ${GLAD_C})
+
+include_directories(./include)
+
+target_link_libraries(uinta PUBLIC EnTT::EnTT ${GL_LIBS})
+target_include_directories(uinta PRIVATE ${GL_INCLUDES})
 
 add_subdirectory(app)
 add_subdirectory(test)
