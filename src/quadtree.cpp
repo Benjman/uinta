@@ -36,7 +36,7 @@ void validateQuad(const quad &quad) {
         throw std::runtime_error("quad size must be a power of 2");
 
     if ((quad.minCellSize & (quad.minCellSize - 1)) != 0)
-        throw std::runtime_error("quad size must be a power of 2");
+        throw std::runtime_error("minimum cell size must be a power of 2");
 }
 
 quad::quad() : quad(vec2(0.0), vec2(QUAD_MIN_CELL_SIZE)) {}
@@ -134,17 +134,17 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
         if (y >= pos.y) {
             if (topLeft == nullptr) {
                 topLeft = new quad(vec2(topLeftBounds.x, topLeftBounds.y),
-                vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0,
-                (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                minCellSize);
+                    vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0,
+                    (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                    minCellSize);
                 topLeft->parent = this;
             }
             topLeft->insert(entity, pos);
         } else {
             if (bottomLeft == nullptr) {
                 bottomLeft = new quad(vec2(topLeftBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y),
-                minCellSize);
+                    vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y),
+                    minCellSize);
                 bottomLeft->parent = this;
             }
             bottomLeft->insert(entity, pos);
@@ -153,16 +153,16 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
         if (y >= pos.y) {
             if (topRight == nullptr) {
                 topRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, topLeftBounds.y),
-                vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                minCellSize);
+                    vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                    minCellSize);
                 topRight->parent = this;
             }
             topRight->insert(entity, pos);
         } else {
             if (bottomRight == nullptr) {
                 bottomRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                vec2(bottomRightBounds.x, bottomRightBounds.y),
-                minCellSize);
+                    vec2(bottomRightBounds.x, bottomRightBounds.y),
+                    minCellSize);
                 bottomRight->parent = this;
             }
             bottomRight->insert(entity, pos);
@@ -175,14 +175,13 @@ bool quad::isInBounds(const vec2 &pos) const noexcept {
 }
 
 void quad::addEntity(entt::entity entity) noexcept {
-    if (entityStoreSize == 0 ||
-        entityCount + 1 == entityStoreSize) {
+    if (entityCount + 1 > entityStoreSize) {
         // TODO validate store size doesn't exceed uchar max
-        auto arr = new entt::entity[entityStoreSize + QUAD_ENTITY_STORE_SIZE_STEP];
         entityStoreSize += QUAD_ENTITY_STORE_SIZE_STEP;
+        auto arr = new entt::entity[entityStoreSize];
 
         if (entityCount > 0)
-            memcpy(arr, entityStore, sizeof(entt::entity) * entityCount);
+            memmove(arr, entityStore, sizeof(entt::entity) * entityCount);
 
         delete[] entityStore;
         entityStore = arr;

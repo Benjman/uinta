@@ -7,6 +7,11 @@
 static const inline char QUAD_MIN_CELL_SIZE = 1;
 static const inline char QUAD_ENTITY_STORE_SIZE_STEP = 2;
 
+/**
+    TODO So far I can see a practical advantage to only having a single entity per cell. Convert to single entity.
+    TODO quads should be POD objects. All the functional aspects of it should be taken out of this class and converted into a functional interface.
+**/
+
 struct quad final {
     quad *parent;
     quad *bottomLeft;

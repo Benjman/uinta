@@ -1,10 +1,28 @@
 #include <glad/glad.h>
 
 #include <cmath>
+#include <cstdio>
+
+#include <entt/entt.hpp>
 
 #include <mesh.hpp>
+#include <window.hpp>
 
 #include "quadtreeRunner.hpp"
+
+const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec2 in_pos;"
+    "out vec3 pass_color;"
+    "void main() {"
+    "   gl_Position = vec4(in_pos.x, in_pos.y, 1.0, 1.0);"
+    "}\0";
+const char *fragmentShaderSource = "#version 330 core\n"
+    "out vec4 FragColor;"
+    "uniform vec3 u_color;"
+    "void main() {"
+    "   FragColor = vec4(u_color, 1.0);"
+    "}\0";
+
 
 void quadtreeRunner::init() {
     createWindow(width, height, "hello quadtree");
@@ -17,24 +35,30 @@ void quadtreeRunner::init() {
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
+
     // check for shader compile errors
     int success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        printf("[ERROR] Vertex shader compilation failed.\n:%s\n", infoLog);
+        throw std::exception();
     }
+
     // fragment shader
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
+
     // check for shader compile errors
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        printf("[ERROR] Fragment shader compilation failed.\n:%s\n", infoLog);
+        throw std::exception();
     }
+
     // link shaders
     unsigned int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -44,10 +68,13 @@ void quadtreeRunner::init() {
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        printf("[ERROR] Linking shader failed.\n:%s\n", infoLog);
+        throw std::exception();
     }
+
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
     glUseProgram(shaderProgram);
     uniformColor = glGetUniformLocation(shaderProgram, "u_color");
 
@@ -67,6 +94,10 @@ void quadtreeRunner::init() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 }
+
+struct square {
+
+};
 
 void quadtreeRunner::update(float runningTime) {
     // TODO accumulator 
