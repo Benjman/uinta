@@ -10,7 +10,7 @@ struct vec2 final {
     vec2(float x, float y) noexcept;
     vec2(const vec2 &vec) noexcept;
 
-    vec2& operator=(const vec2 &rhs) noexcept;
+    vec2 operator=(const vec2 &rhs) noexcept;
     vec2 operator+(const vec2 &rhs) const noexcept;
     vec2 operator-(const vec2 &rhs) const noexcept;
     vec2 operator*(const vec2 &rhs) const noexcept;
@@ -39,7 +39,7 @@ struct vec3 final {
     vec3(const vec2& vec) noexcept;
     vec3(const vec2& vec, float z) noexcept;
 
-    vec3& operator=(const vec3& vec) noexcept;
+    vec3 operator=(const vec3& vec) noexcept;
     vec3 operator+(const vec3 &other) noexcept;
     vec3 operator-(const vec3 &other) noexcept;
     vec3 operator*(const vec3 &rhs) const noexcept;
@@ -72,7 +72,7 @@ struct vec4 final {
     vec4(const vec3& vec) noexcept;
     vec4(const vec3& vec, float w) noexcept;
 
-    vec4& operator=(const vec4& vec) noexcept;
+    vec4 operator=(const vec4& vec) noexcept;
     vec4 operator+(const vec4 &other) noexcept;
     vec4 operator-(const vec4 &other) noexcept;
     vec4 operator*(const vec4 &rhs) const noexcept;
@@ -80,6 +80,7 @@ struct vec4 final {
     vec4 operator*=(const vec4 &rhs) noexcept;
     vec4 operator/(const vec4 &rhs) noexcept;
     vec4 operator/=(const vec4 &rhs) noexcept;
+
     bool operator>(const vec4 &rhs) const noexcept;
     bool operator<(const vec4 &rhs) const noexcept;
     bool operator>=(const vec4 &rhs) const noexcept;

@@ -15,7 +15,7 @@ vec2::vec2(const vec2 &vec) noexcept {
     *this = vec;
 }
 
-vec2& vec2::operator=(const vec2 &rhs) noexcept {
+vec2 vec2::operator=(const vec2 &rhs) noexcept {
     x = rhs.x;
     y = rhs.y;
     return *this;
@@ -95,7 +95,7 @@ vec3::vec3(const vec2& vec) noexcept : vec3(vec, 0.0) {}
 
 vec3::vec3(const vec2& vec, float z) noexcept : vec3(vec.x, vec.y, z) {}
 
-vec3& vec3::operator=(const vec3& vec) noexcept {
+vec3 vec3::operator=(const vec3& vec) noexcept {
     x = vec.x;
     y = vec.y;
     z = vec.z;
@@ -181,7 +181,7 @@ vec4::vec4(const vec3& vec) noexcept : vec4(vec, 0.0) {}
 
 vec4::vec4(const vec3& vec, float w) noexcept : vec4(vec.x, vec.y, vec.z, w) {}
 
-vec4& vec4::operator=(const vec4& vec) noexcept {
+vec4 vec4::operator=(const vec4& vec) noexcept {
     x = vec.x;
     y = vec.y;
     z = vec.z;
