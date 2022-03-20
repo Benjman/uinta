@@ -1,14 +1,14 @@
 #ifndef UINTA_CAMERA_RUNNER_H
 #define UINTA_CAMERA_RUNNER_H
 
-#include <runner.h>
 #include <camera2d.hpp>
+#include <window.hpp>
 
 #include <GL/gl.h>
 
 const inline unsigned int BUF_SIZE = 2048;
 
-struct camera2DRunner : public runner {
+struct camera2DRunner {
     camera2d camera;
 
     mat4 view_matrix;
@@ -34,11 +34,13 @@ struct camera2DRunner : public runner {
     GLuint ebo;
     GLuint shader;
 
-    void init() override;
+    glfwdto glfw;
 
-    void render() override; 
+    void init();
 
-    void tick(float dt) override;
+    void render(); 
+
+    void tick(float dt);
 
 };
 
