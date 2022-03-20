@@ -2,11 +2,12 @@
 #define UINTA_RUNNER_H
 
 #include <GLFW/glfw3.h>
+#include <string>
 
 struct viewport {
     unsigned int width;
     unsigned int height;
-    char *title;
+    std::string title;
 
     GLFWwindow *glfwWindow;
 };
@@ -16,7 +17,7 @@ struct runner {
 
     virtual void init() {}
     virtual void render() {}
-    virtual void update(float dt) {}
+    virtual void tick(float dt) {}
 
     void createWindow(unsigned int width, unsigned int height, const char *title);
 

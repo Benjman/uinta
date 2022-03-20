@@ -4,6 +4,7 @@ include_directories(../include)
 
 add_executable(test
     ./main.cpp
+    ./mat_test.cpp
     ./quadtreeTests.cpp
     ./vecTests.cpp
     )

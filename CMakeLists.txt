@@ -15,6 +15,8 @@ find_package(GTest REQUIRED)
 add_subdirectory(./lib/entt)
 
 add_library(uinta STATIC 
+    ./src/camera2d.cpp
+    ./src/math.cpp
     ./src/mesh.cpp
     ./src/quadtree.cpp
     ./src/runner.cpp
