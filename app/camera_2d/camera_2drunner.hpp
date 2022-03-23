@@ -37,6 +37,9 @@ struct camera2DRunner {
     glfwdto glfw;
 
     void init();
+    void init_buffers();
+    void init_mesh();
+    void init_shader();
 
     void render(); 
 

@@ -19,6 +19,7 @@ add_library(uinta STATIC
     ./src/math.cpp
     ./src/mesh.cpp
     ./src/quadtree.cpp
+    ./src/shader.cpp
     ./src/window.cpp
     ${GLAD_C})
 

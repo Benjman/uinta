@@ -99,7 +99,7 @@ struct square {
 
 };
 
-void quadtreeRunner::update(float runningTime) {
+void quadtreeRunner::tick(float runningTime) {
     // TODO accumulator 
     // TODO doUpdate so that runner can manage render times and update cycles.
     vertexCount = 0;

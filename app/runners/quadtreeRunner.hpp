@@ -32,7 +32,7 @@ struct quadtreeRunner : public runner {
 
     void render() override; 
 
-    void update(float dt) override;
+    void tick(float dt) override;
 
 };
 

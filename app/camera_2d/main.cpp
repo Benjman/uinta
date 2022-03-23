@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include "./camera_2drunner.hpp"
 
@@ -8,7 +9,7 @@ int main(const int argc, const char **argv) {
     camera2DRunner runner;
     runner.init();
 
-    while (!glfwWindowShouldClose(runner.view.glfwWindow)) {
+    while (!glfwWindowShouldClose(runner.glfw.window)) {
         runner.tick(glfwGetTime());
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -16,7 +17,7 @@ int main(const int argc, const char **argv) {
 
         runner.render();
 
-        glfwSwapBuffers(runner.view.glfwWindow);
+        glfwSwapBuffers(runner.glfw.window);
         glfwPollEvents();
     }
 
