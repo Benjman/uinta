@@ -1,10 +1,11 @@
 #include <mesh.hpp>
 #include <quadtree.hpp>
-#include <window.hpp>
+#include <glfw.hpp>
 
 const inline auto LINE_SIZE = 4;
+const inline auto LINE_SIZE_HALF = LINE_SIZE / 2.0f;
 
-extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *indexBuffer, unsigned int *vertexCount, unsigned int *indexCount, unsigned int *indexOffset) noexcept {
+extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *indexBuffer, unsigned int *vertexCount, unsigned int *indexCount, unsigned int *indexOffset, const unsigned int width, const unsigned int height) noexcept {
     if (qt == nullptr)
         return;
 
@@ -21,14 +22,14 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
             v2              v4
     */
 
-    auto v0 = vec2(qt->topLeftBounds);
-    auto v1 = v0 + LINE_SIZE;
-    auto v2 = vec2(qt->topLeftBounds.x, qt->bottomRightBounds.y);
-    auto v3 = v2 + vec2(LINE_SIZE, - LINE_SIZE);
-    auto v4 = vec2(qt->bottomRightBounds);
-    auto v5 = v4 - LINE_SIZE;
-    auto v6 = vec2(qt->bottomRightBounds.x, qt->topLeftBounds.y);
-    auto v7 = v6 + vec2(-LINE_SIZE, LINE_SIZE);
+    auto v0 = vec2(qt->topLeftBounds - LINE_SIZE_HALF);
+    auto v1 = vec2(qt->topLeftBounds + LINE_SIZE_HALF);
+    auto v2 = vec2(qt->topLeftBounds.x - LINE_SIZE_HALF, qt->bottomRightBounds.y + LINE_SIZE_HALF);
+    auto v3 = vec2(qt->topLeftBounds.x + LINE_SIZE_HALF, qt->bottomRightBounds.y - LINE_SIZE_HALF);
+    auto v4 = vec2(qt->bottomRightBounds + LINE_SIZE_HALF);
+    auto v5 = vec2(qt->bottomRightBounds - LINE_SIZE_HALF);
+    auto v6 = vec2(qt->bottomRightBounds.x + LINE_SIZE_HALF, qt->topLeftBounds.y - LINE_SIZE_HALF);
+    auto v7 = vec2(qt->bottomRightBounds.x - LINE_SIZE_HALF, qt->topLeftBounds.y + LINE_SIZE_HALF);
 
     vertexBuffer[0] = v0.x;
     vertexBuffer[1] = v0.y;
@@ -75,14 +76,28 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
     auto localIndexCount = 24u;
     *indexOffset += 8u;
 
+    // adjust vertices to screen size, and opengl ndc
+    for (int i = 0; i < 24; i++) {
+        if (i % 2 == 0) {
+            vertexBuffer[i] /= width;
+            vertexBuffer[i] = 2 * vertexBuffer[i] - 1;
+        } else {
+            vertexBuffer[i] /= height;
+            vertexBuffer[i] = -2 * vertexBuffer[i] + 1;
+        }
+    }
+
     if (qt->bottomLeft && qt->bottomLeft->isActive())
-        generateMesh(qt->bottomLeft , &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
+        generateMesh(qt->bottomLeft , &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset, width, height);
     if (qt->bottomRight && qt->bottomRight->isActive())
-        generateMesh(qt->bottomRight, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
+        generateMesh(qt->bottomRight, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset, width, height);
     if (qt->topLeft && qt->topLeft->isActive())
-        generateMesh(qt->topLeft, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
+        generateMesh(qt->topLeft, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset, width, height);
     if (qt->topRight && qt->topRight->isActive())
-        generateMesh(qt->topRight, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
+        generateMesh(qt->topRight, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset, width, height);
+
+    if (qt->topRight != nullptr) {
+    }
 
     *vertexCount += localVertexCount;
     *indexCount += localIndexCount;

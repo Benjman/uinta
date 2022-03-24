@@ -121,7 +121,7 @@ void quadtreeRunner::tick(float runningTime) {
     vec2 squarePos_outer = vec2(cos_outer * qt_width + qt.topLeftBounds.x, sin_outer * qt_height + qt.topLeftBounds.y);
     qt.insert((entt::entity) 2, squarePos_outer);
 
-    generateMesh(&qt, vertices, indices, &vertexCount, &indexCount, &indexOffset);
+    generateMesh(&qt, vertices, indices, &vertexCount, &indexCount, &indexOffset, view.width, view.height);
 
     // upload qt
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vertexCount, vertices);
