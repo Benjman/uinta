@@ -1,12 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "./camera_2drunner.hpp"
-
-#include <cstdio>
+#include "./quadtreeRunner.hpp"
 
 int main(const int argc, const char **argv) {
-    camera2DRunner runner;
+    quadtreeRunner runner;
     runner.init();
 
     while (!glfwWindowShouldClose(runner.view.window)) {
@@ -24,3 +22,4 @@ int main(const int argc, const char **argv) {
     glfwTerminate();
     return 0;
 }
+

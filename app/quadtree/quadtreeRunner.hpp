@@ -1,11 +1,13 @@
 #ifndef UINTA_RUNNER_QUADTREE_H
 #define UINTA_RUNNER_QUADTREE_H
 
-#include <runner.h>
 #include <quadtree.hpp>
+#include <glfw.hpp>
+
+#include <GL/gl.h>
 #include <entt/entity/registry.hpp>
 
-struct quadtreeRunner : public runner {
+struct quadtreeRunner {
     unsigned int width = 1088;
     unsigned int height = 1088;
 
@@ -28,11 +30,13 @@ struct quadtreeRunner : public runner {
     unsigned int indexCount = 0u;
     unsigned int indexOffset = 0u;
 
-    void init() override;
+    viewport view;
 
-    void render() override; 
+    void init();
 
-    void tick(float dt) override;
+    void render(); 
+
+    void tick(float dt);
 
 };
 

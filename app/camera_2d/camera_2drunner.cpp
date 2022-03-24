@@ -1,6 +1,6 @@
-#include <cmath>
-#include <glad/glad.h>
+#include<glad/glad.h>
 
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 
@@ -10,10 +10,10 @@
 #include "./camera_2drunner.hpp"
 
 void camera2DRunner::init() {
-    glfw.width = 1920;
-    glfw.height = 1080;
-    glfw.title = "hello 2d camera";
-    createGLFWWindow(glfw);
+    view.width = 1920;
+    view.height = 1080;
+    view.title = "hello 2d camera";
+    createGLFWWindow(view);
 
     init_shader();
     init_buffers();
@@ -28,7 +28,7 @@ void camera2DRunner::render() {
     glUniformMatrix4fv(u_view, 1, GL_FALSE, view_matrix.values);
 
     
-    float aspect_ratio = (float) glfw.width / (float) glfw.height;
+    float aspect_ratio = (float) view.width / (float) view.height;
     float horizontal = aspect_ratio > 1.0 ? aspect_ratio / camera.scale.x : camera.scale.x;
     float vertical = aspect_ratio < 1.0 ? aspect_ratio / camera.scale.y : camera.scale.y;
 

@@ -20,7 +20,7 @@ add_library(uinta STATIC
     ./src/mesh.cpp
     ./src/quadtree.cpp
     ./src/shader.cpp
-    ./src/window.cpp
+    ./src/glfw.cpp
     ${GLAD_C})
 
 include_directories(./include)

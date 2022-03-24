@@ -6,7 +6,7 @@
 #include <entt/entt.hpp>
 
 #include <mesh.hpp>
-#include <window.hpp>
+#include <glfw.hpp>
 
 #include "quadtreeRunner.hpp"
 
@@ -25,9 +25,12 @@ const char *fragmentShaderSource = "#version 330 core\n"
 
 
 void quadtreeRunner::init() {
-    createWindow(width, height, "hello quadtree");
-    squareWidth = (float) squareSize / window::width;
-    squareHeight = (float) squareSize / window::height;
+    view.width = 1088;
+    view.height = 1088;
+    view.title = "hello quadtree";
+    createGLFWWindow(view);
+    squareWidth = (float) squareSize / view.width;
+    squareHeight = (float) squareSize / view.height;
 
     // build and compile our shader program
     // ------------------------------------
@@ -166,6 +169,6 @@ void quadtreeRunner::render() {
     glUniform3f(uniformColor, 1.0f, 1.0f, 0.0f);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((indexCount + 6) * sizeof(GLuint)));
 
-    glfwSwapBuffers(view.glfwWindow);
+    glfwSwapBuffers(view.window);
     glfwPollEvents();
 }

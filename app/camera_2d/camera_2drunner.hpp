@@ -2,7 +2,7 @@
 #define UINTA_CAMERA_RUNNER_H
 
 #include <camera2d.hpp>
-#include <window.hpp>
+#include <glfw.hpp>
 
 #include <GL/gl.h>
 
@@ -34,7 +34,7 @@ struct camera2DRunner {
     GLuint ebo;
     GLuint shader;
 
-    glfwdto glfw;
+    viewport view;
 
     void init();
     void init_buffers();
