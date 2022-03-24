@@ -3,11 +3,6 @@
 
 #include <GLFW/glfw3.h>
 
-namespace window {
-    extern unsigned int width;
-    extern unsigned int height;
-}
-
 struct glfwdto {
     GLFWwindow* window = nullptr;
     const char *title = nullptr;

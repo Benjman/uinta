@@ -75,17 +75,6 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
     auto localIndexCount = 24u;
     *indexOffset += 8u;
 
-    // adjust vertices to screen size, and opengl ndc
-    for (int i = 0; i < 24; i++) {
-        if (i % 2 == 0) {
-            vertexBuffer[i] /= window::width;
-            vertexBuffer[i] = 2 * vertexBuffer[i] - 1;
-        } else {
-            vertexBuffer[i] /= window::height;
-            vertexBuffer[i] = -2 * vertexBuffer[i] + 1;
-        }
-    }
-
     if (qt->bottomLeft && qt->bottomLeft->isActive())
         generateMesh(qt->bottomLeft , &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset);
     if (qt->bottomRight && qt->bottomRight->isActive())

@@ -4,9 +4,6 @@
 #include <glad/glad.h>
 #include <window.hpp>
 
-unsigned int window::width = 0;
-unsigned int window::height = 0;
-
 void createGLFWWindow(glfwdto& dto) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
