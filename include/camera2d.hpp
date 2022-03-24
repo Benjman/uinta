@@ -10,8 +10,8 @@ const inline vec3 WORLD_FORWARD = vec3(0.0, 0.0, -1.0);
 
 struct camera2d final {
     vec2 pos;
-    vec2 scale = vec2(1.0);
     float fov = 45;
+    float ortho_size = 1.0;
 };
 
 void get_view_matrix(const camera2d &camera, mat4 &mat) noexcept;

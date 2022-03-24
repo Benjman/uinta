@@ -94,6 +94,8 @@ struct vec4 final {
 
 /** matricies are column major **/
 struct mat4 final {
+    static void inverse(mat4& mat);
+
     float values[16];
 
     mat4();
@@ -110,21 +112,37 @@ struct mat4 final {
     mat4& operator=(const vec4 &rhs) noexcept;
 
     float m00() { return values[0]; }
+    void m00(float v) { values[0] = v; }
     float m01() { return values[1]; }
+    void m01(float v) { values[1] = v; }
     float m02() { return values[2]; }
+    void m02(float v) { values[2] = v; }
     float m03() { return values[3]; }
+    void m03(float v) { values[3] = v; }
     float m10() { return values[4]; }
+    void m10(float v) { values[4] = v; }
     float m11() { return values[5]; }
+    void m11(float v) { values[5] = v; }
     float m12() { return values[6]; }
+    void m12(float v) { values[6] = v; }
     float m13() { return values[7]; }
+    void m13(float v) { values[7] = v; }
     float m20() { return values[8]; }
+    void m20(float v) { values[8] = v; }
     float m21() { return values[9]; }
+    void m21(float v) { values[9] = v; }
     float m22() { return values[10]; }
+    void m22(float v) { values[10] = v; }
     float m23() { return values[11]; }
+    void m23(float v) { values[11] = v; }
     float m30() { return values[12]; }
+    void m30(float v) { values[12] = v; }
     float m31() { return values[13]; }
+    void m31(float v) { values[13] = v; }
     float m32() { return values[14]; }
+    void m32(float v) { values[14] = v; }
     float m33() { return values[15]; }
+    void m33(float v) { values[15] = v; }
 
 };
 

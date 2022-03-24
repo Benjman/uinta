@@ -15,6 +15,8 @@ void camera2DRunner::init() {
     view.title = "hello 2d camera";
     createGLFWWindow(view);
 
+    camera.pos = vec2(0.0);
+
     init_shader();
     init_buffers();
     init_mesh();
@@ -23,18 +25,16 @@ void camera2DRunner::init() {
 }
 
 void camera2DRunner::render() {
-    // update the model-view-matrix
     get_view_matrix(camera, view_matrix);
     glUniformMatrix4fv(u_view, 1, GL_FALSE, view_matrix.values);
-
     
-    float aspect_ratio = (float) view.width / (float) view.height;
-    float horizontal = aspect_ratio > 1.0 ? aspect_ratio / camera.scale.x : camera.scale.x;
-    float vertical = aspect_ratio < 1.0 ? aspect_ratio / camera.scale.y : camera.scale.y;
-
     // FIXME when aspect ratio < 1 things get all fucked up
-    get_ortho_matrix(proj_matrix, -horizontal, horizontal, vertical, -vertical, 0.1, 1.0);
-    // get_perspective_matrix(proj_matrix, camera.fov, view.width, view.height, 0.1, 10.0);
+    float aspect_ratio = (float) view.width / (float) view.height;
+    float horizontal = aspect_ratio > 1.0 ? aspect_ratio / camera.ortho_size : camera.ortho_size;
+    float vertical = aspect_ratio < 1.0 ? aspect_ratio / camera.ortho_size : camera.ortho_size;
+
+// void get_ortho_matrix(mat4 &mat, float left, float right, float bottom, float top, float near, float far) noexcept {
+    get_ortho_matrix(proj_matrix, -horizontal, horizontal, -vertical, vertical, 0.1, 1.0);
     glUniformMatrix4fv(u_proj, 1, GL_FALSE, proj_matrix.values);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -43,10 +43,6 @@ void camera2DRunner::render() {
 void camera2DRunner::tick(float dt) {
     // camera.pos.x = std::sin(dt);
     // camera.pos.y = std::cos(dt);
-    camera.scale.x = (std::cos(dt) + 1) * 0.5;
-    camera.scale.y = (std::cos(dt) + 1) * 0.5;
-    // camera.scale.x = std::cos(dt);
-    // camera.scale.y = std::cos(dt);
 }
 
 void camera2DRunner::init_buffers() {
@@ -92,8 +88,8 @@ void camera2DRunner::init_shader() {
         "#version 330 core\n"
         "layout (location = 0) in vec2 in_pos;"
         "layout (location = 1) in vec3 in_color;"
-        "uniform mat4 u_view;"
-        "uniform mat4 u_proj;"
+        "uniform mat4 u_view = mat4(1.0);"
+        "uniform mat4 u_proj = mat4(1.0);"
         "const mat4 u_model = mat4(1.0);"
         "out vec4 pass_color;"
         "void main() {"
@@ -118,4 +114,15 @@ void camera2DRunner::init_shader() {
 
     u_view = locs[0];
     u_proj = locs[1];
+}
+
+void camera2DRunner::key_callback(int key, int scancode, int action, int mods) noexcept {
+    if (action == GLFW_PRESS && key == GLFW_KEY_E)
+        camera.pos.y += 0.25f;
+    if (action == GLFW_PRESS && key == GLFW_KEY_D)
+        camera.pos.y -= 0.25f;
+    if (action == GLFW_PRESS && key == GLFW_KEY_F)
+        camera.pos.x += 0.25f;
+    if (action == GLFW_PRESS && key == GLFW_KEY_S)
+        camera.pos.x -= 0.25f;
 }

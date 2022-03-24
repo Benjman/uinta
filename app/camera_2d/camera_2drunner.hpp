@@ -45,6 +45,8 @@ struct camera2DRunner {
 
     void tick(float dt);
 
+    void key_callback(int key, int scancode, int action, int mods) noexcept;
+
 };
 
 #endif // UINTA_CAMERA_RUNNER_H

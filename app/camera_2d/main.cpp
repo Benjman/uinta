@@ -5,9 +5,14 @@
 
 #include <cstdio>
 
+camera2DRunner runner;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
+
 int main(const int argc, const char **argv) {
-    camera2DRunner runner;
     runner.init();
+
+    glfwSetKeyCallback(runner.view.window, key_callback);
 
     while (!glfwWindowShouldClose(runner.view.window)) {
         runner.tick(glfwGetTime());
@@ -24,3 +29,9 @@ int main(const int argc, const char **argv) {
     glfwTerminate();
     return 0;
 }
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept {
+    printf("Key: %d\t Scancode: %d\t, Action: %d\t Mods: %d\n", key, scancode, action, mods);
+    runner.key_callback(key, scancode, action, mods);
+}
+
