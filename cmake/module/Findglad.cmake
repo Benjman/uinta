@@ -1,5 +1,5 @@
-find_path(GLAD_INCLUDE names "glad/glad.h" PATHS "${CMAKE_CURRENT_LIST_DIR}/../lib/glad/include")
-find_file(GLAD_C names "glad.c" PATHS "${CMAKE_CURRENT_LIST_DIR}/../lib/glad/src" REQUIRED)
+find_path(GLAD_INCLUDE names "glad/glad.h" PATHS "${CMAKE_SOURCE_DIR}/lib/glad/include")
+find_file(GLAD_C names "glad.c" PATHS "${CMAKE_SOURCE_DIR}/lib/glad/src" REQUIRED)
 
 if (NOT GLAD_C)
     message(FATAL_ERROR "Failed to locate GLAD. Possibly haven't run the configuration script?")
