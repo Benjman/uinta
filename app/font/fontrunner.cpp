@@ -10,16 +10,18 @@
 
 #include "./fontrunner.hpp"
 
+stbtt_aligned_quad quad;
+
 void fontRunner::init() {
-    view.width = 1920;
-    view.height = 1080;
+    view.width = 1000;
+    view.height = 1000;
     view.title = "hello font";
     createGLFWWindow(view);
 
+    init_font();
     init_shader();
     init_buffers();
     init_mesh();
-    init_font();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -28,7 +30,7 @@ void fontRunner::init() {
 }
 
 void fontRunner::render() {
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 }
 
 void fontRunner::tick(float dt) {
@@ -51,28 +53,43 @@ void fontRunner::init_buffers() {
 }
 
 void fontRunner::init_font() {
-    read_file_binary("font/dejavu/DejaVuSans.ttf", (char*) ttf_buffer);
+    const unsigned int texture_width = 256,
+                       texture_height = 256;
     GLuint texId;
-    load_font(ttf_buffer, chardata, &texId);
+    read_file_binary("font/dejavu/DejaVuSans.ttf", (char*) font_dejavusans);
+    load_font(font_dejavusans, &texId, texture_width, texture_height, ctx, chardata);
+
+    float xpos, ypos;
+    stbtt_GetPackedQuad(chardata, texture_width, texture_height, '@' - 32, &xpos, &ypos, &quad, 0);
 }
 
 void fontRunner::init_mesh() {
     const float cube_mesh[] = {
-        -0.25,  0.25, 1.0, 1.0,
-        -0.25, -0.25, 1.0, 0.0,
-         0.25, -0.25, 0.0, 0.0,
-         0.25,  0.25, 0.0, 1.0,
+        // atlas
+        -1.0, 1.0, 0.0, 1.0, // top-left
+        -1.0, 0.0, 0.0, 0.0, // bottom-left
+         0.0, 0.0, 1.0, 0.0, // bottom-right
+         0.0, 1.0, 1.0, 1.0, // top-right
+
+        // quad
+        -1.0,  0.0, quad.s0, -quad.t0, // top-left
+        -1.0, -1.0, quad.s0, -quad.t1, // bottom-left
+         0.0, -1.0, quad.s1, -quad.t1, // bottom-right
+         0.0,  0.0, quad.s1, -quad.t0, // top-right
     };
     memcpy(vbuf, cube_mesh, sizeof(cube_mesh));
     vcount = 4;
 
     unsigned int indices[] = {
+        // atlas
         0, 1, 2,
-        2, 3, 0
+        2, 3, 0,
+
+        // quad
+        4, 5, 6,
+        6, 7, 4,
     };
     memcpy(ibuf, indices, sizeof(indices));
-    icount += 6;
-    ioff += 4;
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * BUF_SIZE, vbuf, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * BUF_SIZE, ibuf, GL_STATIC_DRAW);
@@ -95,7 +112,7 @@ void fontRunner::init_shader() {
         "uniform sampler2D atlas;"
         "out vec4 out_color;"
         "void main() {"
-        "  out_color = vec4(1.0, 0.0, 0.0, texture(atlas, pass_uv).r);"
+        "  out_color = vec4(1.0, 1.0, 1.0, texture(atlas, pass_uv).r);"
         "}\0";
 
     const char* sources[] = { vshader, fshader };

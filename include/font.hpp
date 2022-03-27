@@ -26,6 +26,8 @@ static const inline unsigned int FONT_SIZE_DejaVuSerif = 380132u;
 
 #include <GL/gl.h>
 #include <stb_truetype.h>
-void load_font(const unsigned char* ttfdata, stbtt_packedchar* chardata, GLuint *texId);
+void load_font(const unsigned char* ttfdata, GLuint *textureid,
+               const unsigned int texture_width, const unsigned int texture_height,
+               stbtt_pack_context &ctx, stbtt_packedchar* chardata);
 
 #endif // UINTA_FONT_H

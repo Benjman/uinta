@@ -10,8 +10,9 @@ const inline unsigned int BUF_SIZE = 2048;
 
 struct fontRunner {
 
+    stbtt_pack_context ctx;
     stbtt_packedchar chardata[96];
-    unsigned char ttf_buffer[FONT_SIZE_DejaVuSans];
+    unsigned char font_dejavusans[FONT_SIZE_DejaVuSans];
 
     // vertex buffer
     float vbuf[BUF_SIZE];
@@ -20,10 +21,6 @@ struct fontRunner {
 
     // index buffer
     unsigned int ibuf[BUF_SIZE];
-    // count of indices in buffer
-    unsigned int icount = 0u;
-    // offset for index
-    unsigned int ioff = 0u;
 
     GLuint vao;
     GLuint vbo;

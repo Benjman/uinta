@@ -16,25 +16,24 @@
 #include <stb_image.h>
 #undef STB_IMAGE_IMPLEMENTATION
 
-void load_font(const unsigned char* ttfdata, stbtt_packedchar* chardata, GLuint *texId) {
-    const unsigned int width = 256,
-                       height = 256;
-    unsigned char bitmap[width * height];
+void load_font(const unsigned char* ttfdata, GLuint *textureid,
+               const unsigned int texture_width, const unsigned int texture_height,
+               stbtt_pack_context &ctx, stbtt_packedchar* chardata) {
+    unsigned char bitmap[texture_width * texture_height];
 
-    stbtt_pack_context ctx;
-    if (!stbtt_PackBegin(&ctx, bitmap, width, height, 0, 1, nullptr))
+    if (!stbtt_PackBegin(&ctx, bitmap, texture_width, texture_height, 0, 1, nullptr))
         printf("some kinda error happened with stbtt_PackBegin\n");
 
-    stbtt_packedchar chars[96];
-    stbtt_PackFontRange(&ctx, ttfdata, 0, 32.0, 32, 95, chars);
+    stbtt_PackFontRange(&ctx, ttfdata, 0, 32.0, 32, 95, chardata);
     stbtt_PackEnd(&ctx);
 
-    // TODO invert bitmap so we don't have to do vertex trickery
+    // flip vertically to comply with OpenGL texture coordinates
+    stbi__vertical_flip(bitmap, texture_width, texture_height, 1);
 
-    glGenTextures(1, texId);
-    glBindTexture(GL_TEXTURE_2D, *texId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
+    glGenTextures(1, textureid);
+    glBindTexture(GL_TEXTURE_2D, *textureid);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    stbi_write_png("/tmp/test.png", width, height, 1, bitmap, 0);
+    stbi_write_png("/tmp/test.png", texture_width, texture_height, 1, bitmap, 0);
 }
