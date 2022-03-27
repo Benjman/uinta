@@ -12,4 +12,8 @@ struct viewport {
 
 void createGLFWWindow(viewport& view);
 
+const char *getKeyStr(int key) noexcept;
+const char *getActionStr(int action) noexcept;
+const char *getModsStr(int mods) noexcept;
+
 #endif // UINTA_WINDOW_H

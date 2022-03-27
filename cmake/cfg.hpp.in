@@ -1,0 +1,8 @@
+#ifndef UINTA_CFG_H
+#define UINTA_CFG_H
+
+// cmake generates this implementation. edits should be made to uinta/cmake/cfg.hpp.in
+
+const inline char* RES_PATH = "${RES_PATH}";
+
+#endif // UINTA_CFG_H

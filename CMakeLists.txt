@@ -4,7 +4,7 @@ project(uinta)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/module")
 set(CMAKE_BUILD_TYPE Debug)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -12,21 +12,30 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 # dependencies
 find_package(GLFW REQUIRED)
 find_package(GTest REQUIRED)
+find_package(stb REQUIRED)
 add_subdirectory(./lib/entt)
 
-add_library(uinta STATIC 
-    ./src/camera2d.cpp
-    ./src/math.cpp
-    ./src/mesh.cpp
-    ./src/quadtree.cpp
-    ./src/shader.cpp
-    ./src/glfw.cpp
-    ${GLAD_C})
+set(RES_PATH ${CMAKE_BINARY_DIR}/res/)
+file(COPY res DESTINATION ${CMAKE_BINARY_DIR})
+configure_file(${CMAKE_SOURCE_DIR}/cmake/cfg.hpp.in ${CMAKE_BINARY_DIR}/generated/cfg.hpp)
 
-include_directories(./include)
+add_library(uinta STATIC 
+  ./src/camera2d.cpp
+  ./src/file.cpp
+  ./src/font.cpp
+  ./src/math.cpp
+  ./src/mesh.cpp
+  ./src/quadtree.cpp
+  ./src/shader.cpp
+  ./src/glfw.cpp
+  ${GLAD_C})
+
+include_directories(${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_BINARY_DIR}/generated
+    ${GL_INCLUDES}
+    ${STB_INCLUDE})
 
 target_link_libraries(uinta PUBLIC EnTT::EnTT ${GL_LIBS})
-target_include_directories(uinta PRIVATE ${GL_INCLUDES})
 
 add_subdirectory(app)
 add_subdirectory(test)
