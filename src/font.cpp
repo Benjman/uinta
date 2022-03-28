@@ -37,3 +37,11 @@ void load_font(const unsigned char* ttfdata, GLuint *textureid,
 
     stbi_write_png("/tmp/test.png", texture_width, texture_height, 1, bitmap, 0);
 }
+
+#include <regex>
+int getRenderableCharCount(const char* s, const unsigned int size) noexcept {
+    const std::regex expression("[\x21-\x7E]");
+    return std::ptrdiff_t(std::distance(
+        std::cregex_iterator(s, &s[size], expression),
+        std::cregex_iterator()));
+}

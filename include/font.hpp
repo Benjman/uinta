@@ -30,4 +30,6 @@ void load_font(const unsigned char* ttfdata, GLuint *textureid,
                const unsigned int texture_width, const unsigned int texture_height,
                stbtt_pack_context &ctx, stbtt_packedchar* chardata);
 
+int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
+
 #endif // UINTA_FONT_H

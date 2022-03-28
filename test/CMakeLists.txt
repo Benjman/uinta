@@ -3,6 +3,7 @@ find_package(Threads REQUIRED)
 include_directories(../include)
 
 add_executable(test
+    ./fontTest.cpp
     ./main.cpp
     ./mat_test.cpp
     ./quadtreeTests.cpp
