@@ -31,7 +31,7 @@ int main(const int argc, const char **argv) {
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept {
-    printf("Key: %d\t Scancode: %d\t, Action: %d\t Mods: %d\n", key, scancode, action, mods);
+    printf("Key %s event: %s (%d)\n", getActionStr(action), getKeyStr(key), mods);
     runner.key_callback(key, scancode, action, mods);
 }
 
