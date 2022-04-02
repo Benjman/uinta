@@ -61,7 +61,7 @@ void fontRunner::init_font() {
 }
 
 void fontRunner::init_mesh() {
-    const float cube_mesh[] = {
+    const float mesh[] = {
         // atlas
         -1.0, 1.0, 0.0, 1.0, // top-left
         -1.0, 0.0, 0.0, 0.0, // bottom-left
@@ -74,7 +74,7 @@ void fontRunner::init_mesh() {
          0.0, -1.0, quad.s1, -quad.t1, // bottom-right
          0.0,  0.0, quad.s1, -quad.t0, // top-right
     };
-    memcpy(vbuf, cube_mesh, sizeof(cube_mesh));
+    memcpy(vbuf, mesh, sizeof(mesh));
     vcount = 4;
 
     unsigned int indices[] = {

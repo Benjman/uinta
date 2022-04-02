@@ -8,7 +8,7 @@ const inline unsigned int BUF_SIZE = 2048;
 
 struct fontRunner {
 
-    font_ctx ctx = font_ctx(FontType::DejaVuSans, 256.0f, 256.0f);
+    font_ctx ctx = font_ctx(DejaVuSans, 256, 256);
 
     // vertex buffer
     float vbuf[BUF_SIZE];
