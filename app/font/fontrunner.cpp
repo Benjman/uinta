@@ -55,12 +55,9 @@ void fontRunner::init_buffers() {
 void fontRunner::init_font() {
     const unsigned int texture_width = 256,
                        texture_height = 256;
-    GLuint texId;
-    read_file_binary("font/dejavu/DejaVuSans.ttf", (char*) font_dejavusans);
-    load_font(font_dejavusans, &texId, texture_width, texture_height, ctx, chardata);
-
+    load_font(ctx);
     float xpos, ypos;
-    stbtt_GetPackedQuad(chardata, texture_width, texture_height, '@' - 32, &xpos, &ypos, &quad, 0);
+    stbtt_GetPackedQuad(ctx.stbtt_chardata, texture_width, texture_height, '@' - 32, &xpos, &ypos, &quad, 0);
 }
 
 void fontRunner::init_mesh() {

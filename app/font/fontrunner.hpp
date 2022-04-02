@@ -4,15 +4,11 @@
 #include <font.hpp>
 #include <glfw.hpp>
 
-#include <GL/gl.h>
-
 const inline unsigned int BUF_SIZE = 2048;
 
 struct fontRunner {
 
-    stbtt_pack_context ctx;
-    stbtt_packedchar chardata[96];
-    unsigned char font_dejavusans[FONT_SIZE_DejaVuSans];
+    font_ctx ctx = font_ctx(FontType::DejaVuSans, 256.0f, 256.0f);
 
     // vertex buffer
     float vbuf[BUF_SIZE];
