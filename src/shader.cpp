@@ -1,5 +1,8 @@
+#include <cstdio>
 #include <glad/glad.h>
 #include <shader.hpp>
+
+void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 
 GLuint create_shader_program(const char** sources,
                              const GLenum* stages,
@@ -13,11 +16,13 @@ GLuint create_shader_program(const char** sources,
         GLuint stageId = glCreateShader(stages[i]);
         glShaderSource(stageId, 1, &sources[i], nullptr);
         glCompileShader(stageId);
+        checkCompileErrors(id, stageId);
         glAttachShader(id, stageId);
         glDeleteShader(stageId);
     }
 
     glLinkProgram(id);
+    checkCompileErrors(id, GL_LINK_STATUS);
 
     if (uniform_count > 0) {
         glUseProgram(id);
@@ -28,4 +33,21 @@ GLuint create_shader_program(const char** sources,
     }
 
     return id;
+}
+
+void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {
+    GLint success;
+    GLchar info[1024];
+    if (type != GL_LINK_STATUS) {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        if (!success)
+            glGetShaderInfoLog(shader, 1024, 0, info);
+    } else {
+        glGetProgramiv(shader, GL_LINK_STATUS, &success);
+        if (!success)
+            glGetProgramInfoLog(shader, 1024, 0, info);
+    }
+    if (!success) {
+        printf("Shader error: %s\n", info);
+    }
 }
