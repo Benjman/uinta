@@ -9,7 +9,7 @@ const inline vec3 WORLD_RIGHT   = vec3(1.0, 0.0,  0.0);
 const inline vec3 WORLD_FORWARD = vec3(0.0, 0.0, -1.0);
 
 struct camera2d final {
-    vec2 pos;
+    vec2 pos = vec2(0.0);
     float fov = 45;
     float ortho_size = 1.0;
 };
