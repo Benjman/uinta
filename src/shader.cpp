@@ -38,16 +38,15 @@ GLuint create_shader_program(const char** sources,
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {
     GLint success;
     GLchar info[1024];
-    if (type != GL_LINK_STATUS) {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success)
-            glGetShaderInfoLog(shader, 1024, 0, info);
-    } else {
+    if (type == GL_LINK_STATUS) {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success)
             glGetProgramInfoLog(shader, 1024, 0, info);
+    } else {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        if (!success)
+            glGetShaderInfoLog(shader, 1024, 0, info);
     }
-    if (!success) {
+    if (!success)
         printf("Shader error: %s\n", info);
-    }
 }
