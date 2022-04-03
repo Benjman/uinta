@@ -74,29 +74,27 @@ static const unsigned int getFontSize(const FontType type) {
     }
 }
 
-void load_font(const font_ctx& ctx) {
-    GLuint texId;
-    unsigned char data[getFontSize(ctx.type)];
-    read_file_binary(getFontPath(ctx.type), (char*) data);
-    // read_file_binary(getFontPath(ctx.type), (char*) ctx.ttfData);
+void load_font(const font_ctx& font) {
+    unsigned char data[getFontSize(font.type)];
+    read_file_binary(getFontPath(font.type), (char*) data);
 
-    unsigned char bitmap[ctx.stbtt_ctx.width * ctx.stbtt_ctx.height];
+    unsigned char bitmap[font.tex_width * font.tex_height];
 
-    if (!stbtt_PackBegin((stbtt_pack_context*) &ctx.stbtt_ctx, bitmap, ctx.stbtt_ctx.width, ctx.stbtt_ctx.height, 0, 1, nullptr))
+    stbtt_pack_context ctx;
+    if (!stbtt_PackBegin(&ctx, bitmap, font.tex_width, font.tex_height, 0, 1, nullptr))
         printf("some kinda error happened with stbtt_PackBegin\n");
-
-    stbtt_PackFontRange((stbtt_pack_context*) &ctx.stbtt_ctx, data, 0, 32.0, 32, 95, (stbtt_packedchar*) ctx.stbtt_chardata);
-    stbtt_PackEnd((stbtt_pack_context *)&ctx.stbtt_ctx);
+    stbtt_PackFontRange(&ctx, data, 0, 32.0, 32, 95, font.stbtt_chardata);
+    // stbtt_PackEnd(&stbtt_ctx);
 
     // flip vertically to comply with OpenGL texture coordinates
-    stbi__vertical_flip(bitmap, ctx.stbtt_ctx.width, ctx.stbtt_ctx.height, 1);
+    stbi__vertical_flip(bitmap, font.tex_width, font.tex_height, 1);
 
-    glGenTextures(1, (GLuint*) &ctx.textureId);
-    glBindTexture(GL_TEXTURE_2D, ctx.textureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ctx.stbtt_ctx.width, ctx.stbtt_ctx.height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
+    glGenTextures(1, (GLuint*) &font.textureId);
+    glBindTexture(GL_TEXTURE_2D, font.textureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, font.tex_width, font.tex_height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    stbi_write_png("/tmp/test.png", ctx.stbtt_ctx.width, ctx.stbtt_ctx.height, 1, bitmap, 0);
+    // stbi_write_png("/tmp/test.png", ctx.stbtt_ctx.width, ctx.stbtt_ctx.height, 1, bitmap, 0);
 }
 
 #include <regex>
@@ -108,12 +106,21 @@ int getRenderableCharCount(const char* s, const unsigned int size) noexcept {
 }
 
 font_ctx::font_ctx(const FontType type, const float tex_width, const float tex_height) noexcept :
-    type(type) {
-    stbtt_ctx.width = tex_width;
-    stbtt_ctx.height = tex_height;
+    type(type), tex_width(tex_width), tex_height(tex_height) {
     ttfData = new unsigned char[getFontSize(type)];
+    stbtt_chardata = new stbtt_packedchar[96];
 }
 
 font_ctx::~font_ctx() noexcept {
     delete[] ttfData;
+    delete[] stbtt_chardata;
+}
+
+void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad) {
+    float xpos = 0.0, ypos = 0.0;
+    getCharQuad(c, ctx, quad, &xpos, &ypos);
+}
+
+void getCharQuad(const char c, const font_ctx& font, stbtt_aligned_quad* quad, float* xpos, float* ypos) {
+    stbtt_GetPackedQuad(font.stbtt_chardata, font.tex_width, font.tex_height, c - 32, xpos, ypos, quad, 0);
 }

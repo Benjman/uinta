@@ -26,22 +26,25 @@ enum FontType {
 	DejaVuSerif
 };
 
+
+int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
+
+
 #include <GL/gl.h>
 #include <stb_truetype.h>
 struct font_ctx {
     const FontType type;
-    stbtt_pack_context stbtt_ctx;
-    stbtt_packedchar stbtt_chardata[96];
+    stbtt_packedchar *stbtt_chardata = nullptr;
     unsigned char *ttfData = nullptr;
     GLuint textureId = GL_ZERO;
+    unsigned int tex_width, tex_height;
 
     font_ctx(const FontType, const float tex_width, const float tex_height) noexcept;
 
     ~font_ctx() noexcept;
 };
-
 void load_font(const font_ctx&);
-
-int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
+void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad);
+void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad, float* xpos, float* ypos);
 
 #endif // UINTA_FONT_H
