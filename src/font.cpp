@@ -125,5 +125,15 @@ void font::getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* qu
 }
 
 void font::getCharQuad(const char c, const font_ctx& font, stbtt_aligned_quad* quad, float* xpos, float* ypos) {
+    /*
+        FIXME   font.chardata isn't thread safe and will cause collisions here.
+
+        Possible solution:  This method could take an instance of stbtt_packedchar*, and each 
+                            consumer would have their own copy of that array.
+
+        Another solution:   Create a "requestTextMesh" pipeline, which can pool objects which have 
+                            their own instances of the chardata collection, and other needed objects.
+                            This way it would be data-oriented, and thread safe.
+    */
     stbtt_GetPackedQuad(font.chardata, font.tex_width, font.tex_height, c - 32, xpos, ypos, quad, 0);
 }
