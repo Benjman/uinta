@@ -1,15 +1,14 @@
-#include <cstdio>
 #include <gtest/gtest.h>
 #include <font.hpp>
 
 TEST(font, renderableCount) {
     // ascii chars from 33 to 126
     char renderableChars[] = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-    ASSERT_EQ(94, getRenderableCharCount(renderableChars, sizeof(renderableChars)));
+    ASSERT_EQ(94, font::getRenderableCharCount(renderableChars, sizeof(renderableChars)));
 
     char boarder_chars[] = {32, 33, 126, 127};
-    ASSERT_EQ(2, getRenderableCharCount(boarder_chars, sizeof(boarder_chars)));
+    ASSERT_EQ(2, font::getRenderableCharCount(boarder_chars, sizeof(boarder_chars)));
 
     char outside_chars[] = {32, 127};
-    ASSERT_EQ(0, getRenderableCharCount(outside_chars, sizeof(outside_chars)));
+    ASSERT_EQ(0, font::getRenderableCharCount(outside_chars, sizeof(outside_chars)));
 }
