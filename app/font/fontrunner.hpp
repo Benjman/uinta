@@ -4,19 +4,19 @@
 #include <font.hpp>
 #include <glfw.hpp>
 
-const inline unsigned int BUF_SIZE = 2048;
+const inline unsigned int VBUF_SIZE = 4096;
+const inline unsigned int IBUF_SIZE = 2048;
 
 struct fontRunner {
-
-    font_ctx ctx = font_ctx(DejaVuSans, 256, 256);
+    font::font_ctx ctx = font::font_ctx(font::DejaVuSans, 256, 256);
+    font::text text = font::text(&ctx, "Hello text");
 
     // vertex buffer
-    float vbuf[BUF_SIZE];
-    // count of verticies in buffer
-    unsigned int vcount = 0u;
+    float vbuf[VBUF_SIZE];
 
     // index buffer
-    unsigned int ibuf[BUF_SIZE];
+    unsigned int ibuf[IBUF_SIZE];
+    unsigned int icount = 0;
 
     GLuint vao;
     GLuint vbo;

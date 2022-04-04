@@ -10,8 +10,6 @@
 
 #include "./fontrunner.hpp"
 
-stbtt_aligned_quad quad;
-
 void fontRunner::init() {
     view.width = 1000;
     view.height = 1000;
@@ -30,7 +28,7 @@ void fontRunner::init() {
 }
 
 void fontRunner::render() {
-    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
 }
 
 void fontRunner::tick(float dt) {
@@ -39,8 +37,10 @@ void fontRunner::tick(float dt) {
 void fontRunner::init_buffers() {
     glGenVertexArrays(1, &vao);
 
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
+    GLuint ids[2];
+    glGenBuffers(2, ids);
+    vbo = ids[0];
+    ebo = ids[1];
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -53,43 +53,50 @@ void fontRunner::init_buffers() {
 }
 
 void fontRunner::init_font() {
-    const unsigned int texture_width = 256,
-                       texture_height = 256;
     load_font(ctx);
-    float xpos, ypos;
-    stbtt_GetPackedQuad(ctx.stbtt_chardata, texture_width, texture_height, '@' - 32, &xpos, &ypos, &quad, 0);
 }
 
 void fontRunner::init_mesh() {
-    const float mesh[] = {
-        // atlas
-        -1.0, 1.0, 0.0, 1.0, // top-left
-        -1.0, 0.0, 0.0, 0.0, // bottom-left
-         0.0, 0.0, 1.0, 0.0, // bottom-right
-         0.0, 1.0, 1.0, 1.0, // top-right
-
-        // quad
-        -1.0,  0.0, quad.s0, -quad.t0, // top-left
-        -1.0, -1.0, quad.s0, -quad.t1, // bottom-left
-         0.0, -1.0, quad.s1, -quad.t1, // bottom-right
-         0.0,  0.0, quad.s1, -quad.t0, // top-right
+    const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
+        {MeshAttribType_Position, mesh_attrib(2, 4, 0)},
+        {MeshAttribType_UV, mesh_attrib(2, 4, 2)},
     };
-    memcpy(vbuf, mesh, sizeof(mesh));
-    vcount = 4;
+    unsigned int vbuf_count = 0;
+    unsigned int ioffset = 0;
+    font::generate_mesh(&text, view.width, view.height, 32.0, attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
 
-    unsigned int indices[] = {
-        // atlas
-        0, 1, 2,
-        2, 3, 0,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VBUF_SIZE, vbuf, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IBUF_SIZE, ibuf, GL_STATIC_DRAW);
 
-        // quad
-        4, 5, 6,
-        6, 7, 4,
-    };
-    memcpy(ibuf, indices, sizeof(indices));
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * BUF_SIZE, vbuf, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * BUF_SIZE, ibuf, GL_STATIC_DRAW);
+    // const float mesh[] = {
+    //     // atlas
+    //     -1.0, 1.0, 0.0, 1.0, // top-left
+    //     -1.0, 0.0, 0.0, 0.0, // bottom-left
+    //      0.0, 0.0, 1.0, 0.0, // bottom-right
+    //      0.0, 1.0, 1.0, 1.0, // top-right
+    //
+    //     // quad
+    //     -1.0,  0.0, quad.s0, -quad.t0, // top-left
+    //     -1.0, -1.0, quad.s0, -quad.t1, // bottom-left
+    //      0.0, -1.0, quad.s1, -quad.t1, // bottom-right
+    //      0.0,  0.0, quad.s1, -quad.t0, // top-right
+    // };
+    // memcpy(vbuf, mesh, sizeof(mesh));
+    // vcount = 4;
+    //
+    // unsigned int indices[] = {
+    //     // atlas
+    //     0, 1, 2,
+    //     2, 3, 0,
+    //
+    //     // quad
+    //     4, 5, 6,
+    //     6, 7, 4,
+    // };
+    // memcpy(ibuf, indices, sizeof(indices));
+    //
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * BUF_SIZE, vbuf, GL_STATIC_DRAW);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * BUF_SIZE, ibuf, GL_STATIC_DRAW);
 }
 
 void fontRunner::init_shader() {
