@@ -36,7 +36,7 @@ GLuint create_shader_program(const char** sources,
 }
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {
-    GLint success;
+    GLint success = 1;
     GLchar info[1024];
     if (type == GL_LINK_STATUS) {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
