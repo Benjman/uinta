@@ -94,7 +94,7 @@ struct vec4 final {
 
 /** matricies are column major **/
 struct mat4 final {
-    static void inverse(mat4& mat);
+    static void inverse(mat4& mat); // FIXME ew a static method in a pod. this should be a separate function.
 
     float values[16];
 
