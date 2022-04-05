@@ -2,7 +2,6 @@
 #define UINTA_FONT_H
 
 #include <GL/gl.h>
-#include <limits>
 #include <stb_truetype.h>
 #include <string>
 #include <unordered_map>
@@ -46,7 +45,7 @@ struct font_ctx final {
     stbtt_packedchar *chardata = nullptr;
     GLuint textureId = GL_ZERO;
     unsigned int tex_width, tex_height;
-    float asc = 0.0, dsc = 0.0, gap = 0.0;
+    float asc = 0.0, dsc = 0.0, gap = 0.0, line_size = 32.0;
 
     font_ctx(const FontType, const float tex_width, const float tex_height) noexcept;
 
@@ -63,6 +62,7 @@ struct font_ctx final {
         asc = other.asc;
         dsc = other.dsc;
         gap = other.gap;
+        line_size = other.line_size;
         return *this;
     }
 
@@ -81,9 +81,10 @@ struct text final {
     vec3 color;
     vec2 pos;
     vec2 dimensions;
+    float line_size;
 
-    text(const font_ctx* font, const std::string value, const vec3 color = vec3(0.0), const vec2 pos = vec2(0.0), const vec2 dimensions = vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max())) noexcept 
-    : font(font), value(value), color(color), pos(pos), dimensions(dimensions) { }
+    text(const font_ctx* font, const std::string value, const float line_size, const vec3 color = vec3(0.0), const vec2 pos = vec2(0.0), const vec2 dimensions = vec2(0)) noexcept 
+    : font(font), value(value), line_size(line_size), color(color), pos(pos), dimensions(dimensions) { }
 
     text(const text& other) noexcept {
         *this = other;
@@ -95,40 +96,11 @@ struct text final {
         color = other.color;
         font = other.font;
         value = other.value;
-        value.length();
+        line_size = other.line_size;
         return *this;
     }
 
 };
-
-struct text_builder final {
-    text root = text(nullptr, "");
-
-    text_builder(std::string value, const font_ctx* font) noexcept : root(font, value) {
-    }
-
-    operator text() const noexcept {
-        return text(root);
-    }
-
-    void font(const font_ctx* font) noexcept {
-        root.font = font;
-    }
-
-    void color(vec3 color) noexcept {
-        root.color = color;
-    }
-
-    void pos(vec2 pos) noexcept {
-        root.pos = pos;
-    }
-
-    void dimensions(vec2 dimensions) noexcept {
-        root.dimensions = dimensions;
-    }
-
-};
-
 
 
 /*********************
@@ -136,7 +108,7 @@ struct text_builder final {
 ********************/
 int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
 
-void generate_mesh(const text* root, const float frame_width, const float frame_height, const unsigned int line_size, const std::unordered_map<MeshAttribType, mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
+void generate_mesh(const text* root, const float frame_width, const float frame_height, const std::unordered_map<MeshAttribType, mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
 
 
 /*********************
@@ -147,14 +119,15 @@ struct mesh_ctx final {
     const text* root;
     float frame_width;
     float frame_height;
-    unsigned int line_size;
     std::unordered_map<MeshAttribType, mesh_attrib> attribs;
     float* vbuf;
     unsigned int* vcount;
     unsigned int* ibuf;
     unsigned int* icount;
     unsigned int* ioffset;
-    float xcursor = 0.0, ycursor = 0.0;
+    float xcursor = 0.0;
+    float ycursor = 0.0;
+    float text_scale = 1.0;
 };
 
 struct word final {

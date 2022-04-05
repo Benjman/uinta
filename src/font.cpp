@@ -75,14 +75,13 @@ static const unsigned int getFontSize(const FontType type) {
 void font::load_font(font_ctx& font) {
     unsigned char bitmap[font.tex_width * font.tex_height];
     unsigned char data[getFontSize(font.type)];
-    float line_size = 32.0;
 
     read_file_binary(getFontPath(font.type), (char*) data);
 
     stbtt_pack_context ctx;
     if (!stbtt_PackBegin(&ctx, bitmap, font.tex_width, font.tex_height, 0, 1, nullptr))
         printf("some kinda error happened with stbtt_PackBegin\n");
-    stbtt_PackFontRange(&ctx, data, 0, line_size, 32, 95, font.chardata);
+    stbtt_PackFontRange(&ctx, data, 0, font.line_size, 32, 95, font.chardata);
     stbtt_PackEnd(&ctx);
 
     stbtt_aligned_quad q;
@@ -94,7 +93,7 @@ void font::load_font(font_ctx& font) {
     stbtt_InitFont(&info, data, 0);
     int asc, dsc, gap;
     stbtt_GetFontVMetrics(&info, &asc, &dsc, &gap);
-    float scale = stbtt_ScaleForPixelHeight(&info, line_size);
+    float scale = stbtt_ScaleForPixelHeight(&info, font.line_size);
     font.asc = asc * scale;
     font.dsc = dsc * scale;
     font.gap = gap * scale;

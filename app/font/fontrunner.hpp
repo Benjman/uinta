@@ -10,7 +10,7 @@ const inline unsigned int IBUF_SIZE = 2048;
 struct fontRunner {
 public:
     font::font_ctx font = font::font_ctx(font::DejaVuSans, 256, 256);
-    font::text text = font::text(&font, "Hello text");
+    font::text text = font::text(&font, "Hello text", 32.0);
 
     // vertex buffer
     float vbuf[VBUF_SIZE];

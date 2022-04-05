@@ -11,18 +11,18 @@ int font::getRenderableCharCount(const char* s, const unsigned int size) noexcep
         std::cregex_iterator()));
 }
 
-void font::generate_mesh(const text* root, const float frame_width, const float frame_height, const unsigned int line_size, const std::unordered_map<MeshAttribType, mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset) {
+void font::generate_mesh(const text* root, const float frame_width, const float frame_height, const std::unordered_map<MeshAttribType, mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset) {
     mesh_ctx ctx;
     ctx.root = root;
     ctx.frame_width = frame_width;
     ctx.frame_height = frame_height;
-    ctx.line_size = line_size;
     ctx.attribs = attribs;
     ctx.vbuf = vbuf;
     ctx.vcount = vcount;
     ctx.ibuf = ibuf;
     ctx.icount = icount;
     ctx.ioffset = ioffset;
+    ctx.text_scale = (float) root->line_size / (float) root->font->line_size;
     generate_mesh(ctx);
 }
 
@@ -37,13 +37,30 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
     std::vector<line> lines;
     stbtt_aligned_quad quad;
     generate_structure(ctx, &lines, quad);
-    ctx.ycursor = ctx.root->pos.y + ctx.root->font->asc;
+    ctx.ycursor = ctx.root->font->asc;
     for (const auto& line : lines) {
         ctx.xcursor = find_xstart(ctx.root, line.width);
         for (auto& word : line.words) {
             for (unsigned int i = 0u, len = word.value.length(); i < len; i++) {
                 const char c = word.value.at(i);
-                getCharQuad(c, *ctx.root->font, &quad, &ctx.xcursor, &ctx.ycursor);
+                float xcursor = 0.0;
+                getCharQuad(c, *ctx.root->font, &quad, &xcursor, &ctx.ycursor);
+
+                // scale from font to text size
+                quad.x0 *= ctx.text_scale;
+                quad.x1 *= ctx.text_scale;
+                quad.y0 *= ctx.text_scale;
+                quad.y1 *= ctx.text_scale;
+
+                // place according to text position
+                quad.x0 += ctx.root->pos.x + ctx.xcursor;
+                quad.x1 += ctx.root->pos.x + ctx.xcursor;
+                quad.y0 += ctx.root->pos.y;
+                quad.y1 += ctx.root->pos.y;
+
+                // increase cursor
+                xcursor *= ctx.text_scale;
+                ctx.xcursor += xcursor;
 
                 // normalize to screen space
                 quad.x0 /= ctx.frame_width;
@@ -57,7 +74,7 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
                 quad.y0 = -2 * quad.y0 + 1;
                 quad.y1 = -2 * quad.y1 + 1;
 
-                // flip vertical axis for OpenGL texture coordinates
+                // flip UV vertical axis for OpenGL texture coordinates
                 quad.t0 *= -1;
                 quad.t1 *= -1;
 
@@ -196,3 +213,4 @@ void font::internal::store_color(const vec3& color, const mesh_attrib& attrib, f
     vbuf[attrib.offset + attrib.stride * 3 + 1] = color.y;
     vbuf[attrib.offset + attrib.stride * 3 + 2] = color.z;
 }
+

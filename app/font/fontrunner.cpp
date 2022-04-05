@@ -63,7 +63,8 @@ void fontRunner::init_mesh() {
     unsigned int vbuf_count = 0;
     unsigned int ioffset = 0;
     text.color = vec3(1.0, 0.5, 0.2);
-    font::generate_mesh(&text, view.width, view.height, 32.0, attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
+    text.pos = vec2(150, 200);
+    font::generate_mesh(&text, view.width, view.height, attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VBUF_SIZE, vbuf, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IBUF_SIZE, ibuf, GL_STATIC_DRAW);
