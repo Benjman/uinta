@@ -38,12 +38,13 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
     stbtt_aligned_quad quad;
     generate_structure(ctx, &lines, quad);
     ctx.ycursor = ctx.root->font->asc;
+    float xcursor = 0.0;
     for (const auto& line : lines) {
         ctx.xcursor = find_xstart(ctx.root, line.width);
         for (auto& word : line.words) {
             for (unsigned int i = 0u, len = word.value.length(); i < len; i++) {
                 const char c = word.value.at(i);
-                float xcursor = 0.0;
+                xcursor = 0.0;
                 getCharQuad(c, *ctx.root->font, &quad, &xcursor, &ctx.ycursor);
 
                 // scale from font to text size
@@ -97,12 +98,15 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
                 *ctx.ioffset += 4;
 
                 // advance vertex buffer to next quad position
-                ctx.vbuf = &ctx.vbuf[vertexStride]; // TODO wtf is this?
+                ctx.vbuf = &ctx.vbuf[vertexStride];
                 // advance index buffer
                 ctx.ibuf = &ctx.ibuf[6];
             }
             // advance xcursor one space length
-            getCharQuad(' ', *ctx.root->font, &quad, &ctx.xcursor, &ctx.ycursor);
+            xcursor = 0.0;
+            getCharQuad(' ', *ctx.root->font, &quad, &xcursor, &ctx.ycursor);
+            xcursor *= ctx.text_scale;
+            ctx.xcursor += xcursor;
         }
     }
 }
@@ -181,14 +185,6 @@ void font::internal::store_quad_position(const stbtt_aligned_quad& quad, const m
 }
 
 void font::internal::store_quad_uv(const stbtt_aligned_quad& quad, const mesh_attrib& attrib, float* vbuf) {
-    vbuf[attrib.offset + attrib.stride * 0 + 0] = 0.0;
-    vbuf[attrib.offset + attrib.stride * 0 + 1] = 0.0;
-    vbuf[attrib.offset + attrib.stride * 1 + 0] = 0.0;
-    vbuf[attrib.offset + attrib.stride * 1 + 1] = 1.0;
-    vbuf[attrib.offset + attrib.stride * 2 + 0] = 1.0;
-    vbuf[attrib.offset + attrib.stride * 2 + 1] = 1.0;
-    vbuf[attrib.offset + attrib.stride * 3 + 0] = 1.0;
-    vbuf[attrib.offset + attrib.stride * 3 + 1] = 0.0;
     vbuf[attrib.offset + attrib.stride * 0 + 0] = quad.s0;
     vbuf[attrib.offset + attrib.stride * 0 + 1] = quad.t0;
     vbuf[attrib.offset + attrib.stride * 1 + 0] = quad.s0;
