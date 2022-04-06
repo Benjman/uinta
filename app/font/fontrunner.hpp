@@ -4,13 +4,18 @@
 #include <font.hpp>
 #include <glfw.hpp>
 
-const inline unsigned int VBUF_SIZE = 4096;
-const inline unsigned int IBUF_SIZE = 2048;
+const unsigned int VBUF_SIZE = 15 * 1024;
+const unsigned int IBUF_SIZE = 15 * 1024;
+
+const unsigned int WINDOW_WIDTH = 1000;
+const unsigned int WINDOW_HEIGHT = 1000;
+
 
 struct fontRunner {
 public:
     font::font_ctx font = font::font_ctx(font::DejaVuSans, 256, 256);
-    font::text text = font::text(&font, "Hello text", 32.0);
+    font::text text = font::text(&font, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        32.0, vec3(1.0, 0.5, 0.2), vec2(0, 0), vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
 
     // vertex buffer
     float vbuf[VBUF_SIZE];

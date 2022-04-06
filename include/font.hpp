@@ -83,8 +83,9 @@ struct text final {
     vec2 dimensions;
     float line_size;
 
-    text(const font_ctx* font, const std::string value, const float line_size, const vec3 color = vec3(0.0), const vec2 pos = vec2(0.0), const vec2 dimensions = vec2(0)) noexcept 
-    : font(font), value(value), line_size(line_size), color(color), pos(pos), dimensions(dimensions) { }
+    text(const font_ctx* font, const std::string value, const float line_size, const vec3 color = vec3(0.0), const vec2 pos = vec2(0.0), const vec2 dimensions = vec2(0, 0)) noexcept 
+    : font(font), value(value), line_size(line_size), color(color), pos(pos), dimensions(dimensions) {
+    }
 
     text(const text& other) noexcept {
         *this = other;
@@ -152,9 +153,11 @@ struct word final {
 struct line final {
     std::vector<word> words;
     float width;
+    float max_width;
 
-    line() noexcept {
-        width = 0.0;
+    line() noexcept : line(0.0) {}
+
+    line(const float max_width) noexcept : width(0.0), max_width(max_width) {
     }
 
     line(const line& other) noexcept {
