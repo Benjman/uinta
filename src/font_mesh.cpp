@@ -108,16 +108,17 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
             xcursor *= ctx.text_scale;
             ctx.xcursor += xcursor;
         }
+        ctx.ycursor += ctx.root->line_size;
     }
 }
 
 void font::internal::generate_structure(mesh_ctx ctx, std::vector<line>* lines, stbtt_aligned_quad& quad) {
-    // TODO max line width
-    line line;
+    line line(ctx.root->dimensions.x);
     word word;
 
     float space_width = 0.0, xpos = 0.0, ypos = 0.0;
     getCharQuad(' ', *ctx.root->font, &quad, &space_width, &ypos);
+    space_width *= ctx.text_scale;
 
     for (unsigned int i = 0, len = ctx.root->value.size(); i < len; i++) {
         char c = ctx.root->value.at(i);
@@ -125,7 +126,7 @@ void font::internal::generate_structure(mesh_ctx ctx, std::vector<line>* lines, 
             if (!try_add_word(line, word)) {
                 line.width -= space_width;
                 lines->emplace_back(font::internal::line(line));
-                line = font::internal::line(); // TODO test the assignment operator. i'm worried it's operating like a copy.
+                line = font::internal::line(ctx.root->dimensions.x); // TODO test the assignment operator. i'm worried it's operating like a copy.
                 try_add_word(line, word);
             }
             word = font::internal::word();
@@ -136,12 +137,13 @@ void font::internal::generate_structure(mesh_ctx ctx, std::vector<line>* lines, 
         xpos = 0.0;
         c = ctx.root->value.at(i);
         getCharQuad(c, *ctx.root->font, &quad, &xpos, &ypos);
+        xpos *= ctx.text_scale;
         add_char(word, c, xpos);
     }
 
     if (!try_add_word(line, word)) {
         lines->emplace_back(font::internal::line(line));
-        line = font::internal::line();
+        line = font::internal::line(ctx.root->dimensions.x);
         try_add_word(line, word);
     }
 
@@ -149,9 +151,8 @@ void font::internal::generate_structure(mesh_ctx ctx, std::vector<line>* lines, 
 }
 
 bool font::internal::try_add_word(line& line, word& word) {
-    // TODO check for max width violation
-    // if (line.max_width < line.width + word.width)
-    //     return false;
+    if (line.max_width && line.max_width < line.width + word.width)
+        return false;
     line.words.emplace_back(font::internal::word(word));
     line.width += word.width;
     return true;
@@ -159,12 +160,12 @@ bool font::internal::try_add_word(line& line, word& word) {
 
 void font::internal::add_char(word& word, const char c, float width) {
     word.value += c;
-    word.width = width;
+    word.width += width;
 }
 
 float font::internal::find_xstart(const text* root, const float width) {
     // TODO horizontal alignment
-    return root->pos.x;
+    return 0;
 }
 
 const mesh_attrib* font::internal::find_attrib(MeshAttribType type, const std::unordered_map<MeshAttribType, mesh_attrib>* attribs) {
