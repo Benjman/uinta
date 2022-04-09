@@ -4,11 +4,28 @@
 using namespace font;
 using namespace font::internal;
 
-int font::getRenderableCharCount(const char* s, const unsigned int size) noexcept {
+unsigned int font::getRenderableCharCount(const char* s, const unsigned int size) noexcept {
     const std::regex expression("[\x21-\x7E]");
     return std::ptrdiff_t(std::distance(
         std::cregex_iterator(s, &s[size], expression),
         std::cregex_iterator()));
+}
+
+unsigned int font::getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<MeshAttribType, mesh_attrib> attribs) noexcept {
+    unsigned int bufsize = 0;
+    if (const mesh_attrib* attrib = find_attrib(MeshAttribType_Position, &attribs))
+        bufsize += 8;
+    if (const mesh_attrib* attrib = find_attrib(MeshAttribType_UV, &attribs))
+        bufsize += 8;
+    if (const mesh_attrib* attrib = find_attrib(MeshAttribType_Color, &attribs))
+        bufsize += 12;
+    const int count = getRenderableCharCount(s, size);
+    return bufsize * count;
+}
+
+unsigned int font::getIndexBufferSize(const char* s, const unsigned int size) noexcept {
+    const int count = getRenderableCharCount(s, size);
+    return 6 * count;
 }
 
 void font::generate_mesh(const text* root, const float frame_width, const float frame_height, const std::unordered_map<MeshAttribType, mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset) {
@@ -81,12 +98,11 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
 
                 // store quad to buffers
                 if (const mesh_attrib* attrib = find_attrib(MeshAttribType_Position, &ctx.attribs))
-                    store_quad_position(quad, *attrib, ctx.vbuf);
+                    store_quad_position(quad, *attrib, ctx.vbuf, ctx.vcount);
                 if (const mesh_attrib* attrib = find_attrib(MeshAttribType_UV, &ctx.attribs))
-                    store_quad_uv(quad, *attrib, ctx.vbuf);
+                    store_quad_uv(quad, *attrib, ctx.vbuf, ctx.vcount);
                 if (const mesh_attrib* attrib = find_attrib(MeshAttribType_Color, &ctx.attribs))
-                    store_color(ctx.root->color, *attrib, ctx.vbuf);
-                *ctx.vcount += 4;
+                    store_color(ctx.root->color, *attrib, ctx.vbuf, ctx.vcount);
 
                 ctx.ibuf[0] = 0 + *ctx.ioffset;
                 ctx.ibuf[1] = 1 + *ctx.ioffset;
@@ -174,7 +190,7 @@ const mesh_attrib* font::internal::find_attrib(MeshAttribType type, const std::u
     return &attribs->at(type);
 }
 
-void font::internal::store_quad_position(const stbtt_aligned_quad& quad, const mesh_attrib& attrib, float* vbuf) {
+void font::internal::store_quad_position(const stbtt_aligned_quad& quad, const mesh_attrib& attrib, float* vbuf, unsigned int* vcount) {
     vbuf[attrib.offset + attrib.stride * 0 + 0] = quad.x0;
     vbuf[attrib.offset + attrib.stride * 0 + 1] = quad.y0;
     vbuf[attrib.offset + attrib.stride * 1 + 0] = quad.x0;
@@ -183,9 +199,10 @@ void font::internal::store_quad_position(const stbtt_aligned_quad& quad, const m
     vbuf[attrib.offset + attrib.stride * 2 + 1] = quad.y1;
     vbuf[attrib.offset + attrib.stride * 3 + 0] = quad.x1;
     vbuf[attrib.offset + attrib.stride * 3 + 1] = quad.y0;
+    *vcount += 8;
 }
 
-void font::internal::store_quad_uv(const stbtt_aligned_quad& quad, const mesh_attrib& attrib, float* vbuf) {
+void font::internal::store_quad_uv(const stbtt_aligned_quad& quad, const mesh_attrib& attrib, float* vbuf, unsigned int* vcount) {
     vbuf[attrib.offset + attrib.stride * 0 + 0] = quad.s0;
     vbuf[attrib.offset + attrib.stride * 0 + 1] = quad.t0;
     vbuf[attrib.offset + attrib.stride * 1 + 0] = quad.s0;
@@ -194,9 +211,10 @@ void font::internal::store_quad_uv(const stbtt_aligned_quad& quad, const mesh_at
     vbuf[attrib.offset + attrib.stride * 2 + 1] = quad.t1;
     vbuf[attrib.offset + attrib.stride * 3 + 0] = quad.s1;
     vbuf[attrib.offset + attrib.stride * 3 + 1] = quad.t0;
+    *vcount += 8;
 }
 
-void font::internal::store_color(const vec3& color, const mesh_attrib& attrib, float* vbuf) {
+void font::internal::store_color(const vec3& color, const mesh_attrib& attrib, float* vbuf, unsigned int* vcount) {
     vbuf[attrib.offset + attrib.stride * 0 + 0] = color.x;
     vbuf[attrib.offset + attrib.stride * 0 + 1] = color.y;
     vbuf[attrib.offset + attrib.stride * 0 + 2] = color.z;
@@ -209,5 +227,6 @@ void font::internal::store_color(const vec3& color, const mesh_attrib& attrib, f
     vbuf[attrib.offset + attrib.stride * 3 + 0] = color.x;
     vbuf[attrib.offset + attrib.stride * 3 + 1] = color.y;
     vbuf[attrib.offset + attrib.stride * 3 + 2] = color.z;
+    *vcount += 12;
 }
 

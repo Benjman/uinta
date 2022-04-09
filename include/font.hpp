@@ -67,7 +67,9 @@ struct font_ctx final {
     }
 
     ~font_ctx() noexcept;
+
 };
+
 void load_font(font_ctx&);
 void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad); // TODO can we noexcept these?
 void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad, float* xpos, float* ypos);
@@ -84,7 +86,7 @@ struct text final {
     float line_size;
 
     text(const font_ctx* font, const std::string value, const float line_size, const vec3 color = vec3(0.0), const vec2 pos = vec2(0.0), const vec2 dimensions = vec2(0, 0)) noexcept 
-    : font(font), value(value), line_size(line_size), color(color), pos(pos), dimensions(dimensions) {
+        : font(font), value(value), line_size(line_size), color(color), pos(pos), dimensions(dimensions) {
     }
 
     text(const text& other) noexcept {
@@ -103,11 +105,9 @@ struct text final {
 
 };
 
-
-/*********************
-    MESH GENERATION
-********************/
-int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
+unsigned int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
+unsigned int getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<MeshAttribType, mesh_attrib> attribs) noexcept;
+unsigned int getIndexBufferSize(const char* s, const unsigned int size) noexcept;
 
 void generate_mesh(const text* root, const float frame_width, const float frame_height, const std::unordered_map<MeshAttribType, mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
 
@@ -177,9 +177,9 @@ bool try_add_word(line&, word&);
 void add_char(word&, const char, float);
 float find_xstart(const text*, const float);
 const mesh_attrib* find_attrib(MeshAttribType, const std::unordered_map<MeshAttribType, mesh_attrib>*); // TODO maybe this should be in mesh.hpp?
-void store_quad_position(const stbtt_aligned_quad&, const mesh_attrib&, float*);
-void store_quad_uv(const stbtt_aligned_quad&, const mesh_attrib&, float*);
-void store_color(const vec3&, const mesh_attrib&, float*);
+void store_quad_position(const stbtt_aligned_quad&, const mesh_attrib&, float*, unsigned int*);
+void store_quad_uv(const stbtt_aligned_quad&, const mesh_attrib&, float*, unsigned int*);
+void store_color(const vec3&, const mesh_attrib&, float*, unsigned int*);
 
 }}
 
