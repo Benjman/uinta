@@ -7,6 +7,7 @@ add_executable(test
     ./main.cpp
     ./mat_test.cpp
     ./quadtreeTests.cpp
+    ./running_avg.cpp
     ./vecTests.cpp
     )
 
