@@ -40,6 +40,10 @@ static const char* getFontPath(const FontType type) {
         case DejaVuSerifCondensed: return "font/dejavu/DejaVuSerifCondensed.ttf";
         case DejaVuSerif_Italic: return "font/dejavu/DejaVuSerif_Italic.ttf";
         case DejaVuSerif: return "font/dejavu/DejaVuSerif.ttf";
+
+        case ProggyCleanTT_Nerd_Font_Complete_Mono: return "font/proggy/ProggyCleanTT Nerd Font Complete Mono.ttf";
+        case ProggyCleanTT_Nerd_Font_Complete: return "font/proggy/ProggyCleanTT Nerd Font Complete Mono.ttf";
+
         default: throw std::runtime_error("Not implemented for font type\n");
     }
 }
@@ -68,6 +72,10 @@ static const unsigned int getFontSize(const FontType type) {
         case DejaVuSerifCondensed: return 379296u;
         case DejaVuSerif_Italic: return 359000u;
         case DejaVuSerif: return 380132u;
+
+        case ProggyCleanTT_Nerd_Font_Complete_Mono: return 838628u;
+        case ProggyCleanTT_Nerd_Font_Complete: return 874880u;
+
         default: throw std::runtime_error("Not implemented for font type\n");
     }
 }

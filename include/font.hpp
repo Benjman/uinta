@@ -33,7 +33,10 @@ enum FontType {
     DejaVuSerifCondensed_Italic,
     DejaVuSerifCondensed,
     DejaVuSerif_Italic,
-    DejaVuSerif
+    DejaVuSerif,
+
+    ProggyCleanTT_Nerd_Font_Complete_Mono,
+    ProggyCleanTT_Nerd_Font_Complete,
 };
 
 
