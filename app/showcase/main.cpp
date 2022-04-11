@@ -11,9 +11,12 @@ showcaseRunner runner;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
 
+unsigned int tick = 0;
+
 int main(const int argc, const char **argv) {
     debug_controller debug;
     double tick_time, render_time, init_time;
+    running_avg render_avg = running_avg(10);
 
     buffer_region item;
     item.vbuf = &debug.vbuf[0];
@@ -21,8 +24,10 @@ int main(const int argc, const char **argv) {
     item.voffset = 0;
     item.ioffset = 0;
 
-    int tick_timer_handle = debug.create_timer("TICK");
-    int render_timer_handle = debug.create_timer("RENDER");
+    int tick_timer_handle = debug.create_timer("TICK TIME");
+    int render_timer_handle = debug.create_timer("RENDER TIME");
+    int frame_handle = debug.create_timer("FRAME");
+    int time_handle = debug.create_timer("TIME");
 
     debug.reset_timer(tick_timer_handle);
     runner.init();
@@ -43,6 +48,8 @@ int main(const int argc, const char **argv) {
         runner.render();
         render_time = debug.duration(tick_timer_handle);
 
+        debug.render_timer(time_handle, glfwGetTime());
+        debug.render_timer(frame_handle, ++tick);
         debug.render_timer(tick_timer_handle, tick_time);
         debug.render_timer(render_timer_handle, render_time);
         debug.render();

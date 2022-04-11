@@ -53,19 +53,12 @@ struct buffer_ctx {
 };
 
 struct debug_controller {
-    font::font_ctx font = font::font_ctx(font::DejaVuSans, 256, 256);
+    GLuint shader;
 
-    font::text render_time_text = font::text(&font, "RENDER 000", 24.0);
+    font::font_ctx font = font::font_ctx(font::ProggyCleanTT_Nerd_Font_Complete_Mono, 256, 256);
 
     buffer_ctx buf;
     buffer_region render_time_buf;
-    GLuint shader;
-
-    const std::unordered_map<MeshAttribType, mesh_attrib> timer_mesh_attribs = {
-        {MeshAttribType_Position, mesh_attrib(2, 7, 0)},
-        {MeshAttribType_UV, mesh_attrib(2, 7, 2)},
-        {MeshAttribType_Color, mesh_attrib(3, 7, 4)},
-    };
 
     // vertex buffer
     float vbuf[15 * 1024];
@@ -88,6 +81,7 @@ private:
     const char* timer_assignments[internal::DEBUG_CONTROLLER_MAX_TIMERS]{nullptr};
     debug_timer_t render_queue[internal::DEBUG_CONTROLLER_MAX_TIMERS];
     float render_queue_times[internal::DEBUG_CONTROLLER_MAX_TIMERS];
+    std::string render_formats[internal::DEBUG_CONTROLLER_MAX_TIMERS];
 
 };
 

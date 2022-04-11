@@ -11,6 +11,12 @@ void init_bufs(buffer_ctx&);
 void upload_buf(const buffer_region&);
 void init_shader(GLuint*);
 
+const std::unordered_map<MeshAttribType, mesh_attrib> timer_mesh_attribs = {
+    {MeshAttribType_Position, mesh_attrib(2, 7, 0)},
+    {MeshAttribType_UV, mesh_attrib(2, 7, 2)},
+    {MeshAttribType_Color, mesh_attrib(3, 7, 4)},
+};
+
 void debug_controller::init(unsigned int view_width, unsigned int view_height) {
     std::fill(render_queue, render_queue + internal::DEBUG_CONTROLLER_MAX_TIMERS, -1);
     std::fill(render_queue_times, render_queue_times + internal::DEBUG_CONTROLLER_MAX_TIMERS, 0.0);
@@ -74,13 +80,13 @@ void debug_controller::render() {
     region.voffset = 0;
     region.ioffset = 0;
     unsigned int vcount = 0, icount = 0, ioff = 0;
+    font::text text = font::text(&font, "", 20.0);
+    text.color = vec3(0.6, 0.6, 0.3);
     for (int i = 0; render_queue[i] != -1; i++, queue_count = i) {
         debug_timer_t handle = render_queue[i];
         const char* label = timer_assignments[handle];
-        const int v = (int) std::min(render_queue_times[queue_count], 999.0f);
-        font::text text = font::text(&font, std::string(label) + " " + std::to_string(v) + " ms", 18.0);
-        text.color = vec3(1.0, 0.0, 0.0);
-        text.pos = vec2(0.0, text.line_size * i);
+        text.value = std::string(label) + " " + std::to_string(render_queue_times[queue_count]);
+        text.pos.y = text.line_size * i;
         font::generate_mesh(&text, 1000, 1000, timer_mesh_attribs, &vbuf[vcount], &vcount, &ibuf[icount], &icount, &ioff);
     }
     if (!queue_count)
