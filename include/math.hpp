@@ -94,8 +94,6 @@ struct vec4 final {
 
 /** matricies are column major **/
 struct mat4 final {
-    static void inverse(mat4& mat); // FIXME ew a static method in a pod. this should be a separate function.
-
     float values[16];
 
     mat4();
@@ -143,6 +141,30 @@ struct mat4 final {
     void m32(float v) { values[14] = v; }
     float m33() { return values[15]; }
     void m33(float v) { values[15] = v; }
+
+};
+
+#include <algorithm>
+struct running_avg {
+public:
+    running_avg(const unsigned int) noexcept;
+    running_avg(const running_avg&) noexcept;
+    running_avg& operator=(const running_avg&) noexcept;
+
+    void operator+=(const float) noexcept;
+
+    ~running_avg();
+
+    void add(float) noexcept;
+
+    float avg() noexcept;
+
+private:
+    float* buffer;
+    float mavg;
+    bool dirty;
+    unsigned int cursor;
+    unsigned int count;
 
 };
 

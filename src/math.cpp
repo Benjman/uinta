@@ -351,3 +351,52 @@ mat4& mat4::operator*=(const vec4 &rhs) noexcept {
     return *this;
 }
 
+running_avg::running_avg(const unsigned int sample_size) noexcept {
+    buffer = new float[sample_size];
+    mavg = 0.0;
+    dirty = false;
+    cursor = 0u;
+    count = sample_size;
+}
+
+running_avg::running_avg(const running_avg& other) noexcept {
+    *this = other;
+}
+
+running_avg& running_avg::operator=(const running_avg &other) noexcept {
+    buffer = other.buffer;
+    mavg = other.mavg;
+    dirty = other.dirty;
+    cursor = other.cursor;
+    count = other.count;
+    return *this;
+}
+
+void running_avg::operator+=(const float v) noexcept {
+    add(v);
+}
+
+running_avg::~running_avg() {
+    delete[] buffer;
+}
+
+float running_avg::avg() noexcept {
+    if (!cursor)
+        return 0.0;
+    if (dirty) {
+        float sum = 0.0;
+        unsigned int len = std::min(cursor, count);
+        for (unsigned int i = 0u; i < len; i++) {
+            sum += buffer[i];
+        }
+        mavg = sum / (float) len;
+        dirty = false;
+    }
+    return mavg;
+}
+
+void running_avg::add(float v) noexcept {
+    buffer[cursor % count] = v;
+    dirty = true;
+    cursor++;
+}
