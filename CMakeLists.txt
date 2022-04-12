@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/module")
 set(CMAKE_BUILD_TYPE Debug)
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # dependencies
 find_package(GLFW REQUIRED)
@@ -20,15 +19,17 @@ file(COPY res DESTINATION ${CMAKE_BINARY_DIR})
 configure_file(${CMAKE_SOURCE_DIR}/cmake/cfg.hpp.in ${CMAKE_BINARY_DIR}/generated/cfg.hpp)
 
 add_library(uinta STATIC 
+
   ./src/camera2d.cpp
   ./src/file.cpp
   ./src/font.cpp
   ./src/font_mesh.cpp
+  ./src/glfw.cpp
   ./src/math.cpp
   ./src/mesh.cpp
   ./src/quadtree.cpp
   ./src/shader.cpp
-  ./src/glfw.cpp
+
   ${GLAD_C})
 
 include_directories(${CMAKE_SOURCE_DIR}/include
