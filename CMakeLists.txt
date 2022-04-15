@@ -23,7 +23,6 @@ add_library(uinta STATIC
   ./src/camera2d.cpp
   ./src/file.cpp
   ./src/font.cpp
-  ./src/font_mesh.cpp
   ./src/glfw.cpp
   ./src/math.cpp
   ./src/mesh.cpp

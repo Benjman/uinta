@@ -15,7 +15,11 @@ struct fontRunner {
 public:
     font::font_ctx font = font::font_ctx(font::DejaVuSans, 256, 256);
     font::text text = font::text(&font, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        32.0, vec3(1.0, 0.5, 0.2), vec2(0), vec2(WINDOW_WIDTH * 0.75, 0.0));
+                                 32.0, // line_size
+                                 1.0, 0.5, 0.2, // color
+                                 0.0, 0.0, // pos
+                                 WINDOW_WIDTH * 0.75, 0.0 // max dimensions
+                                 );
 
     // vertex buffer
     float vbuf[VBUF_SIZE];
@@ -43,6 +47,7 @@ private:
     void init_buffers();
     void init_mesh();
     void init_shader();
+    void init_font();
 };
 
 #endif // UINTA_CAMERA_RUNNER_H

@@ -13,13 +13,13 @@
 void showcaseRunner::init() {
     view.width = WINDOW_WIDTH;
     view.height = WINDOW_HEIGHT;
-    view.title = "hello font";
+    view.title = "hello showcase";
     createGLFWWindow(view);
 
-    load_font(font);
     init_shader();
     init_buffers();
     init_mesh();
+    init_font();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -54,17 +54,24 @@ void showcaseRunner::init_buffers() {
     glEnableVertexAttribArray(2);
 }
 
+using namespace font;
 void showcaseRunner::init_mesh() {
-    const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
-        {MeshAttribType_Position, mesh_attrib(2, 7, 0)},
-        {MeshAttribType_UV, mesh_attrib(2, 7, 2)},
-        {MeshAttribType_Color, mesh_attrib(3, 7, 4)},
+    const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs = {
+        {FontMeshAttrib_Position, font_mesh_attrib(7, 0)},
+        {FontMeshAttrib_UV, font_mesh_attrib(7, 2)},
+        {FontMeshAttrib_Color, font_mesh_attrib(7, 4)},
     };
     unsigned int vbuf_count = 0;
     unsigned int ioffset = 0;
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VBUF_SIZE, vbuf, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IBUF_SIZE, ibuf, GL_STATIC_DRAW);
+}
+
+void showcaseRunner::init_font() {
+    unsigned char font_data[getFontSize(font.type)];
+    read_file_binary(getFontPath(font.type), (char*) font_data);
+    load_font(font, font_data);
 }
 
 void showcaseRunner::init_shader() {

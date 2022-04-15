@@ -7,9 +7,7 @@
 
 using debug_timer_t = int;
 
-namespace internal {
-    constexpr unsigned int DEBUG_CONTROLLER_MAX_TIMERS = 8;
-}
+constexpr unsigned int DEBUG_CONTROLLER_MAX_TIMERS = 8;
 
 struct buffer_region {
     GLuint vbo = 0;
@@ -25,22 +23,6 @@ struct buffer_region {
 
     unsigned int vcount = 0;
     unsigned int icount = 0;
-
-    // buffer_item(float* vbuf, unsigned int vmax, GLuint* ibuf, unsigned int imax) noexcept :
-    //     vbuf(vbuf), vmax(vmax), ibuf(ibuf), imax(imax) {
-    // }
-    //
-    // buffer_item(const buffer_item& other) noexcept {
-    //     *this = other;
-    // }
-    //
-    // buffer_item& operator=(const buffer_item& other) noexcept {
-    //     vbo = other.vbo;
-    //     vbuf = other.vbuf;
-    //     ibuf = other.ibuf;
-    //     imax = other.imax;
-    //     return *this;
-    // }
 
 };
 
@@ -69,6 +51,8 @@ struct debug_controller {
 
 
     void init(unsigned int view_width, unsigned int view_height);
+    void init_font();
+
     debug_timer_t create_timer(const char* name) noexcept;
     void reset_timer(const debug_timer_t handle) noexcept;
     double duration(const debug_timer_t handle) noexcept;
@@ -77,11 +61,11 @@ struct debug_controller {
     void render_timer(debug_timer_t handle, float time);
 
 private:
-    std::chrono::time_point<std::chrono::system_clock> timers[internal::DEBUG_CONTROLLER_MAX_TIMERS]{};
-    const char* timer_assignments[internal::DEBUG_CONTROLLER_MAX_TIMERS]{nullptr};
-    debug_timer_t render_queue[internal::DEBUG_CONTROLLER_MAX_TIMERS];
-    float render_queue_times[internal::DEBUG_CONTROLLER_MAX_TIMERS];
-    std::string render_formats[internal::DEBUG_CONTROLLER_MAX_TIMERS];
+    std::chrono::time_point<std::chrono::system_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
+    const char* timer_assignments[DEBUG_CONTROLLER_MAX_TIMERS]{nullptr};
+    debug_timer_t render_queue[DEBUG_CONTROLLER_MAX_TIMERS];
+    float render_queue_times[DEBUG_CONTROLLER_MAX_TIMERS];
+    std::string render_formats[DEBUG_CONTROLLER_MAX_TIMERS];
 
 };
 

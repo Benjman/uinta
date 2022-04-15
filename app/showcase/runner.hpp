@@ -41,6 +41,7 @@ private:
     void init_buffers();
     void init_mesh();
     void init_shader();
+    void init_font();
 };
 
 #endif // UINTA_RUNNER_H

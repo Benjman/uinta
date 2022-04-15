@@ -4,6 +4,7 @@
 #include "./runner.hpp"
 #include "./src/debug.hpp"
 #include "./src/text_defs.hpp"
+#include <math.hpp>
 
 #include <cstdio>
 
@@ -11,10 +12,9 @@ showcaseRunner runner;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
 
-unsigned int tick = 0;
-
 int main(const int argc, const char **argv) {
     debug_controller debug;
+    unsigned int tick = 0;
     double tick_time, render_time, init_time;
     running_avg render_avg = running_avg(10);
 

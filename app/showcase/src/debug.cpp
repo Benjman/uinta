@@ -4,6 +4,7 @@
 
 #include "debug.hpp"
 
+#include <file.hpp>
 #include <font.hpp>
 #include <shader.hpp>
 
@@ -11,25 +12,32 @@ void init_bufs(buffer_ctx&);
 void upload_buf(const buffer_region&);
 void init_shader(GLuint*);
 
-const std::unordered_map<MeshAttribType, mesh_attrib> timer_mesh_attribs = {
-    {MeshAttribType_Position, mesh_attrib(2, 7, 0)},
-    {MeshAttribType_UV, mesh_attrib(2, 7, 2)},
-    {MeshAttribType_Color, mesh_attrib(3, 7, 4)},
+using namespace font;
+const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs = {
+    {FontMeshAttrib_Position, font_mesh_attrib(7, 0)},
+    {FontMeshAttrib_UV, font_mesh_attrib(7, 2)},
+    {FontMeshAttrib_Color, font_mesh_attrib(7, 4)},
 };
 
 void debug_controller::init(unsigned int view_width, unsigned int view_height) {
-    std::fill(render_queue, render_queue + internal::DEBUG_CONTROLLER_MAX_TIMERS, -1);
-    std::fill(render_queue_times, render_queue_times + internal::DEBUG_CONTROLLER_MAX_TIMERS, 0.0);
-    font::load_font(font);
+    std::fill(render_queue, render_queue + DEBUG_CONTROLLER_MAX_TIMERS, -1);
+    std::fill(render_queue_times, render_queue_times + DEBUG_CONTROLLER_MAX_TIMERS, 0.0);
     init_shader(&shader);
     buf.vsize = sizeof(vbuf) / sizeof(GLfloat);
     buf.isize = sizeof(ibuf) / sizeof(GLuint);
     init_bufs(buf);
     upload_buf(render_time_buf);
+    init_font();
+}
+
+void debug_controller::init_font() {
+    unsigned char font_data[getFontSize(font.type)];
+    read_file_binary(getFontPath(font.type), (char*) font_data);
+    load_font(font, font_data);
 }
 
 debug_timer_t debug_controller::create_timer(const char* name) noexcept {
-    for (int i = 0; i < internal::DEBUG_CONTROLLER_MAX_TIMERS; i++) {
+    for (int i = 0; i < DEBUG_CONTROLLER_MAX_TIMERS; i++) {
         if (!timer_assignments[i]) {
             timer_assignments[i] = name;
             return i;
@@ -41,7 +49,7 @@ debug_timer_t debug_controller::create_timer(const char* name) noexcept {
 
 void debug_controller::reset_timer(const debug_timer_t handle) noexcept {
     if (handle == -1
-        || handle > internal::DEBUG_CONTROLLER_MAX_TIMERS) {
+        || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
         printf("[WARN] Ignoring reset timer attempt for invalid timer.\n");
         return;
     }
@@ -51,7 +59,7 @@ void debug_controller::reset_timer(const debug_timer_t handle) noexcept {
 double debug_controller::duration(const debug_timer_t handle) noexcept {
     auto now = std::chrono::system_clock::now();
     if (handle == -1
-        || handle > internal::DEBUG_CONTROLLER_MAX_TIMERS) {
+        || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
         printf("[WARN] Ignoring stop timer attempt for invalid timer.\n");
         return -1.0;
     }
@@ -60,11 +68,11 @@ double debug_controller::duration(const debug_timer_t handle) noexcept {
 
 void debug_controller::render_timer(debug_timer_t handle, float time) {
     if (handle == -1
-        || handle > internal::DEBUG_CONTROLLER_MAX_TIMERS) {
+        || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
         printf("[WARN] Ignoring render timer attempt for invalid timer.\n");
         return;
     }
-    for (int i = 0; i < internal::DEBUG_CONTROLLER_MAX_TIMERS; i++) {
+    for (int i = 0; i < DEBUG_CONTROLLER_MAX_TIMERS; i++) {
         if (render_queue[i] == -1) {
             render_queue[i] = handle;
             render_queue_times[i] = time;
@@ -81,16 +89,20 @@ void debug_controller::render() {
     region.ioffset = 0;
     unsigned int vcount = 0, icount = 0, ioff = 0;
     font::text text = font::text(&font, "", 20.0);
-    text.color = vec3(0.6, 0.6, 0.3);
+    text.color_r = 0.6;
+    text.color_g = 0.6;
+    text.color_b = 0.3;
     for (int i = 0; render_queue[i] != -1; i++, queue_count = i) {
         debug_timer_t handle = render_queue[i];
         const char* label = timer_assignments[handle];
         text.value = std::string(label) + " " + std::to_string(render_queue_times[queue_count]);
-        text.pos.y = text.line_size * i;
-        font::generate_mesh(&text, 1000, 1000, timer_mesh_attribs, &vbuf[vcount], &vcount, &ibuf[icount], &icount, &ioff);
+        text.pos_y = text.line_size * i;
+        font::generate_mesh(&text, 1000, 1000, attribs, &vbuf[vcount], &vcount, &ibuf[icount], &icount, &ioff);
     }
+
     if (!queue_count)
         return;
+
     region.vbuf = vbuf;
     region.ibuf = ibuf;
     region.vcount = vcount;
@@ -107,6 +119,7 @@ void debug_controller::render() {
 
     glUseProgram(shader);
     glBindVertexArray(buf.vao);
+
     glDrawElements(GL_TRIANGLES, region.icount, GL_UNSIGNED_INT, 0);
 }
 
