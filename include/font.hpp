@@ -107,7 +107,6 @@ struct font_ctx final {
 
 struct font_ctx;
 GLuint load_font(const font_t, unsigned char*);
-void load_font(font_ctx&, unsigned char*);
 void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad);
 void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad, float* xpos, float* ypos);
 GLuint getFontTexture(const font_t);
@@ -234,7 +233,7 @@ void generate_structure(mesh_ctx, std::vector<line>*, stbtt_aligned_quad&);
 bool try_add_word(line&, word&);
 void add_char(word&, const char, float);
 float find_xstart(const text*, const float);
-const font_mesh_attrib* find_attrib(font_mesh_attrib_t, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>*); // TODO maybe this should be in mesh.hpp?
+const font_mesh_attrib* find_font_attrib(font_mesh_attrib_t, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>*); // TODO maybe this should be in mesh.hpp?
 void store_quad_position(const stbtt_aligned_quad&, const font_mesh_attrib&, float*, unsigned int*);
 void store_quad_uv(const stbtt_aligned_quad&, const font_mesh_attrib&, float*, unsigned int*);
 void store_color(const float, const float, const float, const font_mesh_attrib&, float*, unsigned int*);
@@ -357,11 +356,11 @@ unsigned int font::getRenderableCharCount(const char* s, const unsigned int size
 
 unsigned int font::getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs) noexcept {
     unsigned int bufsize = 0;
-    if (const font_mesh_attrib* attrib = find_attrib(FontMeshAttrib_Position, &attribs))
+    if (const auto* attrib = find_font_attrib(FontMeshAttrib_Position, &attribs))
         bufsize += 8;
-    if (const font_mesh_attrib* attrib = find_attrib(FontMeshAttrib_UV, &attribs))
+    if (const auto* attrib = find_font_attrib(FontMeshAttrib_UV, &attribs))
         bufsize += 8;
-    if (const font_mesh_attrib* attrib = find_attrib(FontMeshAttrib_Color, &attribs))
+    if (const auto* attrib = find_font_attrib(FontMeshAttrib_Color, &attribs))
         bufsize += 12;
     const int count = getRenderableCharCount(s, size);
     return bufsize * count;
@@ -443,11 +442,11 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
                 quad.t1 *= -1;
 
                 // store quad to buffers
-                if (const font_mesh_attrib* attrib = find_attrib(FontMeshAttrib_Position, &ctx.attribs))
+                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_Position, &ctx.attribs))
                     store_quad_position(quad, *attrib, ctx.vbuf, ctx.vcount);
-                if (const font_mesh_attrib* attrib = find_attrib(FontMeshAttrib_UV, &ctx.attribs))
+                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_UV, &ctx.attribs))
                     store_quad_uv(quad, *attrib, ctx.vbuf, ctx.vcount);
-                if (const font_mesh_attrib* attrib = find_attrib(FontMeshAttrib_Color, &ctx.attribs))
+                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_Color, &ctx.attribs))
                     store_color(ctx.root->color_r, ctx.root->color_g, ctx.root->color_b, *attrib, ctx.vbuf, ctx.vcount);
 
                 ctx.ibuf[0] = 0 + *ctx.ioffset;
@@ -530,7 +529,7 @@ float font::internal::find_xstart(const text* root, const float width) {
     return 0;
 }
 
-const font_mesh_attrib* font::internal::find_attrib(font_mesh_attrib_t type, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) {
+const font_mesh_attrib* font::internal::find_font_attrib(font_mesh_attrib_t type, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) {
     if (attribs->find(type) == attribs->end())
         return nullptr;
     return &attribs->at(type);
@@ -600,36 +599,6 @@ font_ctx& font::get_font_ctx(const font_t handle) {
     assert(font::fonts.size() > handle); // invalid handle
     return font::fonts.at(handle);
 }
-
-void font::load_font(font_ctx& font, unsigned char* font_data) {
-    unsigned char bitmap[font.tex_width * font.tex_height];
-    stbtt_pack_context stbtt_ctx;
-    if (!stbtt_PackBegin(&stbtt_ctx, bitmap, font.tex_width, font.tex_height, 0, 1, nullptr))
-        printf("some kinda error happened with stbtt_PackBegin\n");
-    stbtt_PackFontRange(&stbtt_ctx, font_data, 0, font.line_size, 32, 95, font.chardata);
-    stbtt_PackEnd(&stbtt_ctx);
-
-    // get vertical metrics
-    stbtt_fontinfo info;
-    stbtt_InitFont(&info, font_data, 0);
-    int asc, dsc, gap;
-    stbtt_GetFontVMetrics(&info, &asc, &dsc, &gap);
-    float scale = stbtt_ScaleForPixelHeight(&info, font.line_size);
-    font.asc = asc * scale;
-    font.dsc = dsc * scale;
-    font.gap = gap * scale;
-
-    // flip vertically to comply with OpenGL texture coordinates
-    stbi__vertical_flip(bitmap, font.tex_width, font.tex_height, 1);
-
-    glGenTextures(1, (GLuint*) &font.texture_id);
-    glBindTexture(GL_TEXTURE_2D, font.texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, font.tex_width, font.tex_height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    // stbi_write_png("/tmp/test.png", font.tex_width, font.tex_height, 1, bitmap, 0);
-}
-
 
 GLuint font::load_font(const font_t handle, unsigned char* buffer) {
     assert(fonts.size() > handle); // invalid handle

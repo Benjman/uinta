@@ -74,7 +74,7 @@ void fontRunner::init_font() {
     font_handle = font::init_font(type, 256, 256);
     unsigned char data[getFontSize(type)];
     read_file_binary(getFontPath(type), (char*) data);
-    load_font(font::get_font_ctx(font_handle), data);
+    load_font(font_handle, data);
 }
 
 void fontRunner::init_shader() {
