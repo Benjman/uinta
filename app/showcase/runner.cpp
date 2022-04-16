@@ -69,9 +69,6 @@ void showcaseRunner::init_mesh() {
 }
 
 void showcaseRunner::init_font() {
-    unsigned char font_data[getFontSize(font.type)];
-    read_file_binary(getFontPath(font.type), (char*) font_data);
-    load_font(font, font_data);
 }
 
 void showcaseRunner::init_shader() {

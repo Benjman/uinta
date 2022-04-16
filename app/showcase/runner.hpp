@@ -13,8 +13,6 @@ const unsigned int WINDOW_HEIGHT = 1000;
 
 struct showcaseRunner {
 public:
-    font::font_ctx font = font::font_ctx(font::DejaVuSans, 256, 256);
-
     // vertex buffer
     float vbuf[VBUF_SIZE];
 

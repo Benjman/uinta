@@ -16,7 +16,7 @@ using namespace font;
 const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs = {
     {FontMeshAttrib_Position, font_mesh_attrib(7, 0)},
     {FontMeshAttrib_UV, font_mesh_attrib(7, 2)},
-    {FontMeshAttrib_Color, font_mesh_attrib(7, 4)},
+    {FontMeshAttrib_Color, font_mesh_attrib(7, 4) },
 };
 
 void debug_controller::init(unsigned int view_width, unsigned int view_height) {
@@ -31,9 +31,11 @@ void debug_controller::init(unsigned int view_width, unsigned int view_height) {
 }
 
 void debug_controller::init_font() {
-    unsigned char font_data[getFontSize(font.type)];
-    read_file_binary(getFontPath(font.type), (char*) font_data);
-    load_font(font, font_data);
+    auto type = font::ProggyCleanTT_Nerd_Font_Complete_Mono;
+    font_handle = font::init_font(type, 256, 256);
+    unsigned char data[getFontSize(type)];
+    read_file_binary(getFontPath(type), (char*) data);
+    load_font(font::get_font_ctx(font_handle), data);
 }
 
 debug_timer_t debug_controller::create_timer(const char* name) noexcept {
@@ -88,7 +90,7 @@ void debug_controller::render() {
     region.voffset = 0;
     region.ioffset = 0;
     unsigned int vcount = 0, icount = 0, ioff = 0;
-    font::text text = font::text(&font, "", 20.0);
+    font::text text = font::text("", 20.0);
     text.color_r = 0.6;
     text.color_g = 0.6;
     text.color_b = 0.3;
@@ -97,7 +99,7 @@ void debug_controller::render() {
         const char* label = timer_assignments[handle];
         text.value = std::string(label) + " " + std::to_string(render_queue_times[queue_count]);
         text.pos_y = text.line_size * i;
-        font::generate_mesh(&text, 1000, 1000, attribs, &vbuf[vcount], &vcount, &ibuf[icount], &icount, &ioff);
+        font::generate_mesh(&text, font_handle, 1000, 1000, attribs, &vbuf[vcount], &vcount, &ibuf[icount], &icount, &ioff);
     }
 
     if (!queue_count)

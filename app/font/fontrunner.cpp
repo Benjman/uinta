@@ -63,16 +63,18 @@ void fontRunner::init_mesh() {
     };
     unsigned int vbuf_count = 0;
     unsigned int ioffset = 0;
-    font::generate_mesh(&text, view.width, view.height, attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
+    font::generate_mesh(&text, font_handle, view.width, view.height, attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VBUF_SIZE, vbuf, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IBUF_SIZE, ibuf, GL_STATIC_DRAW);
 }
 
 void fontRunner::init_font() {
-    unsigned char font_data[getFontSize(font.type)];
-    read_file_binary(getFontPath(font.type), (char*) font_data);
-    load_font(font, font_data);
+    auto type = font::DejaVuSans;
+    font_handle = font::init_font(type, 256, 256);
+    unsigned char data[getFontSize(type)];
+    read_file_binary(getFontPath(type), (char*) data);
+    load_font(font::get_font_ctx(font_handle), data);
 }
 
 void fontRunner::init_shader() {

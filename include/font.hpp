@@ -10,11 +10,17 @@
 #ifndef UINTA_FONT_H
 #define UINTA_FONT_H
 
+#include <cstring>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <GL/gl.h>
+
+#ifdef UINTA_FONT_IMPLEMENTATION
+#define STB_RECT_PACK_IMPLEMENTATION
+#define STB_TRUETYPE_IMPLEMENTATION
+#endif
 
 #include <stb_rect_pack.h>
 #include <stb_truetype.h>
@@ -65,7 +71,7 @@ enum FontType {
     ProggyCleanTT_Nerd_Font_Complete_Mono,
 };
 
-font_t create_font(FontType, unsigned int, unsigned int);
+font_t init_font(FontType, unsigned int tex_width, unsigned int tex_height);
 
 
 /********************
@@ -73,8 +79,8 @@ font_t create_font(FontType, unsigned int, unsigned int);
 ********************/
 struct font_ctx final {
     FontType type;
-    stbtt_packedchar *chardata = nullptr;
-    GLuint textureId = GL_ZERO;
+    stbtt_packedchar chardata[96];
+    GLuint texture_id = GL_ZERO;
     unsigned int tex_width, tex_height;
     float asc = 0.0, dsc = 0.0, gap = 0.0, line_size = 32.0;
 
@@ -86,31 +92,33 @@ struct font_ctx final {
 
     font_ctx& operator=(const font_ctx& other) noexcept {
         type = other.type;
-        chardata = other.chardata;
-        textureId = other.textureId;
+        texture_id = other.texture_id;
         tex_width = other.tex_width;
         tex_height = other.tex_height;
         asc = other.asc;
         dsc = other.dsc;
         gap = other.gap;
         line_size = other.line_size;
+        memcpy(chardata, other.chardata, sizeof(chardata));
         return *this;
     }
 
-    ~font_ctx() noexcept;
-
 };
 
+struct font_ctx;
+GLuint load_font(const font_t, unsigned char*);
 void load_font(font_ctx&, unsigned char*);
-void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad); // TODO can we noexcept these?
+void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad);
 void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad, float* xpos, float* ypos);
+GLuint getFontTexture(const font_t);
+font_ctx& get_font_ctx(const font_t);
 
 /*********************
     TEXT ELEMENT
 ********************/
 struct text final {
-    const font_ctx* font;
     std::string value;
+    float line_size;
 
     float color_r;
     float color_g;
@@ -122,26 +130,15 @@ struct text final {
     float max_width;
     float max_height;
 
-    float line_size;
-
-    text(const font_ctx* font, const std::string value, const float line_size,
-         float color_r = 0.0,
-         float color_g = 0.0,
-         float color_b = 0.0,
-         float pos_x = 0.0,
-         float pos_y = 0.0,
-         float max_width = 0.0,
-         float max_height = 0.0) noexcept :
-        font(font),
+    text(const std::string value, const float line_size,
+         float color_r = 0.0, float color_g = 0.0, float color_b = 0.0,
+         float pos_x = 0.0, float pos_y = 0.0,
+         float max_width = 0.0, float max_height = 0.0) noexcept :
         value(value),
-        color_r(color_r),
-        color_g(color_g),
-        color_b(color_b),
-        pos_x(pos_x),
-        pos_y(pos_y),
-        max_width(max_width),
-        max_height(max_height),
-        line_size(line_size) {
+        line_size(line_size),
+        color_r(color_r), color_g(color_g), color_b(color_b),
+        pos_x(pos_x), pos_y(pos_y),
+        max_width(max_width), max_height(max_height) {
     }
 
     text(const text& other) noexcept {
@@ -156,7 +153,6 @@ struct text final {
         pos_y = other.pos_y;
         max_width = other.max_width;
         max_height = other.max_height;
-        font = other.font;
         value = other.value;
         line_size = other.line_size;
         return *this;
@@ -170,7 +166,7 @@ unsigned int getIndexBufferSize(const char* s, const unsigned int size) noexcept
 const unsigned int getFontSize(const FontType);
 const char* const getFontPath(const FontType);
 
-void generate_mesh(const text* root, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
+void generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
 
 
 /*********************
@@ -179,6 +175,7 @@ void generate_mesh(const text* root, const float frame_width, const float frame_
 namespace internal {
 struct mesh_ctx final {
     const text* root;
+    const font_ctx* font;
     float frame_width;
     float frame_height;
     std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs;
@@ -249,9 +246,10 @@ void store_color(const float, const float, const float, const font_mesh_attrib&,
 #ifdef UINTA_FONT_IMPLEMENTATION
 
 #include <stdexcept>
-#include <stb_image_write.h>
-#include <stb_image.h>
-#include <regex>
+
+namespace font {
+    std::vector<font_ctx> fonts;
+}
 
 using namespace font;
 using namespace font::internal;
@@ -320,47 +318,14 @@ const unsigned int font::getFontSize(const FontType type) {
     }
 }
 
-void font::load_font(font_ctx& font, unsigned char* font_data) {
-    unsigned char bitmap[font.tex_width * font.tex_height];
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
-    stbtt_pack_context ctx;
-    if (!stbtt_PackBegin(&ctx, bitmap, font.tex_width, font.tex_height, 0, 1, nullptr))
-        printf("some kinda error happened with stbtt_PackBegin\n");
-    stbtt_PackFontRange(&ctx, font_data, 0, font.line_size, 32, 95, font.chardata);
-    stbtt_PackEnd(&ctx);
-
-    stbtt_aligned_quad q;
-    float xpos, ypos;
-    stbtt_GetPackedQuad(font.chardata, font.tex_width, font.tex_height, 'W' - 32, &xpos, &ypos, &q, 0);
-
-    // get vertical metrics
-    stbtt_fontinfo info;
-    stbtt_InitFont(&info, font_data, 0);
-    int asc, dsc, gap;
-    stbtt_GetFontVMetrics(&info, &asc, &dsc, &gap);
-    float scale = stbtt_ScaleForPixelHeight(&info, font.line_size);
-    font.asc = asc * scale;
-    font.dsc = dsc * scale;
-    font.gap = gap * scale;
-
-    // flip vertically to comply with OpenGL texture coordinates
-    stbi__vertical_flip(bitmap, font.tex_width, font.tex_height, 1);
-
-    glGenTextures(1, (GLuint*) &font.textureId);
-    glBindTexture(GL_TEXTURE_2D, font.textureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, font.tex_width, font.tex_height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    // stbi_write_png("/tmp/test.png", font.tex_width, font.tex_height, 1, bitmap, 0);
-}
+// #define STB_IMAGE_WRITE_IMPLEMENTATION
+// #include <stb_image_write.h>
 
 font::font_ctx::font_ctx(const FontType type, const float tex_width, const float tex_height) noexcept :
     type(type), tex_width(tex_width), tex_height(tex_height) {
-    chardata = new stbtt_packedchar[96];
-}
-
-font::font_ctx::~font_ctx() noexcept {
-    delete[] chardata;
 }
 
 void font::getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad) {
@@ -382,6 +347,7 @@ void font::getCharQuad(const char c, const font_ctx& font, stbtt_aligned_quad* q
     stbtt_GetPackedQuad(font.chardata, font.tex_width, font.tex_height, c - 32, xpos, ypos, quad, 0);
 }
 
+#include <regex>
 unsigned int font::getRenderableCharCount(const char* s, const unsigned int size) noexcept {
     const std::regex expression("[\x21-\x7E]");
     return std::ptrdiff_t(std::distance(
@@ -406,9 +372,11 @@ unsigned int font::getIndexBufferSize(const char* s, const unsigned int size) no
     return 6 * count;
 }
 
-void font::generate_mesh(const text* root, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset) {
+void font::generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset) {
+    assert(font::fonts.size() > f);
     mesh_ctx ctx;
     ctx.root = root;
+    ctx.font = &font::fonts.at(f);
     ctx.frame_width = frame_width;
     ctx.frame_height = frame_height;
     ctx.attribs = attribs;
@@ -417,7 +385,7 @@ void font::generate_mesh(const text* root, const float frame_width, const float 
     ctx.ibuf = ibuf;
     ctx.icount = icount;
     ctx.ioffset = ioffset;
-    ctx.text_scale = (float) root->line_size / (float) root->font->line_size;
+    ctx.text_scale = (float) root->line_size / (float) ctx.font->line_size;
     generate_mesh(ctx);
 }
 
@@ -432,7 +400,7 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
     std::vector<line> lines;
     stbtt_aligned_quad quad;
     generate_structure(ctx, &lines, quad);
-    ctx.ycursor = ctx.root->font->asc;
+    ctx.ycursor = ctx.font->asc;
     float xcursor = 0.0;
     for (const auto& line : lines) {
         ctx.xcursor = find_xstart(ctx.root, line.width);
@@ -440,7 +408,7 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
             for (unsigned int i = 0u, len = word.value.length(); i < len; i++) {
                 const char c = word.value.at(i);
                 xcursor = 0.0;
-                getCharQuad(c, *ctx.root->font, &quad, &xcursor, &ctx.ycursor);
+                getCharQuad(c, *ctx.font, &quad, &xcursor, &ctx.ycursor);
 
                 // scale from font to text size
                 quad.x0 *= ctx.text_scale;
@@ -498,7 +466,7 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
             }
             // advance xcursor one space length
             xcursor = 0.0;
-            getCharQuad(' ', *ctx.root->font, &quad, &xcursor, &ctx.ycursor);
+            getCharQuad(' ', *ctx.font, &quad, &xcursor, &ctx.ycursor);
             xcursor *= ctx.text_scale;
             ctx.xcursor += xcursor;
         }
@@ -511,7 +479,7 @@ void font::internal::generate_structure(mesh_ctx ctx, std::vector<line>* lines, 
     word word;
 
     float space_width = 0.0, xpos = 0.0, ypos = 0.0;
-    getCharQuad(' ', *ctx.root->font, &quad, &space_width, &ypos);
+    getCharQuad(' ', *ctx.font, &quad, &space_width, &ypos);
     space_width *= ctx.text_scale;
 
     for (unsigned int i = 0, len = ctx.root->value.size(); i < len; i++) {
@@ -530,7 +498,7 @@ void font::internal::generate_structure(mesh_ctx ctx, std::vector<line>* lines, 
 
         xpos = 0.0;
         c = ctx.root->value.at(i);
-        getCharQuad(c, *ctx.root->font, &quad, &xpos, &ypos);
+        getCharQuad(c, *ctx.font, &quad, &xpos, &ypos);
         xpos *= ctx.text_scale;
         add_char(word, c, xpos);
     }
@@ -606,6 +574,98 @@ void font::internal::store_color(const float r, const float g, const float b, co
     vbuf[attrib.offset + attrib.stride * 3 + 1] = g;
     vbuf[attrib.offset + attrib.stride * 3 + 2] = b;
     *vcount += 12;
+}
+
+font::font_t font::init_font(font::FontType type, unsigned int tex_width, unsigned int tex_height) {
+    for (font::font_t i = 0; i < font::fonts.size(); i++) {
+        auto& font = font::fonts.at(i);
+        if (type == font.type
+            && tex_width == font.tex_width
+            && tex_height == font.tex_height) {
+            return i;
+        }
+    }
+    font::font_ctx ctx(type, tex_width, tex_height);
+    font::fonts.push_back(ctx);
+    return font::fonts.size() - 1;
+}
+
+#include <cassert>
+GLuint font::getFontTexture(const font_t handle) {
+    assert(font::fonts.size() > handle); // invalid handle
+    return font::fonts.at(handle).texture_id;
+}
+
+font_ctx& font::get_font_ctx(const font_t handle) {
+    assert(font::fonts.size() > handle); // invalid handle
+    return font::fonts.at(handle);
+}
+
+void font::load_font(font_ctx& font, unsigned char* font_data) {
+    unsigned char bitmap[font.tex_width * font.tex_height];
+    stbtt_pack_context stbtt_ctx;
+    if (!stbtt_PackBegin(&stbtt_ctx, bitmap, font.tex_width, font.tex_height, 0, 1, nullptr))
+        printf("some kinda error happened with stbtt_PackBegin\n");
+    stbtt_PackFontRange(&stbtt_ctx, font_data, 0, font.line_size, 32, 95, font.chardata);
+    stbtt_PackEnd(&stbtt_ctx);
+
+    // get vertical metrics
+    stbtt_fontinfo info;
+    stbtt_InitFont(&info, font_data, 0);
+    int asc, dsc, gap;
+    stbtt_GetFontVMetrics(&info, &asc, &dsc, &gap);
+    float scale = stbtt_ScaleForPixelHeight(&info, font.line_size);
+    font.asc = asc * scale;
+    font.dsc = dsc * scale;
+    font.gap = gap * scale;
+
+    // flip vertically to comply with OpenGL texture coordinates
+    stbi__vertical_flip(bitmap, font.tex_width, font.tex_height, 1);
+
+    glGenTextures(1, (GLuint*) &font.texture_id);
+    glBindTexture(GL_TEXTURE_2D, font.texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, font.tex_width, font.tex_height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    // stbi_write_png("/tmp/test.png", font.tex_width, font.tex_height, 1, bitmap, 0);
+}
+
+
+GLuint font::load_font(const font_t handle, unsigned char* buffer) {
+    assert(fonts.size() > handle); // invalid handle
+    auto& font = fonts.at(handle);
+    unsigned char bitmap[font.tex_width * font.tex_height];
+    stbtt_pack_context ctx;
+    if (!stbtt_PackBegin(&ctx, bitmap, font.tex_width, font.tex_height, 0, 1, nullptr))
+        printf("some kinda error happened with stbtt_PackBegin\n");
+    stbtt_PackFontRange(&ctx, buffer, 0, font.line_size, 32, 95, font.chardata);
+    stbtt_PackEnd(&ctx);
+
+    stbtt_aligned_quad q;
+    float xpos, ypos;
+    stbtt_GetPackedQuad(font.chardata, font.tex_width, font.tex_height, 'W' - 32, &xpos, &ypos, &q, 0);
+
+    // get vertical metrics
+    stbtt_fontinfo info;
+        stbtt_InitFont(&info, buffer, 0);
+        int asc, dsc, gap;
+        stbtt_GetFontVMetrics(&info, &asc, &dsc, &gap);
+        float scale = stbtt_ScaleForPixelHeight(&info, font.line_size);
+        font.asc = asc * scale;
+    font.dsc = dsc * scale;
+    font.gap = gap * scale;
+
+    // flip vertically to comply with OpenGL texture coordinates
+    stbi__vertical_flip(bitmap, font.tex_width, font.tex_height, 1);
+
+    glGenTextures(1, (GLuint*) &font.texture_id);
+    glBindTexture(GL_TEXTURE_2D, font.texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, font.tex_width, font.tex_height, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    // stbi_write_png("/tmp/test.png", font.tex_width, font.tex_height, 1, bitmap, 0);
+
+    return font.texture_id;
 }
 
 #endif // UINTA_FONT_IMPLEMENTATION

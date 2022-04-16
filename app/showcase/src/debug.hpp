@@ -36,8 +36,7 @@ struct buffer_ctx {
 
 struct debug_controller {
     GLuint shader;
-
-    font::font_ctx font = font::font_ctx(font::ProggyCleanTT_Nerd_Font_Complete_Mono, 256, 256);
+    font::font_t font_handle;
 
     buffer_ctx buf;
     buffer_region render_time_buf;
