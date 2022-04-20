@@ -26,6 +26,7 @@ add_library(uinta STATIC
   ./src/glfw.cpp
   ./src/math.cpp
   ./src/mesh.cpp
+  ./src/metrics.cpp
   ./src/quadtree.cpp
   ./src/shader.cpp
 

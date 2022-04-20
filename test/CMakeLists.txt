@@ -6,9 +6,11 @@ add_executable(tests
     ./fontTest.cpp
     ./main.cpp
     ./mat_test.cpp
+    ./metrics_test.cpp
     ./quadtreeTests.cpp
     ./running_avg.cpp
-    ./vecTests.cpp)
+    ./vecTests.cpp
+    )
 
 target_link_libraries(tests
     uinta
