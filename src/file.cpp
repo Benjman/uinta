@@ -4,6 +4,7 @@
 #include <ios>
 #include <istream>
 #include <cstring>
+#include <fstream>
 
 #include <stb_truetype.h>
 
@@ -17,10 +18,6 @@ extern void read_file_internal(const char *filepath, std::ios::openmode mode, ch
     file.seekg(0, std::ios::beg);
     file.read(buffer, length);
     file.close();
-    if (buffer[length] != '\0') {
-        printf("null terminating string for file buffer from path %s\n", filepath);
-        buffer[length] = '\0';
-    }
 }
 
 extern void read_file_raw(const char *relative_path, char *buffer) {
