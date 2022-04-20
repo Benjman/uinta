@@ -40,17 +40,17 @@ void quadtreeRunner::init_buffers() {
 }
 
 void quadtreeRunner::init_shader() {
-    const char *vshader = "#version 330 core\n"
+    const char* vshader = "#version 330 core\n"
         "layout (location = 0) in vec2 in_pos;"
         "out vec3 pass_color;"
         "void main() {"
         "   gl_Position = vec4(in_pos.x, in_pos.y, 1.0, 1.0);"
         "}\0";
-    const char *fshader = "#version 330 core\n"
-        "out vec4 FragColor;"
+    const char* fshader = "#version 330 core\n"
+        "out vec4 out_color;"
         "uniform vec3 u_color;"
         "void main() {"
-        "   FragColor = vec4(u_color, 1.0);"
+        "   out_color = vec4(u_color, 1.0);"
         "}\0";
     const char* sources[] = { vshader, fshader };
     const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
@@ -72,10 +72,10 @@ void quadtreeRunner::tick(float runningTime) {
 
     qt.clear();
 
-    vec2 squarePos_inner = vec2(cos_inner * qt_width + qt.topLeftBounds.x, sin_inner * qt_height + qt.topLeftBounds.y);
+    vec2 squarePos_inner(cos_inner * qt_width + qt.topLeftBounds.x, sin_inner * qt_height + qt.topLeftBounds.y);
     qt.insert((entt::entity) 1, squarePos_inner);
 
-    vec2 squarePos_outer = vec2(cos_outer * qt_width + qt.topLeftBounds.x, sin_outer * qt_height + qt.topLeftBounds.y);
+    vec2 squarePos_outer(cos_outer * qt_width + qt.topLeftBounds.x, sin_outer * qt_height + qt.topLeftBounds.y);
     qt.insert((entt::entity) 2, squarePos_outer);
 
     generateMesh(&qt, vertices, indices, &vbo.count, &ebo.count, &ebo.offset, view.width, view.height);
@@ -93,7 +93,7 @@ void quadtreeRunner::tick(float runningTime) {
     squareOuterNorm.x =  2 * squareOuterNorm.x - 1;
     squareOuterNorm.y = -2 * squareOuterNorm.y + 1;
 
-    GLuint squareIndices[12] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
+    GLuint squareIndices[] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
     GLfloat squareVertices[] = {
         squareInnerNorm.x - squareWidth * 0.5f, squareInnerNorm.y + squareHeight * 0.5f,
         squareInnerNorm.x - squareWidth * 0.5f, squareInnerNorm.y - squareHeight * 0.5f,
