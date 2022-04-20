@@ -1,95 +1,36 @@
 #include <glad/glad.h>
 
 #include <cmath>
-#include <cstdio>
-
-#include <entt/entt.hpp>
-
-#include <mesh.hpp>
-#include <glfw.hpp>
 
 #include "quadtreeRunner.hpp"
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec2 in_pos;"
-    "out vec3 pass_color;"
-    "void main() {"
-    "   gl_Position = vec4(in_pos.x, in_pos.y, 1.0, 1.0);"
-    "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;"
-    "uniform vec3 u_color;"
-    "void main() {"
-    "   FragColor = vec4(u_color, 1.0);"
-    "}\0";
-
+#include <mesh.hpp>
+#include <shader.hpp>
 
 void quadtreeRunner::init() {
     view.width = 1088;
     view.height = 1088;
     view.title = "hello quadtree";
-    createGLFWWindow(view);
+
     squareWidth = (float) squareSize / view.width;
     squareHeight = (float) squareSize / view.height;
 
-    // build and compile our shader program
-    // ------------------------------------
-    // vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+    createGLFWWindow(view);
+    init_shader();
+    init_buffers();
+}
 
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        printf("[ERROR] Vertex shader compilation failed.\n:%s\n", infoLog);
-        throw std::exception();
-    }
-
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        printf("[ERROR] Fragment shader compilation failed.\n:%s\n", infoLog);
-        throw std::exception();
-    }
-
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        printf("[ERROR] Linking shader failed.\n:%s\n", infoLog);
-        throw std::exception();
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    glUseProgram(shaderProgram);
-    uniformColor = glGetUniformLocation(shaderProgram, "u_color");
-
-    unsigned int vbo, vao, ebo;
+void quadtreeRunner::init_buffers() {
+    GLuint vao;
     glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    GLuint ids[2];
+    glGenBuffers(2, ids);
+    vbo.id = ids[0];
+    ebo.id = ids[1];
     glBindVertexArray(vao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), 0, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), 0, GL_STATIC_DRAW);
@@ -98,12 +39,31 @@ void quadtreeRunner::init() {
     glEnableVertexAttribArray(0);
 }
 
+void quadtreeRunner::init_shader() {
+    const char *vshader = "#version 330 core\n"
+        "layout (location = 0) in vec2 in_pos;"
+        "out vec3 pass_color;"
+        "void main() {"
+        "   gl_Position = vec4(in_pos.x, in_pos.y, 1.0, 1.0);"
+        "}\0";
+    const char *fshader = "#version 330 core\n"
+        "out vec4 FragColor;"
+        "uniform vec3 u_color;"
+        "void main() {"
+        "   FragColor = vec4(u_color, 1.0);"
+        "}\0";
+    const char* sources[] = { vshader, fshader };
+    const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
+    const char* uniform_names[] = { "u_color" };
+    GLuint shader = create_shader_program(sources, stages, 2,
+                                          uniform_names, &uniformColor, 1);
+
+}
+
 void quadtreeRunner::tick(float runningTime) {
-    // TODO accumulator 
-    // TODO doUpdate so that runner can manage render times and update cycles.
-    vertexCount = 0;
-    indexCount = 0;
-    indexOffset = 0;
+    vbo.count = 0;
+    ebo.count = 0;
+    ebo.offset = 0;
 
     float cos_inner = (std::cos(runningTime * 0.13) + 2) * 0.25;
     float sin_inner = (std::sin(runningTime * 0.33) + 2) * 0.25;
@@ -111,17 +71,18 @@ void quadtreeRunner::tick(float runningTime) {
     float sin_outer = (std::sin(runningTime * 0.1) + 1) * 0.5;
 
     qt.clear();
+
     vec2 squarePos_inner = vec2(cos_inner * qt_width + qt.topLeftBounds.x, sin_inner * qt_height + qt.topLeftBounds.y);
     qt.insert((entt::entity) 1, squarePos_inner);
 
     vec2 squarePos_outer = vec2(cos_outer * qt_width + qt.topLeftBounds.x, sin_outer * qt_height + qt.topLeftBounds.y);
     qt.insert((entt::entity) 2, squarePos_outer);
 
-    generateMesh(&qt, vertices, indices, &vertexCount, &indexCount, &indexOffset, view.width, view.height);
+    generateMesh(&qt, vertices, indices, &vbo.count, &ebo.count, &ebo.offset, view.width, view.height);
 
     // upload qt
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vertexCount, vertices);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint) * indexCount, indices);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vbo.count, vertices);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint) * ebo.count, indices);
 
     // generate squares
     vec2 squareInnerNorm = squarePos_inner / vec2(width, height);
@@ -145,11 +106,12 @@ void quadtreeRunner::tick(float runningTime) {
         squareOuterNorm.x + squareWidth * 0.5f, squareOuterNorm.y + squareHeight * 0.5f,
     };
 
-    for (int i = 0; i < 12; i++) squareIndices[i] += indexOffset;
+    for (int i = 0; i < 12; i++)
+        squareIndices[i] += ebo.offset;
 
     // upload squares
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexCount, sizeof(squareVertices), squareVertices);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indexCount, sizeof(squareIndices), squareIndices);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vbo.count, sizeof(squareVertices), squareVertices);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ebo.count, sizeof(squareIndices), squareIndices);
 }
 
 void quadtreeRunner::render() {
@@ -157,13 +119,13 @@ void quadtreeRunner::render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUniform3f(uniformColor, 1.0f, 0.5f, 0.2f);
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
 
     glUniform3f(uniformColor, 0.0f, 1.0f, 1.0f);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) (indexCount * sizeof(GLuint)));
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) (ebo.count * sizeof(GLuint)));
 
     glUniform3f(uniformColor, 1.0f, 1.0f, 0.0f);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((indexCount + 6) * sizeof(GLuint)));
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((ebo.count + 6) * sizeof(GLuint)));
 
     glfwSwapBuffers(view.window);
 }

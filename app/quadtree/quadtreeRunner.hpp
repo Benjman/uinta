@@ -1,8 +1,9 @@
 #ifndef UINTA_RUNNER_QUADTREE_H
 #define UINTA_RUNNER_QUADTREE_H
 
-#include <quadtree.hpp>
+#include <buffer.hpp>
 #include <glfw.hpp>
+#include <quadtree.hpp>
 
 #include <GL/gl.h>
 
@@ -10,8 +11,8 @@ struct quadtreeRunner {
     unsigned int width = 1088;
     unsigned int height = 1088;
 
-    float vertices[2048];
-    unsigned int indices[2048];
+    GLfloat vertices[2048];
+    GLuint indices[2048];
 
     quad qt = quad(vec2(32), vec2(1056), 16);
     float qt_width = qt.bottomRightBounds.x - qt.topLeftBounds.x;
@@ -23,13 +24,14 @@ struct quadtreeRunner {
 
     GLuint uniformColor = 0u;
 
-    unsigned int vertexCount = 0u;
-    unsigned int indexCount = 0u;
-    unsigned int indexOffset = 0u;
+    gl_buf vbo;
+    gl_buf ebo;
 
     viewport view;
 
     void init();
+    void init_buffers();
+    void init_shader();
 
     void render(); 
 
