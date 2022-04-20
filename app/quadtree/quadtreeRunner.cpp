@@ -98,10 +98,6 @@ void quadtreeRunner::init() {
     glEnableVertexAttribArray(0);
 }
 
-struct square {
-
-};
-
 void quadtreeRunner::tick(float runningTime) {
     // TODO accumulator 
     // TODO doUpdate so that runner can manage render times and update cycles.

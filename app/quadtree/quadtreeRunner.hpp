@@ -5,13 +5,10 @@
 #include <glfw.hpp>
 
 #include <GL/gl.h>
-#include <entt/entity/registry.hpp>
 
 struct quadtreeRunner {
     unsigned int width = 1088;
     unsigned int height = 1088;
-
-    entt::registry registry;
 
     float vertices[2048];
     unsigned int indices[2048];
@@ -36,7 +33,7 @@ struct quadtreeRunner {
 
     void render(); 
 
-    void tick(float dt);
+    void tick(float runtime);
 
 };
 
