@@ -1,70 +1,54 @@
 #ifndef SHOWCASE_DEBUG_CONTROLLER_HPP
 #define SHOWCASE_DEBUG_CONTROLLER_HPP
 
-#include <GL/gl.h>
 #include <chrono>
-#include <font.hpp>
 
+#include <buffer.hpp>
+#include <font.hpp>
+#include <macros.hpp>
+#include <math.hpp>
+#include <metrics.hpp>
+
+// TODO move all timer stuff to its own controller
 using debug_timer_t = int;
 
 constexpr unsigned int DEBUG_CONTROLLER_MAX_TIMERS = 8;
 
-struct buffer_region {
-    GLuint vbo = 0;
-    GLuint ebo = 0;
-
-    float* vbuf = 0;
-    unsigned int vmax = 0;
-    unsigned int voffset = 0;
-
-    GLuint* ibuf = 0;
-    unsigned int imax = 0;
-    unsigned int ioffset = 0;
-
-    unsigned int vcount = 0;
-    unsigned int icount = 0;
-
-};
-
-struct buffer_ctx {
-    GLuint vao;
-    GLuint vbo;
-    GLuint ebo;
-    GLsizei vsize;
-    GLsizei isize;
-};
-
-struct debug_controller {
+struct debug_controller final {
     GLuint shader;
+
+    GLuint vao;
+    gl_buf vbo;
+    gl_buf ebo;
+
+    GLfloat vbuf[KILOBYTES(15)];
+    GLuint ibuf[KILOBYTES(15)];
+
+    vec2 view_size;
+
     font::font_t font_handle;
 
-    buffer_ctx buf;
-    buffer_region render_time_buf;
+    metrics_controller metrics;
+    unsigned int metric_row = 0, ioff = 0;
 
-    // vertex buffer
-    float vbuf[15 * 1024];
+    debug_controller(unsigned int view_width, unsigned int view_height) noexcept : view_size(view_width, view_height) {}
 
-    // index buffer
-    unsigned int ibuf[15 * 1024];
-    unsigned int icount = 0;
-
-
-    void init(unsigned int view_width, unsigned int view_height);
+    void init();
+    void init_buffers();
     void init_font();
+    void init_shader();
+    void render();
+    void upload_buffers();
 
     debug_timer_t create_timer(const char* name) noexcept;
+    double duration_micro(const debug_timer_t handle) noexcept;
+    double duration_milli(const debug_timer_t handle) noexcept;
+    void mesh_metric(const metric_t handle, const std::string append = "");
     void reset_timer(const debug_timer_t handle) noexcept;
-    double duration(const debug_timer_t handle) noexcept;
-
-    void render();
-    void render_timer(debug_timer_t handle, float time);
 
 private:
     std::chrono::time_point<std::chrono::system_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
     const char* timer_assignments[DEBUG_CONTROLLER_MAX_TIMERS]{nullptr};
-    debug_timer_t render_queue[DEBUG_CONTROLLER_MAX_TIMERS];
-    float render_queue_times[DEBUG_CONTROLLER_MAX_TIMERS];
-    std::string render_formats[DEBUG_CONTROLLER_MAX_TIMERS];
 
 };
 

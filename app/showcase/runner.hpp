@@ -1,8 +1,8 @@
 #ifndef UINTA_RUNNER_H
 #define UINTA_RUNNER_H
 
-#include <font.hpp>
 #include <glfw.hpp>
+#include <buffer.hpp>
 
 const unsigned int VBUF_SIZE = 15 * 1024;
 const unsigned int IBUF_SIZE = 15 * 1024;
@@ -13,17 +13,14 @@ const unsigned int WINDOW_HEIGHT = 1000;
 
 struct showcaseRunner {
 public:
-    // vertex buffer
-    float vbuf[VBUF_SIZE];
-
-    // index buffer
-    unsigned int ibuf[IBUF_SIZE];
-    unsigned int icount = 0;
+    GLfloat vbuf[VBUF_SIZE];
+    GLuint ibuf[IBUF_SIZE];
 
     GLuint vao;
-    GLuint vbo;
-    GLuint ebo;
     GLuint shader;
+
+    gl_buf vbo;
+    gl_buf ebo;
 
     viewport view;
 
@@ -40,6 +37,7 @@ private:
     void init_mesh();
     void init_shader();
     void init_font();
+
 };
 
 #endif // UINTA_RUNNER_H

@@ -3,56 +3,44 @@
 
 #include "./runner.hpp"
 #include "./src/debug.hpp"
-#include "./src/text_defs.hpp"
-#include <math.hpp>
-
-#include <cstdio>
 
 showcaseRunner runner;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
 
-int main(const int argc, const char **argv) {
-    debug_controller debug;
-    unsigned int tick = 0;
-    double tick_time, render_time, init_time;
-    running_avg render_avg = running_avg(10);
+int main(const int argc, const char** argv) {
+    debug_controller debug(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    buffer_region item;
-    item.vbuf = &debug.vbuf[0];
-    item.ibuf = &debug.ibuf[0];
-    item.voffset = 0;
-    item.ioffset = 0;
+    metric_t m_render   = debug.metrics.init_metric(METRIC_FLOAT, "render");
+    metric_t m_tick     = debug.metrics.init_metric(METRIC_UINT, "tick");
 
-    int tick_timer_handle = debug.create_timer("TICK TIME");
-    int render_timer_handle = debug.create_timer("RENDER TIME");
-    int frame_handle = debug.create_timer("FRAME");
-    int time_handle = debug.create_timer("TIME");
+    debug_timer_t t_render = debug.create_timer("render");
 
-    debug.reset_timer(tick_timer_handle);
     runner.init();
-    debug.init(runner.view.width, runner.view.height);
-    init_time = debug.duration(tick_timer_handle);
+    debug.init();
 
     glfwSetKeyCallback(runner.view.window, key_callback);
 
+    double dt = 0.0;
+    double time = 0.0;
+
     while (!glfwWindowShouldClose(runner.view.window)) {
-        debug.reset_timer(tick_timer_handle);
-        runner.tick(glfwGetTime());
-        tick_time = debug.duration(tick_timer_handle);
+        dt = glfwGetTime() - time;
+        time += dt;
+
+        runner.tick(dt);
+        debug.metrics.set(m_tick, debug.metrics.getui(m_tick) + 1);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        debug.reset_timer(render_timer_handle);
-        runner.render();
-        render_time = debug.duration(tick_timer_handle);
+        debug.mesh_metric(m_tick);
+        debug.mesh_metric(m_render, "us");
 
-        debug.render_timer(time_handle, glfwGetTime());
-        debug.render_timer(frame_handle, ++tick);
-        debug.render_timer(tick_timer_handle, tick_time);
-        debug.render_timer(render_timer_handle, render_time);
+        debug.reset_timer(t_render);
+        runner.render();
         debug.render();
+        debug.metrics.set(m_render, (float) debug.duration_micro(t_render));
 
         glfwSwapBuffers(runner.view.window);
         glfwPollEvents();
