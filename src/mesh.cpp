@@ -96,9 +96,6 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
     if (qt->topRight && qt->topRight->isActive())
         generateMesh(qt->topRight, &vertexBuffer[localVertexCount], &indexBuffer[localIndexCount], &localVertexCount, &localIndexCount, indexOffset, width, height);
 
-    if (qt->topRight != nullptr) {
-    }
-
     *vertexCount += localVertexCount;
     *indexCount += localIndexCount;
 }
