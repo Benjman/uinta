@@ -166,5 +166,4 @@ void quadtreeRunner::render() {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((indexCount + 6) * sizeof(GLuint)));
 
     glfwSwapBuffers(view.window);
-    glfwPollEvents();
 }
