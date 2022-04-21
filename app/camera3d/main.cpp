@@ -41,7 +41,6 @@ int main(const int argc, const char** argv) {
         tick_a.add(debug.duration_micro(tick_t));
         metrics.set(tick_m, tick_a.avg());
 
-
         debug.reset_timer(text_t);
         debug.mesh_metric(tick_m);
         debug.mesh_metric(render_m);
@@ -70,5 +69,3 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     printf("Key %s event: %s (%d)\n", getActionStr(action), getKeyStr(key), mods);
     runner.key_callback(key, scancode, action, mods);
 }
-
-

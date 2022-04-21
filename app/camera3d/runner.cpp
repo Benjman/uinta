@@ -43,6 +43,11 @@ void camera3dRunner::render() {
 void camera3dRunner::tick(float dt) {
     runtime += dt;
     model_mat = glm::rotate(glm::mat4(1.0), runtime, glm::vec3(0.6f, 1.0f, 0.2f));
+
+    cam_x.update(dt);
+    cam_y.update(dt);
+
+    cam.pos = glm::vec3(cam_x, cam_y, cam.pos.z);
 }
 
 void camera3dRunner::init_buffers() {
@@ -124,9 +129,8 @@ void camera3dRunner::init_shader() {
     const char *fshader =
         "#version 330 core\n"
         "in vec3 pass_color;"
-        "out vec4 out_color;"
         "void main() {"
-        "  out_color = vec4(pass_color, 1.0);"
+        "  gl_FragColor = vec4(pass_color, 1.0);"
         "}\0";
 
     const char* sources[] = { vshader, fshader };
@@ -141,13 +145,23 @@ void camera3dRunner::init_shader() {
 }
 
 void camera3dRunner::key_callback(int key, int scancode, int action, int mods) noexcept {
+    // if (action == GLFW_PRESS && key == GLFW_KEY_E)
+    //     cam.pos.y += 1.0;
+    // if (action == GLFW_PRESS && key == GLFW_KEY_D)
+    //     cam.pos.y -= 1.0;
+    // if (action == GLFW_PRESS && key == GLFW_KEY_S)
+    //     cam.pos.x -= 1.0;
+    // if (action == GLFW_PRESS && key == GLFW_KEY_F)
+    //     cam.pos.x += 1.0;
+
+
     if (action == GLFW_PRESS && key == GLFW_KEY_E)
-        cam.pos.y += 1.0;
+        cam_y += 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_D)
-        cam.pos.y -= 1.0;
+        cam_y -= 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_S)
-        cam.pos.x -= 1.0;
+        cam_x -= 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_F)
-        cam.pos.x += 1.0;
+        cam_x += 1.0;
 }
 

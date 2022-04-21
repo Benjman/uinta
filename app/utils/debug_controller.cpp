@@ -152,7 +152,7 @@ void debug_controller::mesh_metric(const metric_t handle, const std::string appe
     text.pos_y = text.line_size * metric_row;
     switch (metrics.metric_type[handle]) {
         case METRIC_FLOAT:
-            text.value += " " + std::to_string((int) std::round(100 * metrics.getf(handle)) / 100) + " " + append;
+            text.value += " " + std::to_string(metrics.getf(handle)) + " " + append;
             break;
 
         case METRIC_INT:
