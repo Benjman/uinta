@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include <camera2d.hpp>
+#include <camera.hpp>
 #include <shader.hpp>
 
 #include "./camera2drunner.hpp"
@@ -25,7 +25,7 @@ void camera2dRunner::init() {
 }
 
 void camera2dRunner::render() {
-    get_view_matrix(camera, view_matrix);
+    get_view_matrix(camera, &view_matrix);
     glUniformMatrix4fv(u_view, 1, GL_FALSE, view_matrix.values);
     
     // FIXME when aspect ratio < 1 things get all fucked up

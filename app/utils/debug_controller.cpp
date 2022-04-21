@@ -14,9 +14,9 @@ const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs = {
 };
 
 void debug_controller::init() {
-    init_shader();
     vbo.max = sizeof(vbuf) / sizeof(GLfloat);
     ebo.max = sizeof(ibuf) / sizeof(GLuint);
+    init_shader();
     init_buffers();
     init_font();
 }
@@ -86,6 +86,10 @@ void debug_controller::init_shader() {
 void debug_controller::render() {
     if (!ebo.count)
         return;
+
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);

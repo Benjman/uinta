@@ -1,7 +1,7 @@
 #ifndef UINTA_CAMERA_RUNNER_H
 #define UINTA_CAMERA_RUNNER_H
 
-#include <camera2d.hpp>
+#include <camera.hpp>
 #include <glfw.hpp>
 
 #include <GL/gl.h>
