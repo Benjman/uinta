@@ -400,3 +400,46 @@ void running_avg::add(float v) noexcept {
     dirty = true;
     cursor++;
 }
+
+
+smooth_float::smooth_float(const float agility, const float target) noexcept : agility(agility), current(0.0), target(target) {
+}
+
+smooth_float::smooth_float(const smooth_float& other) noexcept {
+    *this = other;
+}
+
+smooth_float& smooth_float::operator=(const smooth_float& other) noexcept {
+    agility = other.agility;
+    current = other.current;
+    target = other.target;
+    return *this;
+}
+
+smooth_float& smooth_float::operator+=(const float v) noexcept {
+    target += v;
+    return *this;
+}
+
+smooth_float& smooth_float::operator-=(const float v) noexcept {
+    target -= v;
+    return *this;
+}
+
+smooth_float::operator float() const noexcept {
+    return current;
+}
+
+void smooth_float::force() noexcept {
+    force(target);
+}
+
+void smooth_float::force(float v) noexcept {
+    current = v;
+    target = v;
+}
+
+void smooth_float::update(const float dt) noexcept {
+    float diff = (target - current);
+    current += diff * agility * dt;
+}

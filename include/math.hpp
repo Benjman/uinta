@@ -145,7 +145,7 @@ struct mat4 final {
 };
 
 #include <algorithm>
-struct running_avg {
+struct running_avg final {
 public:
     unsigned int count;
 
@@ -166,6 +166,29 @@ private:
     float mavg;
     bool dirty;
     unsigned int cursor;
+
+};
+
+struct smooth_float final {
+    float agility;
+    float current;
+    float target;
+
+    smooth_float(const float agility = 1.0, const float target = 0.0) noexcept;
+    smooth_float(const smooth_float& other) noexcept;
+
+    smooth_float& operator=(const smooth_float& other) noexcept;
+
+    smooth_float& operator+=(const float v) noexcept;
+
+    smooth_float& operator-=(const float v) noexcept;
+
+    operator float() const noexcept;
+
+    void force() noexcept;
+    void force(float v) noexcept;
+
+    void update(const float dt) noexcept;
 
 };
 
