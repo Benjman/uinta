@@ -147,6 +147,8 @@ struct mat4 final {
 #include <algorithm>
 struct running_avg {
 public:
+    unsigned int count;
+
     running_avg(const unsigned int) noexcept;
     running_avg(const running_avg&) noexcept;
     running_avg& operator=(const running_avg&) noexcept;
@@ -164,7 +166,6 @@ private:
     float mavg;
     bool dirty;
     unsigned int cursor;
-    unsigned int count;
 
 };
 
