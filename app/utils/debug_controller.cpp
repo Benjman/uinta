@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 #include <cmath>
 
-#include "debug.hpp"
+#include "debug_controller.hpp"
 
 #include <file.hpp>
 #include <shader.hpp>

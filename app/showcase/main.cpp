@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include "./runner.hpp"
-#include "./src/debug.hpp"
+#include "../utils/debug_controller.hpp"
 
 showcaseRunner runner;
 
