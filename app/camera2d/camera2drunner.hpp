@@ -8,7 +8,7 @@
 
 const inline unsigned int BUF_SIZE = 2048;
 
-struct camera2DRunner {
+struct camera2dRunner {
     camera2d camera;
 
     mat4 view_matrix;

@@ -1,11 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "./camera_2drunner.hpp"
+#include "./camera2drunner.hpp"
 
 #include <cstdio>
 
-camera2DRunner runner;
+camera2dRunner runner;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept;
 

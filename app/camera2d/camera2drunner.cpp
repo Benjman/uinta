@@ -7,9 +7,9 @@
 #include <camera2d.hpp>
 #include <shader.hpp>
 
-#include "./camera_2drunner.hpp"
+#include "./camera2drunner.hpp"
 
-void camera2DRunner::init() {
+void camera2dRunner::init() {
     view.width = 1920;
     view.height = 1080;
     view.title = "hello 2d camera";
@@ -24,7 +24,7 @@ void camera2DRunner::init() {
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void camera2DRunner::render() {
+void camera2dRunner::render() {
     get_view_matrix(camera, view_matrix);
     glUniformMatrix4fv(u_view, 1, GL_FALSE, view_matrix.values);
     
@@ -40,12 +40,12 @@ void camera2DRunner::render() {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void camera2DRunner::tick(float dt) {
+void camera2dRunner::tick(float dt) {
     // camera.pos.x = std::sin(dt);
     // camera.pos.y = std::cos(dt);
 }
 
-void camera2DRunner::init_buffers() {
+void camera2dRunner::init_buffers() {
     glGenVertexArrays(1, &vao);
 
     glGenBuffers(1, &vbo);
@@ -61,7 +61,7 @@ void camera2DRunner::init_buffers() {
     glEnableVertexAttribArray(1);
 }
 
-void camera2DRunner::init_mesh() {
+void camera2dRunner::init_mesh() {
     const float cube_mesh[] = {
         -0.25,  0.25, 1.0, 0.5, 0.2,
         -0.25, -0.25, 1.0, 0.5, 0.2,
@@ -83,7 +83,7 @@ void camera2DRunner::init_mesh() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * BUF_SIZE, ibuf, GL_STATIC_DRAW);
 }
 
-void camera2DRunner::init_shader() {
+void camera2dRunner::init_shader() {
     const char *vshader =
         "#version 330 core\n"
         "layout (location = 0) in vec2 in_pos;"
@@ -116,7 +116,7 @@ void camera2DRunner::init_shader() {
     u_proj = locs[1];
 }
 
-void camera2DRunner::key_callback(int key, int scancode, int action, int mods) noexcept {
+void camera2dRunner::key_callback(int key, int scancode, int action, int mods) noexcept {
     if (action == GLFW_PRESS && key == GLFW_KEY_E)
         camera.pos.y += 0.25f;
     if (action == GLFW_PRESS && key == GLFW_KEY_D)
