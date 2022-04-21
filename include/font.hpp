@@ -107,8 +107,8 @@ struct font_ctx final {
 
 struct font_ctx;
 GLuint load_font(const font_t, unsigned char*);
-void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad);
-void getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad, float* xpos, float* ypos);
+void getCharQuad(const char, const font_ctx&, stbtt_aligned_quad*);
+void getCharQuad(const char, const font_ctx&, stbtt_aligned_quad*, float*, float*);
 GLuint getFontTexture(const font_t);
 font_ctx& get_font_ctx(const font_t);
 
