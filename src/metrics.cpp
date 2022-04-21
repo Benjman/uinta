@@ -40,8 +40,7 @@ void metrics_controller::set(const metric_t handle, const int v) noexcept {
 }
 
 void metrics_controller::set(const metric_t handle, const unsigned int v) noexcept {
-    // void* position = storage + handle * METRICS_STRIDE;
-    auto* position = static_cast<unsigned int*>(storage) + 4;
+    auto* position = (unsigned int*) storage + handle * METRICS_STRIDE;
     *position = v;
 }
 
