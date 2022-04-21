@@ -5,11 +5,11 @@ include_directories(../include)
 add_executable(tests
     ./fontTest.cpp
     ./main.cpp
-    ./mat_test.cpp
+    ./math/mat_test.cpp
+    ./math/vecTests.cpp
     ./metrics_test.cpp
     ./quadtreeTests.cpp
     ./running_avg.cpp
-    ./vecTests.cpp
     )
 
 target_link_libraries(tests
