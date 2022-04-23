@@ -9,14 +9,14 @@
 constexpr unsigned int METRICS_STRIDE = sizeof(float);
 constexpr metric_t METRICS_INVALID = -1;
 
+#define METRICS_VALIDATE_STRIDE(type) if (METRICS_STRIDE != sizeof(type)) \
+    throw std::runtime_error(std::string("[ERROR] metrics_controller.cpp - unexpected return from sizeof(") + #type + ")")
+
 metrics_controller::metrics_controller() {
     // validate stride is correct
-    if (METRICS_STRIDE != sizeof(int))
-        throw std::runtime_error("[ERROR] metrics_controller.cpp - unexpected sizeof(int)");
-    if (METRICS_STRIDE != sizeof(unsigned int))
-        throw std::runtime_error("[ERROR] metrics_controller.cpp - unexpected sizeof(unsigned int)");
-    if (METRICS_STRIDE != sizeof(float))
-        throw std::runtime_error("[ERROR] metrics_controller.cpp - unexpected sizeof(float)");
+    METRICS_VALIDATE_STRIDE(int);
+    METRICS_VALIDATE_STRIDE(unsigned int);
+    METRICS_VALIDATE_STRIDE(float);
 
     storage = malloc(METRICS_MAX_STORAGE * METRICS_STRIDE);
     memset(assignments, 0, METRICS_MAX_STORAGE * METRICS_STRIDE);
