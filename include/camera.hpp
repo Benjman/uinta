@@ -26,9 +26,27 @@ struct camera3d final {
     float ortho_size = 1.0;
 };
 
+struct camera3d_smooth final {
+    smooth_float pos_x = smooth_float(5.0);
+    smooth_float pos_y = smooth_float(5.0);
+    smooth_float pos_z = smooth_float(5.0);
+
+    // attitude describes the pitch (x), yaw (y), and roll (z)
+    glm::vec3 attitude;
+
+    float fov = 45;
+
+    camera3d_smooth() noexcept : camera3d_smooth(1.0) {
+    }
+
+    camera3d_smooth(float agility) noexcept :
+        pos_x(agility), pos_y(agility), pos_z(agility) {
+    }
+};
+
 
 void get_view_matrix(const camera2d& camera, mat4* mat) noexcept;
-void get_view_matrix(const camera3d& camera, glm::mat4* mat) noexcept;
+void get_view_matrix(const glm::vec3& pos, const glm::vec3 attitude, glm::mat4* mat) noexcept;
 
 void get_ortho_matrix(mat4& mat, float left, float right, float bottom, float top, float near, float far) noexcept;
 

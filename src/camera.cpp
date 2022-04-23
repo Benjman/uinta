@@ -27,10 +27,11 @@ void get_view_matrix(const camera2d& camera, mat4* mat) noexcept {
     memcpy(mat, &gmat[0][0], sizeof(float) * 16);
 }
 
-void get_view_matrix(const camera3d& camera, glm::mat4* mat) noexcept {
-    *mat = glm::rotate(glm::mat4(1.0), glm::radians(camera.attitude.x), WORLD_RIGHT);
-    *mat = glm::rotate(*mat, glm::radians(camera.attitude.y), WORLD_UP);
-    *mat = glm::translate(*mat, camera.pos);
+void get_view_matrix(const glm::vec3& pos, const glm::vec3 attitude, glm::mat4* mat) noexcept {
+    *mat = glm::mat4(1.0);
+    *mat = glm::rotate(*mat, glm::radians(attitude.x), WORLD_RIGHT);
+    *mat = glm::rotate(*mat, glm::radians(attitude.y), WORLD_UP);
+    *mat = glm::translate(*mat, pos);
     *mat = glm::inverse(*mat);
 }
 

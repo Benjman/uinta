@@ -16,13 +16,12 @@ const unsigned int WINDOW_HEIGHT = 1000;
 
 struct camera3dRunner {
 public:
-    camera3d cam;
-    smooth_float cam_y = smooth_float(3.0);
-    smooth_float cam_x = smooth_float(5.0);
+    camera3d_smooth cam = camera3d_smooth(1.0);
+
+    // matrix memory
+    glm::mat4 tmp_mat;
 
     GLuint u_model, u_view, u_proj;
-    glm::mat4 model_mat = glm::mat4(1.0);
-    glm::mat4 proj_mat = glm::mat4(1.0);
 
     float runtime = 0.0;
     GLuint shader;

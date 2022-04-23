@@ -4,9 +4,11 @@
 #include <cstdio>
 #include <cstring>
 
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include <file.hpp>
+#include <glm/trigonometric.hpp>
 #include <shader.hpp>
 
 #include "./runner.hpp"
@@ -21,6 +23,9 @@ void camera3dRunner::init() {
     init_buffers();
     init_mesh();
 
+    cam.pos_z.force(3.0);
+    cam.pos_y.target = -3.0;
+
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
@@ -28,11 +33,19 @@ void camera3dRunner::render() {
     glEnable(GL_DEPTH_TEST);
     glUseProgram(shader);
 
-    glm::mat4 view;
-    get_view_matrix(cam, &view);
 
-    glUniformMatrix4fv(u_model, 1, GL_FALSE, &model_mat[0][0]);
-    glUniformMatrix4fv(u_view, 1, GL_FALSE, &view[0][0]);
+    tmp_mat = glm::scale(glm::mat4(1.0), glm::vec3(3.0, 0.125, 3.0));
+    tmp_mat = glm::translate(tmp_mat, glm::vec3(0.0, 0.0, -1.5));
+    glUniformMatrix4fv(u_model, 1, GL_FALSE, &tmp_mat[0][0]);
+
+    get_view_matrix(
+            glm::vec3(cam.pos_x, cam.pos_y, cam.pos_z),
+            cam.attitude,
+            &tmp_mat);
+    glUniformMatrix4fv(u_view, 1, GL_FALSE, &tmp_mat[0][0]);
+
+    tmp_mat = glm::perspective((float) glm::radians(90.0), (float) view.width / (float) view.height, 0.1f, 10.0f);
+    glUniformMatrix4fv(u_proj, 1, GL_FALSE, &tmp_mat[0][0]);
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
@@ -42,12 +55,9 @@ void camera3dRunner::render() {
 
 void camera3dRunner::tick(float dt) {
     runtime += dt;
-    model_mat = glm::rotate(glm::mat4(1.0), runtime, glm::vec3(0.6f, 1.0f, 0.2f));
-
-    cam_x.update(dt);
-    cam_y.update(dt);
-
-    cam.pos = glm::vec3(cam_x, cam_y, cam.pos.z);
+    cam.pos_x.update(dt);
+    cam.pos_y.update(dt);
+    cam.pos_z.update(dt);
 }
 
 void camera3dRunner::init_buffers() {
@@ -65,47 +75,47 @@ void camera3dRunner::init_buffers() {
 
 void camera3dRunner::init_mesh() {
     GLfloat vertices[] = {
-        -0.5, -0.5, -0.5,  1.0, 0.0, 0.0,
-         0.5, -0.5, -0.5,  1.0, 0.0, 0.0,
-         0.5,  0.5, -0.5,  1.0, 0.0, 0.0,
-         0.5,  0.5, -0.5,  1.0, 0.0, 0.0,
-        -0.5,  0.5, -0.5,  1.0, 0.0, 0.0,
-        -0.5, -0.5, -0.5,  1.0, 0.0, 0.0,
+        -1.0, -1.0, -1.0,  1.0, 0.0, 0.0,
+         1.0, -1.0, -1.0,  1.0, 0.0, 0.0,
+         1.0,  1.0, -1.0,  1.0, 0.0, 0.0,
+         1.0,  1.0, -1.0,  1.0, 0.0, 0.0,
+        -1.0,  1.0, -1.0,  1.0, 0.0, 0.0,
+        -1.0, -1.0, -1.0,  1.0, 0.0, 0.0,
 
-        -0.5, -0.5,  0.5,  0.0, 1.0, 0.0,
-         0.5, -0.5,  0.5,  0.0, 1.0, 0.0,
-         0.5,  0.5,  0.5,  0.0, 1.0, 0.0,
-         0.5,  0.5,  0.5,  0.0, 1.0, 0.0,
-        -0.5,  0.5,  0.5,  0.0, 1.0, 0.0,
-        -0.5, -0.5,  0.5,  0.0, 1.0, 0.0,
+        -1.0, -1.0,  1.0,  0.0, 1.0, 0.0,
+         1.0, -1.0,  1.0,  0.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,  0.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,  0.0, 1.0, 0.0,
+        -1.0,  1.0,  1.0,  0.0, 1.0, 0.0,
+        -1.0, -1.0,  1.0,  0.0, 1.0, 0.0,
 
-        -0.5,  0.5,  0.5,  0.0, 0.0, 1.0,
-        -0.5,  0.5, -0.5,  0.0, 0.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 0.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 0.0, 1.0,
-        -0.5, -0.5,  0.5,  0.0, 0.0, 1.0,
-        -0.5,  0.5,  0.5,  0.0, 0.0, 1.0,
+        -1.0,  1.0,  1.0,  0.0, 0.0, 1.0,
+        -1.0,  1.0, -1.0,  0.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,  0.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,  0.0, 0.0, 1.0,
+        -1.0, -1.0,  1.0,  0.0, 0.0, 1.0,
+        -1.0,  1.0,  1.0,  0.0, 0.0, 1.0,
 
-         0.5,  0.5,  0.5,  1.0, 1.0, 0.0,
-         0.5,  0.5, -0.5,  1.0, 1.0, 0.0,
-         0.5, -0.5, -0.5,  1.0, 1.0, 0.0,
-         0.5, -0.5, -0.5,  1.0, 1.0, 0.0,
-         0.5, -0.5,  0.5,  1.0, 1.0, 0.0,
-         0.5,  0.5,  0.5,  1.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,  1.0, 1.0, 0.0,
+         1.0,  1.0, -1.0,  1.0, 1.0, 0.0,
+         1.0, -1.0, -1.0,  1.0, 1.0, 0.0,
+         1.0, -1.0, -1.0,  1.0, 1.0, 0.0,
+         1.0, -1.0,  1.0,  1.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,  1.0, 1.0, 0.0,
 
-        -0.5, -0.5, -0.5,  1.0, 0.0, 1.0,
-         0.5, -0.5, -0.5,  1.0, 0.0, 1.0,
-         0.5, -0.5,  0.5,  1.0, 0.0, 1.0,
-         0.5, -0.5,  0.5,  1.0, 0.0, 1.0,
-        -0.5, -0.5,  0.5,  1.0, 0.0, 1.0,
-        -0.5, -0.5, -0.5,  1.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,  1.0, 0.0, 1.0,
+         1.0, -1.0, -1.0,  1.0, 0.0, 1.0,
+         1.0, -1.0,  1.0,  1.0, 0.0, 1.0,
+         1.0, -1.0,  1.0,  1.0, 0.0, 1.0,
+        -1.0, -1.0,  1.0,  1.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,  1.0, 0.0, 1.0,
 
-        -0.5,  0.5, -0.5,  0.0, 1.0, 1.0,
-         0.5,  0.5, -0.5,  0.0, 1.0, 1.0,
-         0.5,  0.5,  0.5,  0.0, 1.0, 1.0,
-         0.5,  0.5,  0.5,  0.0, 1.0, 1.0,
-        -0.5,  0.5,  0.5,  0.0, 1.0, 1.0,
-        -0.5,  0.5, -0.5,  0.0, 1.0, 1.0
+        -1.0,  1.0, -1.0,  0.0, 1.0, 1.0,
+         1.0,  1.0, -1.0,  0.0, 1.0, 1.0,
+         1.0,  1.0,  1.0,  0.0, 1.0, 1.0,
+         1.0,  1.0,  1.0,  0.0, 1.0, 1.0,
+        -1.0,  1.0,  1.0,  0.0, 1.0, 1.0,
+        -1.0,  1.0, -1.0,  0.0, 1.0, 1.0
     };
     glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -145,23 +155,13 @@ void camera3dRunner::init_shader() {
 }
 
 void camera3dRunner::key_callback(int key, int scancode, int action, int mods) noexcept {
-    // if (action == GLFW_PRESS && key == GLFW_KEY_E)
-    //     cam.pos.y += 1.0;
-    // if (action == GLFW_PRESS && key == GLFW_KEY_D)
-    //     cam.pos.y -= 1.0;
-    // if (action == GLFW_PRESS && key == GLFW_KEY_S)
-    //     cam.pos.x -= 1.0;
-    // if (action == GLFW_PRESS && key == GLFW_KEY_F)
-    //     cam.pos.x += 1.0;
-
-
     if (action == GLFW_PRESS && key == GLFW_KEY_E)
-        cam_y += 1.0;
+        cam.pos_y += 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_D)
-        cam_y -= 1.0;
+        cam.pos_y -= 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_S)
-        cam_x -= 1.0;
+        cam.pos_x -= 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_F)
-        cam_x += 1.0;
+        cam.pos_x += 1.0;
 }
 

@@ -12,16 +12,15 @@ int main(const int argc, const char** argv) {
     debug_controller debug(WINDOW_WIDTH, WINDOW_HEIGHT);
     metrics_controller& metrics = debug.metrics;
 
+    auto timer = debug.create_timer();
+
+    // register metrics
     auto tick_m     = metrics.init_metric(METRIC_FLOAT, "tick");
-    auto tick_t     = debug.create_timer("tick");
-    auto tick_a     = running_avg(10);
-
-    auto render_m   = metrics.init_metric(METRIC_FLOAT, "render");
-    auto render_t   = debug.create_timer("render");
-    auto render_a   = running_avg(20);
-
     auto text_m   = metrics.init_metric(METRIC_FLOAT, "text");
-    auto text_t   = debug.create_timer("render");
+    auto render_m   = metrics.init_metric(METRIC_FLOAT, "render");
+
+    // register averages
+    auto render_a   = running_avg(20);
 
     runner.init();
     debug.init();
@@ -35,27 +34,23 @@ int main(const int argc, const char** argv) {
         dt = glfwGetTime() - time;
         time += dt;
 
-
-        debug.reset_timer(tick_t);
+        debug.reset_timer(timer);
         runner.tick(dt);
-        tick_a.add(debug.duration_micro(tick_t));
-        metrics.set(tick_m, tick_a.avg());
-
-        debug.reset_timer(text_t);
-        debug.mesh_metric(tick_m);
-        debug.mesh_metric(render_m);
-        debug.mesh_metric(text_m);
-        metrics.set(text_m, (float) debug.duration_micro(text_t));
-
+        metrics.set(tick_m, (float) debug.duration_micro(timer));
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        debug.reset_timer(render_t);
+        debug.reset_timer(timer);
         debug.render();
         runner.render();
-        render_a.add(debug.duration_micro(render_t));
+        render_a.add(debug.duration_micro(timer));
         metrics.set(render_m, render_a.avg());
+
+        debug.mesh_metric(tick_m);
+        debug.mesh_metric(render_m);
+        debug.mesh_metric(text_m);
+        metrics.set(text_m, (float) debug.duration_micro(timer));
 
         glfwSwapBuffers(runner.view.window);
         glfwPollEvents();

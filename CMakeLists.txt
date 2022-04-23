@@ -20,7 +20,7 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/cfg.hpp.in ${CMAKE_BINARY_DIR}/generate
 
 add_library(uinta STATIC 
 
-  ./src/camera2d.cpp
+  ./src/camera.cpp
   ./src/file.cpp
   ./src/font.cpp
   ./src/glfw.cpp
