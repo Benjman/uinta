@@ -15,7 +15,7 @@ struct metrics_controller final {
     unsigned int metric_type[METRICS_MAX_STORAGE];
     const char* assignments[METRICS_MAX_STORAGE];
 
-    metrics_controller() noexcept;
+    metrics_controller();
 
     ~metrics_controller();
 
