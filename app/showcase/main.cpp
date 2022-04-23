@@ -16,7 +16,7 @@ int main(const int argc, const char** argv) {
     metric_t m_render       = debug.metrics.init_metric(METRIC_FLOAT, "render avg (10)");
     metric_t m_tick         = debug.metrics.init_metric(METRIC_UINT, "tick");
 
-    debug_timer_t t_render = debug.create_timer("render");
+    debug_timer_t t_render = debug.create_timer();
 
     running_avg render_avg(10);
 

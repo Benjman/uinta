@@ -31,7 +31,7 @@ struct debug_controller final {
     metrics_controller metrics;
     unsigned int metric_row = 0, ioff = 0;
 
-    debug_controller(unsigned int view_width, unsigned int view_height) noexcept : view_size(view_width, view_height) {}
+    debug_controller(unsigned int view_width, unsigned int view_height) noexcept;
 
     void init();
     void init_buffers();
@@ -40,7 +40,7 @@ struct debug_controller final {
     void render();
     void upload_buffers();
 
-    debug_timer_t create_timer(const char* name) noexcept;
+    debug_timer_t create_timer() noexcept;
     double duration_micro(const debug_timer_t handle) noexcept;
     double duration_milli(const debug_timer_t handle) noexcept;
     void mesh_metric(const metric_t handle, const std::string append = "");
@@ -48,7 +48,7 @@ struct debug_controller final {
 
 private:
     std::chrono::time_point<std::chrono::system_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
-    const char* timer_assignments[DEBUG_CONTROLLER_MAX_TIMERS]{nullptr};
+    bool timer_assignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
 
 };
 

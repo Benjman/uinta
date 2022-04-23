@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+
 #include <cmath>
 
 #include "debug_controller.hpp"
@@ -12,6 +13,9 @@ const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs = {
     {FontMeshAttrib_UV, font_mesh_attrib(7, 2)},
     {FontMeshAttrib_Color, font_mesh_attrib(7, 4) },
 };
+
+debug_controller::debug_controller(unsigned int view_width, unsigned int view_height) noexcept : view_size(view_width, view_height) {
+}
 
 void debug_controller::init() {
     vbo.max = sizeof(vbuf) / sizeof(GLfloat);
@@ -113,14 +117,14 @@ void debug_controller::upload_buffers() {
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, ebo.offset, ebo.count * sizeof(GLuint), ibuf);
 }
 
-debug_timer_t debug_controller::create_timer(const char* name) noexcept {
+debug_timer_t debug_controller::create_timer() noexcept {
     for (int i = 0; i < DEBUG_CONTROLLER_MAX_TIMERS; i++) {
         if (!timer_assignments[i]) {
-            timer_assignments[i] = name;
+            timer_assignments[i] = true;
             return i;
         }
     }
-    printf("[WARN] Ignoring timer for '%s': No available debug timers.\n", name);
+    printf("[WARN] No available debug timer storage.\n");
     return -1;
 }
 
