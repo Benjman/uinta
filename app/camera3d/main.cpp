@@ -12,20 +12,19 @@ int main(const int argc, const char** argv) {
     debug_controller debug(WINDOW_WIDTH, WINDOW_HEIGHT);
     metrics_controller& metrics = debug.metrics;
 
-    auto timer = debug.create_timer();
-
     // register metrics
     auto tick_m     = metrics.init_metric(METRIC_FLOAT, "tick");
-    auto text_m   = metrics.init_metric(METRIC_FLOAT, "text");
+    auto text_m     = metrics.init_metric(METRIC_FLOAT, "text");
     auto render_m   = metrics.init_metric(METRIC_FLOAT, "render");
 
     // register averages
     auto render_a   = running_avg(20);
 
+    auto timer = debug.create_timer();
     runner.init();
     debug.init();
-
     glfwSetKeyCallback(runner.view.window, key_callback);
+    printf("[INFO] Init time %g seconds.\n", debug.duration_milli(timer) / 1000.0f);
 
     double dt = 0.0;
     double time = 0.0;

@@ -6,9 +6,10 @@
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/trigonometric.hpp>
 
 #include <file.hpp>
-#include <glm/trigonometric.hpp>
 #include <shader.hpp>
 
 #include "./runner.hpp"
@@ -23,8 +24,9 @@ void camera3dRunner::init() {
     init_buffers();
     init_mesh();
 
-    cam.pos_z.force(3.0);
-    cam.pos_y.target = -3.0;
+    cam.pos.y = 5.0;
+    cam.pos.z = 7.0;
+    cam.pitch(30.0);
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
@@ -33,19 +35,20 @@ void camera3dRunner::render() {
     glEnable(GL_DEPTH_TEST);
     glUseProgram(shader);
 
+    glm::mat4 model_matrix, projection_matrix;
 
-    tmp_mat = glm::scale(glm::mat4(1.0), glm::vec3(3.0, 0.125, 3.0));
-    tmp_mat = glm::translate(tmp_mat, glm::vec3(0.0, 0.0, -1.5));
-    glUniformMatrix4fv(u_model, 1, GL_FALSE, &tmp_mat[0][0]);
+    model_matrix = glm::scale(glm::mat4(1.0), glm::vec3(3.0, 0.125, 3.0));
 
-    get_view_matrix(
-            glm::vec3(cam.pos_x, cam.pos_y, cam.pos_z),
-            cam.attitude,
-            &tmp_mat);
-    glUniformMatrix4fv(u_view, 1, GL_FALSE, &tmp_mat[0][0]);
+    glm::mat4 view_matrix;
+    get_view_matrix(&view_matrix, cam.pos, cam.pitch(), cam.yaw());
 
-    tmp_mat = glm::perspective((float) glm::radians(90.0), (float) view.width / (float) view.height, 0.1f, 10.0f);
-    glUniformMatrix4fv(u_proj, 1, GL_FALSE, &tmp_mat[0][0]);
+    float near_plane = 0.1f,
+          far_plane = 100.0f;
+
+    projection_matrix = glm::perspective((float) glm::radians(90.0), (float) view.width / (float) view.height, near_plane, far_plane);
+    // projection_matrix = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, near_plane, far_plane);
+
+    glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(projection_matrix * view_matrix * model_matrix)[0][0]);
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
@@ -55,9 +58,6 @@ void camera3dRunner::render() {
 
 void camera3dRunner::tick(float dt) {
     runtime += dt;
-    cam.pos_x.update(dt);
-    cam.pos_y.update(dt);
-    cam.pos_z.update(dt);
 }
 
 void camera3dRunner::init_buffers() {
@@ -75,47 +75,48 @@ void camera3dRunner::init_buffers() {
 
 void camera3dRunner::init_mesh() {
     GLfloat vertices[] = {
-        -1.0, -1.0, -1.0,  1.0, 0.0, 0.0,
-         1.0, -1.0, -1.0,  1.0, 0.0, 0.0,
-         1.0,  1.0, -1.0,  1.0, 0.0, 0.0,
-         1.0,  1.0, -1.0,  1.0, 0.0, 0.0,
-        -1.0,  1.0, -1.0,  1.0, 0.0, 0.0,
-        -1.0, -1.0, -1.0,  1.0, 0.0, 0.0,
+        // positions        // colors
+        -1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
+         1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
+         1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
+         1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
+        -1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
+        -1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
 
-        -1.0, -1.0,  1.0,  0.0, 1.0, 0.0,
-         1.0, -1.0,  1.0,  0.0, 1.0, 0.0,
-         1.0,  1.0,  1.0,  0.0, 1.0, 0.0,
-         1.0,  1.0,  1.0,  0.0, 1.0, 0.0,
-        -1.0,  1.0,  1.0,  0.0, 1.0, 0.0,
-        -1.0, -1.0,  1.0,  0.0, 1.0, 0.0,
+        -1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
+         1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
+        -1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
+        -1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
 
-        -1.0,  1.0,  1.0,  0.0, 0.0, 1.0,
-        -1.0,  1.0, -1.0,  0.0, 0.0, 1.0,
-        -1.0, -1.0, -1.0,  0.0, 0.0, 1.0,
-        -1.0, -1.0, -1.0,  0.0, 0.0, 1.0,
-        -1.0, -1.0,  1.0,  0.0, 0.0, 1.0,
-        -1.0,  1.0,  1.0,  0.0, 0.0, 1.0,
+        -1.0,  1.0,  1.0,   0.0, 0.0, 1.0,
+        -1.0,  1.0, -1.0,   0.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,   0.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,   0.0, 0.0, 1.0,
+        -1.0, -1.0,  1.0,   0.0, 0.0, 1.0,
+        -1.0,  1.0,  1.0,   0.0, 0.0, 1.0,
 
-         1.0,  1.0,  1.0,  1.0, 1.0, 0.0,
-         1.0,  1.0, -1.0,  1.0, 1.0, 0.0,
-         1.0, -1.0, -1.0,  1.0, 1.0, 0.0,
-         1.0, -1.0, -1.0,  1.0, 1.0, 0.0,
-         1.0, -1.0,  1.0,  1.0, 1.0, 0.0,
-         1.0,  1.0,  1.0,  1.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,   1.0, 1.0, 0.0,
+         1.0,  1.0, -1.0,   1.0, 1.0, 0.0,
+         1.0, -1.0, -1.0,   1.0, 1.0, 0.0,
+         1.0, -1.0, -1.0,   1.0, 1.0, 0.0,
+         1.0, -1.0,  1.0,   1.0, 1.0, 0.0,
+         1.0,  1.0,  1.0,   1.0, 1.0, 0.0,
 
-        -1.0, -1.0, -1.0,  1.0, 0.0, 1.0,
-         1.0, -1.0, -1.0,  1.0, 0.0, 1.0,
-         1.0, -1.0,  1.0,  1.0, 0.0, 1.0,
-         1.0, -1.0,  1.0,  1.0, 0.0, 1.0,
-        -1.0, -1.0,  1.0,  1.0, 0.0, 1.0,
-        -1.0, -1.0, -1.0,  1.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
+         1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
+         1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
+         1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
+        -1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
+        -1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
 
-        -1.0,  1.0, -1.0,  0.0, 1.0, 1.0,
-         1.0,  1.0, -1.0,  0.0, 1.0, 1.0,
-         1.0,  1.0,  1.0,  0.0, 1.0, 1.0,
-         1.0,  1.0,  1.0,  0.0, 1.0, 1.0,
-        -1.0,  1.0,  1.0,  0.0, 1.0, 1.0,
-        -1.0,  1.0, -1.0,  0.0, 1.0, 1.0
+        -1.0,  1.0, -1.0,   0.0, 1.0, 1.0,
+         1.0,  1.0, -1.0,   0.0, 1.0, 1.0,
+         1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
+         1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
+        -1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
+        -1.0,  1.0, -1.0,   0.0, 1.0, 1.0
     };
     glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -130,10 +131,11 @@ void camera3dRunner::init_shader() {
         "uniform mat4 u_model = mat4(1.0);"
         "uniform mat4 u_view = mat4(1.0);"
         "uniform mat4 u_proj = mat4(1.0);"
+        "uniform mat4 u_mvp = mat4(1.0);"
         "out vec3 pass_color;"
         "void main() {"
         "  pass_color = in_color;"
-        "  gl_Position = u_proj * u_view * u_model * vec4(in_pos, 1.0);"
+        "  gl_Position = u_mvp * vec4(in_pos, 1.0);"
         "}\0";
 
     const char *fshader =
@@ -145,23 +147,19 @@ void camera3dRunner::init_shader() {
 
     const char* sources[] = { vshader, fshader };
     const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-    const char* uniforms[] = { "u_model", "u_view", "u_proj" };
-    GLuint uniform_locs[3];
+    const char* uniforms[] = { "u_mvp" };
     shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum),
-                                   uniforms, uniform_locs, sizeof(uniform_locs) / sizeof(GLuint));
-    u_model = uniform_locs[0];
-    u_view = uniform_locs[1];
-    u_proj = uniform_locs[2];
+                                   uniforms, &u_mvp, 1);
 }
 
 void camera3dRunner::key_callback(int key, int scancode, int action, int mods) noexcept {
     if (action == GLFW_PRESS && key == GLFW_KEY_E)
-        cam.pos_y += 1.0;
+        cam.pos.z -= 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_D)
-        cam.pos_y -= 1.0;
+        cam.pos.z += 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_S)
-        cam.pos_x -= 1.0;
+        cam.pos.x -= 1.0;
     if (action == GLFW_PRESS && key == GLFW_KEY_F)
-        cam.pos_x += 1.0;
+        cam.pos.x += 1.0;
 }
 

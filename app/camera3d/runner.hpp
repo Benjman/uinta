@@ -13,15 +13,11 @@ const unsigned int IBUF_SIZE = 15 * 1024;
 const unsigned int WINDOW_WIDTH = 1000;
 const unsigned int WINDOW_HEIGHT = 1000;
 
-
 struct camera3dRunner {
 public:
-    camera3d_smooth cam = camera3d_smooth(1.0);
+    camera cam;
 
-    // matrix memory
-    glm::mat4 tmp_mat;
-
-    GLuint u_model, u_view, u_proj;
+    GLuint u_mvp;
 
     float runtime = 0.0;
     GLuint shader;

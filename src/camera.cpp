@@ -1,10 +1,8 @@
-#include <camera.hpp>
 #include <cstdio>
 #include <cstring> // for memcpy
 
-// TODO get rid of glm -- but need to learn quaternions tho :'(
-#include <glm/mat4x4.hpp>
-#include <glm/ext.hpp>
+#include <camera.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 void get_view_matrix(const camera2d& camera, mat4* mat) noexcept {
     *mat = mat4();
@@ -27,21 +25,15 @@ void get_view_matrix(const camera2d& camera, mat4* mat) noexcept {
     memcpy(mat, &gmat[0][0], sizeof(float) * 16);
 }
 
-void get_view_matrix(const glm::vec3& pos, const glm::vec3 attitude, glm::mat4* mat) noexcept {
-    *mat = glm::mat4(1.0);
-    *mat = glm::rotate(*mat, glm::radians(attitude.x), WORLD_RIGHT);
-    *mat = glm::rotate(*mat, glm::radians(attitude.y), WORLD_UP);
-    *mat = glm::translate(*mat, pos);
-    *mat = glm::inverse(*mat);
+#include <glm/gtx/euler_angles.hpp>
+void get_view_matrix(glm::mat4* mat, const glm::vec3& pos, const float pitch, const float yaw) noexcept {
+    glm::mat4 transformx = glm::eulerAngleX(glm::radians(pitch));
+    glm::mat4 transformy = glm::eulerAngleY(glm::radians(yaw));
+    *mat = glm::translate(transformx * transformy, -pos);
 }
 
 void get_ortho_matrix(mat4 &mat, float left, float right, float bottom, float top, float near, float far) noexcept {
     glm::mat4 ortho = glm::ortho(left, right, bottom, top, near, far);
     memcpy(&mat, &ortho, sizeof(float) * 16);
-}
-
-void get_perspective_matrix(mat4 &mat, float fov, float width, float height, float near, float far) noexcept {
-    glm::mat4 proj = glm::perspective(glm::radians(fov), width / height, near, far);
-    memcpy(mat.values, &proj, sizeof(float) * 16);
 }
 
