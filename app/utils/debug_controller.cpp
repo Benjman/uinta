@@ -121,6 +121,7 @@ debug_timer_t debug_controller::create_timer() noexcept {
     for (int i = 0; i < DEBUG_CONTROLLER_MAX_TIMERS; i++) {
         if (!timer_assignments[i]) {
             timer_assignments[i] = true;
+            reset_timer(i);
             return i;
         }
     }
