@@ -12,6 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 find_package(GLFW REQUIRED)
 find_package(GTest REQUIRED)
 find_package(stb REQUIRED)
+find_package(glm REQUIRED)
 add_subdirectory(./lib/entt)
 
 set(RES_PATH ${CMAKE_BINARY_DIR}/res/)
@@ -37,7 +38,9 @@ add_library(uinta STATIC
 include_directories(${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/generated
     ${GL_INCLUDES}
-    ${STB_INCLUDE})
+    ${STB_INCLUDE}
+    ${GLM_INCLUDE}
+    )
 
 target_link_libraries(uinta PUBLIC EnTT::EnTT ${GL_LIBS})
 

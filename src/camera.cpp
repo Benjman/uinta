@@ -3,6 +3,7 @@
 
 #include <camera.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 void get_view_matrix(const camera2d& camera, mat4* mat) noexcept {
     *mat = mat4();
