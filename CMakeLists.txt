@@ -46,7 +46,6 @@ target_link_libraries(uinta PUBLIC EnTT::EnTT ${GL_LIBS})
 add_subdirectory(app)
 
 # to enable testing run `cmake -DUINTA_TEST=true ...`
-message(STATUS "${UINTA_TEST}")
 if (UINTA_TEST)
   add_subdirectory(test)
 endif()
