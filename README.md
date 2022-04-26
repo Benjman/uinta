@@ -4,11 +4,21 @@ This repo uses git submodules, so it must be cloned with --recursive:
 
 
 # Building
-## Install dependencies (I use Arch BTW)
+## Install dependencies
+### I use Arch BTW
 Install the following packages:
 * glfw-wayland
 * gtest
 * glm
+
+### MacOS (not quite working yet, need to add glm from homebrew to the include path)
+> brew install cmake
+
+> brew install googletest
+
+> brew install glfw
+
+> brew install glm
 
 ## Run cmake:
 > cmake -B build .     # Configure the build directory
@@ -19,4 +29,6 @@ Install the following packages:
 > ./build/camera2d
 
 > ./build/camera3d
+
+
 
