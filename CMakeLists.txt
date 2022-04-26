@@ -10,7 +10,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # dependencies
 find_package(GLFW REQUIRED)
-find_package(GTest REQUIRED)
 find_package(stb REQUIRED)
 find_package(glm REQUIRED)
 add_subdirectory(./lib/entt)
@@ -45,4 +44,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include
 target_link_libraries(uinta PUBLIC EnTT::EnTT ${GL_LIBS})
 
 add_subdirectory(app)
-add_subdirectory(test)
+
+# to enable testing run `cmake -DUINTA_TEST=true ...`
+message(STATUS "${UINTA_TEST}")
+if (UINTA_TEST)
+  add_subdirectory(test)
+endif()

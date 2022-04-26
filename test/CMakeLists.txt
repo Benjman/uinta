@@ -1,4 +1,5 @@
 find_package(Threads REQUIRED)
+find_package(GTest REQUIRED)
 
 include_directories(../include)
 
@@ -9,8 +10,7 @@ add_executable(tests
     ./math/vecTests.cpp
     ./metrics_test.cpp
     ./quadtreeTests.cpp
-    ./running_avg.cpp
-    )
+    ./running_avg.cpp)
 
 target_link_libraries(tests
     uinta
