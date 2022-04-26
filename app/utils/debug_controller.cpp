@@ -169,7 +169,7 @@ void debug_controller::mesh_metric(const metric_t handle, const std::string appe
             break;
     }
     font::generate_mesh(&text, font_handle,
-                        view_size.x, view_size.y, attribs,
+                        view_size.x, view_size.y, &attribs,
                         &vbuf[vbo.count], &vbo.count,
                         &ibuf[ebo.count], &ebo.count, &ioff);
     metric_row++;

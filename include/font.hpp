@@ -15,14 +15,21 @@
 #include <unordered_map>
 #include <vector>
 
+#ifdef __APPLE__
+#define GL_SILENCe_DEPRECATION
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/gl.h>
+#include <GL/glu.h>
+#endif // __APPLE__
 
 #ifdef UINTA_FONT_IMPLEMENTATION
 #define STB_RECT_PACK_IMPLEMENTATION
 #define STB_TRUETYPE_IMPLEMENTATION
+#include <stb_rect_pack.h>
 #endif
 
-#include <stb_rect_pack.h>
 #include <stb_truetype.h>
 
 namespace font {
@@ -160,12 +167,12 @@ struct text final {
 };
 
 unsigned int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
-unsigned int getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs) noexcept;
+unsigned int getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) noexcept;
 unsigned int getIndexBufferSize(const char* s, const unsigned int size) noexcept;
 const unsigned int getFontSize(const FontType);
 const char* const getFontPath(const FontType);
 
-void generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
+void generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
 
 
 /*********************
@@ -175,9 +182,9 @@ namespace internal {
 struct mesh_ctx final {
     const text* root;
     const font_ctx* font;
+    const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs;
     float frame_width;
     float frame_height;
-    std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs;
     float* vbuf;
     unsigned int* vcount;
     unsigned int* ibuf;
@@ -354,13 +361,13 @@ unsigned int font::getRenderableCharCount(const char* s, const unsigned int size
         std::cregex_iterator()));
 }
 
-unsigned int font::getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs) noexcept {
+unsigned int font::getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) noexcept {
     unsigned int bufsize = 0;
-    if (const auto* attrib = find_font_attrib(FontMeshAttrib_Position, &attribs))
+    if (const auto* attrib = find_font_attrib(FontMeshAttrib_Position, attribs))
         bufsize += 8;
-    if (const auto* attrib = find_font_attrib(FontMeshAttrib_UV, &attribs))
+    if (const auto* attrib = find_font_attrib(FontMeshAttrib_UV, attribs))
         bufsize += 8;
-    if (const auto* attrib = find_font_attrib(FontMeshAttrib_Color, &attribs))
+    if (const auto* attrib = find_font_attrib(FontMeshAttrib_Color, attribs))
         bufsize += 12;
     const int count = getRenderableCharCount(s, size);
     return bufsize * count;
@@ -371,7 +378,7 @@ unsigned int font::getIndexBufferSize(const char* s, const unsigned int size) no
     return 6 * count;
 }
 
-void font::generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset) {
+void font::generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset) {
     assert(font::fonts.size() > f);
     mesh_ctx ctx;
     ctx.root = root;
@@ -391,11 +398,11 @@ void font::generate_mesh(const text* root, const font_t f, const float frame_wid
 void font::internal::generate_mesh(mesh_ctx ctx) {
     if (ctx.root->value.empty())
         return;
-    if (ctx.attribs.size() == 0) {
+    if (ctx.attribs->size() == 0) {
         printf("[WARN] No attributes were provided to generate a text mesh.");
         return;
     }
-    const unsigned int vertexStride = ctx.attribs.begin()->second.stride * 4;
+    const unsigned int vertexStride = ctx.attribs->begin()->second.stride * 4;
     std::vector<line> lines;
     stbtt_aligned_quad quad;
     generate_structure(ctx, &lines, quad);
@@ -442,11 +449,11 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
                 quad.t1 *= -1;
 
                 // store quad to buffers
-                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_Position, &ctx.attribs))
+                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_Position, ctx.attribs))
                     store_quad_position(quad, *attrib, ctx.vbuf, ctx.vcount);
-                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_UV, &ctx.attribs))
+                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_UV, ctx.attribs))
                     store_quad_uv(quad, *attrib, ctx.vbuf, ctx.vcount);
-                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_Color, &ctx.attribs))
+                if (const font_mesh_attrib* attrib = find_font_attrib(FontMeshAttrib_Color, ctx.attribs))
                     store_color(ctx.root->color_r, ctx.root->color_g, ctx.root->color_b, *attrib, ctx.vbuf, ctx.vcount);
 
                 ctx.ibuf[0] = 0 + *ctx.ioffset;
