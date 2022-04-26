@@ -4,8 +4,7 @@
 #include <buffer.hpp>
 #include <glfw.hpp>
 #include <quadtree.hpp>
-
-#include <GL/gl.h>
+#include <gl.h>
 
 struct quadtreeRunner {
     unsigned int width = 1088;

@@ -3,8 +3,7 @@
 
 #include <camera.hpp>
 #include <glfw.hpp>
-
-#include <GL/gl.h>
+#include <gl.h>
 
 const inline unsigned int BUF_SIZE = 2048;
 

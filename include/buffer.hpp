@@ -1,7 +1,7 @@
 #ifndef UINTA_BUFFER_HPP
 #define UINTA_BUFFER_HPP
 
-#include <GL/gl.h>
+#include <gl.h>
 
 struct gl_buf {
     GLuint id;

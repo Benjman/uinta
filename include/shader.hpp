@@ -1,7 +1,7 @@
 #ifndef UINTA_SHADER_H
 #define UINTA_SHADER_H
 
-#include <GL/gl.h>
+#include <gl.h>
 
 GLuint create_shader_program(const char** sources,
                              const GLenum* stages,
