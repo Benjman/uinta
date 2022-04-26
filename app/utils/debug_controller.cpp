@@ -1,3 +1,4 @@
+#include <chrono>
 #include <glad/glad.h>
 
 #include <cmath>
@@ -130,7 +131,7 @@ debug_timer_t debug_controller::create_timer() noexcept {
 }
 
 double debug_controller::duration_micro(const debug_timer_t handle) noexcept {
-    auto now = std::chrono::system_clock::now();
+    auto now = std::chrono::high_resolution_clock::now();
     if (handle == -1
         || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
         printf("[WARN] Ignoring stop timer attempt for invalid timer.\n");
@@ -140,7 +141,7 @@ double debug_controller::duration_micro(const debug_timer_t handle) noexcept {
 }
 
 double debug_controller::duration_milli(const debug_timer_t handle) noexcept {
-    auto now = std::chrono::system_clock::now();
+    auto now = std::chrono::high_resolution_clock::now();
     if (handle == -1
         || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
         printf("[WARN] Ignoring stop timer attempt for invalid timer.\n");

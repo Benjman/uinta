@@ -47,7 +47,7 @@ struct debug_controller final {
     void reset_timer(const debug_timer_t handle) noexcept;
 
 private:
-    std::chrono::time_point<std::chrono::system_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
+    std::chrono::time_point<std::chrono::high_resolution_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
     bool timer_assignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
 
 };
