@@ -1,6 +1,5 @@
 #include <mesh.hpp>
 #include <quadtree.hpp>
-#include <glfw.hpp>
 
 const inline auto LINE_SIZE = 4;
 const inline auto LINE_SIZE_HALF = LINE_SIZE / 2.0f;
