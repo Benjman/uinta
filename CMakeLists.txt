@@ -14,10 +14,12 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_definitions(-DUINTA_DEBUG)
 endif()
 
-# dependencies
+# dependencie
+set(LIB_PATH ${CMAKE_BINARY_DIR}/lib/)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/module")
 find_package(GLFW REQUIRED)
 find_package(glm REQUIRED)
+find_package(imgui REQUIRED)
 find_package(stb REQUIRED)
 add_subdirectory(./lib/entt)
 
@@ -28,6 +30,7 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/cfg.hpp.in ${CMAKE_BINARY_DIR}/generate
 add_library(uinta STATIC 
 
   ./src/camera.cpp
+  ./src/debug.cpp
   ./src/file.cpp
   ./src/font.cpp
   ./src/glfw.cpp
@@ -45,6 +48,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/generated
     ${GLM_INCLUDE}
     ${GL_INCLUDES}
+    ${IMGUI_INCLUDE}
     ${STB_INCLUDE}
     )
 
