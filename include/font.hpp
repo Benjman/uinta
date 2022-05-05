@@ -27,10 +27,10 @@
 #ifdef UINTA_FONT_IMPLEMENTATION
 #define STB_RECT_PACK_IMPLEMENTATION
 #define STB_TRUETYPE_IMPLEMENTATION
-#include <stb_rect_pack.h>
+#include <stb/stb_rect_pack.h>
 #endif
 
-#include <stb_truetype.h>
+#include <stb/stb_truetype.h>
 
 namespace font {
 
@@ -325,10 +325,10 @@ const unsigned int font::getFontSize(const FontType type) {
 }
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 // #define STB_IMAGE_WRITE_IMPLEMENTATION
-// #include <stb_image_write.h>
+// #include <stb/stb_image_write.h>
 
 font::font_ctx::font_ctx(const FontType type, const float tex_width, const float tex_height) noexcept :
     type(type), tex_width(tex_width), tex_height(tex_height) {

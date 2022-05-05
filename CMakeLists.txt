@@ -4,14 +4,21 @@ project(uinta)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/module")
-set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    add_definitions(-DUINTA_DEBUG)
+endif()
+
 # dependencies
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/module")
 find_package(GLFW REQUIRED)
-find_package(stb REQUIRED)
 find_package(glm REQUIRED)
+find_package(stb REQUIRED)
 add_subdirectory(./lib/entt)
 
 set(RES_PATH ${CMAKE_BINARY_DIR}/res/)
@@ -30,15 +37,15 @@ add_library(uinta STATIC
   ./src/quadtree.cpp
   ./src/shader.cpp
 
-  ./app/utils/debug_controller.cpp # TODO not a great place to add this source
+  ./app/utils/debug_controller.cpp # TODO move all this stuff to src/debug.cpp
 
   ${GLAD_C})
 
 include_directories(${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/generated
+    ${GLM_INCLUDE}
     ${GL_INCLUDES}
     ${STB_INCLUDE}
-    ${GLM_INCLUDE}
     )
 
 target_link_libraries(uinta PUBLIC EnTT::EnTT ${GL_LIBS})

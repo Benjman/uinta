@@ -1,7 +1,7 @@
-find_path(STB_INCLUDE names "stb_truetype.h" PATHS "${CMAKE_SOURCE_DIR}/lib/stb")
+find_path(STB_INCLUDE names "stb/stb_truetype.h" PATHS "${CMAKE_SOURCE_DIR}/lib")
 
 if (NOT STB_INCLUDE)
-    message(FATAL_ERROR "could not locate stb_truetype.h")
+    message(FATAL_ERROR "could not locate stb_truetype.h in ${CMAKE_SOURCE_DIR}/lib")
 endif()
 
 include(FindPackageHandleStandardArgs)
