@@ -6,8 +6,6 @@
 #include <cstring>
 #include <fstream>
 
-#include <stb_truetype.h>
-
 extern void read_file_internal(const char *filepath, std::ios::openmode mode, char *buffer) {
     std::ifstream file(filepath, std::ios::in | mode | std::ios::ate);
     if (!file || !file.good()) {
