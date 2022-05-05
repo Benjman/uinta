@@ -1,7 +1,5 @@
 #include <math.hpp>
 
-#include <cstring> // for memcpy
-
 vec2::vec2() noexcept : vec2(0.0) {}
 
 vec2::vec2(float v) noexcept : vec2(v, v) {}
@@ -249,6 +247,7 @@ bool vec4::operator!=(const vec4 &rhs) const noexcept {
     return x != rhs.x || y != rhs.y || z == rhs.z && w != rhs.w;
 }
 
+#include <cstring> // for memcpy
 mat4::mat4(const float *values) noexcept {
     /*
        FIXME memcpy of matrices with different dimensions will dirty our array.
@@ -399,8 +398,8 @@ void running_avg::add(float v) noexcept {
     buffer[cursor % count] = v;
     dirty = true;
     cursor++;
+    // TODO check for cursor violating uint max
 }
-
 
 smooth_float::smooth_float(const float agility, const float target) noexcept : agility(agility), current(0.0), target(target) {
 }
