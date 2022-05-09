@@ -240,7 +240,7 @@ void generate_structure(mesh_ctx, std::vector<line>*, stbtt_aligned_quad&);
 bool try_add_word(line&, word&);
 void add_char(word&, const char, float);
 float find_xstart(const text*, const float);
-const font_mesh_attrib* find_font_attrib(font_mesh_attrib_t, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>*); // TODO maybe this should be in mesh.hpp?
+const font_mesh_attrib* find_font_attrib(font_mesh_attrib_t, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>*);
 void store_quad_position(const stbtt_aligned_quad&, const font_mesh_attrib&, float*, unsigned int*);
 void store_quad_uv(const stbtt_aligned_quad&, const font_mesh_attrib&, float*, unsigned int*);
 void store_color(const float, const float, const float, const font_mesh_attrib&, float*, unsigned int*);
