@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstring>
 #include <glad/glad.h>
 
 #include <cmath>
@@ -53,7 +54,7 @@ void debug_controller::init_buffers() {
 void debug_controller::init_font() {
     auto type = font::ProggyCleanTT_Nerd_Font_Complete_Mono;
     font_handle = font::init_font(type, 256, 256);
-    unsigned char data[getFontSize(type)];
+    unsigned char data[get_file_size(getFontPath(type))];
     read_file_binary(getFontPath(type), (char*) data);
     font::load_font(font_handle, data);
 }
@@ -84,7 +85,8 @@ void debug_controller::init_shader() {
 
     const char* sources[] = { vshader, fshader };
     const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum));
+    const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
+    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
     glUseProgram(shader);
 }
 

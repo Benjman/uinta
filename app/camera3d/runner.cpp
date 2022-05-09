@@ -147,8 +147,8 @@ void camera3dRunner::init_shader() {
     const char* sources[] = { vshader, fshader };
     const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
     const char* uniforms[] = { "u_mvp" };
-    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum),
-                                   uniforms, &u_mvp, 1);
+    const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
+    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
 }
 
 void camera3dRunner::key_callback(int key, int scancode, int action, int mods) noexcept {

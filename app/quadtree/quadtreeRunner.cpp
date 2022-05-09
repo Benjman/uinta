@@ -1,3 +1,4 @@
+#include <cstring> // strlen
 #include <glad/glad.h>
 
 #include <cmath>
@@ -55,7 +56,8 @@ void quadtreeRunner::init_shader() {
     const char* sources[] = { vshader, fshader };
     const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
     const char* uniform_names[] = { "u_color" };
-    GLuint shader = create_shader_program(sources, stages, 2,
+    const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
+    GLuint shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
                                           uniform_names, &uniformColor, 1);
 
 }

@@ -110,7 +110,8 @@ void camera2dRunner::init_shader() {
     const char* uniforms[] = { "u_view", "u_proj" };
     const unsigned int uniform_count = sizeof(uniforms) / sizeof(const char*);
     GLuint locs[uniform_count];
-    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), uniforms, locs, uniform_count);
+    const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
+    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
 
     u_view = locs[0];
     u_proj = locs[1];

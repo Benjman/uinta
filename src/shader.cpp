@@ -1,12 +1,15 @@
 #include <cstdio>
 #include <glad/glad.h>
+
 #include <shader.hpp>
+#include <macros.hpp>
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 
 GLuint create_shader_program(const char** sources,
                              const GLenum* stages,
                              const unsigned int stage_count,
+                             const GLint* buffer_lengths,
                              const char** uniform_names,
                              GLuint* uniform_locations,
                              const unsigned int uniform_count) noexcept {
@@ -14,7 +17,7 @@ GLuint create_shader_program(const char** sources,
 
     for (auto i = 0; i < stage_count; i++) {
         GLuint stageId = glCreateShader(stages[i]);
-        glShaderSource(stageId, 1, &sources[i], nullptr);
+        glShaderSource(stageId, 1, &sources[i], &buffer_lengths[i]);
         glCompileShader(stageId);
         checkCompileErrors(id, stageId);
         glAttachShader(id, stageId);
@@ -37,15 +40,16 @@ GLuint create_shader_program(const char** sources,
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {
     GLint success = 1;
-    GLchar info[1024];
+    GLchar info[KILOBYTES(1)];
+
     if (type == GL_LINK_STATUS) {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success)
-            glGetProgramInfoLog(shader, 1024, 0, info);
+            glGetProgramInfoLog(shader, KILOBYTES(1), 0, info);
     } else {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)
-            glGetShaderInfoLog(shader, 1024, 0, info);
+            glGetShaderInfoLog(shader, KILOBYTES(1), 0, info);
     }
     if (!success)
         printf("Shader error: %s\n", info);

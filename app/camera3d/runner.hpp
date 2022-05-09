@@ -3,12 +3,13 @@
 
 #include <glm/glm.hpp>
 
-#include <glfw.hpp>
 #include <buffer.hpp>
 #include <camera.hpp>
+#include <glfw.hpp>
+#include <macros.hpp>
 
-const unsigned int VBUF_SIZE = 15 * 1024;
-const unsigned int IBUF_SIZE = 15 * 1024;
+const unsigned int VBUF_SIZE = KILOBYTES(15);
+const unsigned int IBUF_SIZE = KILOBYTES(15);
 
 const unsigned int WINDOW_WIDTH = 1000;
 const unsigned int WINDOW_HEIGHT = 1000;
