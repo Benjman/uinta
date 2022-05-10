@@ -106,6 +106,8 @@ int main(const int argc, const char **argv) {
 
     glEnable(GL_DEPTH_TEST);
 
+    glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(runner.view.window)) {
         glfwPollEvents();
 
