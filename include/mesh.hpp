@@ -13,7 +13,7 @@ enum MeshAttribType {
 };
 
 struct mesh_attrib final {
-    unsigned int size;
+    unsigned int size; // TODO delete this field
     unsigned int stride;
     unsigned int offset;
 
