@@ -19,11 +19,11 @@ struct runner final {
     GLuint u_model;
 
     void init() {
+        // initialize viewport
         view.width = 1000;
         view.height = 1000;
         view.title = "hello models";
         createGLFWWindow(view);
-
 
 
         // obj loading
