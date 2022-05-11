@@ -79,6 +79,8 @@ void loadObj(const Models model, float* const vbuf, unsigned int* const ibuf, un
     std::vector<std::string> face_lines;
 
     parseFile(bufstr, vertex_lines, uv_lines, normal_lines, face_lines);
+
+    *icount += face_lines.size() * 3;
     
     float vertices[vertex_lines.size() * 3];
     extractLineFloats(vertex_lines, vertices, 3, ' ');
@@ -88,8 +90,6 @@ void loadObj(const Models model, float* const vbuf, unsigned int* const ibuf, un
 
     float normals[normal_lines.size() * 3];
     extractLineFloats(normal_lines, normals, 3, ' ');
-
-    *icount += face_lines.size() * 3;
 
     std::vector<objface> face_data;
     processFaces(face_lines, face_data, ibuf);
