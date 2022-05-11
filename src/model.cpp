@@ -58,7 +58,7 @@ void packNormals(const mesh_attrib&, float* const, const std::vector<objface>&, 
 void packUVs(const mesh_attrib&, float* const, const std::vector<objface>&, const float* const);
 void packVertices(const mesh_attrib&, float* const, const std::vector<objface>&, const float* const);
 void parseFile(std::string&, std::vector<std::string>&, std::vector<std::string>&, std::vector<std::string>&, std::vector<std::string>&);
-void extractLineData(const std::vector<std::string>& lines, float* const buffer, const unsigned int size, const char delimiter);
+void extractLineFloats(const std::vector<std::string>& lines, float* const buffer, const unsigned int size, const char delimiter);
 void extractLineData(const std::vector<std::string>& lines, unsigned int* const buffer, const unsigned int size, const char delimiter);
 void processFaceStrs(std::string*, std::vector<objface>&, unsigned int);
 void processFaces(const std::vector<std::string>&, std::vector<objface>&, unsigned int* const);
@@ -81,13 +81,13 @@ void loadObj(const Models model, float* const vbuf, unsigned int* const ibuf, un
     parseFile(bufstr, vertex_lines, uv_lines, normal_lines, face_lines);
     
     float vertices[vertex_lines.size() * 3];
-    extractLineData(vertex_lines, vertices, 3, ' ');
+    extractLineFloats(vertex_lines, vertices, 3, ' ');
 
     float uvs[uv_lines.size() * 2];
-    extractLineData(uv_lines, uvs, 2, ' ');
+    extractLineFloats(uv_lines, uvs, 2, ' ');
 
     float normals[normal_lines.size() * 3];
-    extractLineData(normal_lines, normals, 3, ' ');
+    extractLineFloats(normal_lines, normals, 3, ' ');
 
     *icount += face_lines.size() * 3;
 
@@ -132,9 +132,9 @@ void processFaces(const std::vector<std::string>& face_lines, std::vector<objfac
 void packNormals(const mesh_attrib& attrib, float* const vbuf, const std::vector<objface>& face_data, const float* const normal_data) {
     for (int i = 0, len = face_data.size(); i < len; i++) {
         const unsigned int index = face_data.at(i).norm - 1;
-        const float* ptr = &normal_data[index * 3];
         if (index < 0)
             break;
+        const float* ptr = &normal_data[index * 3];
         memcpy(&vbuf[attrib.offset + attrib.stride * i], ptr, 3 * sizeof(float));
     }
 }
@@ -142,9 +142,9 @@ void packNormals(const mesh_attrib& attrib, float* const vbuf, const std::vector
 void packUVs(const mesh_attrib& attrib, float* const vbuf, const std::vector<objface>& face_data, const float* const uv_data) {
     for (int i = 0, len = face_data.size(); i < len; i++) {
         const unsigned int index = face_data.at(i).uv - 1;
-        const float* ptr = &uv_data[index * 3];
         if (index < 0)
             break;
+        const float* ptr = &uv_data[index * 3];
         memcpy(&vbuf[attrib.offset + attrib.stride * i], ptr, 3 * sizeof(float));
     }
 }
@@ -152,9 +152,9 @@ void packUVs(const mesh_attrib& attrib, float* const vbuf, const std::vector<obj
 void packVertices(const mesh_attrib& attrib, float* const vbuf, const std::vector<objface>& face_data, const float* const vertex_data) {
     for (int i = 0, len = face_data.size(); i < len; i++) {
         const unsigned int index = face_data.at(i).vert - 1;
-        const float* ptr = &vertex_data[index * 3];
         if (index < 0)
             break;
+        const float* ptr = &vertex_data[index * 3];
         memcpy(&vbuf[attrib.offset + attrib.stride * i], ptr, 3 * sizeof(float));
     }
 }
@@ -221,17 +221,7 @@ void parseFile(std::string& objBuffer, std::vector<std::string>& vertex_lines, s
     }
 }
 
-void extractLineData(const std::vector<std::string>& lines, unsigned int* const buffer, const unsigned int size, const char delimiter) {
-    for (int i = 0, len = lines.size(); i < len; i++) {
-        std::string tmp = std::string(lines.at(i));
-        for (int j = 0; j < size; j++) {
-            buffer[i * size + j] = std::stoi(tmp.substr(0, tmp.find(delimiter)));
-            tmp.erase(0, tmp.find(delimiter) + 1);
-        }
-    }
-}
-
-void extractLineData(const std::vector<std::string>& lines, float* const buffer, const unsigned int size, const char delimiter) {
+void extractLineFloats(const std::vector<std::string>& lines, float* const buffer, const unsigned int size, const char delimiter) {
     for (int i = 0, len = lines.size(); i < len; i++) {
         std::string tmp = std::string(lines.at(i));
         for (int j = 0; j < size; j++) {
