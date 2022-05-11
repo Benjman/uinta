@@ -13,10 +13,10 @@
 #include <model.hpp>
 #include <shader.hpp>
 
-struct runner {
+struct runner final {
     viewport view;
     unsigned int icount = 0;
-    GLuint u_mvp;
+    GLuint u_model;
 
     void init() {
         view.width = 1000;
@@ -24,10 +24,12 @@ struct runner {
         view.title = "hello models";
         createGLFWWindow(view);
 
-        const char* obj[getObjFileSize(Model_Suzanne)];
-        float vbuf[KILOBYTES(80)];
 
-        unsigned int ibuf[KILOBYTES(40)];
+
+        // obj loading
+        const Models model = Model_Suzanne;
+        float vbuf[getObjFileSize(model)];
+        unsigned int ibuf[getObjFileSize(model)];
 
         const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
             {MeshAttribType_Position, mesh_attrib(3, 6, 0)},
@@ -37,9 +39,7 @@ struct runner {
         loadObj(Model_Suzanne, vbuf, ibuf, &icount, &attribs, attribs.size());
 
 
-
-
-        // buffers
+        // upload model data to the gpu
         GLuint vao, vbo, ebo;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -49,69 +49,60 @@ struct runner {
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vbuf), vbuf, GL_STATIC_DRAW);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibuf), ibuf, GL_STATIC_DRAW);
-
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*) (3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
 
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vbuf), vbuf, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibuf), ibuf, GL_STATIC_DRAW);
 
 
-
-        // shaders
+        // create shaders
         const char *vshader =
             "#version 330 core\n"
             "layout (location = 0) in vec3 in_pos;"
             "layout (location = 1) in vec3 in_norm;"
-            "uniform mat4 u_mvp = mat4(1.0);"
+            "uniform mat4 u_model = mat4(1.0);"
             "out vec3 pass_norm;"
             "void main() {"
             "  pass_norm = normalize(in_norm);"
-            "  gl_Position = u_mvp * vec4(in_pos, 1.0);"
+            "  gl_Position = u_model * vec4(in_pos, 1.0);"
             "}\0";
 
         const char *fshader =
             "#version 330 core\n"
             "in vec3 pass_norm;"
-            "vec3 direction = normalize(-vec3(1.0, 0.0, 1.0));"
-            "vec3 color = vec3(1.0);"
-            "float ambient_strength = 0.2;"
-            "const vec3 obj_color = vec3(1.0, 0.5, 0.5);"
+            "const vec3 obj_color = vec3(0.3, 0.1, 0.1);"
             "void main() {"
-            "  vec3 norms = normalize(pass_norm);"
-            "  float diff = max(dot(pass_norm, direction), 0.0);"
-            "  gl_FragColor = vec4(vec3(ambient_strength * obj_color), 1.0);"
+            "  gl_FragColor = vec4(obj_color, 1.0);"
             "}\0";
 
         const char* sources[] = { vshader, fshader };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-        const char* uniforms[] = { "u_mvp" };
+        const char* uniforms[] = { "u_model" };
         GLuint shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum),
-                                       uniforms, &u_mvp, 1);
-        glUseProgram(shader);
+                                       uniforms, &u_model, 1);
     }
 
     void render() {
         glm::mat4 mat = glm::rotate(glm::mat4(1.0), (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &mat[0][0]);
+        glUniformMatrix4fv(u_model, 1, GL_FALSE, &mat[0][0]);
         glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
     }
 
 };
 
-GLFWwindow* window = nullptr;
+runner runner;
+
 void on_exit_handler(int status, void *arg) {
-    if (window)
-        glfwDestroyWindow(window);
+    if (runner.view.window)
+        glfwDestroyWindow(runner.view.window);
     glfwTerminate();
 }
 
 int main(const int argc, const char **argv) {
-    runner runner;
     runner.init();
-    window = runner.view.window;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -123,11 +114,10 @@ int main(const int argc, const char **argv) {
 
         runner.render();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(runner.view.window);
     }
 
     on_exit(on_exit_handler, nullptr);
-
     return 0;
 }
 
