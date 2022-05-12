@@ -98,3 +98,9 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
     *vertexCount += localVertexCount;
     *indexCount += localIndexCount;
 }
+
+const mesh_attrib* find_mesh_attrib(MeshAttribType type, const std::unordered_map<MeshAttribType, mesh_attrib>* attribs) {
+    if (attribs->find(type) == attribs->end())
+        return nullptr;
+    return &attribs->at(type);
+}

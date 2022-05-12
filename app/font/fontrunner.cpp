@@ -72,7 +72,7 @@ void fontRunner::init_mesh() {
 void fontRunner::init_font() {
     auto type = font::DejaVuSans;
     font_handle = font::init_font(type, 256, 256);
-    unsigned char data[getFontSize(type)];
+    unsigned char data[get_file_size(getFontPath(type))];
     read_file_binary(getFontPath(type), (char*) data);
     load_font(font_handle, data);
 }
@@ -103,7 +103,8 @@ void fontRunner::init_shader() {
 
     const char* sources[] = { vshader, fshader };
     const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum));
+    const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
+    shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
     glUseProgram(shader);
 }
 

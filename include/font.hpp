@@ -169,7 +169,6 @@ struct text final {
 unsigned int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
 unsigned int getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) noexcept;
 unsigned int getIndexBufferSize(const char* s, const unsigned int size) noexcept;
-const unsigned int getFontSize(const FontType);
 const char* const getFontPath(const FontType);
 
 void generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
@@ -240,7 +239,7 @@ void generate_structure(mesh_ctx, std::vector<line>*, stbtt_aligned_quad&);
 bool try_add_word(line&, word&);
 void add_char(word&, const char, float);
 float find_xstart(const text*, const float);
-const font_mesh_attrib* find_font_attrib(font_mesh_attrib_t, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>*); // TODO maybe this should be in mesh.hpp?
+const font_mesh_attrib* find_font_attrib(font_mesh_attrib_t, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>*);
 void store_quad_position(const stbtt_aligned_quad&, const font_mesh_attrib&, float*, unsigned int*);
 void store_quad_uv(const stbtt_aligned_quad&, const font_mesh_attrib&, float*, unsigned int*);
 void store_color(const float, const float, const float, const font_mesh_attrib&, float*, unsigned int*);
@@ -287,38 +286,6 @@ const char* const font::getFontPath(const FontType type) {
 
         case ProggyCleanTT_Nerd_Font_Complete_Mono: return "font/proggy/ProggyCleanTT Nerd Font Complete Mono.ttf";
         case ProggyCleanTT_Nerd_Font_Complete: return "font/proggy/ProggyCleanTT Nerd Font Complete Mono.ttf";
-
-        default: throw std::runtime_error("Not implemented for font type\n");
-    }
-}
-
-const unsigned int font::getFontSize(const FontType type) {
-    switch (type) {
-        case DejaVuMathTeXGyre: return 577604u;
-        case DejaVuSans_BoldOblique: return 643288u;
-        case DejaVuSans_Bold: return 705684u;
-        case DejaVuSansCondensed_BoldOblique: return 641696u;
-        case DejaVuSansCondensed_Bold: return 703880u;
-        case DejaVuSansCondensed_Oblique: return 633824u;
-        case DejaVuSansCondensed: return 755124u;
-        case DejaVuSans_ExtraLight: return 356760u;
-        case DejaVuSansMono_BoldOblique: return 253580u;
-        case DejaVuSansMono_Bold: return 331992u;
-        case DejaVuSansMono_Oblique: return 251932u;
-        case DejaVuSansMono: return 340712u;
-        case DejaVuSans_Oblique: return 635412u;
-        case DejaVuSans: return 757076u;
-        case DejaVuSerif_BoldItalic: return 358820u;
-        case DejaVuSerif_Bold: return 356088u;
-        case DejaVuSerifCondensed_BoldItalic: return 357888u;
-        case DejaVuSerifCondensed_Bold: return 355220u;
-        case DejaVuSerifCondensed_Italic: return 358324u;
-        case DejaVuSerifCondensed: return 379296u;
-        case DejaVuSerif_Italic: return 359000u;
-        case DejaVuSerif: return 380132u;
-
-        case ProggyCleanTT_Nerd_Font_Complete_Mono: return 838628u;
-        case ProggyCleanTT_Nerd_Font_Complete: return 874880u;
 
         default: throw std::runtime_error("Not implemented for font type\n");
     }

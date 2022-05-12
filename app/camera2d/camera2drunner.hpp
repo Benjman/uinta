@@ -2,10 +2,11 @@
 #define UINTA_CAMERA_RUNNER_H
 
 #include <camera.hpp>
-#include <glfw.hpp>
 #include <gl.h>
+#include <glfw.hpp>
+#include <macros.hpp>
 
-const inline unsigned int BUF_SIZE = 2048;
+const inline unsigned int BUF_SIZE = KILOBYTES(2);
 
 struct camera2dRunner {
     camera2d camera;

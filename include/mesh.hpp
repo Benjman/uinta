@@ -6,13 +6,14 @@ struct quad;
 extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *indexBuffer, unsigned int *vertexCount, unsigned int *indexCount, unsigned int *indexOffset, const unsigned int width, const unsigned int height) noexcept;
 
 enum MeshAttribType {
+    MeshAttribType_Color,
+    MeshAttribType_Normal,
     MeshAttribType_Position,
     MeshAttribType_UV,
-    MeshAttribType_Color
 };
 
 struct mesh_attrib final {
-    unsigned int size;
+    unsigned int size; // TODO delete this field
     unsigned int stride;
     unsigned int offset;
 
@@ -30,5 +31,8 @@ struct mesh_attrib final {
         return *this;
     }
 };
+
+#include <unordered_map>
+const mesh_attrib* find_mesh_attrib(MeshAttribType, const std::unordered_map<MeshAttribType, mesh_attrib>*);
 
 #endif // UINTA_GENERATORS_H

@@ -2,16 +2,17 @@
 #define UINTA_RUNNER_QUADTREE_H
 
 #include <buffer.hpp>
-#include <glfw.hpp>
-#include <quadtree.hpp>
 #include <gl.h>
+#include <glfw.hpp>
+#include <macros.hpp>
+#include <quadtree.hpp>
 
 struct quadtreeRunner {
     unsigned int width = 1088;
     unsigned int height = 1088;
 
-    GLfloat vertices[2048];
-    GLuint indices[2048];
+    GLfloat vertices[KILOBYTES(2)];
+    GLuint indices[KILOBYTES(2)];
 
     quad qt = quad(vec2(32), vec2(1056), 16);
     float qt_width = qt.bottomRightBounds.x - qt.topLeftBounds.x;
