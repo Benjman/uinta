@@ -13,35 +13,32 @@
 #include <model.hpp>
 #include <shader.hpp>
 
-struct runner final {
-    viewport view;
+#define UINTA_APP_UTILS_IMPL
+#include "../app_utils.hpp"
+
+struct modelRunner final : runner {
     unsigned int icount = 0;
     GLuint shader, u_model;
+    float vbuf[MEGABYTES(5)];
+    unsigned int ibuf[MEGABYTES(5)];
 
-    void init() {
-        // initialize viewport
-        view.width = 1000;
-        view.height = 1000;
-        view.title = "hello models";
-        createGLFWWindow(view);
+    modelRunner() : runner("hello models", 1000, 1000) {}
 
+    void doInit() override {
         load_shaders();
+        init_obj();
+        init_buffers();
+    }
 
-
-        // obj loading
-        const Models model = Model_Suzanne;
-        float vbuf[get_file_size(getObjPath(model))]; // assuming the size of the buffers will be less than the file size.
-        unsigned int ibuf[get_file_size(getObjPath(model))];
-
+    void init_obj() {
         const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
             {MeshAttribType_Position, mesh_attrib(3, 6, 0)},
             {MeshAttribType_Normal, mesh_attrib(3, 6, 3)},
         };
+        loadObj(Model_Suzanne, vbuf, ibuf, &icount, &attribs);
+    }
 
-        loadObj(model, vbuf, ibuf, &icount, &attribs);
-
-
-        // upload model data to the gpu
+    void init_buffers() {
         GLuint vao, vbo, ebo;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -81,7 +78,7 @@ struct runner final {
         glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
     }
 
-    void key_callback(int key, int scancode, int action, int mods) noexcept {
+    void doKeyCallback(int key, int scancode, int action, int mods) override {
         if (action == GLFW_PRESS && key == GLFW_KEY_SPACE) {
             glDeleteProgram(shader);
             load_shaders();
@@ -91,17 +88,11 @@ struct runner final {
 
 };
 
-runner runner;
-
-void on_exit_handler(int status, void *arg) {
-    if (runner.view.window)
-        glfwDestroyWindow(runner.view.window);
-    glfwTerminate();
-}
+modelRunner runner;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept {
     printf("Key %s event: %s (%d)\n", getActionStr(action), getKeyStr(key), mods);
-    runner.key_callback(key, scancode, action, mods);
+    runner.doKeyCallback(key, scancode, action, mods);
 }
 
 int main(const int argc, const char **argv) {
@@ -123,4 +114,10 @@ int main(const int argc, const char **argv) {
 
     on_exit(on_exit_handler, nullptr);
     return 0;
+}
+
+void on_exit_handler(int status, void *arg) {
+    if (runner.view.window)
+        glfwDestroyWindow(runner.view.window);
+    glfwTerminate();
 }

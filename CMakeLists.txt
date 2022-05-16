@@ -41,8 +41,6 @@ add_library(uinta STATIC
   ./src/quadtree.cpp
   ./src/shader.cpp
 
-  ./app/utils/debug_controller.cpp # TODO move all this stuff to src/debug.cpp
-
   ${GLAD_C})
 
 include_directories(${CMAKE_SOURCE_DIR}/include

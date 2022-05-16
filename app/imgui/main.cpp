@@ -4,24 +4,22 @@
 #include <cstdlib>
 
 #include <debug.hpp>
-#include <glfw.hpp>
 
-struct runner {
-    viewport view;
+#define UINTA_APP_UTILS_IMPL
+#include "../app_utils.hpp"
+
+struct imgui_runner final : runner {
     unsigned int frame = 0;
+    
+    imgui_runner() : runner("hello imgui", 1000, 1000) {}
 
-    ~runner() {
+    ~imgui_runner() {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }
 
-    void init() {
-        view.width = 1000;
-        view.height = 1000;
-        view.title = "hello imgui";
-        createGLFWWindow(view);
-
+    void doInit() override {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
@@ -29,39 +27,30 @@ struct runner {
         ImGui_ImplOpenGL3_Init("#version 330 core");
     }
 
-    void pre_render() {
+    void doPreRender() override {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
     }
 
-    void render() {
+    void doRender() override {
         ImGui::Begin("Hello ImGUI");
         ImGui::Text("Frame %i", ++frame);
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
     }
 
-    void post_render() {
+    void doPostRender() override {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
-    void tick(float dt) {}
-
 };
 
-GLFWwindow* window = nullptr;
-void on_exit_handler(int status, void *arg) {
-    if (window)
-        glfwDestroyWindow(window);
-    glfwTerminate();
-}
+imgui_runner runner;
 
 int main(const int argc, const char **argv) {
-    runner runner;
     runner.init();
-    window = runner.view.window;
 
     double dt = 0.0;
     double time = 0.0;
@@ -72,20 +61,22 @@ int main(const int argc, const char **argv) {
         dt = glfwGetTime() - time;
         time += dt;
 
-        runner.tick(dt);
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        runner.pre_render();
+        runner.preRender();
         runner.render();
-        runner.post_render();
+        runner.postRender();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(runner.view.window);
     }
 
     on_exit(on_exit_handler, nullptr);
-
     return 0;
 }
 
+void on_exit_handler(int status, void *arg) {
+    if (runner.view.window)
+        glfwDestroyWindow(runner.view.window);
+    glfwTerminate();
+}

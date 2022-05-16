@@ -2,15 +2,18 @@
 #define UINTA_WINDOW_H
 
 #include <GLFW/glfw3.h>
+#include <string>
 
 struct viewport {
-    GLFWwindow* window = nullptr;
-    const char *title = nullptr;
-    unsigned int width = 0,
-                 height = 0;
+    GLFWwindow* window;
+    std::string title;
+    unsigned int width;
+    unsigned int height;
+
+    viewport(const std::string& title, const unsigned int width, const unsigned int height) noexcept;
 };
 
-void createGLFWWindow(viewport& view);
+void createGLFWWindow(viewport* const view);
 
 const char *getKeyStr(int key) noexcept;
 const char *getActionStr(int action) noexcept;

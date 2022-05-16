@@ -7,23 +7,27 @@
 #include <stdexcept>
 #include <string>
 
-void createGLFWWindow(viewport& view) {
+viewport::viewport(const std::string& title, unsigned int width, unsigned int height) noexcept :
+    title(std::string(title)), width(width), height(height) {
+}
+
+void createGLFWWindow(viewport* const view) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    printf("[INFO] Creating GLFW window \"%s\" (%dx%d)...\n", view.title, view.width, view.height);
-    view.window = glfwCreateWindow(view.width, view.height, view.title, NULL, NULL);
-    if (view.window == NULL) {
+    printf("[INFO] Creating GLFW window \"%s\" (%dx%d)...\n", view->title.c_str(), view->width, view->height);
+    view->window = glfwCreateWindow(view->width, view->height, view->title.c_str(), NULL, NULL);
+    if (view->window == NULL) {
         glfwTerminate();
         printf("[ERROR] Failed to create GLFW window.\n"); // TODO logging
         throw std::exception();
         return;
     }
-    printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", view.title, view.width, view.height);
-    glfwMakeContextCurrent(view.window);
+    printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", view->title.c_str(), view->width, view->height);
+    glfwMakeContextCurrent(view->window);
 
     printf("[INFO] Loading GLAD...\n");
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
