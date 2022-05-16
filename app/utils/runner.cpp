@@ -19,7 +19,9 @@ void runner::postTick(float dt) {
     doPostTick(dt);
 }
 
-void runner::preRender() {
+void runner::preRender(const glm::vec3& clear_color) {
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     doPreRender();
 }
 
