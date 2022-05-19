@@ -20,7 +20,7 @@ struct runner {
     void tick(float dt);
     void postTick(float dt);
 
-    void preRender(const glm::vec3& clear_color = DEFAULT_CLEAR_COLOR);
+    void preRender(const glm::vec3& clear_color = DEFAULT_CLEAR_COLOR, const GLbitfield clear_mask = GL_COLOR_BUFFER_BIT);
     void render();
     void postRender();
 
@@ -35,6 +35,7 @@ struct runner {
     virtual void doPostRender() {}
 
     virtual void doKeyCallback(int key, int scancode, int action, int mods) {}
+    virtual void doCursorPosCallback(double xpos, double ypos) {}
 
 };
 
