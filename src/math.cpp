@@ -401,7 +401,7 @@ void running_avg::add(float v) noexcept {
     // TODO check for cursor violating uint max
 }
 
-smooth_float::smooth_float(const float agility, const float target) noexcept : agility(agility), current(0.0), target(target) {
+smooth_float::smooth_float(const float agility, const float target) noexcept : agility(agility), current(target), target(target) {
 }
 
 smooth_float::smooth_float(const smooth_float& other) noexcept {
