@@ -68,8 +68,9 @@ struct modelRunner final : runner {
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const GLint buffer_lengths[] = { (GLint) sizeof(vert), (GLint) sizeof(frag) };
         const char* uniforms[] = { "u_model" };
-        shader = create_shader_program(sources, stages, 2, buffer_lengths,
-                                       uniforms, &u_model, 1);
+        GLuint* uniform_locations[] = { &u_model };
+        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
+                                       uniforms, uniform_locations, sizeof(uniforms) / sizeof(char*));
     }
 
     void render() {

@@ -11,7 +11,7 @@ GLuint create_shader_program(const char** sources,
                              const unsigned int stage_count,
                              const GLint* buffer_lengths,
                              const char** uniform_names,
-                             GLuint* uniform_locations,
+                             GLuint** uniform_locations,
                              const unsigned int uniform_count) noexcept {
     GLuint id = glCreateProgram();
 
@@ -26,13 +26,13 @@ GLuint create_shader_program(const char** sources,
 
     glLinkProgram(id);
     checkCompileErrors(id, GL_LINK_STATUS);
+    glUseProgram(id);
 
-    if (uniform_count > 0) {
-        glUseProgram(id);
-        for (auto i = 0; i < uniform_count; i++) {
-            GLuint loc = glGetUniformLocation(id, uniform_names[i]);
-            uniform_locations[i] = glGetUniformLocation(id, uniform_names[i]);
-        }
+    for (auto i = 0; i < uniform_count; i++) {
+        GLuint loc = glGetUniformLocation(id, uniform_names[i]);
+        if (loc == -1)
+            printf("[WARN] Couldn't find uniform location for '%s'\n", uniform_names[i]);
+        *uniform_locations[i] = glGetUniformLocation(id, uniform_names[i]);
     }
 
     return id;
