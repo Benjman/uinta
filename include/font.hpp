@@ -166,9 +166,9 @@ struct text final {
 
 };
 
-unsigned int getRenderableCharCount(const char* s, const unsigned int size) noexcept;
-unsigned int getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) noexcept;
-unsigned int getIndexBufferSize(const char* s, const unsigned int size) noexcept;
+unsigned int getRenderableCharCount(const std::string& value) noexcept;
+unsigned int getVertBufferSize(const std::string& value, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) noexcept;
+unsigned int getIndexBufferSize(const std::string& value) noexcept;
 const char* const getFontPath(const FontType);
 
 void generate_mesh(const text* root, const font_t f, const float frame_width, const float frame_height, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs, float* vbuf, unsigned int* vcount, unsigned int* ibuf, unsigned int* icount, unsigned int* ioffset);
@@ -321,14 +321,15 @@ void font::getCharQuad(const char c, const font_ctx& font, stbtt_aligned_quad* q
 }
 
 #include <regex>
-unsigned int font::getRenderableCharCount(const char* s, const unsigned int size) noexcept {
+unsigned int font::getRenderableCharCount(const std::string& value) noexcept {
     const std::regex expression("[\x21-\x7E]");
+    const char* s = value.c_str();
     return std::ptrdiff_t(std::distance(
-        std::cregex_iterator(s, &s[size], expression),
+        std::cregex_iterator(s, &s[value.size()], expression),
         std::cregex_iterator()));
 }
 
-unsigned int font::getVertBufferSize(const char* s, const unsigned int size, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) noexcept {
+unsigned int font::getVertBufferSize(const std::string& value, const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib>* attribs) noexcept {
     unsigned int bufsize = 0;
     if (const auto* attrib = find_font_attrib(FontMeshAttrib_Position, attribs))
         bufsize += 8;
@@ -336,12 +337,12 @@ unsigned int font::getVertBufferSize(const char* s, const unsigned int size, con
         bufsize += 8;
     if (const auto* attrib = find_font_attrib(FontMeshAttrib_Color, attribs))
         bufsize += 12;
-    const int count = getRenderableCharCount(s, size);
+    const int count = getRenderableCharCount(value);
     return bufsize * count;
 }
 
-unsigned int font::getIndexBufferSize(const char* s, const unsigned int size) noexcept {
-    const int count = getRenderableCharCount(s, size);
+unsigned int font::getIndexBufferSize(const std::string& value) noexcept {
+    const int count = getRenderableCharCount(value);
     return 6 * count;
 }
 
