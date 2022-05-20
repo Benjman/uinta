@@ -92,8 +92,6 @@ struct quadtreeRunner final : runner {
 
         glUniform3f(uniformColor, 1.0f, 1.0f, 0.0f);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((ebo.count + 6) * sizeof(GLuint)));
-
-        glfwSwapBuffers(view.window);
     }
 
     void doTick(float runtime) override {
@@ -158,17 +156,22 @@ int main(const int argc, const char **argv) {
     runner.init();
 
     while (!glfwWindowShouldClose(runner.view.window)) {
-        runner.tick(glfwGetTime());
-        runner.render();
         glfwPollEvents();
+
+        runner.preTick(0);
+        runner.tick(glfwGetTime());
+        runner.postTick(0);
+
+        runner.preRender();
+        runner.render();
+        runner.postRender();
     }
 
-    on_exit(on_exit_handler, nullptr);
+    runner.shutdown();
+    on_exit([] (int status, void* arg) {
+        if (runner.view.window)
+            glfwDestroyWindow(runner.view.window);
+        glfwTerminate();
+    }, nullptr);
     return 0;
-}
-
-void on_exit_handler(int status, void *arg) {
-    if (runner.view.window)
-        glfwDestroyWindow(runner.view.window);
-    glfwTerminate();
 }

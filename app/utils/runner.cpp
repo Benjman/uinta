@@ -31,4 +31,9 @@ void runner::render() {
 
 void runner::postRender() {
     doPostRender();
+    glfwSwapBuffers(view.window);
+}
+
+void runner::shutdown() {
+    doShutdown();
 }

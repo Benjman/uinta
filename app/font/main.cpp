@@ -144,23 +144,25 @@ int main(const int argc, const char **argv) {
     glfwSetKeyCallback(runner.view.window, key_callback);
 
     while (!glfwWindowShouldClose(runner.view.window)) {
+        glfwPollEvents();
+
+        runner.preTick(0);
         runner.tick(glfwGetTime());
+        runner.postTick(0);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        runner.preRender();
         runner.render();
-
-        glfwSwapBuffers(runner.view.window);
-        glfwPollEvents();
+        runner.postRender();
     }
 
-    on_exit(on_exit_handler, nullptr);
+    runner.shutdown();
+    on_exit([] (int status, void* arg) {
+        if (runner.view.window)
+            glfwDestroyWindow(runner.view.window);
+        glfwTerminate();
+    }, nullptr);
     return 0;
-}
-
-void on_exit_handler(int status, void *arg) {
-    if (runner.view.window)
-        glfwDestroyWindow(runner.view.window);
-    glfwTerminate();
 }
