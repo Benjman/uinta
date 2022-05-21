@@ -16,6 +16,4 @@
 #endif // UINTA_APP_UTILS_IMPL
 
 
-void on_exit_handler(int status, void *arg);
-
 #endif // UINTA_APP_UTILS_HPP

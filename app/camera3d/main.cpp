@@ -200,11 +200,15 @@ int main(const int argc, const char** argv) {
     double time = 0.0;
 
     while (!glfwWindowShouldClose(runner.view.window)) {
+        glfwPollEvents();
+
         dt = glfwGetTime() - time;
         time += dt;
 
         debug.reset_timer(timer);
+        runner.preTick(dt);
         runner.tick(dt);
+        runner.postTick(dt);
         metrics.set(tick_m, (float) debug.duration_micro(timer));
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -212,7 +216,9 @@ int main(const int argc, const char** argv) {
 
         debug.reset_timer(timer);
         debug.render();
+        runner.preRender();
         runner.render();
+        runner.postRender();
         render_a.add(debug.duration_micro(timer));
         metrics.set(render_m, render_a.avg());
 
@@ -220,17 +226,13 @@ int main(const int argc, const char** argv) {
         debug.mesh_metric(render_m);
         debug.mesh_metric(text_m);
         metrics.set(text_m, (float) debug.duration_micro(timer));
-
-        glfwSwapBuffers(runner.view.window);
-        glfwPollEvents();
     }
 
-    on_exit(on_exit_handler, nullptr);
+    runner.shutdown();
+    on_exit([] (int status, void* arg) {
+        if (runner.view.window)
+            glfwDestroyWindow(runner.view.window);
+        glfwTerminate();
+    }, nullptr);
     return 0;
-}
-
-void on_exit_handler(int status, void *arg) {
-    if (runner.view.window)
-        glfwDestroyWindow(runner.view.window);
-    glfwTerminate();
 }

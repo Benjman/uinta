@@ -11,6 +11,8 @@ const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
 struct runner {
     viewport view;
+    float cursorx = 0.0;
+    float cursory = 0.0;
 
     runner(const std::string& title, unsigned int width, unsigned int height) noexcept : view(title, width, height) {}
 
@@ -24,7 +26,12 @@ struct runner {
     void render();
     void postRender();
 
+    void shutdown();
+
     virtual void doInit() {}
+
+    virtual void doKeyCallback(int key, int scancode, int action, int mods) {}
+    virtual void doCursorPosCallback(double xpos, double ypos) {}
 
     virtual void doPreTick(float dt) {}
     virtual void doTick(float dt) {}
@@ -34,8 +41,7 @@ struct runner {
     virtual void doRender() {}
     virtual void doPostRender() {}
 
-    virtual void doKeyCallback(int key, int scancode, int action, int mods) {}
-    virtual void doCursorPosCallback(double xpos, double ypos) {}
+    virtual void doShutdown() {}
 
 };
 
