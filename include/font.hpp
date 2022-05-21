@@ -256,7 +256,7 @@ namespace font {
     std::vector<font_ctx> fonts;
 }
 
-using namespace font;
+using namespace font; // TODO these usings need to be removed
 using namespace font::internal;
 
 const char* const font::getFontPath(const FontType type) {
