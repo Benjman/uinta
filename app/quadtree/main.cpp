@@ -94,15 +94,15 @@ struct quadtreeRunner final : runner {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((ebo.count + 6) * sizeof(GLuint)));
     }
 
-    void doTick(float runtime) override {
+    void doTick(const runner_state& state) override {
         vbo.count = 0;
         ebo.count = 0;
         ebo.offset = 0;
 
-        float cos_inner = (std::cos(runtime * 0.13) + 2) * 0.25;
-        float sin_inner = (std::sin(runtime * 0.33) + 2) * 0.25;
-        float cos_outer = (std::cos(runtime * 0.25) + 1) * 0.5;
-        float sin_outer = (std::sin(runtime * 0.1) + 1) * 0.5;
+        float cos_inner = (std::cos(state.runtime * 0.13) + 2) * 0.25;
+        float sin_inner = (std::sin(state.runtime * 0.33) + 2) * 0.25;
+        float cos_outer = (std::cos(state.runtime * 0.25) + 1) * 0.5;
+        float sin_outer = (std::sin(state.runtime * 0.1) + 1) * 0.5;
 
         qt.clear();
 
@@ -157,14 +157,9 @@ int main(const int argc, const char **argv) {
 
     while (!glfwWindowShouldClose(runner.view.window)) {
         glfwPollEvents();
-
-        runner.preTick(0);
-        runner.tick(glfwGetTime());
-        runner.postTick(0);
-
-        runner.preRender();
+        while (!runner.shouldRenderFrame())
+            runner.tick(glfwGetTime());
         runner.render();
-        runner.postRender();
     }
 
     runner.shutdown();

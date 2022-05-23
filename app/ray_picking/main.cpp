@@ -188,9 +188,30 @@ struct rayPickingRunner final : runner {
         ImGui_ImplOpenGL3_Init("#version 330 core");
     }
 
-    void doTick(float dt) override {
-        camera.tick(dt);
-        ortho_size.update(dt);
+    void doPreTick(const runner_state& state) override {
+        // handle input
+        cursorx = state.input_state.cursorx;
+        cursory = state.input_state.cursory;
+        updateCursorVectors();
+        if (!state.input_state.isAnyKeyDown()) return;
+        float speed = 8.0;
+        if (state.input_state.isKeyDown(GLFW_KEY_UP)) camera.target_y += speed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_LEFT)) camera.target_x -= speed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_DOWN)) camera.target_y -= speed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_RIGHT)) camera.target_x += speed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_EQUAL)) ortho_size.target = std::max(1.0f, ortho_size.target - speed * state.dt);
+        if (state.input_state.isKeyDown(GLFW_KEY_MINUS)) ortho_size += speed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_I)) state.input_state.isShiftPressed() ? std::max(0, --imgui_level) : std::min(3, ++imgui_level); 
+        if (state.input_state.isKeyDown(GLFW_KEY_R)) {
+            camera.target_x.target = 0.0;
+            camera.target_y.target = 0.0;
+            ortho_size.target = 1.0;
+        }
+    }
+
+    void doTick(const runner_state& state) override {
+        camera.tick(state.dt);
+        ortho_size.update(state.dt);
     }
 
     void doPreRender() override {
@@ -237,28 +258,6 @@ struct rayPickingRunner final : runner {
         world_space = glm::inverse(m_view) * eye_space;
     }
 
-    void doKeyCallback(int key, int scancode, int action, int mods) override {
-        if (action != GLFW_PRESS)  return;
-        if (key == GLFW_KEY_UP)    camera.target_y += 1.0;
-        if (key == GLFW_KEY_LEFT)  camera.target_x -= 1.0;
-        if (key == GLFW_KEY_DOWN)  camera.target_y -= 1.0;
-        if (key == GLFW_KEY_RIGHT) camera.target_x += 1.0;
-        if (key == GLFW_KEY_EQUAL) ortho_size.target--;
-        if (key == GLFW_KEY_MINUS) ortho_size.target++;
-        if (key == GLFW_KEY_I)     imgui_level = mods & GLFW_MOD_SHIFT ? std::max(0, --imgui_level) : std::min(3, ++imgui_level);
-        if (key == GLFW_KEY_R) {
-            camera.target_x.target = 0.0;
-            camera.target_y.target = 0.0;
-            ortho_size.target = 1.0;
-        }
-    }
-
-    void doCursorPosCallback(double xpos, double ypos) override {
-        cursorx = xpos;
-        cursory = ypos;
-        updateCursorVectors();
-    }
-
     void doShutdown() override {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -273,31 +272,18 @@ int main(const int argc, const char** argv) {
     runner.init();
 
     glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        printf("Key %s %s (%d)\n", getActionStr(action), getKeyStr(key), mods);
         if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner.view.window, true);
-        runner.doKeyCallback(key, scancode, action, mods);
+        runner.handleKeyInput(key, scancode, action, mods);
     });
 
     glfwSetCursorPosCallback(runner.view.window, [] (GLFWwindow* window, double xpos, double ypos) {
-        runner.doCursorPosCallback(xpos, ypos);
+        runner.handleCursorPositionChanged(xpos, ypos);
     });
-
-    double dt = 0.0;
-    double time = 0.0;
 
     while (!glfwWindowShouldClose(runner.view.window)) {
         glfwPollEvents();
-
-        dt = glfwGetTime() - time;
-        time += dt;
-
-        runner.preTick(dt);
-        runner.tick(dt);
-        runner.postTick(dt);
-
-        runner.preRender(background, GL_COLOR_BUFFER_BIT);
-        runner.render();
-        runner.postRender();
+        runner.tick(glfwGetTime());
+        runner.render(background, GL_COLOR_BUFFER_BIT);
     }
 
     runner.shutdown();

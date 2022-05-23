@@ -154,29 +154,24 @@ public:
         glDrawArrays(GL_TRIANGLES, 0, vbo.count);
     }
 
-    void doTick(float dt) override {
-        runtime += dt;
+    void doPreTick(const runner_state& state) override {
+        if (state.input_state.isKeyPressed(GLFW_KEY_E))
+            cam.pos.z -= 1.0;
+        if (state.input_state.isKeyPressed(GLFW_KEY_D))
+            cam.pos.z += 1.0;
+        if (state.input_state.isKeyPressed(GLFW_KEY_S))
+            cam.pos.x -= 1.0;
+        if (state.input_state.isKeyPressed(GLFW_KEY_F))
+            cam.pos.x += 1.0;
     }
 
-    void doKeyCallback(int key, int scancode, int action, int mods) override {
-        if (action == GLFW_PRESS && key == GLFW_KEY_E)
-            cam.pos.z -= 1.0;
-        if (action == GLFW_PRESS && key == GLFW_KEY_D)
-            cam.pos.z += 1.0;
-        if (action == GLFW_PRESS && key == GLFW_KEY_S)
-            cam.pos.x -= 1.0;
-        if (action == GLFW_PRESS && key == GLFW_KEY_F)
-            cam.pos.x += 1.0;
+    void doTick(const runner_state& state) override {
+        runtime += state.dt;
     }
 
 };
 
 camera3dRunner runner;
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept {
-    printf("Key %s event: %s (%d)\n", getActionStr(action), getKeyStr(key), mods);
-    runner.doKeyCallback(key, scancode, action, mods);
-}
 
 int main(const int argc, const char** argv) {
     debug_controller debug(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -193,7 +188,10 @@ int main(const int argc, const char** argv) {
     auto timer = debug.create_timer();
     runner.init();
     debug.init();
-    glfwSetKeyCallback(runner.view.window, key_callback);
+    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+        runner.handleKeyInput(key, scancode, action, mods);
+    });
+
     printf("[INFO] Init time %g seconds.\n", debug.duration_milli(timer) / 1000.0f);
 
     double dt = 0.0;
@@ -206,9 +204,8 @@ int main(const int argc, const char** argv) {
         time += dt;
 
         debug.reset_timer(timer);
-        runner.preTick(dt);
-        runner.tick(dt);
-        runner.postTick(dt);
+        while (!runner.shouldRenderFrame())
+            runner.tick(glfwGetTime());
         metrics.set(tick_m, (float) debug.duration_micro(timer));
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -216,9 +213,7 @@ int main(const int argc, const char** argv) {
 
         debug.reset_timer(timer);
         debug.render();
-        runner.preRender();
         runner.render();
-        runner.postRender();
         render_a.add(debug.duration_micro(timer));
         metrics.set(render_m, render_a.avg());
 

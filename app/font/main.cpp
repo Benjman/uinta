@@ -133,29 +133,18 @@ public:
 
 fontRunner runner;
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept {
-    printf("Key %s event: %s (%d)\n", getActionStr(action), getKeyStr(key), mods);
-    runner.doKeyCallback(key, scancode, action, mods);
-}
-
 int main(const int argc, const char **argv) {
     runner.init();
 
-    glfwSetKeyCallback(runner.view.window, key_callback);
+    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+        runner.handleKeyInput(key, scancode, action, mods);
+    });
 
     while (!glfwWindowShouldClose(runner.view.window)) {
         glfwPollEvents();
-
-        runner.preTick(0);
-        runner.tick(glfwGetTime());
-        runner.postTick(0);
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        runner.preRender();
+        while (!runner.shouldRenderFrame())
+            runner.tick(glfwGetTime());
         runner.render();
-        runner.postRender();
     }
 
     runner.shutdown();

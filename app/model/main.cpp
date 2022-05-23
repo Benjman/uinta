@@ -30,6 +30,14 @@ struct modelRunner final : runner {
         init_buffers();
     }
 
+    void doPreTick(const runner_state& state) override {
+        if (state.input_state.isKeyPressed(GLFW_KEY_SPACE)) {
+            glDeleteProgram(shader);
+            load_shaders();
+            glUseProgram(shader);
+        }
+    }
+
     void init_obj() {
         const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
             {MeshAttribType_Position, mesh_attrib(3, 6, 0)},
@@ -79,27 +87,16 @@ struct modelRunner final : runner {
         glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
     }
 
-    void doKeyCallback(int key, int scancode, int action, int mods) override {
-        if (action == GLFW_PRESS && key == GLFW_KEY_SPACE) {
-            glDeleteProgram(shader);
-            load_shaders();
-            glUseProgram(shader);
-        }
-    }
-
 };
 
 modelRunner runner;
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept {
-    printf("Key %s event: %s (%d)\n", getActionStr(action), getKeyStr(key), mods);
-    runner.doKeyCallback(key, scancode, action, mods);
-}
-
 int main(const int argc, const char **argv) {
     runner.init();
 
-    glfwSetKeyCallback(runner.view.window, key_callback);
+    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+        runner.handleKeyInput(key, scancode, action, mods);
+    });
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(runner.view.window)) {
@@ -108,6 +105,8 @@ int main(const int argc, const char **argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        while (!runner.shouldRenderFrame())
+            runner.tick(glfwGetTime());
         runner.render();
 
         glfwSwapBuffers(runner.view.window);

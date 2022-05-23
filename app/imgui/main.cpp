@@ -60,17 +60,9 @@ int main(const int argc, const char **argv) {
 
         dt = glfwGetTime() - time;
         time += dt;
-
-        runner.preTick(dt);
-        runner.tick(dt);
-        runner.postTick(dt);
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        runner.preRender();
+        while (!runner.shouldRenderFrame())
+            runner.tick(glfwGetTime());
         runner.render();
-        runner.postRender();
     }
 
     runner.shutdown();
