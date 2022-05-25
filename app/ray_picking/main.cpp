@@ -12,7 +12,7 @@ const auto background = glm::vec3(216, 204, 192) / glm::vec3(255.0f);
 smooth_float ortho_size = smooth_float(10.0, 5.0);
 int imgui_level = 3;
 
-struct rayPickingRunner final : runner {
+struct rayPickingRunner final : glfw_runner {
     camera_controller camera;
     glm::mat4 m_view;
     glm::mat4 m_proj;
@@ -30,7 +30,7 @@ struct rayPickingRunner final : runner {
     glm::vec4 eye_space;
     glm::vec4 world_space;
 
-    rayPickingRunner() noexcept : runner("hello ray picking", 1000, 1000) {
+    rayPickingRunner() noexcept : glfw_runner("hello ray picking", 1000, 1000) {
     }
 
     void doInit() override {
@@ -184,25 +184,25 @@ struct rayPickingRunner final : runner {
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
         ImGui::GetIO().FontGlobalScale = 1.2f;
-        ImGui_ImplGlfw_InitForOpenGL(view.window, true);
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 330 core");
     }
 
     void doPreTick(const runner_state& state) override {
         // handle input
-        cursorx = state.input_state.cursorx;
-        cursory = state.input_state.cursory;
+        cursorx = state.input.cursorx;
+        cursory = state.input.cursory;
         updateCursorVectors();
-        if (!state.input_state.isAnyKeyDown()) return;
+        if (!state.input.isAnyKeyDown()) return;
         float speed = 8.0;
-        if (state.input_state.isKeyDown(GLFW_KEY_UP)) camera.target_y += speed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_LEFT)) camera.target_x -= speed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_DOWN)) camera.target_y -= speed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_RIGHT)) camera.target_x += speed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_EQUAL)) ortho_size.target = std::max(1.0f, ortho_size.target - speed * state.dt);
-        if (state.input_state.isKeyDown(GLFW_KEY_MINUS)) ortho_size += speed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_I)) state.input_state.isShiftPressed() ? std::max(0, --imgui_level) : std::min(3, ++imgui_level); 
-        if (state.input_state.isKeyDown(GLFW_KEY_R)) {
+        if (state.input.isKeyDown(KEY_UP)) camera.target_y += speed * state.dt;
+        if (state.input.isKeyDown(KEY_LEFT)) camera.target_x -= speed * state.dt;
+        if (state.input.isKeyDown(KEY_DOWN)) camera.target_y -= speed * state.dt;
+        if (state.input.isKeyDown(KEY_RIGHT)) camera.target_x += speed * state.dt;
+        if (state.input.isKeyDown(KEY_EQUAL)) ortho_size.target = std::max(1.0f, ortho_size.target - speed * state.dt);
+        if (state.input.isKeyDown(KEY_MINUS)) ortho_size += speed * state.dt;
+        if (state.input.isKeyDown(KEY_I)) state.input.isShiftDown() ? std::max(0, --imgui_level) : std::min(3, ++imgui_level); 
+        if (state.input.isKeyDown(KEY_R)) {
             camera.target_x.target = 0.0;
             camera.target_y.target = 0.0;
             ortho_size.target = 1.0;
@@ -271,16 +271,16 @@ rayPickingRunner runner;
 int main(const int argc, const char** argv) {
     runner.init();
 
-    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner.view.window, true);
+    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+        if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner.window, true);
         runner.handleKeyInput(key, scancode, action, mods);
     });
 
-    glfwSetCursorPosCallback(runner.view.window, [] (GLFWwindow* window, double xpos, double ypos) {
+    glfwSetCursorPosCallback(runner.window, [] (GLFWwindow* window, double xpos, double ypos) {
         runner.handleCursorPositionChanged(xpos, ypos);
     });
 
-    while (!glfwWindowShouldClose(runner.view.window)) {
+    while (!glfwWindowShouldClose(runner.window)) {
         glfwPollEvents();
         runner.tick(glfwGetTime());
         runner.render(background, GL_COLOR_BUFFER_BIT);
@@ -288,8 +288,8 @@ int main(const int argc, const char** argv) {
 
     runner.shutdown();
     on_exit([] (int status, void* args) {
-        if (runner.view.window)
-            glfwDestroyWindow(runner.view.window);
+        if (runner.window)
+            glfwDestroyWindow(runner.window);
         glfwTerminate();
     }, nullptr);
 

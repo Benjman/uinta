@@ -3,27 +3,21 @@
 
 #include <cstdlib>
 
-#include <debug.hpp>
-
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
 
-struct imgui_runner final : runner {
+#include <debug.hpp>
+
+struct imgui_runner final : glfw_runner {
     unsigned int frame = 0;
     
-    imgui_runner() : runner("hello imgui", 1000, 1000) {}
-
-    ~imgui_runner() {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
-    }
+    imgui_runner() : glfw_runner("hello imgui", 1000, 1000) {}
 
     void doInit() override {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
-        ImGui_ImplGlfw_InitForOpenGL(view.window, true);
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 330 core");
     }
 
@@ -45,6 +39,12 @@ struct imgui_runner final : runner {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
+    void doShutdown() override {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+    }
+
 };
 
 imgui_runner runner;
@@ -55,7 +55,7 @@ int main(const int argc, const char **argv) {
     double dt = 0.0;
     double time = 0.0;
 
-    while (!glfwWindowShouldClose(runner.view.window)) {
+    while (!glfwWindowShouldClose(runner.window)) {
         glfwPollEvents();
 
         dt = glfwGetTime() - time;
@@ -67,8 +67,8 @@ int main(const int argc, const char **argv) {
 
     runner.shutdown();
     on_exit([] (int status, void* arg) {
-        if (runner.view.window)
-            glfwDestroyWindow(runner.view.window);
+        if (runner.window)
+            glfwDestroyWindow(runner.window);
         glfwTerminate();
     }, nullptr);
     return 0;

@@ -20,7 +20,7 @@ const unsigned int IBUF_SIZE = KILOBYTES(15);
 const unsigned int WINDOW_WIDTH = 1000;
 const unsigned int WINDOW_HEIGHT = 1000;
 
-struct camera3dRunner final : runner {
+struct camera3dRunner final : glfw_runner {
 public:
     camera_controller cam;
 
@@ -32,7 +32,7 @@ public:
     gl_buf vbo;
     gl_buf ebo;
 
-    camera3dRunner() : runner("hello camera3d", 1000, 1000) {
+    camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000) {
         cam.target_y.force(15.0);
         cam.target_z.force(60.0);
         cam.target_pitch.force(-0.0);
@@ -132,10 +132,10 @@ public:
         // model = glm::rotate(glm::mat4(1.0), state.runtime * 0.25f, glm::vec3(0, 1, 0));
 
         const float camSpeed = 15.0;
-        if (state.input_state.isKeyDown(GLFW_KEY_W)) cam.target_z -= camSpeed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_S)) cam.target_z += camSpeed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_A)) cam.target_x -= camSpeed * state.dt;
-        if (state.input_state.isKeyDown(GLFW_KEY_D)) cam.target_x += camSpeed * state.dt;
+        if (state.input.isKeyDown(GLFW_KEY_W)) cam.target_z -= camSpeed * state.dt;
+        if (state.input.isKeyDown(GLFW_KEY_S)) cam.target_z += camSpeed * state.dt;
+        if (state.input.isKeyDown(GLFW_KEY_A)) cam.target_x -= camSpeed * state.dt;
+        if (state.input.isKeyDown(GLFW_KEY_D)) cam.target_x += camSpeed * state.dt;
 
         cam.tick(state.dt);
     }
@@ -147,12 +147,6 @@ public:
 
         glm::mat4 view_mat(1.0);
         cam.view_matrix(&view_mat);
-
-        // double ortho_size = 15.0;
-        // glm::mat4 proj_mat = glm::ortho(-ortho_size, ortho_size, -ortho_size, ortho_size, 0.0001, 1000.0);
-        glm::mat4 proj_mat = glm::perspective(glm::radians(45.0), (double) view.width / (double) view.height, 0.01, 1000.0);
-        glUseProgram(shader);
-        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * view_mat * model)[0][0]);
     }
 
     void doRender() override {
@@ -166,11 +160,11 @@ camera3dRunner runner;
 int main(const int argc, const char** argv) {
     runner.init();
 
-    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
         runner.handleKeyInput(key, scancode, action, mods);
     });
 
-    while (!glfwWindowShouldClose(runner.view.window)) {
+    while (!glfwWindowShouldClose(runner.window)) {
         glfwPollEvents();
         do {
             runner.tick(glfwGetTime());
@@ -180,8 +174,8 @@ int main(const int argc, const char** argv) {
 
     runner.shutdown();
     on_exit([] (int status, void* arg) {
-        if (runner.view.window)
-            glfwDestroyWindow(runner.view.window);
+        if (runner.window)
+            glfwDestroyWindow(runner.window);
         glfwTerminate();
     }, nullptr);
 

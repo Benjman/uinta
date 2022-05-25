@@ -7,7 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <file.hpp>
-#include <glfw.hpp>
 #include <macros.hpp>
 #include <mesh.hpp>
 #include <model.hpp>
@@ -16,13 +15,14 @@
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
 
-struct modelRunner final : runner {
+struct modelRunner final : glfw_runner {
     unsigned int icount = 0, vcount = 0;
+
     GLuint shader, u_model;
     float vbuf[MEGABYTES(5)];
     unsigned int ibuf[MEGABYTES(5)];
 
-    modelRunner() : runner("hello models", 1000, 1000) {}
+    modelRunner() : glfw_runner("hello models", 1000, 1000) {}
 
     void doInit() override {
         load_shaders();
@@ -31,7 +31,7 @@ struct modelRunner final : runner {
     }
 
     void doPreTick(const runner_state& state) override {
-        if (state.input_state.isKeyPressed(GLFW_KEY_SPACE)) {
+        if (state.input.isKeyPressed(KEY_SPACE)) {
             glDeleteProgram(shader);
             load_shaders();
             glUseProgram(shader);
@@ -94,12 +94,12 @@ modelRunner runner;
 int main(const int argc, const char **argv) {
     runner.init();
 
-    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
         runner.handleKeyInput(key, scancode, action, mods);
     });
     glEnable(GL_DEPTH_TEST);
 
-    while (!glfwWindowShouldClose(runner.view.window)) {
+    while (!glfwWindowShouldClose(runner.window)) {
         glfwPollEvents();
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -109,13 +109,13 @@ int main(const int argc, const char **argv) {
             runner.tick(glfwGetTime());
         runner.render();
 
-        glfwSwapBuffers(runner.view.window);
+        glfwSwapBuffers(runner.window);
     }
 
     runner.shutdown();
     on_exit([] (int status, void* arg) {
-        if (runner.view.window)
-            glfwDestroyWindow(runner.view.window);
+        if (runner.window)
+            glfwDestroyWindow(runner.window);
         glfwTerminate();
     }, nullptr);
     return 0;

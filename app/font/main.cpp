@@ -3,12 +3,11 @@
 
 #include <cstdio>
 
-#include <font.hpp>
-#include <glfw.hpp>
-#include <macros.hpp>
-
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
+
+#include <font.hpp>
+#include <macros.hpp>
 
 const unsigned int VBUF_SIZE = KILOBYTES(15);
 const unsigned int IBUF_SIZE = KILOBYTES(15);
@@ -16,7 +15,9 @@ const unsigned int IBUF_SIZE = KILOBYTES(15);
 const unsigned int WINDOW_WIDTH = 1000;
 const unsigned int WINDOW_HEIGHT = 1000;
 
-struct fontRunner final : runner {
+const input_key_t MY_KEY = KEY_SPACE;
+
+struct fontRunner final : glfw_runner {
 public:
     font::font_t font_handle;
     font::text text = font::text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
@@ -38,7 +39,7 @@ public:
     GLuint ebo;
     GLuint shader;
 
-    fontRunner() : runner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {}
+    fontRunner() : glfw_runner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
     void doInit() override {
         init_font();
@@ -136,11 +137,11 @@ fontRunner runner;
 int main(const int argc, const char **argv) {
     runner.init();
 
-    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
         runner.handleKeyInput(key, scancode, action, mods);
     });
 
-    while (!glfwWindowShouldClose(runner.view.window)) {
+    while (!glfwWindowShouldClose(runner.window)) {
         glfwPollEvents();
         while (!runner.shouldRenderFrame())
             runner.tick(glfwGetTime());
@@ -149,8 +150,8 @@ int main(const int argc, const char **argv) {
 
     runner.shutdown();
     on_exit([] (int status, void* arg) {
-        if (runner.view.window)
-            glfwDestroyWindow(runner.view.window);
+        if (runner.window)
+            glfwDestroyWindow(runner.window);
         glfwTerminate();
     }, nullptr);
     return 0;

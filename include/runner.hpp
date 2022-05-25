@@ -1,17 +1,25 @@
 #ifndef UINTA_APP_RUNNER_HPP
 #define UINTA_APP_RUNNER_HPP
 
-#include "input.hpp"
+#include <input.hpp>
 
-#include <glfw.hpp>
-
+#include <GL/gl.h>
 #include <glm/vec3.hpp>
+#include <string>
 #include <vector>
 
 const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
+struct viewport {
+    std::string title;
+    unsigned int width;
+    unsigned int height;
+
+    viewport(const std::string& title, const unsigned int width, const unsigned int height) noexcept;
+};
+
 struct runner_state final {
-    input input_state;
+    input_state input;
 
     float dt;
     float runtime;
@@ -28,7 +36,7 @@ struct runner {
     float cursory = 0.0;
 
     runner(const std::string& title, unsigned int width, unsigned int height) noexcept : view(title, width, height) {}
-
+ 
     void init();
     void tick(float dt);
     void render(const glm::vec3& clear_color = DEFAULT_CLEAR_COLOR, const GLbitfield clear_mask = GL_COLOR_BUFFER_BIT);
@@ -50,6 +58,11 @@ struct runner {
     virtual void doPostRender() {}
 
     virtual void doShutdown() {}
+
+protected:
+    virtual void internal_init() = 0;
+    virtual void internal_shutdown() = 0;
+    virtual void swap_buffers() = 0;
 
 };
 

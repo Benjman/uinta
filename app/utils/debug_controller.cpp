@@ -1,8 +1,8 @@
-#include <chrono>
-#include <cstring>
 #include <glad/glad.h>
 
+#include <chrono>
 #include <cmath>
+#include <cstring>
 
 #include "debug_controller.hpp"
 

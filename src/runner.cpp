@@ -1,9 +1,13 @@
-#include "./runner.hpp"
+#include <glad/glad.h>
 
-#include <glfw.hpp>
+#include <runner.hpp>
+
+viewport::viewport(const std::string& title, unsigned int width, unsigned int height) noexcept :
+    title(std::string(title)), width(width), height(height) {
+}
 
 void runner::init() {
-    createGLFWWindow(&view);
+    internal_init();
     doInit();
 }
 
@@ -14,7 +18,7 @@ void runner::tick(float runtime) {
     doPreTick(state);
     doTick(state);
     doPostTick(state);
-    state.input_state.reset();
+    state.input.reset();
 }
 
 void runner::render(const glm::vec3& clear_color, const GLbitfield clear_mask) {
@@ -23,10 +27,11 @@ void runner::render(const glm::vec3& clear_color, const GLbitfield clear_mask) {
     doPreRender();
     doRender();
     doPostRender();
-    glfwSwapBuffers(view.window);
+    swap_buffers();
 }
 
 void runner::shutdown() {
+    internal_shutdown();
     doShutdown();
 }
 
@@ -36,15 +41,15 @@ bool runner::shouldRenderFrame() {
 }
 
 void runner::handleCursorPositionChanged(const double xpos, const double ypos) {
-    state.input_state.cursordx = xpos - state.input_state.cursorx;
-    state.input_state.cursordy = ypos - state.input_state.cursory;
-    state.input_state.cursorx = xpos;
-    state.input_state.cursory = ypos;
+    state.input.cursordx = xpos - state.input.cursorx;
+    state.input.cursordy = ypos - state.input.cursory;
+    state.input.cursorx = xpos;
+    state.input.cursory = ypos;
 }
 
 void runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
     printf("Key %s event: %s%s\n", getActionStr(action), getModsStr(mods), getKeyStr(key));
-    if (action == GLFW_PRESS) state.input_state.keyPressed(key, mods);
-    if (action == GLFW_RELEASE) state.input_state.keyReleased(key, mods);
-    if (action == GLFW_REPEAT) state.input_state.keyRepeated(key, mods);
+    if (action == ACTION_PRESS) state.input.keyPressed(key, mods);
+    if (action == ACTION_RELEASE) state.input.keyReleased(key, mods);
+    if (action == ACTION_REPEAT) state.input.keyRepeated(key, mods);
 }

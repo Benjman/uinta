@@ -33,12 +33,13 @@ add_library(uinta STATIC
   ./src/debug.cpp
   ./src/file.cpp
   ./src/font.cpp
-  ./src/glfw.cpp
+  ./src/input.cpp
   ./src/math.cpp
   ./src/mesh.cpp
   ./src/metrics.cpp
   ./src/model.cpp
   ./src/quadtree.cpp
+  ./src/runner.cpp
   ./src/shader.cpp
 
   ${GLAD_C})
