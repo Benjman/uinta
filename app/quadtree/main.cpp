@@ -9,7 +9,7 @@
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
 
-struct quadtreeRunner final : runner {
+struct quadtreeRunner final : glfw_runner {
     unsigned int width = 1088;
     unsigned int height = 1088;
 
@@ -29,7 +29,7 @@ struct quadtreeRunner final : runner {
     gl_buf vbo;
     gl_buf ebo;
 
-    quadtreeRunner() : runner("hello quadtree", 1088, 1088) {
+    quadtreeRunner() : glfw_runner("hello quadtree", 1088, 1088) {
         squareWidth = (float) squareSize / view.width;
         squareHeight = (float) squareSize / view.height;
     }
@@ -155,7 +155,7 @@ quadtreeRunner runner;
 int main(const int argc, const char **argv) {
     runner.init();
 
-    while (!glfwWindowShouldClose(runner.view.window)) {
+    while (!glfwWindowShouldClose(runner.window)) {
         glfwPollEvents();
         while (!runner.shouldRenderFrame())
             runner.tick(glfwGetTime());
@@ -164,8 +164,8 @@ int main(const int argc, const char **argv) {
 
     runner.shutdown();
     on_exit([] (int status, void* arg) {
-        if (runner.view.window)
-            glfwDestroyWindow(runner.view.window);
+        if (runner.window)
+            glfwDestroyWindow(runner.window);
         glfwTerminate();
     }, nullptr);
     return 0;

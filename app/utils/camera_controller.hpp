@@ -2,7 +2,6 @@
 #define UINTA_CAMERA_CONTROLLER_HPP
 
 #include <camera.hpp>
-#include <glfw.hpp>
 #include <math.hpp>
 
 #include <glm/mat4x4.hpp>

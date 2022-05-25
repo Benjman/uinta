@@ -14,7 +14,7 @@ const unsigned int IBUF_SIZE = KILOBYTES(15);
 const unsigned int WINDOW_WIDTH = 1000;
 const unsigned int WINDOW_HEIGHT = 1000;
 
-struct camera3dRunner final : runner {
+struct camera3dRunner final : glfw_runner {
 public:
     camera cam;
 
@@ -25,7 +25,7 @@ public:
     GLuint vao;
     gl_buf vbo;
 
-    camera3dRunner() : runner("hello camera3d", 1000, 1000) {
+    camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000) {
         cam.pos.y = 5.0;
         cam.pos.z = 7.0;
         cam.pitch(30.0);
@@ -155,13 +155,13 @@ public:
     }
 
     void doPreTick(const runner_state& state) override {
-        if (state.input_state.isKeyPressed(GLFW_KEY_E))
+        if (state.input.isKeyPressed(KEY_E))
             cam.pos.z -= 1.0;
-        if (state.input_state.isKeyPressed(GLFW_KEY_D))
+        if (state.input.isKeyPressed(KEY_D))
             cam.pos.z += 1.0;
-        if (state.input_state.isKeyPressed(GLFW_KEY_S))
+        if (state.input.isKeyPressed(KEY_S))
             cam.pos.x -= 1.0;
-        if (state.input_state.isKeyPressed(GLFW_KEY_F))
+        if (state.input.isKeyPressed(KEY_F))
             cam.pos.x += 1.0;
     }
 
@@ -188,7 +188,7 @@ int main(const int argc, const char** argv) {
     auto timer = debug.create_timer();
     runner.init();
     debug.init();
-    glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
         runner.handleKeyInput(key, scancode, action, mods);
     });
 
@@ -197,7 +197,7 @@ int main(const int argc, const char** argv) {
     double dt = 0.0;
     double time = 0.0;
 
-    while (!glfwWindowShouldClose(runner.view.window)) {
+    while (!glfwWindowShouldClose(runner.window)) {
         glfwPollEvents();
 
         dt = glfwGetTime() - time;
@@ -225,8 +225,8 @@ int main(const int argc, const char** argv) {
 
     runner.shutdown();
     on_exit([] (int status, void* arg) {
-        if (runner.view.window)
-            glfwDestroyWindow(runner.view.window);
+        if (runner.window)
+            glfwDestroyWindow(runner.window);
         glfwTerminate();
     }, nullptr);
     return 0;
