@@ -9,7 +9,7 @@ out vec3 pass_norm;
 out vec3 pass_frag_pos;
 
 void main() {
-  pass_norm = mat3(transpose(inverse(u_model))) * normalize(in_norm);
+  pass_norm = normalize(mat3(transpose(inverse(u_model))) * normalize(in_norm));
   pass_frag_pos = vec3(u_model * vec4(in_pos, 1.0));
   gl_Position = u_model * vec4(in_pos, 1.0);
 }

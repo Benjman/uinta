@@ -17,7 +17,7 @@
 #include "../app_utils.hpp"
 
 struct modelRunner final : runner {
-    unsigned int icount = 0;
+    unsigned int icount = 0, vcount = 0;
     GLuint shader, u_model;
     float vbuf[MEGABYTES(5)];
     unsigned int ibuf[MEGABYTES(5)];
@@ -43,7 +43,7 @@ struct modelRunner final : runner {
             {MeshAttribType_Position, mesh_attrib(3, 6, 0)},
             {MeshAttribType_Normal, mesh_attrib(3, 6, 3)},
         };
-        loadObj(Model_Suzanne, vbuf, ibuf, &icount, &attribs);
+        loadObj(Model_Suzanne, vbuf, &vcount, ibuf, &icount, &attribs);
     }
 
     void init_buffers() {

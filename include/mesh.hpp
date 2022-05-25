@@ -33,6 +33,6 @@ struct mesh_attrib final {
 };
 
 #include <unordered_map>
-const mesh_attrib* find_mesh_attrib(MeshAttribType, const std::unordered_map<MeshAttribType, mesh_attrib>*);
+const mesh_attrib* find_mesh_attrib(MeshAttribType, const std::unordered_map<MeshAttribType, mesh_attrib>*); // TODO this should take a reference to an unordered_map, not a ptr
 
 #endif // UINTA_GENERATORS_H

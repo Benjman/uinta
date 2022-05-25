@@ -1,9 +1,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <cstring>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/geometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <camera.hpp>
+#include <file.hpp>
+#include <mesh.hpp>
+#include <model.hpp>
 
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
@@ -16,157 +22,141 @@ const unsigned int WINDOW_HEIGHT = 1000;
 
 struct camera3dRunner final : runner {
 public:
-    camera cam;
+    camera_controller cam;
 
     GLuint u_mvp;
+    glm::mat4 model = glm::mat4(1.0);
 
-    float runtime = 0.0;
     GLuint shader;
     GLuint vao;
     gl_buf vbo;
+    gl_buf ebo;
 
     camera3dRunner() : runner("hello camera3d", 1000, 1000) {
-        cam.pos.y = 5.0;
-        cam.pos.z = 7.0;
-        cam.pitch(30.0);
+        cam.target_y.force(15.0);
+        cam.target_z.force(60.0);
+        cam.target_pitch.force(-0.0);
     }
 
     void doInit() override {
         init_shader();
-        init_buffers();
-        init_mesh();
+
+        GLfloat vertices[KILOBYTES(20)];
+        GLuint indices[KILOBYTES(20)];
+        init_ground(vertices, indices);
+        init_buffers(vertices, indices);
     }
 
-    void init_buffers() {
+    void init_buffers(GLfloat* const vertices, GLuint* const indices) {
         glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo.id);
+
+        GLuint ids[2];
+        glGenBuffers(2, ids);
+        vbo.id = ids[0];
+        ebo.id = ids[1];
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
+        glBufferData(GL_ARRAY_BUFFER, vbo.count * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo.count * sizeof(GLuint), indices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*) (3 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*) (3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*) (6 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
     }
 
-    void init_mesh() {
-        GLfloat vertices[] = {
-            // positions        // colors
-            -1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
-             1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
-             1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
-             1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
-            -1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
-            -1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
+    void init_ground(GLfloat* const vertices, GLuint* const indices) {
+        unsigned int local_vcount = 0,
+                     local_icount = 0;
+            
+        mesh_attrib pos_attrib(3, 9, 0),
+                    norm_attrib(3, 9, 3),
+                    color_attrib(3, 9, 6);
 
-            -1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
-             1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
-            -1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
-            -1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
-
-            -1.0,  1.0,  1.0,   0.0, 0.0, 1.0,
-            -1.0,  1.0, -1.0,   0.0, 0.0, 1.0,
-            -1.0, -1.0, -1.0,   0.0, 0.0, 1.0,
-            -1.0, -1.0, -1.0,   0.0, 0.0, 1.0,
-            -1.0, -1.0,  1.0,   0.0, 0.0, 1.0,
-            -1.0,  1.0,  1.0,   0.0, 0.0, 1.0,
-
-             1.0,  1.0,  1.0,   1.0, 1.0, 0.0,
-             1.0,  1.0, -1.0,   1.0, 1.0, 0.0,
-             1.0, -1.0, -1.0,   1.0, 1.0, 0.0,
-             1.0, -1.0, -1.0,   1.0, 1.0, 0.0,
-             1.0, -1.0,  1.0,   1.0, 1.0, 0.0,
-             1.0,  1.0,  1.0,   1.0, 1.0, 0.0,
-
-            -1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
-             1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
-             1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
-             1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
-            -1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
-            -1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
-
-            -1.0,  1.0, -1.0,   0.0, 1.0, 1.0,
-             1.0,  1.0, -1.0,   0.0, 1.0, 1.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
-            -1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
-            -1.0,  1.0, -1.0,   0.0, 1.0, 1.0
+        const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
+            {MeshAttribType_Position, pos_attrib},
+            {MeshAttribType_Normal, norm_attrib},
+            {MeshAttribType_Color, color_attrib},
         };
-        glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        vbo.count = 36;
+        loadObj(Model_Cube, vertices, &local_vcount, indices, &local_icount, &attribs);
+
+
+        glm::vec3 grass(0.0, 1.0, 0.0);
+        glm::vec3 dirt = glm::vec3(165, 42, 42) / glm::vec3(255);
+        glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(30, 1, 30));
+
+        local_vcount *= 1.5; // loadObj doesn't load colors, so we adjust for color attrib
+        for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
+            // transform from cube to something resembling a floor
+            glm::vec3 pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1], vertices[i + pos_attrib.offset + 2], 1.0);
+ 
+            memcpy(&vertices[i + pos_attrib.offset], &pos[0], 3 * sizeof(GLfloat));
+
+            { // colorize
+                glm::vec3 color(0);
+                glm::vec3 norm = glm::vec4(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2], 0.0);
+
+                color += dirt  * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));          // paint sides
+                color += grass * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));    // paint top
+
+                memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
+            }
+        }
+
+        vbo.count += local_vcount;
+        ebo.count += local_icount;
     }
 
     void init_shader() {
-        const char *vshader =
-            "#version 330 core\n"
-            "layout (location = 0) in vec3 in_pos;"
-            "layout (location = 1) in vec3 in_color;"
-            "uniform mat4 u_model = mat4(1.0);"
-            "uniform mat4 u_view = mat4(1.0);"
-            "uniform mat4 u_proj = mat4(1.0);"
-            "uniform mat4 u_mvp = mat4(1.0);"
-            "out vec3 pass_color;"
-            "void main() {"
-            "  pass_color = in_color;"
-            "  gl_Position = u_mvp * vec4(in_pos, 1.0);"
-            "}\0";
+        char vshader[get_file_size("shader/camera3d.vert")];
+        char fshader[get_file_size("shader/camera3d.frag")];
 
-        const char *fshader =
-            "#version 330 core\n"
-            "in vec3 pass_color;"
-            "void main() {"
-            "  gl_FragColor = vec4(pass_color, 1.0);"
-            "}\0";
+        read_file_raw("shader/camera3d.vert", vshader);
+        read_file_raw("shader/camera3d.frag", fshader);
 
         const char* sources[] = { vshader, fshader };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
+        const GLint buffer_lengths[] = { (GLint) sizeof(vshader), (GLint) sizeof(fshader) };
         const char* uniforms[] = { "u_mvp" };
-        const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
-        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
+        GLuint* locations[] = { &u_mvp };
+        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
+                                       uniforms, locations, sizeof(locations) / sizeof(GLuint*));
+    }
+
+    void doTick(const runner_state &state) override {
+        // model = glm::rotate(glm::mat4(1.0), state.runtime * 0.25f, glm::vec3(0, 1, 0));
+
+        const float camSpeed = 15.0;
+        if (state.input_state.isKeyDown(GLFW_KEY_W)) cam.target_z -= camSpeed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_S)) cam.target_z += camSpeed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_A)) cam.target_x -= camSpeed * state.dt;
+        if (state.input_state.isKeyDown(GLFW_KEY_D)) cam.target_x += camSpeed * state.dt;
+
+        cam.tick(state.dt);
+    }
+
+    void doPreRender() override {
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
+        glEnable(GL_DEPTH_TEST);
+
+        glm::mat4 view_mat(1.0);
+        cam.view_matrix(&view_mat);
+
+        // double ortho_size = 15.0;
+        // glm::mat4 proj_mat = glm::ortho(-ortho_size, ortho_size, -ortho_size, ortho_size, 0.0001, 1000.0);
+        glm::mat4 proj_mat = glm::perspective(glm::radians(45.0), (double) view.width / (double) view.height, 0.01, 1000.0);
+        glUseProgram(shader);
+        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * view_mat * model)[0][0]);
     }
 
     void doRender() override {
-        glEnable(GL_DEPTH_TEST);
-        glUseProgram(shader);
-
-        glm::mat4 model_matrix, projection_matrix;
-
-        model_matrix = glm::scale(glm::mat4(1.0), glm::vec3(3.0, 0.125, 3.0));
-
-        glm::mat4 view_matrix;
-        get_view_matrix(&view_matrix, cam.pos, cam.pitch(), cam.yaw());
-
-        float near_plane = 0.1f,
-        far_plane = 100.0f;
-
-        projection_matrix = glm::perspective((float) glm::radians(90.0), (float) view.width / (float) view.height, near_plane, far_plane);
-        // projection_matrix = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, near_plane, far_plane);
-
-        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(projection_matrix * view_matrix * model_matrix)[0][0]);
-
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-
-        glDrawArrays(GL_TRIANGLES, 0, vbo.count);
-    }
-
-    void doPreTick(const runner_state& state) override {
-        if (state.input_state.isKeyPressed(GLFW_KEY_E))
-            cam.pos.z -= 1.0;
-        if (state.input_state.isKeyPressed(GLFW_KEY_D))
-            cam.pos.z += 1.0;
-        if (state.input_state.isKeyPressed(GLFW_KEY_S))
-            cam.pos.x -= 1.0;
-        if (state.input_state.isKeyPressed(GLFW_KEY_F))
-            cam.pos.x += 1.0;
-    }
-
-    void doTick(const runner_state& state) override {
-        runtime += state.dt;
+        glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
     }
 
 };
@@ -174,53 +164,18 @@ public:
 camera3dRunner runner;
 
 int main(const int argc, const char** argv) {
-    debug_controller debug(WINDOW_WIDTH, WINDOW_HEIGHT);
-    metrics_controller& metrics = debug.metrics;
-
-    // register metrics
-    auto tick_m     = metrics.init_metric(METRIC_FLOAT, "tick");
-    auto text_m     = metrics.init_metric(METRIC_FLOAT, "text");
-    auto render_m   = metrics.init_metric(METRIC_FLOAT, "render");
-
-    // register averages
-    auto render_a   = running_avg(20);
-
-    auto timer = debug.create_timer();
     runner.init();
-    debug.init();
+
     glfwSetKeyCallback(runner.view.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
         runner.handleKeyInput(key, scancode, action, mods);
     });
 
-    printf("[INFO] Init time %g seconds.\n", debug.duration_milli(timer) / 1000.0f);
-
-    double dt = 0.0;
-    double time = 0.0;
-
     while (!glfwWindowShouldClose(runner.view.window)) {
         glfwPollEvents();
-
-        dt = glfwGetTime() - time;
-        time += dt;
-
-        debug.reset_timer(timer);
-        while (!runner.shouldRenderFrame())
+        do {
             runner.tick(glfwGetTime());
-        metrics.set(tick_m, (float) debug.duration_micro(timer));
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        debug.reset_timer(timer);
-        debug.render();
-        runner.render();
-        render_a.add(debug.duration_micro(timer));
-        metrics.set(render_m, render_a.avg());
-
-        debug.mesh_metric(tick_m);
-        debug.mesh_metric(render_m);
-        debug.mesh_metric(text_m);
-        metrics.set(text_m, (float) debug.duration_micro(timer));
+        } while(!runner.shouldRenderFrame());
+        runner.render(glm::vec3(0.2f, 0.3f, 0.3f), GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     runner.shutdown();
@@ -229,5 +184,6 @@ int main(const int argc, const char** argv) {
             glfwDestroyWindow(runner.view.window);
         glfwTerminate();
     }, nullptr);
+
     return 0;
 }

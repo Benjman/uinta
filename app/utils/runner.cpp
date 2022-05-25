@@ -10,6 +10,7 @@ void runner::init() {
 void runner::tick(float runtime) {
     state.dt = runtime - state.runtime;
     state.runtime = runtime;
+    state.tick++;
     doPreTick(state);
     doTick(state);
     doPostTick(state);

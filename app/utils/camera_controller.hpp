@@ -17,7 +17,6 @@ struct camera_controller {
     smooth_float target_roll;
 
     camera_controller() {
-        // target_z.force(1.0);
     }
 
     void view_matrix(glm::mat4* const);
