@@ -15,9 +15,6 @@ struct camera_controller {
     smooth_float target_yaw;
     smooth_float target_roll;
 
-    camera_controller() {
-    }
-
     void view_matrix(glm::mat4* const);
 
     void tick(const float dt) {

@@ -4,13 +4,14 @@
 #include <math.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <runner.hpp>
 
 /** world coordinates follow the "right-handed rule" **/
 const inline glm::vec3 WORLD_UP      = glm::vec3(0.0, 1.0,  0.0);
 const inline glm::vec3 WORLD_RIGHT   = glm::vec3(1.0, 0.0,  0.0);
 const inline glm::vec3 WORLD_FORWARD = glm::vec3(0.0, 0.0, -1.0);
 
-struct camera final {
+struct camera {
     glm::vec3 pos = glm::vec3(0.0);
     glm::vec3 attitude = glm::vec3(0.0);
 
@@ -43,6 +44,15 @@ struct camera2d final {
     vec2 pos = vec2(0.0);
     float fov = 45;
     float ortho_size = 1.0;
+};
+
+struct target_cam final : camera {
+    glm::vec3 target = glm::vec3(0);
+    float dist = 10.0;
+    float angle = 0.0;
+
+    void tick(const float dt) {
+    }
 };
 
 void get_view_matrix(glm::mat4* mat, const glm::vec3& pos, const float pitch, const float yaw) noexcept;
