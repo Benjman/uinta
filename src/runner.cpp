@@ -53,3 +53,11 @@ void runner::handleKeyInput(const input_key_t key, const int scancode, const int
     if (action == ACTION_RELEASE) state.input.keyReleased(key, mods);
     if (action == ACTION_REPEAT) state.input.keyRepeated(key, mods);
 }
+
+void runner::handleMouseButtonInput(const int button, const int action, const int mods) {
+    printf("Mouse %s event: %s%s\n", getActionStr(action), getModsStr(mods), getMouseButtonStr(button)); // TODO trace level
+    if (action == ACTION_PRESS) state.input.keyPressed(button, mods);
+    if (action == ACTION_RELEASE) state.input.keyReleased(button, mods);
+    if (action == ACTION_REPEAT) state.input.keyRepeated(button, mods);
+    state.input.flags = mods;
+}
