@@ -1,8 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <cstring>
-#include <glm/detail/func_trigonometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <camera.hpp>
@@ -69,9 +67,9 @@ public:
         unsigned int local_vcount = 0,
                      local_icount = 0;
             
-        mesh_attrib pos_attrib(3, 9, 0),
-                    norm_attrib(3, 9, 3),
-                    color_attrib(3, 9, 6);
+        const mesh_attrib pos_attrib(9, 0),
+                          norm_attrib(9, 3),
+                          color_attrib(9, 6);
 
         const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
             {MeshAttribType_Position, pos_attrib},
@@ -81,15 +79,15 @@ public:
             
         loadObj(Model_Cube, vertices, &local_vcount, indices, &local_icount, &attribs);
 
-        glm::vec3 grass(0.0, 1.0, 0.0);
-        glm::vec3 dirt = glm::vec3(165, 42, 42) / glm::vec3(255);
-        glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(30, 1, 30));
+        const glm::vec3 grass(0.0, 1.0, 0.0);
+        const glm::vec3 dirt = glm::vec3(165, 42, 42) / glm::vec3(255);
+        const glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(30, 1, 30));
 
         local_vcount *= 1.5; // loadObj doesn't load colors, so we adjust for color attrib
         for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
             {
                 // transform to floor
-                glm::vec3 pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1], vertices[i + pos_attrib.offset + 2], 1.0);
+                auto pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1], vertices[i + pos_attrib.offset + 2], 1.0);
                 memcpy(&vertices[i + pos_attrib.offset], &pos[0], 3 * sizeof(GLfloat));
             }
 

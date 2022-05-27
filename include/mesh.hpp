@@ -13,19 +13,17 @@ enum MeshAttribType {
 };
 
 struct mesh_attrib final {
-    unsigned int size; // TODO delete this field
     unsigned int stride;
     unsigned int offset;
 
-    mesh_attrib(const unsigned int size, const unsigned int stride, const unsigned int offset) noexcept :
-        size(size), stride(stride), offset(offset) {}
+    mesh_attrib(const unsigned int stride, const unsigned int offset) noexcept :
+        stride(stride), offset(offset) {}
 
     mesh_attrib(const mesh_attrib& other) noexcept {
         *this = other;
     }
 
     mesh_attrib& operator=(const mesh_attrib& other) noexcept {
-        size = other.size;
         stride = other.stride;
         offset = other.offset;
         return *this;

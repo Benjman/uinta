@@ -42,8 +42,8 @@ struct modelRunner final : glfw_runner {
 
     void init_obj() {
         const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
-            {MeshAttribType_Position, mesh_attrib(3, 6, 0)},
-            {MeshAttribType_Normal, mesh_attrib(3, 6, 3)},
+            {MeshAttribType_Position, mesh_attrib(6, 0)},
+            {MeshAttribType_Normal, mesh_attrib(6, 3)},
         };
         loadObj(Model_Suzanne, vbuf, &vcount, ibuf, &icount, &attribs);
     }
