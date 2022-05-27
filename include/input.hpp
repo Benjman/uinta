@@ -2,6 +2,7 @@
 #define UINTA_INPUT_HPP
 
 using input_key_t = int;
+using mouse_button_t = int;
 
 const input_key_t KEY_UNKNOWN        = -1;
 const input_key_t ACTION_UNKNOWN     = -1;
@@ -137,17 +138,31 @@ extern input_key_t MOD_ALT;
 extern input_key_t MOD_SUPER;
 extern input_key_t MOD_CAPS_LOCK;
 extern input_key_t MOD_NUM_LOCK;
+extern mouse_button_t MOUSE_BUTTON_1;
+extern mouse_button_t MOUSE_BUTTON_2;
+extern mouse_button_t MOUSE_BUTTON_3;
+extern mouse_button_t MOUSE_BUTTON_4;
+extern mouse_button_t MOUSE_BUTTON_5;
+extern mouse_button_t MOUSE_BUTTON_6;
+extern mouse_button_t MOUSE_BUTTON_7;
+extern mouse_button_t MOUSE_BUTTON_8;
+extern mouse_button_t MOUSE_BUTTON_LAST;
+extern mouse_button_t MOUSE_BUTTON_LEFT;
+extern mouse_button_t MOUSE_BUTTON_RIGHT;
+extern mouse_button_t MOUSE_BUTTON_MIDDLE;
 
 #include <set>
 struct input_state final {
+    int flags = 0;
     float cursorx, cursory;
     float cursordx, cursordy;
-
-    int flags = 0;
     std::set<input_key_t> keys_down;
     std::set<input_key_t> keys_pressed;
     std::set<input_key_t> keys_released;
     std::set<input_key_t> keys_repeated;
+    std::set<mouse_button_t> mouse_down;
+    std::set<mouse_button_t> mouse_pressed;
+    std::set<mouse_button_t> mouse_released;
 
     void reset() {
         cursordx = 0;
@@ -167,6 +182,10 @@ struct input_state final {
 
     bool isCtrlDown() const {
         return flags & MOD_CONTROL;
+    }
+
+    bool isAnyMouseBonttonDown() const {
+        return mouse_down.size();
     }
 
     bool isShiftDown() const {
@@ -190,6 +209,27 @@ struct input_state final {
     bool isKeyReleased(input_key_t key) const {
         for (auto value : keys_released)
             if (value == key)
+                return true;
+        return false;
+    }
+
+    bool isMouseButtonDown(mouse_button_t button) const {
+        for (auto value : mouse_down)
+            if (value == button)
+                return true;
+        return false;
+    }
+
+    bool isMouseButtonPressed(mouse_button_t button) const {
+        for (auto value : mouse_pressed)
+            if (value == button)
+                return true;
+        return false;
+    }
+
+    bool isMouseButtonReleased(mouse_button_t button) const {
+        for (auto value : mouse_released)
+            if (value == button)
                 return true;
         return false;
     }
@@ -218,10 +258,23 @@ struct input_state final {
         keys_repeated.insert(key);
     }
 
+    void mouseButtonPressed(const input_key_t key, const int flags) {
+        this->flags = flags;
+        mouse_pressed.insert(key);
+        mouse_down.insert(key);
+    }
+
+    void mouseButtonReleased(const input_key_t key, const int flags) {
+        this->flags = flags;
+        mouse_released.insert(key);
+        mouse_down.erase(key);
+    }
+
 };
 
-const char *getKeyStr(input_key_t key) noexcept;
-const char *getActionStr(input_key_t action) noexcept;
-const char *getModsStr(input_key_t mods) noexcept;
+const char* getKeyStr(input_key_t key) noexcept;
+const char* getActionStr(input_key_t action) noexcept;
+const char* getModsStr(input_key_t mods) noexcept;
+const char* const getMouseButtonStr(mouse_button_t button) noexcept;
 
 #endif // UINTA_INPUT_HPP

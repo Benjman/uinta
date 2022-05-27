@@ -1,6 +1,6 @@
 #include <input.hpp>
 
-const char *getKeyStr(input_key_t key) noexcept {
+const char* getKeyStr(input_key_t key) noexcept {
     if (key == KEY_SPACE) return "SPACE";
     if (key == KEY_APOSTROPHE) return "APOSTROPHE";
     if (key == KEY_COMMA) return "COMMA";
@@ -124,15 +124,30 @@ const char *getKeyStr(input_key_t key) noexcept {
     return "KEY_UNKNOWN";
 }
 
-const char *getActionStr(input_key_t action) noexcept {
+const char* getActionStr(input_key_t action) noexcept {
     if (action == ACTION_PRESS) return "press";
     if (action == ACTION_RELEASE) return "release";
     if (action == ACTION_REPEAT) return "repeat";
     return "ACTION UNKNOWN";
 }
 
-const char *getModsStr(int mods) noexcept {
+const char* getModsStr(int mods) noexcept {
     // TODO implement mods string
     if (mods == 0) return "";
+    return "NOT IMPLEMENTED";
+}
+
+const char* const getMouseButtonStr(mouse_button_t button) noexcept {
+    if (button == MOUSE_BUTTON_LEFT) return "button left";
+    if (button == MOUSE_BUTTON_RIGHT) return "button right";
+    if (button == MOUSE_BUTTON_MIDDLE) return "button middle";
+    if (button == MOUSE_BUTTON_1) return "button 1";
+    if (button == MOUSE_BUTTON_2) return "button 2";
+    if (button == MOUSE_BUTTON_3) return "button 3";
+    if (button == MOUSE_BUTTON_4) return "button 4";
+    if (button == MOUSE_BUTTON_5) return "button 5";
+    if (button == MOUSE_BUTTON_6) return "button 6";
+    if (button == MOUSE_BUTTON_7) return "button 7";
+    if (button == MOUSE_BUTTON_8) return "button 8";
     return "NOT IMPLEMENTED";
 }

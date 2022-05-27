@@ -45,6 +45,7 @@ struct runner {
     bool shouldRenderFrame();
 
     void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
+    void handleMouseButtonInput(const int button, const int action, const int mods);
     void handleCursorPositionChanged(const double xpos, const double ypos);
 
     virtual void doInit() {}
