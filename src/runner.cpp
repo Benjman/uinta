@@ -11,6 +11,19 @@ void runner::init() {
     doInit();
 }
 
+int runner::run() {
+    init();
+    while (!shouldExit()) {
+        pollInput();
+        do {
+            tick(getRuntime());
+        } while(!shouldRenderFrame());
+        render();
+    }
+    shutdown();
+    return EXIT_SUCCESS;
+}
+
 void runner::tick(float runtime) {
     state.delta = runtime - state.runtime;
     state.runtime = runtime;
@@ -21,8 +34,8 @@ void runner::tick(float runtime) {
     state.input.reset();
 }
 
-void runner::render(const glm::vec3& clear_color, const GLbitfield clear_mask) {
-    glClearColor(clear_color.r, clear_color.g, clear_color.b, 1.0);
+void runner::render() {
+    glClearColor(background_color.r, background_color.g, background_color.b, 1.0);
     glClear(clear_mask);
     doPreRender();
     doRender();
@@ -38,6 +51,14 @@ void runner::shutdown() {
 bool runner::shouldRenderFrame() {
     // TODO Runner should have a `targetFps`, and this method will return true when a frame needs to be rendered based on `runtime - lastFrame >= targetFps`
     return true;
+}
+
+void runner::setClearMask(const GLbitfield mask) {
+    clear_mask = mask;
+}
+
+void runner::setBackground(const glm::vec3& background) {
+    background_color = background;
 }
 
 void runner::handleCursorPositionChanged(const double xpos, const double ypos) {

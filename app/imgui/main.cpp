@@ -50,26 +50,5 @@ struct imgui_runner final : glfw_runner {
 imgui_runner runner;
 
 int main(const int argc, const char **argv) {
-    runner.init();
-
-    double dt = 0.0;
-    double time = 0.0;
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-
-        dt = glfwGetTime() - time;
-        time += dt;
-        while (!runner.shouldRenderFrame())
-            runner.tick(glfwGetTime());
-        runner.render();
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* arg) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-    return 0;
+    return runner.run();
 }

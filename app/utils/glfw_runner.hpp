@@ -9,6 +9,7 @@ struct glfw_runner : runner {
     GLFWwindow* window;
 
     glfw_runner(const std::string& title, unsigned int width, unsigned int height) noexcept : runner(title, width, height) {}
+    ~glfw_runner();
 
     virtual void doInit() override {}
 
@@ -23,13 +24,18 @@ struct glfw_runner : runner {
     virtual void doShutdown() override {}
 
 protected:
+    double getRuntime() override;
     void internal_init() override;
     void internal_shutdown() override;
+    void pollInput() override;
+    bool shouldExit() override;
     void swap_buffers() override;
+    void register_callbacks();
 
 };
 
 void createGLFWWindow(glfw_runner& view);
+
 const char *getKeyStr(int key) noexcept;
 const char *getActionStr(int action) noexcept;
 const char *getModsStr(int mods) noexcept;

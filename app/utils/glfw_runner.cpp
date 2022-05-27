@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include "glfw_runner.hpp"
 
@@ -146,8 +147,15 @@ mouse_button_t MOUSE_BUTTON_LEFT    = GLFW_MOUSE_BUTTON_LEFT;
 mouse_button_t MOUSE_BUTTON_RIGHT   = GLFW_MOUSE_BUTTON_RIGHT;
 mouse_button_t MOUSE_BUTTON_MIDDLE  = GLFW_MOUSE_BUTTON_MIDDLE;
 
+glfw_runner::~glfw_runner() {
+    if (window)
+        glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
 void glfw_runner::internal_init() {
     createGLFWWindow(*this);
+    register_callbacks();
 }
 
 void glfw_runner::internal_shutdown() {
@@ -155,6 +163,25 @@ void glfw_runner::internal_shutdown() {
 
 void glfw_runner::swap_buffers() {
     glfwSwapBuffers(window);
+}
+
+void glfw_runner::register_callbacks() {
+    glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q)
+            return glfwSetWindowShouldClose(runner->window, true);
+        runner->handleKeyInput(key, scancode, action, mods);
+    });
+
+    glfwSetCursorPosCallback(window, [] (GLFWwindow* window, double xpos, double ypos) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleCursorPositionChanged(xpos, ypos);
+    });
+
+    glfwSetMouseButtonCallback(window, [] (GLFWwindow* window, int button, int action, int mods) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleMouseButtonInput(button, action, mods);
+    });
 }
 
 void createGLFWWindow(glfw_runner& runner) {
@@ -172,6 +199,9 @@ void createGLFWWindow(glfw_runner& runner) {
         throw std::exception();
         return;
     }
+
+    glfwSetWindowUserPointer(runner.window, &runner);
+
     printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", runner.view.title.c_str(), runner.view.width, runner.view.height);
     glfwMakeContextCurrent(runner.window);
 
@@ -182,3 +212,16 @@ void createGLFWWindow(glfw_runner& runner) {
     }
     printf("[INFO] Done loading GLAD.\n");
 }
+
+double glfw_runner::getRuntime() {
+    return glfwGetTime();
+}
+
+void glfw_runner::pollInput() {
+    glfwPollEvents();
+}
+
+bool glfw_runner::shouldExit() {
+    return glfwWindowShouldClose(window);
+}
+

@@ -135,24 +135,5 @@ public:
 fontRunner runner;
 
 int main(const int argc, const char **argv) {
-    runner.init();
-
-    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        runner.handleKeyInput(key, scancode, action, mods);
-    });
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-        while (!runner.shouldRenderFrame())
-            runner.tick(glfwGetTime());
-        runner.render();
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* arg) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-    return 0;
+    return runner.run();
 }

@@ -38,11 +38,15 @@ struct runner {
     runner(const std::string& title, unsigned int width, unsigned int height) noexcept : view(title, width, height) {}
  
     void init();
+    int run();
     void tick(float dt);
-    void render(const glm::vec3& clear_color = DEFAULT_CLEAR_COLOR, const GLbitfield clear_mask = GL_COLOR_BUFFER_BIT);
+    void render();
     void shutdown();
 
     bool shouldRenderFrame();
+
+    void setClearMask(const GLbitfield mask);
+    void setBackground(const glm::vec3& background);
 
     void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
     void handleMouseButtonInput(const int button, const int action, const int mods);
@@ -64,6 +68,13 @@ protected:
     virtual void internal_init() = 0;
     virtual void internal_shutdown() = 0;
     virtual void swap_buffers() = 0;
+    virtual void pollInput() = 0;
+    virtual bool shouldExit() = 0;
+    virtual double getRuntime() = 0;
+
+private:
+    GLbitfield clear_mask = GL_COLOR_BUFFER_BIT;
+    glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
 
 };
 

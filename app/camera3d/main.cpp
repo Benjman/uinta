@@ -33,11 +33,13 @@ public:
 
     void doInit() override {
         init_shader();
-
         GLfloat vertices[KILOBYTES(20)];
         GLuint indices[KILOBYTES(20)];
         init_ground(vertices, indices);
         init_buffers(vertices, indices);
+
+        glEnable(GL_DEPTH_TEST);
+        setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void init_buffers(GLfloat* const vertices, GLuint* const indices) {
@@ -76,8 +78,8 @@ public:
             {MeshAttribType_Normal, norm_attrib},
             {MeshAttribType_Color, color_attrib},
         };
+            
         loadObj(Model_Cube, vertices, &local_vcount, indices, &local_icount, &attribs);
-
 
         glm::vec3 grass(0.0, 1.0, 0.0);
         glm::vec3 dirt = glm::vec3(165, 42, 42) / glm::vec3(255);
@@ -85,15 +87,14 @@ public:
 
         local_vcount *= 1.5; // loadObj doesn't load colors, so we adjust for color attrib
         for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
-
-            // transform to floor
             {
+                // transform to floor
                 glm::vec3 pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1], vertices[i + pos_attrib.offset + 2], 1.0);
                 memcpy(&vertices[i + pos_attrib.offset], &pos[0], 3 * sizeof(GLfloat));
             }
 
-            // colorize
             {
+                // colorize
                 glm::vec3 color(0);
                 glm::vec3 norm = glm::vec4(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2], 0.0);
 
@@ -102,7 +103,6 @@ public:
 
                 memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
             }
-
         }
 
         vbo.count += local_vcount;
@@ -126,19 +126,20 @@ public:
     }
 
     void doPreTick(const runner_state &state) override {
-        if (!state.input.isAnyKeyDown())
-            return;
+        // cursor input
 
-        float speed = 50.0f * state.delta;
-
-        if (state.input.isKeyDown(KEY_W))
-            camera.target.smooth_float_z() -= speed;
-        if (state.input.isKeyDown(KEY_S))
-            camera.target.smooth_float_z() += speed;
-        if (state.input.isKeyDown(KEY_A))
-            camera.target.smooth_float_x() -= speed;
-        if (state.input.isKeyDown(KEY_D))
-            camera.target.smooth_float_x() += speed;
+        // keyboard input
+        if (state.input.isAnyKeyDown()) {
+            float speed = 50.0f * state.delta;
+            if (state.input.isKeyDown(KEY_W))
+                camera.target.smooth_float_z() -= speed;
+            if (state.input.isKeyDown(KEY_S))
+                camera.target.smooth_float_z() += speed;
+            if (state.input.isKeyDown(KEY_A))
+                camera.target.smooth_float_x() -= speed;
+            if (state.input.isKeyDown(KEY_D))
+                camera.target.smooth_float_x() += speed;
+        }
     }
 
     void doTick(const runner_state &state) override {
@@ -147,13 +148,13 @@ public:
     }
 
     void doPreRender() override {
+        glUseProgram(shader);
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-        glEnable(GL_DEPTH_TEST);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
 
         camera.update_view_matrix();
         glm::mat4 proj_mat = glm::perspective(glm::radians(45.0), (double) view.width / (double) view.height, 0.01, 500.0);
-        glUseProgram(shader);
         glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * camera.m_view_matrix * model)[0][0]);
     }
 
@@ -166,26 +167,5 @@ public:
 camera3dRunner runner;
 
 int main(const int argc, const char** argv) {
-    runner.init();
-
-    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        runner.handleKeyInput(key, scancode, action, mods);
-    });
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-        do {
-            runner.tick(glfwGetTime());
-        } while(!runner.shouldRenderFrame());
-        runner.render(glm::vec3(0.2f, 0.3f, 0.3f), GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* arg) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-
-    return 0;
+    return runner.run();
 }

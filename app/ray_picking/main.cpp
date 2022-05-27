@@ -12,7 +12,6 @@
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
 
-const auto background = glm::vec3(216, 204, 192) / glm::vec3(255.0f);
 smooth_float ortho_size = smooth_float(5.0, 10.0);
 int imgui_level = 3;
 
@@ -45,6 +44,8 @@ struct rayPickingRunner final : glfw_runner {
         init_buffers();
         init_grid();
         init_imgui();
+        setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        setBackground(glm::vec3(216, 204, 192) / glm::vec3(255.0f));
     }
 
     void init_buffers() {
@@ -289,29 +290,5 @@ struct rayPickingRunner final : glfw_runner {
 rayPickingRunner runner;
 
 int main(const int argc, const char** argv) {
-    runner.init();
-
-    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner.window, true);
-        runner.handleKeyInput(key, scancode, action, mods);
-    });
-
-    glfwSetCursorPosCallback(runner.window, [] (GLFWwindow* window, double xpos, double ypos) {
-        runner.handleCursorPositionChanged(xpos, ypos);
-    });
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-        runner.tick(glfwGetTime());
-        runner.render(background, GL_COLOR_BUFFER_BIT);
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* args) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-
-    return 0;
+    return runner.run();
 }
