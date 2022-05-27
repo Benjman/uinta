@@ -178,9 +178,8 @@ void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
 
 #include <glm/glm.hpp>
 bool quad::isInBounds(const glm::vec2 &pos) const noexcept {
-    // return pos >= topLeftBounds
-    //         && pos <= bottomRightBounds;
-    return false;
+    return glm::all(glm::greaterThanEqual(pos, topLeftBounds))
+           && glm::all(glm::lessThanEqual(pos, bottomRightBounds));
 }
 
 void quad::addEntity(entt::entity entity) noexcept {
