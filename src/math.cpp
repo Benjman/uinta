@@ -438,7 +438,7 @@ void smooth_float::force(float v) noexcept {
     target = v;
 }
 
-void smooth_float::update(const float dt) noexcept {
+void smooth_float::tick(const float dt) noexcept {
     float diff = (target - current);
     current += diff * agility * dt;
 }

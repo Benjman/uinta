@@ -211,7 +211,7 @@ struct rayPickingRunner final : glfw_runner {
 
     void doTick(const runner_state& state) override {
         camera.tick(state.dt);
-        ortho_size.update(state.dt);
+        ortho_size.tick(state.dt);
     }
 
     void doPreRender() override {
