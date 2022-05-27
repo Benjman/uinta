@@ -11,7 +11,6 @@
 
 
 #ifdef UINTA_APP_UTILS_IMPL
-#include "./utils/camera_controller.cpp"
 #include "./utils/debug_controller.cpp"
 #include "./utils/glfw_runner.cpp"
 #endif // UINTA_APP_UTILS_IMPL

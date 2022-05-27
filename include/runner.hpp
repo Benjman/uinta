@@ -19,21 +19,21 @@ struct viewport {
 };
 
 struct runner_state final {
-    input_state input;
-
-    float dt;
-    float runtime;
-
+    /// number of times the tick cycle has been executed
     unsigned int tick;
 
+    /// time in seconds since last tick cycle
+    float delta;
+
+    /// time in secinds the runner has been ticking
+    float runtime;
+
+    input_state input;
 };
 
 struct runner {
     viewport view;
     runner_state state;
-
-    float cursorx = 0.0;
-    float cursory = 0.0;
 
     runner(const std::string& title, unsigned int width, unsigned int height) noexcept : view(title, width, height) {}
  

@@ -1,13 +1,15 @@
 #ifndef SHOWCASE_DEBUG_CONTROLLER_HPP
 #define SHOWCASE_DEBUG_CONTROLLER_HPP
 
-#include <chrono>
-
 #include <buffer.hpp>
 #include <font.hpp>
 #include <macros.hpp>
 #include <math.hpp>
 #include <metrics.hpp>
+
+#include <chrono>
+
+#include <glm/vec2.hpp>
 
 // TODO move all timer stuff to its own controller
 using debug_timer_t = int;
@@ -24,7 +26,7 @@ struct debug_controller final {
     GLfloat vbuf[KILOBYTES(15)];
     GLuint ibuf[KILOBYTES(15)];
 
-    vec2 view_size;
+    glm::vec2 view_size;
 
     font::font_t font_handle;
 

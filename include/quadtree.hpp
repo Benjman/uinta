@@ -12,6 +12,7 @@ static const inline char QUAD_ENTITY_STORE_SIZE_STEP = 2;
     TODO quads should be POD objects. All the functional aspects of it should be taken out of this class and converted into a functional interface.
 **/
 
+#include <glm/vec2.hpp>
 struct quad final {
     quad *parent;
     quad *bottomLeft;
@@ -21,8 +22,8 @@ struct quad final {
 
     entt::entity *entityStore = nullptr;
 
-    const vec2 topLeftBounds;
-    const vec2 bottomRightBounds;
+    glm::vec2 topLeftBounds;
+    const glm::vec2 bottomRightBounds;
 
     const unsigned int minCellSize;
     unsigned char entityStoreSize;
@@ -30,17 +31,17 @@ struct quad final {
 
     quad();
 
-    quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned int minCellSize = QUAD_MIN_CELL_SIZE);
+    quad(const glm::vec2& topLeftBounds, const glm::vec2& bottomRightBounds, const unsigned int minCellSize = QUAD_MIN_CELL_SIZE);
 
     ~quad();
 
-    quad *findQuad(const vec2 &pos) const noexcept;
+    quad *findQuad(const glm::vec2& pos) const noexcept;
 
-    const entt::entity* get(const vec2 &pos, char* count) const noexcept;
+    const entt::entity* get(const glm::vec2& pos, char* count) const noexcept;
 
-    void insert(const entt::entity &entity, const vec2 &pos) noexcept;
+    void insert(const entt::entity& entity, const glm::vec2& pos) noexcept;
 
-    bool isInBounds(const vec2 &pos) const noexcept;
+    bool isInBounds(const glm::vec2& pos) const noexcept;
 
     bool isActive() const noexcept;
 

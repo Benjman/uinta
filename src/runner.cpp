@@ -12,7 +12,7 @@ void runner::init() {
 }
 
 void runner::tick(float runtime) {
-    state.dt = runtime - state.runtime;
+    state.delta = runtime - state.runtime;
     state.runtime = runtime;
     state.tick++;
     doPreTick(state);
@@ -48,7 +48,7 @@ void runner::handleCursorPositionChanged(const double xpos, const double ypos) {
 }
 
 void runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
-    printf("Key %s event: %s%s\n", getActionStr(action), getModsStr(mods), getKeyStr(key));
+    printf("Key %s event: %s%s\n", getActionStr(action), getModsStr(mods), getKeyStr(key)); // TODO trace level
     if (action == ACTION_PRESS) state.input.keyPressed(key, mods);
     if (action == ACTION_RELEASE) state.input.keyReleased(key, mods);
     if (action == ACTION_REPEAT) state.input.keyRepeated(key, mods);
