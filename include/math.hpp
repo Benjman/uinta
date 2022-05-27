@@ -188,7 +188,7 @@ struct smooth_float final {
     void force() noexcept;
     void force(float v) noexcept;
 
-    void update(const float dt) noexcept;
+    void tick(const float dt) noexcept;
 
 };
 

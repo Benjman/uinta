@@ -22,13 +22,13 @@ struct camera_controller {
     void view_matrix(glm::mat4* const);
 
     void tick(const float dt) {
-        target_x.update(dt);
-        target_y.update(dt);
-        target_z.update(dt);
-        target_dst.update(dt);
-        target_yaw.update(dt);
-        target_roll.update(dt);
-        target_pitch.update(dt);
+        target_x.tick(dt);
+        target_y.tick(dt);
+        target_z.tick(dt);
+        target_dst.tick(dt);
+        target_yaw.tick(dt);
+        target_roll.tick(dt);
+        target_pitch.tick(dt);
     }
 
 };
