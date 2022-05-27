@@ -143,6 +143,8 @@ struct input_state final {
     float cursorx, cursory;
     float cursordx, cursordy;
 
+    // TODO track cursor button states
+
     int flags = 0;
     std::set<input_key_t> keys_down;
     std::set<input_key_t> keys_pressed;
