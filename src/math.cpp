@@ -95,3 +95,10 @@ void smooth_float::tick(const float dt) noexcept {
     float diff = (target - current);
     current += diff * agility * dt;
 }
+
+#include <glm/gtx/euler_angles.hpp>
+void updateViewMatrix(glm::mat4& view, const glm::vec3 pos, const float pitch, const float yaw) {
+    glm::mat4 transform_x = glm::eulerAngleX(glm::radians(pitch));
+    glm::mat4 transform_y = glm::eulerAngleY(glm::radians(yaw));
+    view = glm::translate(transform_x * transform_y, -pos);
+}

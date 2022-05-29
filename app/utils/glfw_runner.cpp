@@ -5,6 +5,17 @@
 
 #include <input.hpp>
 
+#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
+#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+
+#include "../../lib/imgui/imgui.cpp"
+#include "../../lib/imgui/imgui_draw.cpp"
+#include "../../lib/imgui/imgui_tables.cpp"
+#include "../../lib/imgui/imgui_widgets.cpp"
+#include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
+#include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
+
 input_key_t KEY_SPACE               = GLFW_KEY_SPACE;
 input_key_t KEY_APOSTROPHE          = GLFW_KEY_APOSTROPHE;
 input_key_t KEY_COMMA               = GLFW_KEY_COMMA;
@@ -182,6 +193,16 @@ void glfw_runner::register_callbacks() {
         glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
         runner->handleMouseButtonInput(button, action, mods);
     });
+
+    glfwSetScrollCallback(window, [] (GLFWwindow* window, double xoffset, double yoffset) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleScrollInput(xoffset, yoffset);
+    });
+
+    glfwSetWindowSizeCallback(window, [] (GLFWwindow* window, int width, int height) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleWindowSizeChanged(width, height);
+    });
 }
 
 void createGLFWWindow(glfw_runner& runner) {
@@ -191,8 +212,8 @@ void createGLFWWindow(glfw_runner& runner) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    printf("[INFO] Creating GLFW window \"%s\" (%dx%d)...\n", runner.view.title.c_str(), runner.view.width, runner.view.height);
-    runner.window = glfwCreateWindow(runner.view.width, runner.view.height, runner.view.title.c_str(), NULL, NULL);
+    printf("[INFO] Creating GLFW window \"%s\" (%dx%d)...\n", runner.display.title.c_str(), runner.display.width, runner.display.height);
+    runner.window = glfwCreateWindow(runner.display.width, runner.display.height, runner.display.title.c_str(), NULL, NULL);
     if (runner.window == NULL) {
         glfwTerminate();
         printf("[ERROR] Failed to create GLFW window.\n"); // TODO logging
@@ -202,7 +223,7 @@ void createGLFWWindow(glfw_runner& runner) {
 
     glfwSetWindowUserPointer(runner.window, &runner);
 
-    printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", runner.view.title.c_str(), runner.view.width, runner.view.height);
+    printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", runner.display.title.c_str(), runner.display.width, runner.display.height);
     glfwMakeContextCurrent(runner.window);
 
     printf("[INFO] Loading GLAD...\n");
@@ -225,3 +246,39 @@ bool glfw_runner::shouldExit() {
     return glfwWindowShouldClose(window);
 }
 
+void glfw_runner::imguiInit() {
+#ifdef IMGUI_API
+    imguiEnabled = true;
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+#endif // IMGUI_API
+}
+
+void glfw_runner::imguiPreRender() {
+#ifdef IMGUI_API
+    if (!imguiEnabled) return;
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+#endif // IMGUI_API
+}
+void glfw_runner::imguiPostRender() {
+#ifdef IMGUI_API
+    if (!imguiEnabled) return;
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif // IMGUI_API
+}
+
+void glfw_runner::imguiShutdown() {
+#ifdef IMGUI_API
+    if (!imguiEnabled) return;
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    imguiEnabled = false;
+#endif // IMGUI_API
+}

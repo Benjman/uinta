@@ -3,17 +3,18 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <camera.hpp>
 #include <file.hpp>
 #include <mesh.hpp>
 #include <model.hpp>
+#include <math.hpp>
+#include "imgui.h"
 
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
 
 struct camera3dRunner final : glfw_runner {
 public:
-    target_cam camera;
+    Camera camera;
 
     GLuint u_mvp;
     glm::mat4 model = glm::mat4(1.0);
@@ -23,10 +24,7 @@ public:
     gl_buf vbo;
     gl_buf ebo;
 
-    camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000) {
-        camera.target.y(15.0);
-        camera.target.z(60.0);
-        camera.pitch(0.0);
+    camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000), camera(state) {
     }
 
     void doInit() override {
@@ -35,6 +33,7 @@ public:
         GLuint indices[KILOBYTES(20)];
         init_ground(vertices, indices);
         init_buffers(vertices, indices);
+        imguiInit();
 
         glEnable(GL_DEPTH_TEST);
         setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -87,7 +86,7 @@ public:
         for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
             {
                 // transform to floor
-                auto pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1], vertices[i + pos_attrib.offset + 2], 1.0);
+                auto pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1] - 1, vertices[i + pos_attrib.offset + 2], 1.0);
                 memcpy(&vertices[i + pos_attrib.offset], &pos[0], 3 * sizeof(GLfloat));
             }
 
@@ -123,41 +122,41 @@ public:
                                        uniforms, locations, sizeof(locations) / sizeof(GLuint*));
     }
 
-    void doPreTick(const runner_state &state) override {
-        // cursor input
-
-        // keyboard input
-        if (state.input.isAnyKeyDown()) {
-            float speed = 50.0f * state.delta;
-            if (state.input.isKeyDown(KEY_W))
-                camera.target.smooth_float_z() -= speed;
-            if (state.input.isKeyDown(KEY_S))
-                camera.target.smooth_float_z() += speed;
-            if (state.input.isKeyDown(KEY_A))
-                camera.target.smooth_float_x() -= speed;
-            if (state.input.isKeyDown(KEY_D))
-                camera.target.smooth_float_x() += speed;
-        }
-    }
-
-    void doTick(const runner_state &state) override {
-        // model = glm::rotate(glm::mat4(1.0), state.runtime * 0.25f, glm::vec3(0, 1, 0));
-        camera.tick(state.delta);
+    void doTick(const RunnerState &state) override {
+        camera.tick(state);
     }
 
     void doPreRender() override {
+        imguiPreRender();
+
         glUseProgram(shader);
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
 
-        camera.update_view_matrix();
-        glm::mat4 proj_mat = glm::perspective(glm::radians(45.0), (double) view.width / (double) view.height, 0.01, 500.0);
-        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * camera.m_view_matrix * model)[0][0]);
+        updateViewMatrix(camera.view, camera.position, camera.pitch, camera.yaw);
+        glm::mat4 proj_mat = glm::perspective(glm::radians(45.0), (double) display.width / (double) display.height, 0.01, 500.0);
+        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * camera.view * model)[0][0]);
     }
 
     void doRender() override {
         glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
+
+        ImGui::Begin("Camera");
+        ImGui::Text("Position %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
+        ImGui::Text("Target   %+.2f %+.2f %+.2f", camera.target.x(), camera.target.y(), camera.target.z());
+        ImGui::NewLine();
+        ImGui::Text("Pitch    %+.2f", camera.pitch);
+        ImGui::Text("Yaw      %+.2f", camera.yaw);
+        ImGui::End();
+    }
+
+    void doPostRender() override {
+        imguiPostRender();
+    }
+
+    void doShutdown() override {
+        imguiShutdown();
     }
 
 };

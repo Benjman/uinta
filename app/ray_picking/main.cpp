@@ -8,6 +8,7 @@
 #include <imgui/imgui.h>
 
 #include <math.hpp>
+#include "camera.hpp"
 
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
@@ -15,8 +16,12 @@
 smooth_float ortho_size = smooth_float(5.0, 10.0);
 int imgui_level = 3;
 
+struct RayPickingCameraConfigs : CameraConfig {
+
+};
+
 struct rayPickingRunner final : glfw_runner {
-    debug_camera camera;
+    smooth_vec3 cam_pos = glm::vec3(0.0);
 
     GLuint vao;
     gl_buf vbo;
@@ -25,6 +30,7 @@ struct rayPickingRunner final : glfw_runner {
     glm::vec2 cursor_pos = glm::vec2(0.0);
 
     glm::mat4 m_proj;
+    glm::mat4 m_view;
     glm::mat4 mvp;
 
     GLuint shader;
@@ -36,14 +42,14 @@ struct rayPickingRunner final : glfw_runner {
     glm::vec4 world_space;
 
     rayPickingRunner() noexcept : glfw_runner("hello ray picking", 1000, 1000) {
-        camera.target.z(1.0);
+        cam_pos.z(1.0);
     }
 
     void doInit() override {
         init_shader();
         init_buffers();
         init_grid();
-        init_imgui();
+        imguiInit();
         setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         setBackground(glm::vec3(216, 204, 192) / glm::vec3(255.0f));
     }
@@ -187,16 +193,7 @@ struct rayPickingRunner final : glfw_runner {
                                        uniforms, locations, sizeof(locations) / sizeof(GLuint*));
     }
 
-    void init_imgui() {
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGui::StyleColorsDark();
-        ImGui::GetIO().FontGlobalScale = 1.2f;
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init("#version 330 core");
-    }
-
-    void doPreTick(const runner_state& state) override {
+    void doPreTick(const RunnerState& state) override {
         // handle input
         cursor_pos = glm::vec2(state.input.cursorx, state.input.cursory);
         updateCursorVectors();
@@ -206,16 +203,16 @@ struct rayPickingRunner final : glfw_runner {
         float magnitude = 8.0 * state.delta;
 
         if (state.input.isKeyDown(KEY_W))
-            camera.target.smooth_float_y() += magnitude;
+            cam_pos.smooth_float_y() += magnitude;
         if (state.input.isKeyDown(KEY_A))
-            camera.target.smooth_float_x() -= magnitude;
+            cam_pos.smooth_float_x() -= magnitude;
         if (state.input.isKeyDown(KEY_S))
-            camera.target.smooth_float_y() -= magnitude;
+            cam_pos.smooth_float_y() -= magnitude;
         if (state.input.isKeyDown(KEY_D))
-            camera.target.smooth_float_x() += magnitude;
+            cam_pos.smooth_float_x() += magnitude;
 
         // change ortho size
-        if (state.input.isKeyDown(KEY_EQUAL)) ortho_size.target = std::max(1.0f, ortho_size.target - magnitude);
+        if (state.input.isKeyDown(KEY_EQUAL)) ortho_size = std::max(1.0f, ortho_size.target - magnitude);
         if (state.input.isKeyDown(KEY_MINUS)) ortho_size += magnitude;
 
         // change imgui scale
@@ -223,27 +220,25 @@ struct rayPickingRunner final : glfw_runner {
 
         // reset view
         if (state.input.isKeyDown(KEY_R)) {
-            camera.target.smooth_float_x() = 0.0;
-            camera.target.smooth_float_y() = 0.0;
-            ortho_size.target = 1.0;
+            cam_pos.smooth_float_x() = 0.0;
+            cam_pos.smooth_float_y() = 0.0;
+            ortho_size = 1.0;
         }
     }
 
-    void doTick(const runner_state& state) override {
-        camera.tick(state.delta);
+    void doTick(const RunnerState& state) override {
+        cam_pos.tick(state.delta);
         ortho_size.tick(state.delta);
     }
 
     void doPreRender() override {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        imguiPreRender();
 
         m_proj = glm::ortho((double) -ortho_size.current, (double) ortho_size.current, (double) -ortho_size.current, (double) ortho_size.current, 0.0001, 1000.0);
-        camera.update_view_matrix();
+        updateViewMatrix(m_view, cam_pos, 0, 0);
 
         glm::mat4 model(1.0);
-        mvp = m_proj * camera.m_view_matrix * model;
+        mvp = m_proj * m_view * model;
 
         updateCursorVectors();
     }
@@ -268,21 +263,18 @@ struct rayPickingRunner final : glfw_runner {
     }
 
     void doPostRender() override {
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        imguiPostRender();
     }
 
     void updateCursorVectors() {
-        ndc_space   = glm::vec2(2.0 * cursor_pos.x / view.height - 1.0, -2.0 * cursor_pos.y / view.height + 1.0);
+        ndc_space   = glm::vec2(2.0 * cursor_pos.x / display.height - 1.0, -2.0 * cursor_pos.y / display.height + 1.0);
         clip_space  = glm::vec4(ndc_space, -1.0, 1.0);
         eye_space   = glm::inverse(m_proj) * clip_space;
-        world_space = glm::inverse(camera.m_view_matrix) * eye_space;
+        world_space = glm::inverse(m_view) * eye_space;
     }
 
     void doShutdown() override {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
+        imguiShutdown();
     }
 
 };

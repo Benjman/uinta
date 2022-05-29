@@ -1,4 +1,3 @@
-#include "glm/detail/func_vector_relational.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include <quadtree.hpp>
 

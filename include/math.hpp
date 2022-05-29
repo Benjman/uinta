@@ -1,6 +1,7 @@
 #ifndef UINTA_MATH_H
 #define UINTA_MATH_H
 
+#include <algorithm>
 struct running_avg final {
 public:
     unsigned int count;
@@ -25,6 +26,7 @@ private:
 
 };
 
+#include <glm/vec3.hpp>
 struct smooth_float final {
     float agility;
     float current;
@@ -59,6 +61,14 @@ struct smooth_vec3 {
         values[2] = z;
     }
 
+    smooth_vec3(const float x, const float y, const float z) {
+        this->x(x);
+        this->y(y);
+        this->z(z);
+    }
+
+    smooth_vec3(const glm::vec3& v) : smooth_vec3(v.x, v.y, v.z) {}
+
     float x() { return smooth_float_x().current; }
     void x(float v) { smooth_float_x().target = v; }
 
@@ -78,7 +88,28 @@ struct smooth_vec3 {
         smooth_float_z().tick(dt);
     }
 
-    // TODO math operators against glm::vec3
+    operator glm::vec3() {
+        return glm::vec3(x(), y(), z());
+    }
+
+    smooth_vec3& operator+=(const glm::vec3& v) {
+        x(x() + v.x);
+        y(y() + v.y);
+        z(z() + v.z);
+        return *this;
+    }
+
 };
+
+inline float map0to1Range(const float value, const float min, const float max) {
+    return (value - min) / (max - min);
+}
+
+inline float map0to1RangeClamped(const float value, const float min, const float max) {
+    return std::clamp(map0to1Range(value, min, max), 0.0f, 1.0f);
+}
+
+#include <glm/mat4x4.hpp>
+void updateViewMatrix(glm::mat4& view, const glm::vec3 pos, const float pitch, const float yaw);
 
 #endif // UINTA_MATH_H

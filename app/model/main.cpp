@@ -32,7 +32,7 @@ struct modelRunner final : glfw_runner {
         setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void doPreTick(const runner_state& state) override {
+    void doPreTick(const RunnerState& state) override {
         if (state.input.isKeyPressed(KEY_SPACE)) {
             glDeleteProgram(shader);
             load_shaders();

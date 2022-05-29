@@ -6,19 +6,21 @@
 #include <GL/gl.h>
 #include <glm/vec3.hpp>
 #include <string>
-#include <vector>
 
 const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
-struct viewport {
+struct Display {
     std::string title;
     unsigned int width;
     unsigned int height;
+    float aspectRatio;
 
-    viewport(const std::string& title, const unsigned int width, const unsigned int height) noexcept;
+    Display() : Display("", 0, 0) {}
+
+    Display(const std::string& title, const unsigned int width, const unsigned int height) noexcept;
 };
 
-struct runner_state final {
+struct RunnerState final {
     /// number of times the tick cycle has been executed
     unsigned int tick;
 
@@ -29,13 +31,16 @@ struct runner_state final {
     float runtime;
 
     input_state input;
+    Display display;
 };
 
-struct runner {
-    viewport view;
-    runner_state state;
+struct Runner {
+    Display display;
+    RunnerState state;
 
-    runner(const std::string& title, unsigned int width, unsigned int height) noexcept : view(title, width, height) {}
+    Runner(const std::string& title, unsigned int width, unsigned int height) noexcept : display(title, width, height) {
+        state.display = Display(title, width, height);
+    }
  
     void init();
     int run();
@@ -48,15 +53,17 @@ struct runner {
     void setClearMask(const GLbitfield mask);
     void setBackground(const glm::vec3& background);
 
+    void handleCursorPositionChanged(const double xpos, const double ypos);
     void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
     void handleMouseButtonInput(const int button, const int action, const int mods);
-    void handleCursorPositionChanged(const double xpos, const double ypos);
+    void handleScrollInput(const double xoffset, const double yoffset);
+    void handleWindowSizeChanged(const int width, const int height);
 
     virtual void doInit() {}
 
-    virtual void doPreTick(const runner_state& state) {}
-    virtual void doTick(const runner_state& state) {}
-    virtual void doPostTick(const runner_state& state) {}
+    virtual void doPreTick(const RunnerState& state) {}
+    virtual void doTick(const RunnerState& state) {}
+    virtual void doPostTick(const RunnerState& state) {}
 
     virtual void doPreRender() {}
     virtual void doRender() {}

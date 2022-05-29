@@ -30,8 +30,8 @@ struct quadtreeRunner final : glfw_runner {
     gl_buf ebo;
 
     quadtreeRunner() : glfw_runner("hello quadtree", 1088, 1088) {
-        squareWidth = (float) squareSize / view.width;
-        squareHeight = (float) squareSize / view.height;
+        squareWidth = (float) squareSize / display.width;
+        squareHeight = (float) squareSize / display.height;
     }
 
     void doInit() override {
@@ -94,7 +94,7 @@ struct quadtreeRunner final : glfw_runner {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((ebo.count + 6) * sizeof(GLuint)));
     }
 
-    void doTick(const runner_state& state) override {
+    void doTick(const RunnerState& state) override {
         vbo.count = 0;
         ebo.count = 0;
         ebo.offset = 0;
@@ -112,7 +112,7 @@ struct quadtreeRunner final : glfw_runner {
         glm::vec2 squarePos_outer(cos_outer * qt_width + qt.topLeftBounds.x, sin_outer * qt_height + qt.topLeftBounds.y);
         qt.insert((entt::entity) 2, squarePos_outer);
 
-        generateMesh(&qt, vertices, indices, &vbo.count, &ebo.count, &ebo.offset, view.width, view.height);
+        generateMesh(&qt, vertices, indices, &vbo.count, &ebo.count, &ebo.offset, display.width, display.height);
 
         // upload qt
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vbo.count, vertices);
