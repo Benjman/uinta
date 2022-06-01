@@ -1,4 +1,5 @@
 find_path(IMGUI_INCLUDE names "imgui.h" PATHS "${CMAKE_SOURCE_DIR}/lib/imgui")
+set(UINTA_INCLUDES ${UINTA_INCLUDES} ${IMGUI_INCLUDE})
 
 if (NOT IMGUI_INCLUDE)
     message(FATAL_ERROR "could not locate imgui/imgui.h in ${CMAKE_SOURCE_DIR}/lib/imgui")

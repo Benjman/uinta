@@ -1,7 +1,8 @@
 #ifndef UINTA_APP_UTILS_HPP
 #define UINTA_APP_UTILS_HPP
 
-#include <cfg.hpp>
+#include <uinta/cfg.hpp>
+
 #include <camera.hpp>
 
 #include "./utils/debug_controller.hpp"

@@ -1,5 +1,5 @@
 #include <file.hpp>
-#include <cfg.hpp>
+#include <uinta/cfg.hpp>
 
 #include <ios>
 #include <istream>
