@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #define UINTA_APP_UTILS_IMPL
-#include "../app_utils.hpp"
+#include "../utils/utils.hpp"
 
 #include <font.hpp>
 #include <macros.hpp>

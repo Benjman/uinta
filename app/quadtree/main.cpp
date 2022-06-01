@@ -7,7 +7,7 @@
 #include <quadtree.hpp>
 
 #define UINTA_APP_UTILS_IMPL
-#include "../app_utils.hpp"
+#include "../utils/utils.hpp"
 
 struct quadtreeRunner final : glfw_runner {
     unsigned int width = 1088;

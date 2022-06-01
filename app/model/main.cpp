@@ -13,7 +13,7 @@
 #include <shader.hpp>
 
 #define UINTA_APP_UTILS_IMPL
-#include "../app_utils.hpp"
+#include "../utils/utils.hpp"
 
 struct modelRunner final : glfw_runner {
     unsigned int icount = 0, vcount = 0;

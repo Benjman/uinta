@@ -11,7 +11,7 @@
 #include "camera.hpp"
 
 #define UINTA_APP_UTILS_IMPL
-#include "../app_utils.hpp"
+#include "../utils/utils.hpp"
 
 smooth_float ortho_size = smooth_float(5.0, 10.0);
 int imgui_level = 3;

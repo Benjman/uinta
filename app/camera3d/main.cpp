@@ -8,7 +8,7 @@
 #include <math.hpp>
 
 #define UINTA_APP_UTILS_IMPL
-#include "../app_utils.hpp"
+#include "../utils/utils.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>

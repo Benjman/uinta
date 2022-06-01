@@ -4,7 +4,7 @@
 #include <cstdlib>
 
 #define UINTA_APP_UTILS_IMPL
-#include "../app_utils.hpp"
+#include "../utils/utils.hpp"
 
 struct imgui_runner final : glfw_runner {
     unsigned int frame = 0;
