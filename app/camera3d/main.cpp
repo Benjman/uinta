@@ -94,7 +94,7 @@ public:
             {
                 // colorize
                 glm::vec3 color(0);
-                glm::vec3 norm = glm::vec4(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2], 0.0);
+                glm::vec3 norm = glm::vec3(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2]);
 
                 color += sides  * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));          // paint sides
                 color += top * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));    // paint top

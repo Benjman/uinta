@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 running_avg::running_avg(const unsigned int sample_size) noexcept {
     buffer = new float[sample_size];
