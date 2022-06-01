@@ -1,6 +1,8 @@
 #ifndef UINTA_INPUT_HPP
 #define UINTA_INPUT_HPP
 
+#include <unordered_set>
+
 using input_key_t = int;
 using mouse_button_t = int;
 
@@ -8,7 +10,7 @@ const input_key_t KEY_UNKNOWN        = -1;
 const input_key_t ACTION_UNKNOWN     = -1;
 const input_key_t MOD_UNKNOWN        = -1;
 
-// below are defined per-platform. Example in glfw_runner.cpp
+// input and mouse keys are defined per-platform. Example in glfw_runner.cpp
 extern input_key_t KEY_SPACE;
 extern input_key_t KEY_APOSTROPHE;
 extern input_key_t KEY_COMMA;
@@ -151,25 +153,29 @@ extern mouse_button_t MOUSE_BUTTON_LEFT;
 extern mouse_button_t MOUSE_BUTTON_RIGHT;
 extern mouse_button_t MOUSE_BUTTON_MIDDLE;
 
-#include <set>
 struct input_state final {
     int flags = 0;
     float cursorx, cursory;
     float cursordx, cursordy;
-    std::set<input_key_t> keys_down;
-    std::set<input_key_t> keys_pressed;
-    std::set<input_key_t> keys_released;
-    std::set<input_key_t> keys_repeated;
-    std::set<mouse_button_t> mouse_down;
-    std::set<mouse_button_t> mouse_pressed;
-    std::set<mouse_button_t> mouse_released;
+    float scrolldx, scrolldy;
+    std::unordered_set<input_key_t> keys_down;
+    std::unordered_set<input_key_t> keys_pressed;
+    std::unordered_set<input_key_t> keys_released;
+    std::unordered_set<input_key_t> keys_repeated;
+    std::unordered_set<mouse_button_t> mouse_down;
+    std::unordered_set<mouse_button_t> mouse_pressed;
+    std::unordered_set<mouse_button_t> mouse_released;
 
     void reset() {
         cursordx = 0;
         cursordy = 0;
+        scrolldx = 0;
+        scrolldy = 0;
         keys_pressed.clear();
         keys_released.clear();
         keys_repeated.clear();
+        mouse_pressed.clear();
+        mouse_released.clear();
     }
 
     bool isAltDown() const {

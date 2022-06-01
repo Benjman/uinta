@@ -16,7 +16,8 @@
 #include "../app_utils.hpp"
 
 struct modelRunner final : glfw_runner {
-    unsigned int icount = 0;
+    unsigned int icount = 0, vcount = 0;
+
     GLuint shader, u_model;
     float vbuf[MEGABYTES(5)];
     unsigned int ibuf[MEGABYTES(5)];
@@ -27,9 +28,11 @@ struct modelRunner final : glfw_runner {
         load_shaders();
         init_obj();
         init_buffers();
+        glEnable(GL_DEPTH_TEST);
+        setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void doPreTick(const runner_state& state) override {
+    void doPreTick(const RunnerState& state) override {
         if (state.input.isKeyPressed(KEY_SPACE)) {
             glDeleteProgram(shader);
             load_shaders();
@@ -39,10 +42,10 @@ struct modelRunner final : glfw_runner {
 
     void init_obj() {
         const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
-            {MeshAttribType_Position, mesh_attrib(3, 6, 0)},
-            {MeshAttribType_Normal, mesh_attrib(3, 6, 3)},
+            {MeshAttribType_Position, mesh_attrib(6, 0)},
+            {MeshAttribType_Normal, mesh_attrib(6, 3)},
         };
-        loadObj(Model_Suzanne, vbuf, ibuf, &icount, &attribs);
+        loadObj(Model_Suzanne, vbuf, &vcount, ibuf, &icount, &attribs);
     }
 
     void init_buffers() {
@@ -80,7 +83,7 @@ struct modelRunner final : glfw_runner {
                                        uniforms, uniform_locations, sizeof(uniforms) / sizeof(char*));
     }
 
-    void render() {
+    void doRender() override {
         glm::mat4 mat = glm::rotate(glm::mat4(1.0), (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
         glUniformMatrix4fv(u_model, 1, GL_FALSE, &mat[0][0]);
         glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
@@ -91,31 +94,5 @@ struct modelRunner final : glfw_runner {
 modelRunner runner;
 
 int main(const int argc, const char **argv) {
-    runner.init();
-
-    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        runner.handleKeyInput(key, scancode, action, mods);
-    });
-    glEnable(GL_DEPTH_TEST);
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        while (!runner.shouldRenderFrame())
-            runner.tick(glfwGetTime());
-        runner.render();
-
-        glfwSwapBuffers(runner.window);
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* arg) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-    return 0;
+    return runner.run();
 }

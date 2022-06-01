@@ -85,7 +85,7 @@ public:
         };
         unsigned int vbuf_count = 0;
         unsigned int ioffset = 0;
-        font::generate_mesh(&text, font_handle, view.width, view.height, &attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
+        font::generate_mesh(&text, font_handle, display.width, display.height, &attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
 
         glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VBUF_SIZE, vbuf, GL_STATIC_DRAW);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IBUF_SIZE, ibuf, GL_STATIC_DRAW);
@@ -135,24 +135,5 @@ public:
 fontRunner runner;
 
 int main(const int argc, const char **argv) {
-    runner.init();
-
-    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        runner.handleKeyInput(key, scancode, action, mods);
-    });
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-        while (!runner.shouldRenderFrame())
-            runner.tick(glfwGetTime());
-        runner.render();
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* arg) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-    return 0;
+    return runner.run();
 }

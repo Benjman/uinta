@@ -21,14 +21,14 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
             v2              v4
     */
 
-    auto v0 = vec2(qt->topLeftBounds - LINE_SIZE_HALF);
-    auto v1 = vec2(qt->topLeftBounds + LINE_SIZE_HALF);
-    auto v2 = vec2(qt->topLeftBounds.x - LINE_SIZE_HALF, qt->bottomRightBounds.y + LINE_SIZE_HALF);
-    auto v3 = vec2(qt->topLeftBounds.x + LINE_SIZE_HALF, qt->bottomRightBounds.y - LINE_SIZE_HALF);
-    auto v4 = vec2(qt->bottomRightBounds + LINE_SIZE_HALF);
-    auto v5 = vec2(qt->bottomRightBounds - LINE_SIZE_HALF);
-    auto v6 = vec2(qt->bottomRightBounds.x + LINE_SIZE_HALF, qt->topLeftBounds.y - LINE_SIZE_HALF);
-    auto v7 = vec2(qt->bottomRightBounds.x - LINE_SIZE_HALF, qt->topLeftBounds.y + LINE_SIZE_HALF);
+    auto v0 = glm::vec2(qt->topLeftBounds - LINE_SIZE_HALF);
+    auto v1 = glm::vec2(qt->topLeftBounds + LINE_SIZE_HALF);
+    auto v2 = glm::vec2(qt->topLeftBounds.x - LINE_SIZE_HALF, qt->bottomRightBounds.y + LINE_SIZE_HALF);
+    auto v3 = glm::vec2(qt->topLeftBounds.x + LINE_SIZE_HALF, qt->bottomRightBounds.y - LINE_SIZE_HALF);
+    auto v4 = glm::vec2(qt->bottomRightBounds + LINE_SIZE_HALF);
+    auto v5 = glm::vec2(qt->bottomRightBounds - LINE_SIZE_HALF);
+    auto v6 = glm::vec2(qt->bottomRightBounds.x + LINE_SIZE_HALF, qt->topLeftBounds.y - LINE_SIZE_HALF);
+    auto v7 = glm::vec2(qt->bottomRightBounds.x - LINE_SIZE_HALF, qt->topLeftBounds.y + LINE_SIZE_HALF);
 
     vertexBuffer[0] = v0.x;
     vertexBuffer[1] = v0.y;

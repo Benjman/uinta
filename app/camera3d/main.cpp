@@ -1,172 +1,170 @@
+#include "imgui.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <camera.hpp>
+#include <file.hpp>
+#include <mesh.hpp>
+#include <model.hpp>
+#include <math.hpp>
 
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
 
-const unsigned int VBUF_SIZE = KILOBYTES(15);
-const unsigned int IBUF_SIZE = KILOBYTES(15);
-
-const unsigned int WINDOW_WIDTH = 1000;
-const unsigned int WINDOW_HEIGHT = 1000;
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 struct camera3dRunner final : glfw_runner {
 public:
-    camera cam;
+    Camera camera;
 
     GLuint u_mvp;
+    glm::mat4 model = glm::mat4(1.0);
 
-    float runtime = 0.0;
     GLuint shader;
     GLuint vao;
     gl_buf vbo;
+    gl_buf ebo;
 
     camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000) {
-        cam.pos.y = 5.0;
-        cam.pos.z = 7.0;
-        cam.pitch(30.0);
     }
 
     void doInit() override {
         init_shader();
-        init_buffers();
-        init_mesh();
+        GLfloat vertices[KILOBYTES(20)];
+        GLuint indices[KILOBYTES(20)];
+        init_ground(vertices, indices);
+        init_buffers(vertices, indices);
+        imguiInit();
+
+        glEnable(GL_DEPTH_TEST);
+        setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void init_buffers() {
+    void init_buffers(GLfloat* const vertices, GLuint* const indices) {
         glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo.id);
+
+        GLuint ids[2];
+        glGenBuffers(2, ids);
+        vbo.id = ids[0];
+        ebo.id = ids[1];
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
+        glBufferData(GL_ARRAY_BUFFER, vbo.count * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo.count * sizeof(GLuint), indices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*) (3 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*) (3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*) (6 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
     }
 
-    void init_mesh() {
-        GLfloat vertices[] = {
-            // positions        // colors
-            -1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
-             1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
-             1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
-             1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
-            -1.0,  1.0, -1.0,   1.0, 0.0, 0.0,
-            -1.0, -1.0, -1.0,   1.0, 0.0, 0.0,
+    void init_ground(GLfloat* const vertices, GLuint* const indices) {
+        unsigned int local_vcount = 0,
+                     local_icount = 0;
+            
+        const mesh_attrib pos_attrib(9, 0),
+                          norm_attrib(9, 3),
+                          color_attrib(9, 6);
 
-            -1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
-             1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
-            -1.0,  1.0,  1.0,   0.0, 1.0, 0.0,
-            -1.0, -1.0,  1.0,   0.0, 1.0, 0.0,
-
-            -1.0,  1.0,  1.0,   0.0, 0.0, 1.0,
-            -1.0,  1.0, -1.0,   0.0, 0.0, 1.0,
-            -1.0, -1.0, -1.0,   0.0, 0.0, 1.0,
-            -1.0, -1.0, -1.0,   0.0, 0.0, 1.0,
-            -1.0, -1.0,  1.0,   0.0, 0.0, 1.0,
-            -1.0,  1.0,  1.0,   0.0, 0.0, 1.0,
-
-             1.0,  1.0,  1.0,   1.0, 1.0, 0.0,
-             1.0,  1.0, -1.0,   1.0, 1.0, 0.0,
-             1.0, -1.0, -1.0,   1.0, 1.0, 0.0,
-             1.0, -1.0, -1.0,   1.0, 1.0, 0.0,
-             1.0, -1.0,  1.0,   1.0, 1.0, 0.0,
-             1.0,  1.0,  1.0,   1.0, 1.0, 0.0,
-
-            -1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
-             1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
-             1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
-             1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
-            -1.0, -1.0,  1.0,   1.0, 0.0, 1.0,
-            -1.0, -1.0, -1.0,   1.0, 0.0, 1.0,
-
-            -1.0,  1.0, -1.0,   0.0, 1.0, 1.0,
-             1.0,  1.0, -1.0,   0.0, 1.0, 1.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
-             1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
-            -1.0,  1.0,  1.0,   0.0, 1.0, 1.0,
-            -1.0,  1.0, -1.0,   0.0, 1.0, 1.0
+        const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
+            {MeshAttribType_Position, pos_attrib},
+            {MeshAttribType_Normal, norm_attrib},
+            {MeshAttribType_Color, color_attrib},
         };
-        glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        vbo.count = 36;
+            
+        loadObj(Model_Cube, vertices, &local_vcount, indices, &local_icount, &attribs);
+
+        const glm::vec3 top(0.051, 0.933, 0.996);
+        const glm::vec3 sides = glm::vec3(0.025, 0.465, 0.465);
+        const glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(15, 3, 15));
+
+        local_vcount *= 1.5; // loadObj doesn't load colors, so we adjust for color attrib
+        for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
+            {
+                // transform to floor
+                auto pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1] - 1, vertices[i + pos_attrib.offset + 2], 1.0);
+                memcpy(&vertices[i + pos_attrib.offset], &pos[0], 3 * sizeof(GLfloat));
+            }
+
+            {
+                // colorize
+                glm::vec3 color(0);
+                glm::vec3 norm = glm::vec4(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2], 0.0);
+
+                color += sides  * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));          // paint sides
+                color += top * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));    // paint top
+
+                memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
+            }
+        }
+
+        vbo.count += local_vcount;
+        ebo.count += local_icount;
     }
 
     void init_shader() {
-        const char *vshader =
-            "#version 330 core\n"
-            "layout (location = 0) in vec3 in_pos;"
-            "layout (location = 1) in vec3 in_color;"
-            "uniform mat4 u_model = mat4(1.0);"
-            "uniform mat4 u_view = mat4(1.0);"
-            "uniform mat4 u_proj = mat4(1.0);"
-            "uniform mat4 u_mvp = mat4(1.0);"
-            "out vec3 pass_color;"
-            "void main() {"
-            "  pass_color = in_color;"
-            "  gl_Position = u_mvp * vec4(in_pos, 1.0);"
-            "}\0";
+        char vshader[get_file_size("shader/camera3d.vert")];
+        char fshader[get_file_size("shader/camera3d.frag")];
 
-        const char *fshader =
-            "#version 330 core\n"
-            "in vec3 pass_color;"
-            "void main() {"
-            "  gl_FragColor = vec4(pass_color, 1.0);"
-            "}\0";
+        read_file_raw("shader/camera3d.vert", vshader);
+        read_file_raw("shader/camera3d.frag", fshader);
 
         const char* sources[] = { vshader, fshader };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
+        const GLint buffer_lengths[] = { (GLint) sizeof(vshader), (GLint) sizeof(fshader) };
         const char* uniforms[] = { "u_mvp" };
-        const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
-        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
+        GLuint* locations[] = { &u_mvp };
+        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
+                                       uniforms, locations, sizeof(locations) / sizeof(GLuint*));
+    }
+
+    void doTick(const RunnerState &state) override {
+        camera.tick(state);
+    }
+
+    void doPreRender() override {
+        imguiPreRender();
+
+        glUseProgram(shader);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+
+        updateViewMatrix(camera.view, camera.position, camera.pitch, camera.yaw);
+        glm::mat4 proj_mat = glm::perspective(glm::radians(camera.config.fov), (float) display.width / (float) display.height, camera.config.nearPlane, camera.config.farPlane);
+        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * camera.view * model)[0][0]);
     }
 
     void doRender() override {
-        glEnable(GL_DEPTH_TEST);
-        glUseProgram(shader);
+        glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
 
-        glm::mat4 model_matrix, projection_matrix;
+        ImGui::Begin("Camera");
+        ImGui::Text("Translation:   wasd or right-mouse");
+        ImGui::Text("Rotation:      cv or middle-mouse");
+        ImGui::Text("Distance:      y-scroll");
+        ImGui::NewLine();
+        ImGui::NewLine();
+        ImGui::BeginChild("Camera");
+        ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
+        ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x(), camera.target.y(), camera.target.z());
+        ImGui::Text("Pitch        %+.2f", camera.pitch);
+        ImGui::Text("Yaw          %+.2f", camera.yaw);
+        ImGui::EndChild();
+        ImGui::End();
 
-        model_matrix = glm::scale(glm::mat4(1.0), glm::vec3(3.0, 0.125, 3.0));
-
-        glm::mat4 view_matrix;
-        get_view_matrix(&view_matrix, cam.pos, cam.pitch(), cam.yaw());
-
-        float near_plane = 0.1f,
-        far_plane = 100.0f;
-
-        projection_matrix = glm::perspective((float) glm::radians(90.0), (float) view.width / (float) view.height, near_plane, far_plane);
-        // projection_matrix = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, near_plane, far_plane);
-
-        glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(projection_matrix * view_matrix * model_matrix)[0][0]);
-
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-
-        glDrawArrays(GL_TRIANGLES, 0, vbo.count);
     }
 
-    void doPreTick(const runner_state& state) override {
-        if (state.input.isKeyPressed(KEY_E))
-            cam.pos.z -= 1.0;
-        if (state.input.isKeyPressed(KEY_D))
-            cam.pos.z += 1.0;
-        if (state.input.isKeyPressed(KEY_S))
-            cam.pos.x -= 1.0;
-        if (state.input.isKeyPressed(KEY_F))
-            cam.pos.x += 1.0;
+    void doPostRender() override {
+        imguiPostRender();
     }
 
-    void doTick(const runner_state& state) override {
-        runtime += state.dt;
+    void doShutdown() override {
+        imguiShutdown();
     }
 
 };
@@ -174,60 +172,5 @@ public:
 camera3dRunner runner;
 
 int main(const int argc, const char** argv) {
-    debug_controller debug(WINDOW_WIDTH, WINDOW_HEIGHT);
-    metrics_controller& metrics = debug.metrics;
-
-    // register metrics
-    auto tick_m     = metrics.init_metric(METRIC_FLOAT, "tick");
-    auto text_m     = metrics.init_metric(METRIC_FLOAT, "text");
-    auto render_m   = metrics.init_metric(METRIC_FLOAT, "render");
-
-    // register averages
-    auto render_a   = running_avg(20);
-
-    auto timer = debug.create_timer();
-    runner.init();
-    debug.init();
-    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        runner.handleKeyInput(key, scancode, action, mods);
-    });
-
-    printf("[INFO] Init time %g seconds.\n", debug.duration_milli(timer) / 1000.0f);
-
-    double dt = 0.0;
-    double time = 0.0;
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-
-        dt = glfwGetTime() - time;
-        time += dt;
-
-        debug.reset_timer(timer);
-        while (!runner.shouldRenderFrame())
-            runner.tick(glfwGetTime());
-        metrics.set(tick_m, (float) debug.duration_micro(timer));
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        debug.reset_timer(timer);
-        debug.render();
-        runner.render();
-        render_a.add(debug.duration_micro(timer));
-        metrics.set(render_m, render_a.avg());
-
-        debug.mesh_metric(tick_m);
-        debug.mesh_metric(render_m);
-        debug.mesh_metric(text_m);
-        metrics.set(text_m, (float) debug.duration_micro(timer));
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* arg) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-    return 0;
+    return runner.run();
 }

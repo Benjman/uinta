@@ -1,8 +1,20 @@
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include "glfw_runner.hpp"
 
 #include <input.hpp>
+
+#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
+#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+
+#include "../../lib/imgui/imgui.cpp"
+#include "../../lib/imgui/imgui_draw.cpp"
+#include "../../lib/imgui/imgui_tables.cpp"
+#include "../../lib/imgui/imgui_widgets.cpp"
+#include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
+#include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
 
 input_key_t KEY_SPACE               = GLFW_KEY_SPACE;
 input_key_t KEY_APOSTROPHE          = GLFW_KEY_APOSTROPHE;
@@ -146,8 +158,15 @@ mouse_button_t MOUSE_BUTTON_LEFT    = GLFW_MOUSE_BUTTON_LEFT;
 mouse_button_t MOUSE_BUTTON_RIGHT   = GLFW_MOUSE_BUTTON_RIGHT;
 mouse_button_t MOUSE_BUTTON_MIDDLE  = GLFW_MOUSE_BUTTON_MIDDLE;
 
+glfw_runner::~glfw_runner() {
+    if (window)
+        glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
 void glfw_runner::internal_init() {
     createGLFWWindow(*this);
+    register_callbacks();
 }
 
 void glfw_runner::internal_shutdown() {
@@ -157,6 +176,35 @@ void glfw_runner::swap_buffers() {
     glfwSwapBuffers(window);
 }
 
+void glfw_runner::register_callbacks() {
+    glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q)
+            return glfwSetWindowShouldClose(runner->window, true);
+        runner->handleKeyInput(key, scancode, action, mods);
+    });
+
+    glfwSetCursorPosCallback(window, [] (GLFWwindow* window, double xpos, double ypos) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleCursorPositionChanged(xpos, ypos);
+    });
+
+    glfwSetMouseButtonCallback(window, [] (GLFWwindow* window, int button, int action, int mods) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleMouseButtonInput(button, action, mods);
+    });
+
+    glfwSetScrollCallback(window, [] (GLFWwindow* window, double xoffset, double yoffset) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleScrollInput(xoffset, yoffset);
+    });
+
+    glfwSetWindowSizeCallback(window, [] (GLFWwindow* window, int width, int height) {
+        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        runner->handleWindowSizeChanged(width, height);
+    });
+}
+
 void createGLFWWindow(glfw_runner& runner) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -164,15 +212,18 @@ void createGLFWWindow(glfw_runner& runner) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    printf("[INFO] Creating GLFW window \"%s\" (%dx%d)...\n", runner.view.title.c_str(), runner.view.width, runner.view.height);
-    runner.window = glfwCreateWindow(runner.view.width, runner.view.height, runner.view.title.c_str(), NULL, NULL);
+    printf("[INFO] Creating GLFW window \"%s\" (%dx%d)...\n", runner.display.title.c_str(), runner.display.width, runner.display.height);
+    runner.window = glfwCreateWindow(runner.display.width, runner.display.height, runner.display.title.c_str(), NULL, NULL);
     if (runner.window == NULL) {
         glfwTerminate();
         printf("[ERROR] Failed to create GLFW window.\n"); // TODO logging
         throw std::exception();
         return;
     }
-    printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", runner.view.title.c_str(), runner.view.width, runner.view.height);
+
+    glfwSetWindowUserPointer(runner.window, &runner);
+
+    printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", runner.display.title.c_str(), runner.display.width, runner.display.height);
     glfwMakeContextCurrent(runner.window);
 
     printf("[INFO] Loading GLAD...\n");
@@ -181,4 +232,53 @@ void createGLFWWindow(glfw_runner& runner) {
         throw std::exception();
     }
     printf("[INFO] Done loading GLAD.\n");
+}
+
+double glfw_runner::getRuntime() {
+    return glfwGetTime();
+}
+
+void glfw_runner::pollInput() {
+    glfwPollEvents();
+}
+
+bool glfw_runner::shouldExit() {
+    return glfwWindowShouldClose(window);
+}
+
+void glfw_runner::imguiInit() {
+#ifdef IMGUI_API
+    imguiEnabled = true;
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+#endif // IMGUI_API
+}
+
+void glfw_runner::imguiPreRender() {
+#ifdef IMGUI_API
+    if (!imguiEnabled) return;
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+#endif // IMGUI_API
+}
+void glfw_runner::imguiPostRender() {
+#ifdef IMGUI_API
+    if (!imguiEnabled) return;
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif // IMGUI_API
+}
+
+void glfw_runner::imguiShutdown() {
+#ifdef IMGUI_API
+    if (!imguiEnabled) return;
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    imguiEnabled = false;
+#endif // IMGUI_API
 }

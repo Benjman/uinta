@@ -1,29 +1,40 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/imgui.h>
 
+#include <math.hpp>
+#include "camera.hpp"
+
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
 
-const auto background = glm::vec3(216, 204, 192) / glm::vec3(255.0f);
-smooth_float ortho_size = smooth_float(10.0, 5.0);
+smooth_float ortho_size = smooth_float(5.0, 10.0);
 int imgui_level = 3;
 
-struct rayPickingRunner final : glfw_runner {
-    camera_controller camera;
-    glm::mat4 m_view;
-    glm::mat4 m_proj;
-    glm::mat4 mvp;
+struct RayPickingCameraConfigs : CameraConfig {
 
-    GLuint shader;
-    GLuint u_mvp;
+};
+
+struct rayPickingRunner final : glfw_runner {
+    smooth_vec3 cam_pos = glm::vec3(0.0);
 
     GLuint vao;
     gl_buf vbo;
     gl_buf ebo;
+
+    glm::vec2 cursor_pos = glm::vec2(0.0);
+
+    glm::mat4 m_proj;
+    glm::mat4 m_view;
+    glm::mat4 mvp;
+
+    GLuint shader;
+    GLuint u_mvp;
 
     glm::vec2 ndc_space;
     glm::vec4 clip_space;
@@ -31,13 +42,16 @@ struct rayPickingRunner final : glfw_runner {
     glm::vec4 world_space;
 
     rayPickingRunner() noexcept : glfw_runner("hello ray picking", 1000, 1000) {
+        cam_pos.z(1.0);
     }
 
     void doInit() override {
         init_shader();
         init_buffers();
         init_grid();
-        init_imgui();
+        imguiInit();
+        setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        setBackground(glm::vec3(216, 204, 192) / glm::vec3(255.0f));
     }
 
     void init_buffers() {
@@ -179,49 +193,51 @@ struct rayPickingRunner final : glfw_runner {
                                        uniforms, locations, sizeof(locations) / sizeof(GLuint*));
     }
 
-    void init_imgui() {
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGui::StyleColorsDark();
-        ImGui::GetIO().FontGlobalScale = 1.2f;
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init("#version 330 core");
-    }
-
-    void doPreTick(const runner_state& state) override {
+    void doPreTick(const RunnerState& state) override {
         // handle input
-        cursorx = state.input.cursorx;
-        cursory = state.input.cursory;
+        cursor_pos = glm::vec2(state.input.cursorx, state.input.cursory);
         updateCursorVectors();
+
         if (!state.input.isAnyKeyDown()) return;
-        float speed = 8.0;
-        if (state.input.isKeyDown(KEY_UP)) camera.target_y += speed * state.dt;
-        if (state.input.isKeyDown(KEY_LEFT)) camera.target_x -= speed * state.dt;
-        if (state.input.isKeyDown(KEY_DOWN)) camera.target_y -= speed * state.dt;
-        if (state.input.isKeyDown(KEY_RIGHT)) camera.target_x += speed * state.dt;
-        if (state.input.isKeyDown(KEY_EQUAL)) ortho_size.target = std::max(1.0f, ortho_size.target - speed * state.dt);
-        if (state.input.isKeyDown(KEY_MINUS)) ortho_size += speed * state.dt;
+
+        float magnitude = 8.0 * state.delta;
+
+        if (state.input.isKeyDown(KEY_W))
+            cam_pos.smooth_float_y() += magnitude;
+        if (state.input.isKeyDown(KEY_A))
+            cam_pos.smooth_float_x() -= magnitude;
+        if (state.input.isKeyDown(KEY_S))
+            cam_pos.smooth_float_y() -= magnitude;
+        if (state.input.isKeyDown(KEY_D))
+            cam_pos.smooth_float_x() += magnitude;
+
+        // change ortho size
+        if (state.input.isKeyDown(KEY_EQUAL)) ortho_size = std::max(1.0f, ortho_size.target - magnitude);
+        if (state.input.isKeyDown(KEY_MINUS)) ortho_size += magnitude;
+
+        // change imgui scale
         if (state.input.isKeyDown(KEY_I)) state.input.isShiftDown() ? std::max(0, --imgui_level) : std::min(3, ++imgui_level); 
+
+        // reset view
         if (state.input.isKeyDown(KEY_R)) {
-            camera.target_x.target = 0.0;
-            camera.target_y.target = 0.0;
-            ortho_size.target = 1.0;
+            cam_pos.smooth_float_x() = 0.0;
+            cam_pos.smooth_float_y() = 0.0;
+            ortho_size = 1.0;
         }
     }
 
-    void doTick(const runner_state& state) override {
-        camera.tick(state.dt);
-        ortho_size.tick(state.dt);
+    void doTick(const RunnerState& state) override {
+        cam_pos.tick(state.delta);
+        ortho_size.tick(state.delta);
     }
 
     void doPreRender() override {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        imguiPreRender();
+
+        m_proj = glm::ortho((double) -ortho_size.current, (double) ortho_size.current, (double) -ortho_size.current, (double) ortho_size.current, 0.0001, 1000.0);
+        updateViewMatrix(m_view, cam_pos, 0, 0);
 
         glm::mat4 model(1.0);
-        camera.view_matrix(&m_view);
-        m_proj = glm::ortho((double) -ortho_size.current, (double) ortho_size.current, (double) -ortho_size.current, (double) ortho_size.current, 0.0001, 1000.0);
         mvp = m_proj * m_view * model;
 
         updateCursorVectors();
@@ -247,21 +263,18 @@ struct rayPickingRunner final : glfw_runner {
     }
 
     void doPostRender() override {
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        imguiPostRender();
     }
 
     void updateCursorVectors() {
-        ndc_space   = glm::vec2(2.0 * cursorx / view.width - 1.0, -2.0 * cursory / view.height + 1.0);
+        ndc_space   = glm::vec2(2.0 * cursor_pos.x / display.height - 1.0, -2.0 * cursor_pos.y / display.height + 1.0);
         clip_space  = glm::vec4(ndc_space, -1.0, 1.0);
         eye_space   = glm::inverse(m_proj) * clip_space;
         world_space = glm::inverse(m_view) * eye_space;
     }
 
     void doShutdown() override {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
+        imguiShutdown();
     }
 
 };
@@ -269,29 +282,5 @@ struct rayPickingRunner final : glfw_runner {
 rayPickingRunner runner;
 
 int main(const int argc, const char** argv) {
-    runner.init();
-
-    glfwSetKeyCallback(runner.window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner.window, true);
-        runner.handleKeyInput(key, scancode, action, mods);
-    });
-
-    glfwSetCursorPosCallback(runner.window, [] (GLFWwindow* window, double xpos, double ypos) {
-        runner.handleCursorPositionChanged(xpos, ypos);
-    });
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-        runner.tick(glfwGetTime());
-        runner.render(background, GL_COLOR_BUFFER_BIT);
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* args) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-
-    return 0;
+    return runner.run();
 }

@@ -30,7 +30,6 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/cfg.hpp.in ${CMAKE_BINARY_DIR}/generate
 add_library(uinta STATIC 
 
   ./src/camera.cpp
-  ./src/debug.cpp
   ./src/file.cpp
   ./src/font.cpp
   ./src/input.cpp

@@ -16,7 +16,7 @@ struct quadtreeRunner final : glfw_runner {
     GLfloat vertices[KILOBYTES(2)];
     GLuint indices[KILOBYTES(2)];
 
-    quad qt = quad(vec2(32), vec2(1056), 16);
+    quad qt = quad(glm::vec2(32), glm::vec2(1056), 16);
     float qt_width = qt.bottomRightBounds.x - qt.topLeftBounds.x;
     float qt_height = qt.bottomRightBounds.y - qt.topLeftBounds.y;
 
@@ -24,14 +24,14 @@ struct quadtreeRunner final : glfw_runner {
     float squareWidth;
     float squareHeight;
 
-    GLuint uniformColor = 0u;
+    GLuint u_color = 0u;
 
     gl_buf vbo;
     gl_buf ebo;
 
     quadtreeRunner() : glfw_runner("hello quadtree", 1088, 1088) {
-        squareWidth = (float) squareSize / view.width;
-        squareHeight = (float) squareSize / view.height;
+        squareWidth = (float) squareSize / display.width;
+        squareHeight = (float) squareSize / display.height;
     }
 
     void doInit() override {
@@ -75,7 +75,7 @@ struct quadtreeRunner final : glfw_runner {
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const char* uniform_names[] = { "u_color" };
         const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
-        GLuint* uniform_locs[] = { &uniformColor };
+        GLuint* uniform_locs[] = { &u_color };
         create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
                               uniform_names, uniform_locs, sizeof(uniform_locs) / sizeof(GLuint*));
     }
@@ -84,17 +84,17 @@ struct quadtreeRunner final : glfw_runner {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUniform3f(uniformColor, 1.0f, 0.5f, 0.2f);
+        glUniform3f(u_color, 1.0f, 0.5f, 0.2f);
         glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
 
-        glUniform3f(uniformColor, 0.0f, 1.0f, 1.0f);
+        glUniform3f(u_color, 0.0f, 1.0f, 1.0f);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) (ebo.count * sizeof(GLuint)));
 
-        glUniform3f(uniformColor, 1.0f, 1.0f, 0.0f);
+        glUniform3f(u_color, 1.0f, 1.0f, 0.0f);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*) ((ebo.count + 6) * sizeof(GLuint)));
     }
 
-    void doTick(const runner_state& state) override {
+    void doTick(const RunnerState& state) override {
         vbo.count = 0;
         ebo.count = 0;
         ebo.offset = 0;
@@ -106,24 +106,24 @@ struct quadtreeRunner final : glfw_runner {
 
         qt.clear();
 
-        vec2 squarePos_inner(cos_inner * qt_width + qt.topLeftBounds.x, sin_inner * qt_height + qt.topLeftBounds.y);
+        glm::vec2 squarePos_inner(cos_inner * qt_width + qt.topLeftBounds.x, sin_inner * qt_height + qt.topLeftBounds.y);
         qt.insert((entt::entity) 1, squarePos_inner);
 
-        vec2 squarePos_outer(cos_outer * qt_width + qt.topLeftBounds.x, sin_outer * qt_height + qt.topLeftBounds.y);
+        glm::vec2 squarePos_outer(cos_outer * qt_width + qt.topLeftBounds.x, sin_outer * qt_height + qt.topLeftBounds.y);
         qt.insert((entt::entity) 2, squarePos_outer);
 
-        generateMesh(&qt, vertices, indices, &vbo.count, &ebo.count, &ebo.offset, view.width, view.height);
+        generateMesh(&qt, vertices, indices, &vbo.count, &ebo.count, &ebo.offset, display.width, display.height);
 
         // upload qt
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * vbo.count, vertices);
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint) * ebo.count, indices);
 
         // generate squares
-        vec2 squareInnerNorm = squarePos_inner / vec2(width, height);
+        glm::vec2 squareInnerNorm = squarePos_inner / glm::vec2(width, height);
         squareInnerNorm.x =  2 * squareInnerNorm.x - 1;
         squareInnerNorm.y = -2 * squareInnerNorm.y + 1;
 
-        vec2 squareOuterNorm = squarePos_outer / vec2(width, height);
+        glm::vec2 squareOuterNorm = squarePos_outer / glm::vec2(width, height);
         squareOuterNorm.x =  2 * squareOuterNorm.x - 1;
         squareOuterNorm.y = -2 * squareOuterNorm.y + 1;
 
@@ -153,20 +153,5 @@ struct quadtreeRunner final : glfw_runner {
 quadtreeRunner runner;
 
 int main(const int argc, const char **argv) {
-    runner.init();
-
-    while (!glfwWindowShouldClose(runner.window)) {
-        glfwPollEvents();
-        while (!runner.shouldRenderFrame())
-            runner.tick(glfwGetTime());
-        runner.render();
-    }
-
-    runner.shutdown();
-    on_exit([] (int status, void* arg) {
-        if (runner.window)
-            glfwDestroyWindow(runner.window);
-        glfwTerminate();
-    }, nullptr);
-    return 0;
+    return runner.run();
 }

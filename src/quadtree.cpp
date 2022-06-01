@@ -1,3 +1,4 @@
+#include "glm/gtc/quaternion.hpp"
 #include <quadtree.hpp>
 
 #include <math.h> // for ceilf
@@ -39,10 +40,10 @@ void validateQuad(const quad &quad) {
         throw std::runtime_error("minimum cell size must be a power of 2");
 }
 
-quad::quad() : quad(vec2(0.0), vec2(QUAD_MIN_CELL_SIZE)) {}
+quad::quad() : quad(glm::vec2(0.0), glm::vec2(QUAD_MIN_CELL_SIZE)) {}
 
-quad::quad(const vec2 &topLeftBounds, const vec2 &bottomRightBounds, const unsigned int minCellSize)
-    : topLeftBounds(vec2(topLeftBounds)), bottomRightBounds(vec2(bottomRightBounds)), minCellSize(minCellSize) {
+quad::quad(const glm::vec2 &topLeftBounds, const glm::vec2 &bottomRightBounds, const unsigned int minCellSize)
+    : topLeftBounds(glm::vec2(topLeftBounds)), bottomRightBounds(glm::vec2(bottomRightBounds)), minCellSize(minCellSize) {
     parent = nullptr;
     topLeft = nullptr;
     topRight = nullptr;
@@ -76,7 +77,7 @@ quad::~quad() {
     bottomRight = nullptr;
 }
 
-quad *quad::findQuad(const vec2 &pos) const noexcept {
+quad *quad::findQuad(const glm::vec2 &pos) const noexcept {
     if (!isInBounds(pos)) {
         return nullptr;
     }
@@ -96,13 +97,15 @@ quad *quad::findQuad(const vec2 &pos) const noexcept {
     }
 }
 
-const entt::entity* quad::get(const vec2 &pos, char* count) const noexcept {
+const entt::entity* quad::get(const glm::vec2 &pos, char* count) const noexcept {
     if (!isInBounds(pos)) {
         *count = 0;
         return nullptr;
     }
 
-    if ((topLeftBounds - bottomRightBounds) <= vec2(minCellSize)) {
+    glm::vec2 boundary(topLeftBounds - bottomRightBounds);
+    glm::vec2 cell(minCellSize);
+    if (glm::all(glm::greaterThanEqual(cell, boundary))) {
         *count = entityCount;
         return entityStore;
     }
@@ -117,11 +120,13 @@ const entt::entity* quad::get(const vec2 &pos, char* count) const noexcept {
     return q->get(pos, count);
 }
 
-void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
+void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
     if (!isInBounds(pos))
         return;
 
-    if ((bottomRightBounds - topLeftBounds) <= vec2(minCellSize)) {
+    glm::vec2 boundary(bottomRightBounds - topLeftBounds);
+    glm::vec2 cell(minCellSize);
+    if (glm::all(glm::greaterThanEqual(cell, boundary))) {
         addEntity(entity);
         return;
     }
@@ -133,8 +138,8 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
     if (x >= pos.x) {
         if (y >= pos.y) {
             if (topLeft == nullptr) {
-                topLeft = new quad(vec2(topLeftBounds.x, topLeftBounds.y),
-                    vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0,
+                topLeft = new quad(glm::vec2(topLeftBounds.x, topLeftBounds.y),
+                    glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0,
                     (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                     minCellSize);
                 topLeft->parent = this;
@@ -142,8 +147,8 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
             topLeft->insert(entity, pos);
         } else {
             if (bottomLeft == nullptr) {
-                bottomLeft = new quad(vec2(topLeftBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                    vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y),
+                bottomLeft = new quad(glm::vec2(topLeftBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                    glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y),
                     minCellSize);
                 bottomLeft->parent = this;
             }
@@ -152,16 +157,16 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
     } else {
         if (y >= pos.y) {
             if (topRight == nullptr) {
-                topRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, topLeftBounds.y),
-                    vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                topRight = new quad(glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, topLeftBounds.y),
+                    glm::vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                     minCellSize);
                 topRight->parent = this;
             }
             topRight->insert(entity, pos);
         } else {
             if (bottomRight == nullptr) {
-                bottomRight = new quad(vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
-                    vec2(bottomRightBounds.x, bottomRightBounds.y),
+                bottomRight = new quad(glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                    glm::vec2(bottomRightBounds.x, bottomRightBounds.y),
                     minCellSize);
                 bottomRight->parent = this;
             }
@@ -170,8 +175,10 @@ void quad::insert(const entt::entity &entity, const vec2 &pos) noexcept {
     }
 }
 
-bool quad::isInBounds(const vec2 &pos) const noexcept {
-    return pos >= topLeftBounds && pos <= bottomRightBounds;
+#include <glm/glm.hpp>
+bool quad::isInBounds(const glm::vec2 &pos) const noexcept {
+    return glm::all(glm::greaterThanEqual(pos, topLeftBounds))
+           && glm::all(glm::lessThanEqual(pos, bottomRightBounds));
 }
 
 void quad::addEntity(entt::entity entity) noexcept {

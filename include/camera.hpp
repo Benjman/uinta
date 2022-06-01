@@ -1,50 +1,134 @@
 #ifndef UINTA_CAMERA2D_H
 #define UINTA_CAMERA2D_H
 
+#include <input.hpp>
 #include <math.hpp>
-#include <glm/vec3.hpp>
+#include <runner.hpp>
+
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 /** world coordinates follow the "right-handed rule" **/
 const inline glm::vec3 WORLD_UP      = glm::vec3(0.0, 1.0,  0.0);
 const inline glm::vec3 WORLD_RIGHT   = glm::vec3(1.0, 0.0,  0.0);
 const inline glm::vec3 WORLD_FORWARD = glm::vec3(0.0, 0.0, -1.0);
 
-struct camera final {
-    glm::vec3 pos = glm::vec3(0.0);
-    glm::vec3 attitude = glm::vec3(0.0);
+struct CameraConfig {
+    float fov = 40.0;
+    float nearPlane = 0.1;
+    float farPlane = 1000.0;
+    float yOffset = 7.0; // TODO use
+    float minZoom = 1.0;
+    float maxZoom = 75.0;
+    float minPitch = 26.0;
+    float maxPitch = 55.0;
+    float rotateAgility = 10.0;
+    float zoomAgility = 8.0;
+    float startZoom = 50.0;
+    float startAngle = -45.0;
+    float dragSensitivity = 0.00125;
+    float keyMoveSpeed = 1.0;
+    float zoomSensitivity = 5.0;
+    float yawSensitivity = 1.0;
+    float cinRotateSpeed = 0.75;
 
-    inline float pitch() const noexcept { return attitude.x; }
-    inline float yaw() const noexcept { return attitude.y; }
-    inline float roll() const noexcept { return attitude.z; }
+    glm::vec3 startTarget = glm::vec3(-1.5, 0.0, 1.5);
 
-    inline void pitch(const float v) noexcept {
-        if (v == attitude.x)
-            return;
-        attitude.x = v;
+    CameraConfig() = default;
+
+    CameraConfig(const CameraConfig& other);
+
+    CameraConfig& operator=(const CameraConfig& other);
+
+};
+
+struct CameraControls {
+    const CameraConfig& config;
+
+    CameraControls(const CameraConfig& config) : config(config) {
     }
 
-    inline void yaw(const float v) noexcept {
-        if (v == attitude.y)
-            return;
-        attitude.y = v;
+    float zoom(const RunnerState& state) {
+        return state.input.scrolldy * config.zoomSensitivity;
     }
 
-    inline void roll(const float v) noexcept {
-        if (v == attitude.z)
-            return;
-        attitude.z = v;
+    float goRight(const RunnerState& state) {
+        return state.input.isKeyDown(KEY_D) || state.input.isKeyDown(KEY_RIGHT);
+    }
+
+    float goLeft(const RunnerState& state) {
+        return state.input.isKeyDown(KEY_A) || state.input.isKeyDown(KEY_LEFT);
+    }
+
+    float goForward(const RunnerState& state) {
+        return state.input.isKeyDown(KEY_W) || state.input.isKeyDown(KEY_UP);
+    }
+
+    float goBackward(const RunnerState& state) {
+        return state.input.isKeyDown(KEY_S) || state.input.isKeyDown(KEY_DOWN);
+    }
+
+    float rotation(const RunnerState& state) {
+        if (state.input.isKeyDown(KEY_C))
+            return config.cinRotateSpeed;
+        if (state.input.isKeyDown(KEY_V))
+            return -config.cinRotateSpeed;
+        if (state.input.isMouseButtonDown(MOUSE_BUTTON_MIDDLE))
+            return state.input.cursordx * config.yawSensitivity;
+        return 0.0;
+    }
+
+    bool isDragging(const RunnerState& state) {
+        return state.input.isMouseButtonDown(MOUSE_BUTTON_RIGHT);
+    }
+
+    bool reset(const RunnerState& state) {
+        return state.input.isKeyPressed(KEY_R);
+    }
+
+    glm::vec2 dragFactor(const RunnerState& state) {
+        return glm::vec2(-state.input.cursordx, -state.input.cursordy) * glm::vec2(config.dragSensitivity);
+    }
+
+    glm::vec2 movements(const RunnerState& state) {
+        glm::vec2 result(0);
+        float speed = config.keyMoveSpeed * state.delta;
+        if (goForward(state))
+            result.y = -speed;
+        else if (goBackward(state))
+            result.y = speed;
+        if (goRight(state))
+            result.x = speed;
+        else if (goLeft(state))
+            result.x = -speed;
+        return result;
+    }
+
+    glm::vec2 moveDirection(const RunnerState& state, const CameraConfig& config) {
+        if (isDragging(state))
+            return dragFactor(state);
+        return movements(state);
     }
 
 };
 
+struct Camera {
+    CameraConfig config;
+    CameraControls controls;
 
-struct camera2d final {
-    vec2 pos = vec2(0.0);
-    float fov = 45;
-    float ortho_size = 1.0;
+    glm::mat4 view = glm::mat4(1.0);
+    glm::vec3 position = glm::vec3(0.0);
+    float pitch, yaw;
+
+    smooth_vec3 target;
+    smooth_float angle;
+    smooth_float dist;
+
+    Camera(const CameraConfig& config = CameraConfig());
+
+    void tick(const RunnerState& state);
+
 };
 
-void get_view_matrix(glm::mat4* mat, const glm::vec3& pos, const float pitch, const float yaw) noexcept;
-
-#endif // UINTA_CAMERA2D_H
+#endif // UINTA_CAMERA2D_HglfwSetWindowSizeCallback
