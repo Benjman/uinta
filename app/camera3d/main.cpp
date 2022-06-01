@@ -1,16 +1,17 @@
+#include "imgui.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <glm/gtc/matrix_transform.hpp>
 
 #include <file.hpp>
 #include <mesh.hpp>
 #include <model.hpp>
 #include <math.hpp>
-#include "imgui.h"
 
 #define UINTA_APP_UTILS_IMPL
 #include "../app_utils.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 struct camera3dRunner final : glfw_runner {
 public:
@@ -24,7 +25,7 @@ public:
     gl_buf vbo;
     gl_buf ebo;
 
-    camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000), camera(state) {
+    camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000) {
     }
 
     void doInit() override {
@@ -78,9 +79,9 @@ public:
             
         loadObj(Model_Cube, vertices, &local_vcount, indices, &local_icount, &attribs);
 
-        const glm::vec3 grass(0.0, 1.0, 0.0);
-        const glm::vec3 dirt = glm::vec3(165, 42, 42) / glm::vec3(255);
-        const glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(30, 1, 30));
+        const glm::vec3 top(0.051, 0.933, 0.996);
+        const glm::vec3 sides = glm::vec3(0.025, 0.465, 0.465);
+        const glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(15, 3, 15));
 
         local_vcount *= 1.5; // loadObj doesn't load colors, so we adjust for color attrib
         for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
@@ -95,8 +96,8 @@ public:
                 glm::vec3 color(0);
                 glm::vec3 norm = glm::vec4(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2], 0.0);
 
-                color += dirt  * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));          // paint sides
-                color += grass * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));    // paint top
+                color += sides  * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));          // paint sides
+                color += top * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));    // paint top
 
                 memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
             }
@@ -135,7 +136,7 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
 
         updateViewMatrix(camera.view, camera.position, camera.pitch, camera.yaw);
-        glm::mat4 proj_mat = glm::perspective(glm::radians(45.0), (double) display.width / (double) display.height, 0.01, 500.0);
+        glm::mat4 proj_mat = glm::perspective(glm::radians(camera.config.fov), (float) display.width / (float) display.height, camera.config.nearPlane, camera.config.farPlane);
         glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * camera.view * model)[0][0]);
     }
 
@@ -143,12 +144,19 @@ public:
         glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
 
         ImGui::Begin("Camera");
-        ImGui::Text("Position %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
-        ImGui::Text("Target   %+.2f %+.2f %+.2f", camera.target.x(), camera.target.y(), camera.target.z());
+        ImGui::Text("Translation:   wasd or right-mouse");
+        ImGui::Text("Rotation:      cv or middle-mouse");
+        ImGui::Text("Distance:      y-scroll");
         ImGui::NewLine();
-        ImGui::Text("Pitch    %+.2f", camera.pitch);
-        ImGui::Text("Yaw      %+.2f", camera.yaw);
+        ImGui::NewLine();
+        ImGui::BeginChild("Camera");
+        ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
+        ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x(), camera.target.y(), camera.target.z());
+        ImGui::Text("Pitch        %+.2f", camera.pitch);
+        ImGui::Text("Yaw          %+.2f", camera.yaw);
+        ImGui::EndChild();
         ImGui::End();
+
     }
 
     void doPostRender() override {
