@@ -251,6 +251,7 @@ void store_color(const float, const float, const float, const font_mesh_attrib&,
 #ifdef UINTA_FONT_IMPLEMENTATION
 
 #include <stdexcept>
+#include <logging.hpp>
 
 namespace font {
     std::vector<font_ctx> fonts;
@@ -367,7 +368,7 @@ void font::internal::generate_mesh(mesh_ctx ctx) {
     if (ctx.root->value.empty())
         return;
     if (ctx.attribs->size() == 0) {
-        printf("[WARN] No attributes were provided to generate a text mesh.");
+        SPDLOG_WARN("No attributes were provided to generate a text mesh.");
         return;
     }
     const unsigned int vertexStride = ctx.attribs->begin()->second.stride * 4;
@@ -581,7 +582,7 @@ GLuint font::load_font(const font_t handle, unsigned char* buffer) {
     unsigned char bitmap[font.tex_width * font.tex_height];
     stbtt_pack_context ctx;
     if (!stbtt_PackBegin(&ctx, bitmap, font.tex_width, font.tex_height, 0, 1, nullptr))
-        printf("some kinda error happened with stbtt_PackBegin\n");
+        SPDLOG_ERROR("some kinda error happened with stbtt_PackBegin.");
     stbtt_PackFontRange(&ctx, buffer, 0, font.line_size, 32, 95, font.chardata);
     stbtt_PackEnd(&ctx);
 

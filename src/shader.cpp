@@ -1,4 +1,4 @@
-
+#include "spdlog/spdlog.h"
 #include <cstdio>
 #include <glad/glad.h>
 
@@ -33,7 +33,7 @@ GLuint create_shader_program(const char** sources,
     for (auto i = 0; i < uniform_count; i++) {
         GLuint loc = glGetUniformLocation(id, uniform_names[i]);
         if (loc == -1)
-            spdlog::error("create_shader_program - Uniform '{}' not found.", uniform_names[i]);
+            SPDLOG_ERROR("create_shader_program - Uniform '{}' not found.", uniform_names[i]);
         *uniform_locations[i] = loc;
     }
 
@@ -54,5 +54,5 @@ void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {
             glGetShaderInfoLog(shader, KILOBYTES(1), 0, info);
     }
     if (!success)
-        printf("Shader error: %s\n", info);
+        SPDLOG_ERROR("{}", info);
 }

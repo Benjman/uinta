@@ -13,7 +13,7 @@ namespace internal {
 void read_file_internal(const std::string& path, std::ios::openmode mode, char* const buffer) {
     std::ifstream file(path, std::ios::in | mode | std::ios::ate);
     if (!file || !file.good()) {
-        spdlog::error("read_file_internal - failed to open file {}", path);
+        SPDLOG_ERROR("read_file_internal - failed to open file {}", path);
         return;
     }
     int length = file.tellg();
@@ -38,7 +38,7 @@ unsigned int get_file_size(const char* const relative_path) {
     std::string abs_path = std::string(RES_PATH) + relative_path;
     std::ifstream in(abs_path, std::ifstream::ate | std::ifstream::binary);
     if (!in || !in.good()) {
-        spdlog::error("read_file_internal - failed to open file {}", abs_path);
+        SPDLOG_ERROR("read_file_internal - failed to open file {}", abs_path);
         return 0;
     }
     return in.tellg();

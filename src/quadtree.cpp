@@ -1,9 +1,9 @@
 #include "glm/gtc/quaternion.hpp"
+#include "spdlog/spdlog.h"
 #include <quadtree.hpp>
 
 #include <math.h> // for ceilf
 #include <memory.h> // for memcpy
-#include <cstdio> // for printf
 
 static unsigned int maxCount = 0;
 
@@ -207,7 +207,7 @@ void quad::removeEntity(entt::entity entity) noexcept {
             return;
         }
     }
-    printf("[WARN] Failed to find entity to remove.\n"); // TODO logging
+    SPDLOG_WARN("Failed to find entity to remove."); // TODO logging
 }
 
 void quad::removeQuad(const quad *quad) noexcept {

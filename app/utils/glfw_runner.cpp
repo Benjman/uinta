@@ -4,6 +4,7 @@
 #include "glfw_runner.hpp"
 
 #include <input.hpp>
+#include <logging.hpp>
 
 #define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 #define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
@@ -206,32 +207,33 @@ void glfw_runner::register_callbacks() {
 }
 
 void createGLFWWindow(glfw_runner& runner) {
+    logger_t logger = spdlog::stderr_color_mt("createGLFWWindow");
+    SPDLOG_LOGGER_INFO(logger, "Initializing GLFW...", runner.display.title.c_str(), runner.display.width, runner.display.height);
+    spdlog::stopwatch sw;
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    printf("[INFO] Creating GLFW window \"%s\" (%dx%d)...\n", runner.display.title.c_str(), runner.display.width, runner.display.height);
+    SPDLOG_LOGGER_INFO(logger, "Creating GLFW window \"{}\" ({}x{})...", runner.display.title.c_str(), runner.display.width, runner.display.height);
     runner.window = glfwCreateWindow(runner.display.width, runner.display.height, runner.display.title.c_str(), NULL, NULL);
     if (runner.window == NULL) {
         glfwTerminate();
-        printf("[ERROR] Failed to create GLFW window.\n"); // TODO logging
+        SPDLOG_LOGGER_ERROR(logger, "Failed to create GLFW window.");
         throw std::exception();
         return;
     }
 
     glfwSetWindowUserPointer(runner.window, &runner);
-
-    printf("[INFO] Completed creating GLFW window \"%s\" (%dx%d).\n", runner.display.title.c_str(), runner.display.width, runner.display.height);
     glfwMakeContextCurrent(runner.window);
 
-    printf("[INFO] Loading GLAD...\n");
+    SPDLOG_LOGGER_INFO(logger, "Loading GLAD...");
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        printf("[ERROR] Failed to load GLAD.\n"); // TODO logging
+        SPDLOG_LOGGER_ERROR(logger, "Failed to load GLAD.");
         throw std::exception();
     }
-    printf("[INFO] Done loading GLAD.\n");
+    SPDLOG_LOGGER_INFO(logger, "GLFW initialization completed in {} seconds", sw.elapsed().count());
 }
 
 double glfw_runner::getRuntime() {

@@ -4,8 +4,9 @@
 
 #include <glm/vec3.hpp>
 
-#include <model.hpp>
 #include <file.hpp>
+#include <logging.hpp>
+#include <model.hpp>
 
 const char* const getObjPath(const Models model) {
     switch (model) {
@@ -52,7 +53,7 @@ void processFaces(const std::vector<std::string>&, std::vector<objface>&, unsign
 
 void loadObj(const Models model, float* const vbuf, unsigned int* vcount, unsigned int* const ibuf, unsigned int* icount, const std::unordered_map<MeshAttribType, mesh_attrib>* const attribs) {
     if (!attribs->size()) {
-        printf("[WARN] Unable to parse .obj file: No attributes provided!");
+        SPDLOG_WARN("Unable to parse .obj file: No attributes provided!");
         return;
     }
 

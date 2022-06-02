@@ -1,4 +1,5 @@
 #include <metrics.hpp>
+#include <logging.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -35,7 +36,7 @@ metric_t metrics_controller::init_metric(const unsigned int type, const char* co
             return i;
         }
     }
-    printf("Metrics storage full: Ignoring metric '%s'\n", name);
+    SPDLOG_ERROR("Metrics storage full: Ignoring metric '{}'", name);
     return METRICS_INVALID;
 }
 
@@ -56,7 +57,7 @@ void metrics_controller::set(const metric_t handle, const unsigned int v) noexce
 
 float metrics_controller::getf(const metric_t handle) noexcept {
     if (handle <= METRICS_INVALID) {
-        printf("metrics_controller.getf() received an invalid handle\n");
+        SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
         return 0.0f;
     }
     auto* position = (float*) storage + handle * METRICS_STRIDE;
@@ -65,7 +66,7 @@ float metrics_controller::getf(const metric_t handle) noexcept {
 
 int metrics_controller::geti(const metric_t handle) noexcept {
     if (handle <= METRICS_INVALID) {
-        printf("metrics_controller.getf() received an invalid handle\n");
+        SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
         return 0;
     }
     auto* position = (int*) storage + handle * METRICS_STRIDE;
@@ -74,7 +75,7 @@ int metrics_controller::geti(const metric_t handle) noexcept {
 
 unsigned int metrics_controller::getui(const metric_t handle) noexcept {
     if (handle <= METRICS_INVALID) {
-        printf("metrics_controller.getf() received an invalid handle\n");
+        SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
         return 0u;
     }
     auto* position = (unsigned int*) storage + handle * METRICS_STRIDE;

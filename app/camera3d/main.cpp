@@ -85,22 +85,16 @@ public:
 
         local_vcount *= 1.5; // loadObj doesn't load colors, so we adjust for color attrib
         for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
-            {
-                // transform to floor
-                auto pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1] - 1, vertices[i + pos_attrib.offset + 2], 1.0);
-                memcpy(&vertices[i + pos_attrib.offset], &pos[0], 3 * sizeof(GLfloat));
-            }
+            // transform to floor
+            auto pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1] - 1, vertices[i + pos_attrib.offset + 2], 1.0);
+            memcpy(&vertices[i + pos_attrib.offset], &pos[0], 3 * sizeof(GLfloat));
 
-            {
-                // colorize
-                glm::vec3 color(0);
-                glm::vec3 norm = glm::vec3(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2]);
-
-                color += sides  * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));          // paint sides
-                color += top * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));    // paint top
-
-                memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
-            }
+            // colorize
+            glm::vec3 color(0);
+            glm::vec3 norm = glm::vec3(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1], vertices[i + norm_attrib.offset + 2]);
+            color += sides  * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));          // paint sides
+            color += top    * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));    // paint top
+            memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
         }
 
         vbo.count += local_vcount;
@@ -144,17 +138,16 @@ public:
         glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
 
         ImGui::Begin("Camera");
+        ImGui::SetWindowSize(ImVec2(275, 200));
         ImGui::Text("Translation:   wasd or right-mouse");
         ImGui::Text("Rotation:      cv or middle-mouse");
         ImGui::Text("Distance:      y-scroll");
         ImGui::NewLine();
         ImGui::NewLine();
-        ImGui::BeginChild("Camera");
         ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
         ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x(), camera.target.y(), camera.target.z());
         ImGui::Text("Pitch        %+.2f", camera.pitch);
         ImGui::Text("Yaw          %+.2f", camera.yaw);
-        ImGui::EndChild();
         ImGui::End();
 
     }

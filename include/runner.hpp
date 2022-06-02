@@ -1,6 +1,7 @@
 #ifndef UINTA_APP_RUNNER_HPP
 #define UINTA_APP_RUNNER_HPP
 
+#include "logging.hpp"
 #include <input.hpp>
 
 #include <GL/gl.h>
@@ -32,15 +33,15 @@ struct RunnerState final {
 
     input_state input;
     Display display;
+
 };
 
 struct Runner {
     Display display;
     RunnerState state;
+    logger_t logger;
 
-    Runner(const std::string& title, unsigned int width, unsigned int height) noexcept : display(title, width, height) {
-        state.display = Display(title, width, height);
-    }
+    Runner(const std::string& title, unsigned int width, unsigned int height) noexcept;
  
     void init();
     int run();

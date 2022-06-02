@@ -48,11 +48,12 @@ find_package(glm REQUIRED)
 find_package(imgui REQUIRED) # TODO this should only be required when it's a debug build
 find_package(stb REQUIRED)
 find_package(GLFW REQUIRED)
+
 add_subdirectory(./lib/entt)
 set(UINTA_LIBS ${UINTA_LIBS} EnTT::EnTT)
+
+set(SPDLOG_BUILD_SHARED TRUE)
 add_subdirectory(./lib/spdlog)
-set(UINTA_LIBS ${UINTA_LIBS} ${SPDLOG_SRCS})
-set(UINTA_INCLUDES ${UINTA_INCLUDES} ./lib/spdlog/include)
 
 
 include_directories(./include ${UINTA_INCLUDES})

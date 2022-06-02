@@ -7,6 +7,7 @@
 #include "debug_controller.hpp"
 
 #include <file.hpp>
+#include <logging.hpp>
 #include <shader.hpp>
 
 using namespace font;
@@ -128,7 +129,7 @@ debug_timer_t debug_controller::create_timer() noexcept {
             return i;
         }
     }
-    printf("[WARN] No available debug timer storage.\n");
+    SPDLOG_WARN("No available debug timer storage.");
     return -1;
 }
 
@@ -136,7 +137,7 @@ double debug_controller::duration_micro(const debug_timer_t handle) noexcept {
     auto now = std::chrono::high_resolution_clock::now();
     if (handle == -1
         || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
-        printf("[WARN] Ignoring stop timer attempt for invalid timer.\n");
+        SPDLOG_WARN("Ignoring stop timer attempt for invalid timer.");
         return -1.0;
     }
     return std::chrono::duration_cast<std::chrono::microseconds>(now - timers[handle]).count();
@@ -146,7 +147,7 @@ double debug_controller::duration_milli(const debug_timer_t handle) noexcept {
     auto now = std::chrono::high_resolution_clock::now();
     if (handle == -1
         || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
-        printf("[WARN] Ignoring stop timer attempt for invalid timer.\n");
+        SPDLOG_WARN("Ignoring stop timer attempt for invalid timer.");
         return -1.0;
     }
     return std::chrono::duration_cast<std::chrono::milliseconds>(now - timers[handle]).count();
@@ -181,7 +182,7 @@ void debug_controller::mesh_metric(const metric_t handle, const std::string appe
 void debug_controller::reset_timer(const debug_timer_t handle) noexcept {
     if (handle == -1
         || handle > DEBUG_CONTROLLER_MAX_TIMERS) {
-        printf("[WARN] Ignoring reset timer attempt for invalid timer.\n");
+        SPDLOG_WARN("Ignoring reset timer attempt for invalid timer.");
         return;
     }
     timers[handle] = std::chrono::high_resolution_clock::now();
