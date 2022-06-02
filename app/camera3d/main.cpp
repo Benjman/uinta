@@ -108,13 +108,11 @@ public:
         readFileRaw("shader/camera3d.vert", vshader);
         readFileRaw("shader/camera3d.frag", fshader);
 
-        const char* sources[] = { vshader, fshader };
-        const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-        const GLint buffer_lengths[] = { (GLint) sizeof(vshader), (GLint) sizeof(fshader) };
+        const std::vector<std::string> sources({ std::string(vshader, sizeof(vshader)), std::string(fshader, sizeof(fshader)) });
+        const std::vector<GLenum> stages({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER });
         const std::vector<std::string> uniforms({ "u_mvp" });
         const std::vector<GLuint*> locations = { &u_mvp };
-        shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
-                                     uniforms, locations);
+        shader = createShaderProgram(sources, stages, uniforms, locations);
     }
 
     void doTick(const RunnerState &state) override {

@@ -7,17 +7,22 @@
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 
-GLuint createShaderProgram(const char** sources,
-                           const GLenum* stages,
-                           const unsigned int stageCount,
-                           const GLint* bufferLengths,
-                           const std::vector<std::string> uniformNames,
-                           const std::vector<GLuint*> uniformLocations) {
+GLuint createShaderProgram(const std::vector<std::string>& sources,
+                           const std::vector<GLenum>& stages,
+                           const std::vector<std::string>& uniformNames,
+                           const std::vector<GLuint*>& uniformLocations) {
     GLuint id = glCreateProgram();
 
-    for (auto i = 0; i < stageCount; i++) {
-        GLuint stageId = glCreateShader(stages[i]);
-        glShaderSource(stageId, 1, &sources[i], &bufferLengths[i]);
+    if (sources.size() != stages.size()) {
+        SPDLOG_ERROR("`sources` and `stages` sizes do not match. Aborting shader creation.");
+        return GL_ZERO;
+    }
+
+    for (auto i = 0; i < stages.size(); i++) {
+        const GLuint stageId = glCreateShader(stages.at(i));
+        const GLchar* cstr = sources.at(i).c_str();
+        const GLint length = sources.at(i).size();
+        glShaderSource(stageId, 1, &cstr, &length);
         glCompileShader(stageId);
         checkCompileErrors(id, stageId);
         glAttachShader(id, stageId);
@@ -27,6 +32,11 @@ GLuint createShaderProgram(const char** sources,
     glLinkProgram(id);
     checkCompileErrors(id, GL_LINK_STATUS);
     glUseProgram(id);
+
+    if (uniformNames.size() != uniformLocations.size()) {
+        SPDLOG_WARN("`uniformNames` and `uniformLocations` sizes do not match. Ignoring uniform lookup.");
+        return id;
+    }
 
     for (auto i = 0; i < uniformNames.size(); i++) {
         GLuint loc = glGetUniformLocation(id, uniformNames.at(i).c_str());

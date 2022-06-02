@@ -115,10 +115,10 @@ public:
             "  out_color = vec4(pass_color, texture(atlas, pass_uv).r);"
             "}\0";
 
-        const char* sources[] = { vshader, fshader };
-        const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-        const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
-        shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
+        const std::vector<std::string> sources({ std::string(vshader, strlen(vshader)), std::string(fshader, strlen(fshader)) });
+        const std::vector<GLenum> stages({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER });
+        shader = createShaderProgram(sources, stages);
+
         glUseProgram(shader);
     }
 

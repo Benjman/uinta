@@ -74,13 +74,11 @@ struct ModelRunner final : GlfwRunner {
         char frag[getFileSize("shader/model.frag")];
         readFileRaw("shader/model.frag", frag);
 
-        const char* sources[] = { vert, frag };
-        const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-        const GLint buffer_lengths[] = { (GLint) sizeof(vert), (GLint) sizeof(frag) };
+        const std::vector<std::string> sources({ std::string(vert, sizeof(vert)), std::string(frag, sizeof(frag)) });
+        const std::vector<GLenum> stages({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER });
         const std::vector<std::string> uniforms({ "u_model" });
         const std::vector<GLuint*> locations = { &u_model };
-        shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
-                                     uniforms, locations);
+        shader = createShaderProgram(sources, stages, uniforms, locations);
     }
 
     void doRender() override {

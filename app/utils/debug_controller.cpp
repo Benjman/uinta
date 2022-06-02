@@ -61,7 +61,7 @@ void DebugController::initFont() {
 }
 
 void DebugController::initShader() {
-    const char *vshader =
+    const char* vshader =
         "#version 330 core\n"
         "layout (location = 0) in vec2 in_pos;"
         "layout (location = 1) in vec2 in_uv;"
@@ -74,7 +74,7 @@ void DebugController::initShader() {
         "  gl_Position = vec4(in_pos, 0.0, 1.0);"
         "}\0";
 
-    const char *fshader =
+    const char* fshader =
         "#version 330 core\n"
         "in vec2 pass_uv;"
         "in vec3 pass_color;"
@@ -84,10 +84,10 @@ void DebugController::initShader() {
         "  out_color = vec4(pass_color, texture(atlas, pass_uv).r);"
         "}\0";
 
-    const char* sources[] = { vshader, fshader };
-    const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-    const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
-    shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
+    const std::vector<std::string> sources({ std::string(vshader, strlen(vshader)), std::string(fshader, strlen(fshader)) });
+    const std::vector<GLenum> stages({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER });
+    shader = createShaderProgram(sources, stages);
+
     glUseProgram(shader);
 }
 
