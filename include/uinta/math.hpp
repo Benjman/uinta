@@ -6,17 +6,17 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
-struct running_avg final {
+struct RunningAvg final {
 public:
     unsigned int count;
 
-    running_avg(const unsigned int) noexcept;
-    running_avg(const running_avg&) noexcept;
-    running_avg& operator=(const running_avg&) noexcept;
+    RunningAvg(const unsigned int) noexcept;
+    RunningAvg(const RunningAvg&) noexcept;
+    RunningAvg& operator=(const RunningAvg&) noexcept;
 
     void operator+=(const float) noexcept;
 
-    ~running_avg();
+    ~RunningAvg();
 
     void add(float) noexcept;
 
@@ -30,18 +30,18 @@ private:
 
 };
 
-struct smooth_float final {
+struct SmoothFloat final {
     float agility;
     float current;
     float target;
 
-    smooth_float(const float start, const float agility) noexcept;
-    smooth_float(const smooth_float& other) noexcept;
+    SmoothFloat(const float start, const float agility) noexcept;
+    SmoothFloat(const SmoothFloat& other) noexcept;
 
-    smooth_float& operator=(const smooth_float& other) noexcept;
-    smooth_float& operator=(const float v) noexcept;
-    smooth_float& operator+=(const float v) noexcept;
-    smooth_float& operator-=(const float v) noexcept;
+    SmoothFloat& operator=(const SmoothFloat& other) noexcept;
+    SmoothFloat& operator=(const float v) noexcept;
+    SmoothFloat& operator+=(const float v) noexcept;
+    SmoothFloat& operator-=(const float v) noexcept;
 
     void force() noexcept;
     void force(float v) noexcept;
@@ -50,30 +50,30 @@ struct smooth_float final {
 
 };
 
-struct smooth_vec3 {
-    smooth_float values[3] {
-        smooth_float(0.0, 10.0),
-        smooth_float(0.0, 10.0),
-        smooth_float(0.0, 10.0)
+struct SmoothVec3 {
+    SmoothFloat values[3] {
+        SmoothFloat(0.0, 10.0),
+        SmoothFloat(0.0, 10.0),
+        SmoothFloat(0.0, 10.0)
     };
 
-    smooth_vec3(const smooth_float& x = smooth_float(0.0, 10.0), const smooth_float& y = smooth_float(0.0, 10.0), const smooth_float& z = smooth_float(0.0, 10.0)) {
+    SmoothVec3(const SmoothFloat& x = SmoothFloat(0.0, 10.0), const SmoothFloat& y = SmoothFloat(0.0, 10.0), const SmoothFloat& z = SmoothFloat(0.0, 10.0)) {
         smooth_float_x() = x;
         smooth_float_y() = y;
         smooth_float_z() = z;
     }
 
-    smooth_vec3(const float x, const float y, const float z) {
+    SmoothVec3(const float x, const float y, const float z) {
         this->x(x);
         this->y(y);
         this->z(z);
     }
 
-    smooth_vec3(const glm::vec3& v) : smooth_vec3(v.x, v.y, v.z) {}
+    SmoothVec3(const glm::vec3& v) : SmoothVec3(v.x, v.y, v.z) {}
 
-    smooth_float& smooth_float_x() { return values[0]; }
-    smooth_float& smooth_float_y() { return values[1]; }
-    smooth_float& smooth_float_z() { return values[2]; }
+    SmoothFloat& smooth_float_x() { return values[0]; }
+    SmoothFloat& smooth_float_y() { return values[1]; }
+    SmoothFloat& smooth_float_z() { return values[2]; }
 
     float x() { return smooth_float_x().current; }
     void x(float v) { smooth_float_x().target = v; }
@@ -94,7 +94,7 @@ struct smooth_vec3 {
         return glm::vec3(x(), y(), z());
     }
 
-    smooth_vec3& operator+=(const glm::vec3& v) {
+    SmoothVec3& operator+=(const glm::vec3& v) {
         smooth_float_x() += v.x;
         smooth_float_y() += v.y;
         smooth_float_z() += v.z;

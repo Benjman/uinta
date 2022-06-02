@@ -153,7 +153,7 @@ extern mouse_button_t MOUSE_BUTTON_LEFT;
 extern mouse_button_t MOUSE_BUTTON_RIGHT;
 extern mouse_button_t MOUSE_BUTTON_MIDDLE;
 
-struct input_state final {
+struct InputState final {
     int flags = 0;
     float cursorx, cursory;
     float cursordx, cursordy;

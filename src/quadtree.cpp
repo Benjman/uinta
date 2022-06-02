@@ -8,7 +8,7 @@
 
 static unsigned int maxCount = 0;
 
-void validateQuad(const quad &quad) {
+void validateQuad(const Quad &quad) {
     // validate bounds are whole numbers
     if (ceilf(quad.topLeftBounds.x) != quad.topLeftBounds.x)
         throw std::runtime_error("quad.topLeftBounds.x must be an integer.");
@@ -41,9 +41,9 @@ void validateQuad(const quad &quad) {
         throw std::runtime_error("minimum cell size must be a power of 2");
 }
 
-quad::quad() : quad(glm::vec2(0.0), glm::vec2(QUAD_MIN_CELL_SIZE)) {}
+Quad::Quad() : Quad(glm::vec2(0.0), glm::vec2(QUAD_MIN_CELL_SIZE)) {}
 
-quad::quad(const glm::vec2 &topLeftBounds, const glm::vec2 &bottomRightBounds, const unsigned int minCellSize)
+Quad::Quad(const glm::vec2 &topLeftBounds, const glm::vec2 &bottomRightBounds, const unsigned int minCellSize)
     : topLeftBounds(glm::vec2(topLeftBounds)), bottomRightBounds(glm::vec2(bottomRightBounds)), minCellSize(minCellSize) {
     parent = nullptr;
     topLeft = nullptr;
@@ -58,7 +58,7 @@ quad::quad(const glm::vec2 &topLeftBounds, const glm::vec2 &bottomRightBounds, c
     validateQuad(*this);
 }
 
-quad::~quad() {
+Quad::~Quad() {
     parent = nullptr;
 
     delete[] entityStore;
@@ -78,7 +78,7 @@ quad::~quad() {
     bottomRight = nullptr;
 }
 
-quad *quad::findQuad(const glm::vec2 &pos) const noexcept {
+Quad *Quad::findQuad(const glm::vec2 &pos) const noexcept {
     if (!isInBounds(pos)) {
         return nullptr;
     }
@@ -98,7 +98,7 @@ quad *quad::findQuad(const glm::vec2 &pos) const noexcept {
     }
 }
 
-const entt::entity* quad::get(const glm::vec2 &pos, char* count) const noexcept {
+const entt::entity* Quad::get(const glm::vec2 &pos, char* count) const noexcept {
     if (!isInBounds(pos)) {
         *count = 0;
         return nullptr;
@@ -121,7 +121,7 @@ const entt::entity* quad::get(const glm::vec2 &pos, char* count) const noexcept 
     return q->get(pos, count);
 }
 
-void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
+void Quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
     if (!isInBounds(pos))
         return;
 
@@ -139,7 +139,7 @@ void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
     if (x >= pos.x) {
         if (y >= pos.y) {
             if (topLeft == nullptr) {
-                topLeft = new quad(glm::vec2(topLeftBounds.x, topLeftBounds.y),
+                topLeft = new Quad(glm::vec2(topLeftBounds.x, topLeftBounds.y),
                     glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0,
                     (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                     minCellSize);
@@ -148,7 +148,7 @@ void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
             topLeft->insert(entity, pos);
         } else {
             if (bottomLeft == nullptr) {
-                bottomLeft = new quad(glm::vec2(topLeftBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                bottomLeft = new Quad(glm::vec2(topLeftBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                     glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, bottomRightBounds.y),
                     minCellSize);
                 bottomLeft->parent = this;
@@ -158,7 +158,7 @@ void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
     } else {
         if (y >= pos.y) {
             if (topRight == nullptr) {
-                topRight = new quad(glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, topLeftBounds.y),
+                topRight = new Quad(glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, topLeftBounds.y),
                     glm::vec2(bottomRightBounds.x, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                     minCellSize);
                 topRight->parent = this;
@@ -166,7 +166,7 @@ void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
             topRight->insert(entity, pos);
         } else {
             if (bottomRight == nullptr) {
-                bottomRight = new quad(glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
+                bottomRight = new Quad(glm::vec2((topLeftBounds.x + bottomRightBounds.x) / 2.0, (topLeftBounds.y + bottomRightBounds.y) / 2.0),
                     glm::vec2(bottomRightBounds.x, bottomRightBounds.y),
                     minCellSize);
                 bottomRight->parent = this;
@@ -177,12 +177,12 @@ void quad::insert(const entt::entity &entity, const glm::vec2 &pos) noexcept {
 }
 
 #include <glm/glm.hpp>
-bool quad::isInBounds(const glm::vec2 &pos) const noexcept {
+bool Quad::isInBounds(const glm::vec2 &pos) const noexcept {
     return glm::all(glm::greaterThanEqual(pos, topLeftBounds))
            && glm::all(glm::lessThanEqual(pos, bottomRightBounds));
 }
 
-void quad::addEntity(entt::entity entity) noexcept {
+void Quad::addEntity(entt::entity entity) noexcept {
     if (entityCount + 1 > entityStoreSize) {
         // TODO validate store size doesn't exceed uchar max
         entityStoreSize += QUAD_ENTITY_STORE_SIZE_STEP;
@@ -199,7 +199,7 @@ void quad::addEntity(entt::entity entity) noexcept {
     entityCount++;
 }
 
-void quad::removeEntity(entt::entity entity) noexcept {
+void Quad::removeEntity(entt::entity entity) noexcept {
     for (unsigned char i = 0; i < entityCount; i++) {
         if (entityStore[i] == entity) {
             if (--entityCount > 0) {
@@ -211,7 +211,7 @@ void quad::removeEntity(entt::entity entity) noexcept {
     SPDLOG_WARN("Failed to find entity to remove."); // TODO logging
 }
 
-void quad::removeQuad(const quad *quad) noexcept {
+void Quad::removeQuad(const Quad *quad) noexcept {
     if (quad == bottomLeft) {
         delete bottomLeft;
         bottomLeft = nullptr;
@@ -227,7 +227,7 @@ void quad::removeQuad(const quad *quad) noexcept {
     }
 }
 
-void quad::clear() noexcept {
+void Quad::clear() noexcept {
     for (auto i = 0; i < entityCount; i++)
         removeEntity(entityStore[i]);
 
@@ -241,7 +241,7 @@ void quad::clear() noexcept {
         topRight->clear();
 }
 
-bool quad::isActive() const noexcept {
+bool Quad::isActive() const noexcept {
     return entityCount > 0
         || topLeft && topLeft->isActive()
         || topRight && topRight->isActive()

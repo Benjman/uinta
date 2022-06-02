@@ -42,23 +42,23 @@ struct objface {
 };
 
 int findOrInsertFaceData(const objface&, std::vector<objface>&, const unsigned int);
-void packNormals(const mesh_attrib&, float* const, unsigned int* cont, const std::vector<objface>&, const float* const);
-void packUVs(const mesh_attrib&, float* const, unsigned int* cont, const std::vector<objface>&, const float* const);
-void packVertices(const mesh_attrib&, float* const, unsigned int* cont, const std::vector<objface>&, const float* const);
+void packNormals(const MeshAttrib&, float* const, unsigned int* cont, const std::vector<objface>&, const float* const);
+void packUVs(const MeshAttrib&, float* const, unsigned int* cont, const std::vector<objface>&, const float* const);
+void packVertices(const MeshAttrib&, float* const, unsigned int* cont, const std::vector<objface>&, const float* const);
 void parseFile(std::string&, std::vector<std::string>&, std::vector<std::string>&, std::vector<std::string>&, std::vector<std::string>&);
 void extractLineFloats(const std::vector<std::string>& lines, float* const buffer, const unsigned int size, const char delimiter);
 void extractLineData(const std::vector<std::string>& lines, unsigned int* const buffer, const unsigned int size, const char delimiter);
 void processFaceStrs(std::string*, std::vector<objface>&, unsigned int);
 void processFaces(const std::vector<std::string>&, std::vector<objface>&, unsigned int* const);
 
-void loadObj(const Models model, float* const vbuf, unsigned int* vcount, unsigned int* const ibuf, unsigned int* icount, const std::unordered_map<MeshAttribType, mesh_attrib>* const attribs) {
+void loadObj(const Models model, float* const vbuf, unsigned int* vcount, unsigned int* const ibuf, unsigned int* icount, const std::unordered_map<MeshAttribType, MeshAttrib>* const attribs) {
     if (!attribs->size()) {
         SPDLOG_WARN("Unable to parse .obj file: No attributes provided!");
         return;
     }
 
-    char buf[get_file_size(getObjPath(model))];
-    read_file_raw(getObjPath(model), buf);
+    char buf[getFileSize(getObjPath(model))];
+    readFileRaw(getObjPath(model), buf);
     std::string bufstr = buf;
 
     std::vector<std::string> vertex_lines;
@@ -82,11 +82,11 @@ void loadObj(const Models model, float* const vbuf, unsigned int* vcount, unsign
     std::vector<objface> face_data;
     processFaces(face_lines, face_data, ibuf);
 
-    if (const mesh_attrib* attrib = find_mesh_attrib(MeshAttribType_Normal, attribs))
+    if (const MeshAttrib* attrib = findMeshAttrib(MeshAttribType_Normal, attribs))
         packNormals(*attrib, vbuf, vcount, face_data, normals);
-    if (const mesh_attrib* attrib = find_mesh_attrib(MeshAttribType_UV, attribs))
+    if (const MeshAttrib* attrib = findMeshAttrib(MeshAttribType_UV, attribs))
         packUVs(*attrib, vbuf, vcount, face_data, uvs);
-    if (const mesh_attrib* attrib = find_mesh_attrib(MeshAttribType_Position, attribs))
+    if (const MeshAttrib* attrib = findMeshAttrib(MeshAttribType_Position, attribs))
         packVertices(*attrib, vbuf, vcount, face_data, vertices);
 }
 
@@ -116,7 +116,7 @@ void processFaces(const std::vector<std::string>& face_lines, std::vector<objfac
     }
 }
 
-void packNormals(const mesh_attrib& attrib, float* const vbuf, unsigned int* const vcount, const std::vector<objface>& face_data, const float* const normal_data) {
+void packNormals(const MeshAttrib& attrib, float* const vbuf, unsigned int* const vcount, const std::vector<objface>& face_data, const float* const normal_data) {
     for (int i = 0, len = face_data.size(); i < len; i++) {
         const unsigned int index = face_data.at(i).norm - 1;
         if (index < 0)
@@ -126,7 +126,7 @@ void packNormals(const mesh_attrib& attrib, float* const vbuf, unsigned int* con
     }
 }
 
-void packUVs(const mesh_attrib& attrib, float* const vbuf, unsigned int* const vcount, const std::vector<objface>& face_data, const float* const uv_data) {
+void packUVs(const MeshAttrib& attrib, float* const vbuf, unsigned int* const vcount, const std::vector<objface>& face_data, const float* const uv_data) {
     for (int i = 0, len = face_data.size(); i < len; i++) {
         const unsigned int index = face_data.at(i).uv - 1;
         if (index < 0)
@@ -136,7 +136,7 @@ void packUVs(const mesh_attrib& attrib, float* const vbuf, unsigned int* const v
     }
 }
 
-void packVertices(const mesh_attrib& attrib, float* const vbuf, unsigned int* const vcount, const std::vector<objface>& face_data, const float* const vertex_data) {
+void packVertices(const MeshAttrib& attrib, float* const vbuf, unsigned int* const vcount, const std::vector<objface>& face_data, const float* const vertex_data) {
     for (int i = 0, len = face_data.size(); i < len; i++) {
         const unsigned int index = face_data.at(i).vert - 1;
         if (index < 0)

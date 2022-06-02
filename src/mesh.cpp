@@ -4,7 +4,7 @@
 const inline auto LINE_SIZE = 4;
 const inline auto LINE_SIZE_HALF = LINE_SIZE / 2.0f;
 
-extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *indexBuffer, unsigned int *vertexCount, unsigned int *indexCount, unsigned int *indexOffset, const unsigned int width, const unsigned int height) noexcept {
+extern void generateMesh(const Quad *qt, float *vertexBuffer, unsigned int *indexBuffer, unsigned int *vertexCount, unsigned int *indexCount, unsigned int *indexOffset, const unsigned int width, const unsigned int height) noexcept {
     if (qt == nullptr)
         return;
 
@@ -99,7 +99,7 @@ extern void generateMesh(const quad *qt, float *vertexBuffer, unsigned int *inde
     *indexCount += localIndexCount;
 }
 
-const mesh_attrib* find_mesh_attrib(MeshAttribType type, const std::unordered_map<MeshAttribType, mesh_attrib>* attribs) {
+const MeshAttrib* findMeshAttrib(MeshAttribType type, const std::unordered_map<MeshAttribType, MeshAttrib>* attribs) {
     if (attribs->find(type) == attribs->end())
         return nullptr;
     return &attribs->at(type);

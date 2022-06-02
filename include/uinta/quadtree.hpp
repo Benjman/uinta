@@ -14,12 +14,12 @@ static const inline char QUAD_ENTITY_STORE_SIZE_STEP = 2;
 **/
 
 #include <glm/vec2.hpp>
-struct quad final {
-    quad *parent;
-    quad *bottomLeft;
-    quad *bottomRight;
-    quad *topLeft;
-    quad *topRight;
+struct Quad final {
+    Quad *parent;
+    Quad *bottomLeft;
+    Quad *bottomRight;
+    Quad *topLeft;
+    Quad *topRight;
 
     entt::entity *entityStore = nullptr;
 
@@ -30,13 +30,13 @@ struct quad final {
     unsigned char entityStoreSize;
     unsigned char entityCount;
 
-    quad();
+    Quad();
 
-    quad(const glm::vec2& topLeftBounds, const glm::vec2& bottomRightBounds, const unsigned int minCellSize = QUAD_MIN_CELL_SIZE);
+    Quad(const glm::vec2& topLeftBounds, const glm::vec2& bottomRightBounds, const unsigned int minCellSize = QUAD_MIN_CELL_SIZE);
 
-    ~quad();
+    ~Quad();
 
-    quad *findQuad(const glm::vec2& pos) const noexcept;
+    Quad *findQuad(const glm::vec2& pos) const noexcept;
 
     const entt::entity* get(const glm::vec2& pos, char* count) const noexcept;
 
@@ -53,7 +53,7 @@ private:
 
     void removeEntity(entt::entity entity) noexcept;
 
-    void removeQuad(const quad *quad) noexcept;
+    void removeQuad(const Quad *quad) noexcept;
      
 };
 

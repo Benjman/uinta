@@ -9,11 +9,11 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_glfw.h>
 
-struct glfw_runner : Runner {
+struct GlfwRunner : Runner {
     GLFWwindow* window;
 
-    glfw_runner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
-    ~glfw_runner();
+    GlfwRunner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
+    ~GlfwRunner();
 
     virtual void doInit() override {}
 
@@ -29,8 +29,8 @@ struct glfw_runner : Runner {
 
 protected:
     double getRuntime() override;
-    void internal_init() override;
-    void internal_shutdown() override;
+    void internalInit() override;
+    void internalShutdown() override;
     void pollInput() override;
     bool shouldExit() override;
     void swap_buffers() override;
@@ -46,7 +46,7 @@ private:
 
 };
 
-void createGLFWWindow(glfw_runner& view);
+void createGLFWWindow(GlfwRunner& view);
 
 const char* getKeyStr(int key) noexcept;
 const char* getActionStr(int action) noexcept;

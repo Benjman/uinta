@@ -13,7 +13,7 @@
 #include <glm/ext.hpp>
 #include <imgui.h>
 
-struct camera3dRunner final : glfw_runner {
+struct camera3dRunner final : GlfwRunner {
 public:
     Camera camera;
 
@@ -25,14 +25,14 @@ public:
     gl_buf vbo;
     gl_buf ebo;
 
-    camera3dRunner() : glfw_runner("hello camera3d", 1000, 1000) {
+    camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {
     }
 
     void doInit() override {
-        init_shader();
+        initShader();
         GLfloat vertices[KILOBYTES(20)];
         GLuint indices[KILOBYTES(20)];
-        init_ground(vertices, indices);
+        initGround(vertices, indices);
         init_buffers(vertices, indices);
         imguiInit();
 
@@ -63,15 +63,15 @@ public:
         glEnableVertexAttribArray(2);
     }
 
-    void init_ground(GLfloat* const vertices, GLuint* const indices) {
+    void initGround(GLfloat* const vertices, GLuint* const indices) {
         unsigned int local_vcount = 0,
                      local_icount = 0;
             
-        const mesh_attrib pos_attrib(9, 0),
+        const MeshAttrib pos_attrib(9, 0),
                           norm_attrib(9, 3),
                           color_attrib(9, 6);
 
-        const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
+        const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
             {MeshAttribType_Position, pos_attrib},
             {MeshAttribType_Normal, norm_attrib},
             {MeshAttribType_Color, color_attrib},
@@ -101,19 +101,19 @@ public:
         ebo.count += local_icount;
     }
 
-    void init_shader() {
-        char vshader[get_file_size("shader/camera3d.vert")];
-        char fshader[get_file_size("shader/camera3d.frag")];
+    void initShader() {
+        char vshader[getFileSize("shader/camera3d.vert")];
+        char fshader[getFileSize("shader/camera3d.frag")];
 
-        read_file_raw("shader/camera3d.vert", vshader);
-        read_file_raw("shader/camera3d.frag", fshader);
+        readFileRaw("shader/camera3d.vert", vshader);
+        readFileRaw("shader/camera3d.frag", fshader);
 
         const char* sources[] = { vshader, fshader };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const GLint buffer_lengths[] = { (GLint) sizeof(vshader), (GLint) sizeof(fshader) };
         const char* uniforms[] = { "u_mvp" };
         GLuint* locations[] = { &u_mvp };
-        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
+        shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
                                        uniforms, locations, sizeof(locations) / sizeof(GLuint*));
     }
 

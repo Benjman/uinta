@@ -6,10 +6,10 @@
 
 #include <cstdlib>
 
-struct imgui_runner final : glfw_runner {
+struct ImGUIRunner final : GlfwRunner {
     unsigned int frame = 0;
     
-    imgui_runner() : glfw_runner("hello imgui", 1000, 1000) {}
+    ImGUIRunner() : GlfwRunner("hello imgui", 1000, 1000) {}
 
     void doInit() override {
         imguiInit();
@@ -36,7 +36,7 @@ struct imgui_runner final : glfw_runner {
 
 };
 
-imgui_runner runner;
+ImGUIRunner runner;
 
 int main(const int argc, const char **argv) {
     return runner.run();

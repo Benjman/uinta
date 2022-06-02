@@ -9,7 +9,7 @@
 
 namespace internal {
 
-void read_file_internal(const std::string& path, std::ios::openmode mode, char* const buffer) {
+void readFileInternal(const std::string& path, std::ios::openmode mode, char* const buffer) {
     std::ifstream file(path, std::ios::in | mode | std::ios::ate);
     if (!file || !file.good()) {
         SPDLOG_ERROR("read_file_internal - failed to open file {}", path);
@@ -23,17 +23,17 @@ void read_file_internal(const std::string& path, std::ios::openmode mode, char* 
 
 }
 
-void read_file_raw(const char* const relative_path, char* const buffer) {
+void readFileRaw(const char* const relative_path, char* const buffer) {
     std::string abs_path = std::string(RES_PATH) + relative_path;
-    internal::read_file_internal(abs_path, std::ios::in, buffer);
+    internal::readFileInternal(abs_path, std::ios::in, buffer);
 }
 
-void read_file_binary(const char* const relative_path, char* const buffer) {
+void readFileBinary(const char* const relative_path, char* const buffer) {
     std::string abs_path = std::string(RES_PATH) + relative_path;
-    internal::read_file_internal(abs_path, std::ios::binary, buffer);
+    internal::readFileInternal(abs_path, std::ios::binary, buffer);
 }
 
-unsigned int get_file_size(const char* const relative_path) {
+unsigned int getFileSize(const char* const relative_path) {
     std::string abs_path = std::string(RES_PATH) + relative_path;
     std::ifstream in(abs_path, std::ifstream::ate | std::ifstream::binary);
     if (!in || !in.good()) {

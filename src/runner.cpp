@@ -17,7 +17,7 @@ Runner::Runner(const std::string& title, unsigned int width, unsigned int height
 }
 
 void Runner::init() {
-    internal_init();
+    internalInit();
     doInit();
 }
 
@@ -54,7 +54,7 @@ void Runner::render() {
 }
 
 void Runner::shutdown() {
-    internal_shutdown();
+    internalShutdown();
     doShutdown();
 }
 

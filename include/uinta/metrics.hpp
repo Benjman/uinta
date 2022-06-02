@@ -9,15 +9,15 @@ constexpr unsigned int METRIC_UINT = 2;
 
 constexpr unsigned int METRICS_MAX_STORAGE = 100;
 
-struct metrics_controller final {
+struct MetricsController final {
 
     void* storage = nullptr; 
     unsigned int metric_type[METRICS_MAX_STORAGE];
     const char* assignments[METRICS_MAX_STORAGE];
 
-    metrics_controller();
+    MetricsController();
 
-    ~metrics_controller();
+    ~MetricsController();
 
     metric_t init_metric(const unsigned int type, const char* const name) noexcept;
 

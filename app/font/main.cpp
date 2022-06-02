@@ -17,9 +17,9 @@ const unsigned int WINDOW_HEIGHT = 1000;
 
 const input_key_t MY_KEY = KEY_SPACE;
 
-struct fontRunner final : glfw_runner {
+struct FontRunner final : GlfwRunner {
 public:
-    font::font_t font_handle;
+    font::font_t font;
     font::text text = font::text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                                  32.0, // line_size
                                  1.0, 0.5, 0.2, // color
@@ -39,13 +39,13 @@ public:
     GLuint ebo;
     GLuint shader;
 
-    fontRunner() : glfw_runner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {}
+    FontRunner() : GlfwRunner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
     void doInit() override {
-        init_font();
-        init_shader();
-        init_buffers();
-        init_mesh();
+        initFont();
+        initShader();
+        initBuffers();
+        initMesh();
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -57,7 +57,7 @@ public:
         glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
     }
 
-    void init_buffers() {
+    void initBuffers() {
         glGenVertexArrays(1, &vao);
 
         GLuint ids[2];
@@ -77,21 +77,21 @@ public:
         glEnableVertexAttribArray(2);
     }
 
-    void init_mesh() {
-        const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs = {
-            {FontMeshAttrib_Position, font_mesh_attrib(7, 0)},
-            {FontMeshAttrib_UV, font_mesh_attrib(7, 2)},
-            {FontMeshAttrib_Color, font_mesh_attrib(7, 4)},
+    void initMesh() {
+        const std::unordered_map<FontMeshAttribTypes, FontMeshAttrib> attribs = {
+            {FontMeshAttrib_Position, FontMeshAttrib(7, 0)},
+            {FontMeshAttrib_UV, FontMeshAttrib(7, 2)},
+            {FontMeshAttrib_Color, FontMeshAttrib(7, 4)},
         };
         unsigned int vbuf_count = 0;
         unsigned int ioffset = 0;
-        font::generate_mesh(&text, font_handle, display.width, display.height, &attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
+        font::generate_mesh(&text, font, display.width, display.height, &attribs, vbuf, &vbuf_count, ibuf, &icount, &ioffset);
 
         glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VBUF_SIZE, vbuf, GL_STATIC_DRAW);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IBUF_SIZE, ibuf, GL_STATIC_DRAW);
     }
 
-    void init_shader() {
+    void initShader() {
         const char *vshader =
             "#version 330 core\n"
             "layout (location = 0) in vec2 in_pos;"
@@ -118,21 +118,21 @@ public:
         const char* sources[] = { vshader, fshader };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
-        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
+        shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths);
         glUseProgram(shader);
     }
 
-    void init_font() {
+    void initFont() {
         auto type = font::DejaVuSans;
-        font_handle = font::init_font(type, 256, 256);
-        unsigned char data[get_file_size(getFontPath(type))];
-        read_file_binary(getFontPath(type), (char*) data);
-        load_font(font_handle, data);
+        font = font::initFont(type, 256, 256);
+        unsigned char data[getFileSize(getFontPath(type))];
+        readFileBinary(getFontPath(type), (char*) data);
+        load_font(font, data);
     }
 
 };
 
-fontRunner runner;
+FontRunner runner;
 
 int main(const int argc, const char **argv) {
     return runner.run();

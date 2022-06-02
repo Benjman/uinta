@@ -7,13 +7,13 @@
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 
-GLuint create_shader_program(const char** sources,
-                             const GLenum* stages,
-                             const unsigned int stage_count,
-                             const GLint* buffer_lengths,
-                             const char** uniform_names,
-                             GLuint** uniform_locations,
-                             const unsigned int uniform_count) noexcept {
+GLuint createShaderProgram(const char** sources,
+                           const GLenum* stages,
+                           const unsigned int stage_count,
+                           const GLint* buffer_lengths,
+                           const char** uniform_names,
+                           GLuint** uniform_locations,
+                           const unsigned int uniform_count) noexcept {
     GLuint id = glCreateProgram();
 
     for (auto i = 0; i < stage_count; i++) {
@@ -32,7 +32,7 @@ GLuint create_shader_program(const char** sources,
     for (auto i = 0; i < uniform_count; i++) {
         GLuint loc = glGetUniformLocation(id, uniform_names[i]);
         if (loc == -1)
-            SPDLOG_ERROR("create_shader_program - Uniform '{}' not found.", uniform_names[i]);
+            SPDLOG_ERROR("createShaderProgram - Uniform '{}' not found.", uniform_names[i]);
         *uniform_locations[i] = loc;
     }
 

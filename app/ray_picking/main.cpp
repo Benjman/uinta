@@ -13,15 +13,15 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/imgui.h>
 
-smooth_float ortho_size = smooth_float(5.0, 10.0);
+SmoothFloat ortho_size = SmoothFloat(5.0, 10.0);
 int imgui_level = 3;
 
 struct RayPickingCameraConfigs : CameraConfig {
 
 };
 
-struct rayPickingRunner final : glfw_runner {
-    smooth_vec3 cam_pos = glm::vec3(0.0);
+struct RayPickingRunner final : GlfwRunner {
+    SmoothVec3 cam_pos = glm::vec3(0.0);
 
     GLuint vao;
     gl_buf vbo;
@@ -36,25 +36,25 @@ struct rayPickingRunner final : glfw_runner {
     GLuint shader;
     GLuint u_mvp;
 
-    glm::vec2 ndc_space;
-    glm::vec4 clip_space;
-    glm::vec4 eye_space;
-    glm::vec4 world_space;
+    glm::vec2 ndcSpace;
+    glm::vec4 clipSpace;
+    glm::vec4 eyeSpace;
+    glm::vec4 worldSpace;
 
-    rayPickingRunner() noexcept : glfw_runner("hello ray picking", 1000, 1000) {
+    RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) {
         cam_pos.z(1.0);
     }
 
     void doInit() override {
-        init_shader();
-        init_buffers();
-        init_grid();
+        initShader();
+        initBuffers();
+        initGrid();
         imguiInit();
         setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         setBackground(glm::vec3(216, 204, 192) / glm::vec3(255.0f));
     }
 
-    void init_buffers() {
+    void initBuffers() {
         glGenVertexArrays(1, &vao);
 
         GLuint ids[2];
@@ -72,7 +72,7 @@ struct rayPickingRunner final : glfw_runner {
         glEnableVertexAttribArray(1);
     }
 
-    void init_grid() {
+    void initGrid() {
         const auto rows = 27u,
                    cols = 27u;
         const auto node_size = 0.1f,
@@ -176,12 +176,12 @@ struct rayPickingRunner final : glfw_runner {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     }
 
-    void init_shader() {
-        char vert[get_file_size("shader/ray_picking.vert")];
-        read_file_raw("shader/ray_picking.vert", vert);
+    void initShader() {
+        char vert[getFileSize("shader/ray_picking.vert")];
+        readFileRaw("shader/ray_picking.vert", vert);
 
-        char frag[get_file_size("shader/ray_picking.frag")];
-        read_file_raw("shader/ray_picking.frag", frag);
+        char frag[getFileSize("shader/ray_picking.frag")];
+        readFileRaw("shader/ray_picking.frag", frag);
 
         const char* sources[] = { vert, frag };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
@@ -189,7 +189,7 @@ struct rayPickingRunner final : glfw_runner {
         const char* uniforms[] = { "u_mvp" };
         GLuint* locations[] = { &u_mvp };
 
-        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), source_lengths,
+        shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), source_lengths,
                                        uniforms, locations, sizeof(locations) / sizeof(GLuint*));
     }
 
@@ -256,9 +256,9 @@ struct rayPickingRunner final : glfw_runner {
 
         if (!imgui_level) return;
         ImGui::Begin("Cursor info");
-        if (imgui_level >= 1) ImGui::Text("Device  %+.2f, %+.2f", ndc_space.x, ndc_space.y);
-        if (imgui_level >= 2) ImGui::Text("Eye     %+.2f, %+.2f", eye_space.x, eye_space.y);
-        if (imgui_level >= 3) ImGui::Text("World   %+.2f, %+.2f", world_space.x, world_space.y);
+        if (imgui_level >= 1) ImGui::Text("Device  %+.2f, %+.2f", ndcSpace.x, ndcSpace.y);
+        if (imgui_level >= 2) ImGui::Text("Eye     %+.2f, %+.2f", eyeSpace.x, eyeSpace.y);
+        if (imgui_level >= 3) ImGui::Text("World   %+.2f, %+.2f", worldSpace.x, worldSpace.y);
         ImGui::End();
     }
 
@@ -267,10 +267,10 @@ struct rayPickingRunner final : glfw_runner {
     }
 
     void updateCursorVectors() {
-        ndc_space   = glm::vec2(2.0 * cursor_pos.x / display.height - 1.0, -2.0 * cursor_pos.y / display.height + 1.0);
-        clip_space  = glm::vec4(ndc_space, -1.0, 1.0);
-        eye_space   = glm::inverse(m_proj) * clip_space;
-        world_space = glm::inverse(m_view) * eye_space;
+        ndcSpace   = glm::vec2(2.0 * cursor_pos.x / display.height - 1.0, -2.0 * cursor_pos.y / display.height + 1.0);
+        clipSpace  = glm::vec4(ndcSpace, -1.0, 1.0);
+        eyeSpace   = glm::inverse(m_proj) * clipSpace;
+        worldSpace = glm::inverse(m_view) * eyeSpace;
     }
 
     void doShutdown() override {
@@ -279,7 +279,7 @@ struct rayPickingRunner final : glfw_runner {
 
 };
 
-rayPickingRunner runner;
+RayPickingRunner runner;
 
 int main(const int argc, const char** argv) {
     return runner.run();

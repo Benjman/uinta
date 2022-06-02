@@ -16,7 +16,7 @@ using debug_timer_t = int;
 
 constexpr unsigned int DEBUG_CONTROLLER_MAX_TIMERS = 8;
 
-struct debug_controller final {
+struct DebugController final {
     GLuint shader;
 
     GLuint vao;
@@ -30,27 +30,27 @@ struct debug_controller final {
 
     font::font_t font_handle;
 
-    metrics_controller metrics;
+    MetricsController metrics;
     unsigned int metric_row = 0, ioff = 0;
 
-    debug_controller(unsigned int view_width, unsigned int view_height) noexcept;
+    DebugController(unsigned int view_width, unsigned int view_height) noexcept;
 
     void init();
-    void init_buffers();
-    void init_font();
-    void init_shader();
+    void initBuffers();
+    void initFont();
+    void initShader();
     void render();
-    void upload_buffers();
+    void uploadBuffers();
 
-    debug_timer_t create_timer() noexcept;
-    double duration_micro(const debug_timer_t handle) noexcept;
-    double duration_milli(const debug_timer_t handle) noexcept;
-    void mesh_metric(const metric_t handle, const std::string append = "");
-    void reset_timer(const debug_timer_t handle) noexcept;
+    debug_timer_t createTimer() noexcept;
+    double durationMicro(const debug_timer_t handle) noexcept;
+    double durationMilli(const debug_timer_t handle) noexcept;
+    void meshMetric(const metric_t handle, const std::string append = "");
+    void resetTimer(const debug_timer_t handle) noexcept;
 
 private:
     std::chrono::time_point<std::chrono::high_resolution_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
-    bool timer_assignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
+    bool timerAssignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
 
 };
 

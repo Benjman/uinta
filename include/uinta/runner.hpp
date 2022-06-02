@@ -31,7 +31,7 @@ struct RunnerState final {
     /// time in secinds the runner has been ticking
     float runtime;
 
-    input_state input;
+    InputState input;
     Display display;
 
 };
@@ -73,8 +73,8 @@ struct Runner {
     virtual void doShutdown() {}
 
 protected:
-    virtual void internal_init() = 0;
-    virtual void internal_shutdown() = 0;
+    virtual void internalInit() = 0;
+    virtual void internalShutdown() = 0;
     virtual void swap_buffers() = 0;
     virtual void pollInput() = 0;
     virtual bool shouldExit() = 0;

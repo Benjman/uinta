@@ -121,9 +121,9 @@ struct Camera {
     glm::vec3 position = glm::vec3(0.0);
     float pitch, yaw;
 
-    smooth_vec3 target;
-    smooth_float angle;
-    smooth_float dist;
+    SmoothVec3 target;
+    SmoothFloat angle;
+    SmoothFloat dist;
 
     Camera(const CameraConfig& config = CameraConfig());
 

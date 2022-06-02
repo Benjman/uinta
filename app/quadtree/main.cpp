@@ -9,14 +9,14 @@
 #define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
 
-struct quadtreeRunner final : glfw_runner {
+struct QuadtreeRunner final : GlfwRunner {
     unsigned int width = 1088;
     unsigned int height = 1088;
 
     GLfloat vertices[KILOBYTES(2)];
     GLuint indices[KILOBYTES(2)];
 
-    quad qt = quad(glm::vec2(32), glm::vec2(1056), 16);
+    Quad qt = Quad(glm::vec2(32), glm::vec2(1056), 16);
     float qt_width = qt.bottomRightBounds.x - qt.topLeftBounds.x;
     float qt_height = qt.bottomRightBounds.y - qt.topLeftBounds.y;
 
@@ -29,17 +29,17 @@ struct quadtreeRunner final : glfw_runner {
     gl_buf vbo;
     gl_buf ebo;
 
-    quadtreeRunner() : glfw_runner("hello quadtree", 1088, 1088) {
+    QuadtreeRunner() : GlfwRunner("hello quadtree", 1088, 1088) {
         squareWidth = (float) squareSize / display.width;
         squareHeight = (float) squareSize / display.height;
     }
 
     void doInit() override {
-        init_shader();
-        init_buffers();
+        initShader();
+        initBuffers();
     }
 
-    void init_buffers() {
+    void initBuffers() {
         GLuint vao;
         glGenVertexArrays(1, &vao);
         GLuint ids[2];
@@ -58,7 +58,7 @@ struct quadtreeRunner final : glfw_runner {
         glEnableVertexAttribArray(0);
     }
 
-    void init_shader() {
+    void initShader() {
         const char* vshader = "#version 330 core\n"
             "layout (location = 0) in vec2 in_pos;"
             "out vec3 pass_color;"
@@ -76,7 +76,7 @@ struct quadtreeRunner final : glfw_runner {
         const char* uniform_names[] = { "u_color" };
         const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
         GLuint* uniform_locs[] = { &u_color };
-        create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
+        createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
                               uniform_names, uniform_locs, sizeof(uniform_locs) / sizeof(GLuint*));
     }
 
@@ -150,7 +150,7 @@ struct quadtreeRunner final : glfw_runner {
 
 };
 
-quadtreeRunner runner;
+QuadtreeRunner runner;
 
 int main(const int argc, const char **argv) {
     return runner.run();

@@ -159,54 +159,54 @@ mouse_button_t MOUSE_BUTTON_LEFT    = GLFW_MOUSE_BUTTON_LEFT;
 mouse_button_t MOUSE_BUTTON_RIGHT   = GLFW_MOUSE_BUTTON_RIGHT;
 mouse_button_t MOUSE_BUTTON_MIDDLE  = GLFW_MOUSE_BUTTON_MIDDLE;
 
-glfw_runner::~glfw_runner() {
+GlfwRunner::~GlfwRunner() {
     if (window)
         glfwDestroyWindow(window);
     glfwTerminate();
 }
 
-void glfw_runner::internal_init() {
+void GlfwRunner::internalInit() {
     createGLFWWindow(*this);
     register_callbacks();
 }
 
-void glfw_runner::internal_shutdown() {
+void GlfwRunner::internalShutdown() {
 }
 
-void glfw_runner::swap_buffers() {
+void GlfwRunner::swap_buffers() {
     glfwSwapBuffers(window);
 }
 
-void glfw_runner::register_callbacks() {
+void GlfwRunner::register_callbacks() {
     glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
-        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        GlfwRunner* runner = (GlfwRunner*) glfwGetWindowUserPointer(window);
         if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q)
             return glfwSetWindowShouldClose(runner->window, true);
         runner->handleKeyInput(key, scancode, action, mods);
     });
 
     glfwSetCursorPosCallback(window, [] (GLFWwindow* window, double xpos, double ypos) {
-        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        GlfwRunner* runner = (GlfwRunner*) glfwGetWindowUserPointer(window);
         runner->handleCursorPositionChanged(xpos, ypos);
     });
 
     glfwSetMouseButtonCallback(window, [] (GLFWwindow* window, int button, int action, int mods) {
-        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        GlfwRunner* runner = (GlfwRunner*) glfwGetWindowUserPointer(window);
         runner->handleMouseButtonInput(button, action, mods);
     });
 
     glfwSetScrollCallback(window, [] (GLFWwindow* window, double xoffset, double yoffset) {
-        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        GlfwRunner* runner = (GlfwRunner*) glfwGetWindowUserPointer(window);
         runner->handleScrollInput(xoffset, yoffset);
     });
 
     glfwSetWindowSizeCallback(window, [] (GLFWwindow* window, int width, int height) {
-        glfw_runner* runner = (glfw_runner*) glfwGetWindowUserPointer(window);
+        GlfwRunner* runner = (GlfwRunner*) glfwGetWindowUserPointer(window);
         runner->handleWindowSizeChanged(width, height);
     });
 }
 
-void createGLFWWindow(glfw_runner& runner) {
+void createGLFWWindow(GlfwRunner& runner) {
     logger_t logger = spdlog::stderr_color_mt("createGLFWWindow");
     SPDLOG_LOGGER_INFO(logger, "Initializing GLFW...", runner.display.title.c_str(), runner.display.width, runner.display.height);
     spdlog::stopwatch sw;
@@ -236,19 +236,19 @@ void createGLFWWindow(glfw_runner& runner) {
     SPDLOG_LOGGER_INFO(logger, "GLFW initialization completed in {} seconds", sw.elapsed().count());
 }
 
-double glfw_runner::getRuntime() {
+double GlfwRunner::getRuntime() {
     return glfwGetTime();
 }
 
-void glfw_runner::pollInput() {
+void GlfwRunner::pollInput() {
     glfwPollEvents();
 }
 
-bool glfw_runner::shouldExit() {
+bool GlfwRunner::shouldExit() {
     return glfwWindowShouldClose(window);
 }
 
-void glfw_runner::imguiInit() {
+void GlfwRunner::imguiInit() {
 #ifdef IMGUI_API
     imguiEnabled = true;
     IMGUI_CHECKVERSION();
@@ -259,7 +259,7 @@ void glfw_runner::imguiInit() {
 #endif // IMGUI_API
 }
 
-void glfw_runner::imguiPreRender() {
+void GlfwRunner::imguiPreRender() {
 #ifdef IMGUI_API
     if (!imguiEnabled) return;
     ImGui_ImplOpenGL3_NewFrame();
@@ -267,7 +267,7 @@ void glfw_runner::imguiPreRender() {
     ImGui::NewFrame();
 #endif // IMGUI_API
 }
-void glfw_runner::imguiPostRender() {
+void GlfwRunner::imguiPostRender() {
 #ifdef IMGUI_API
     if (!imguiEnabled) return;
     ImGui::Render();
@@ -275,7 +275,7 @@ void glfw_runner::imguiPostRender() {
 #endif // IMGUI_API
 }
 
-void glfw_runner::imguiShutdown() {
+void GlfwRunner::imguiShutdown() {
 #ifdef IMGUI_API
     if (!imguiEnabled) return;
     ImGui_ImplOpenGL3_Shutdown();

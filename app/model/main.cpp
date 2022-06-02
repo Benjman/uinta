@@ -15,19 +15,19 @@
 #include <unordered_map>
 #include <glm/gtc/matrix_transform.hpp>
 
-struct modelRunner final : glfw_runner {
+struct ModelRunner final : GlfwRunner {
     unsigned int icount = 0, vcount = 0;
 
     GLuint shader, u_model;
     float vbuf[MEGABYTES(5)];
     unsigned int ibuf[MEGABYTES(5)];
 
-    modelRunner() : glfw_runner("hello models", 1000, 1000) {}
+    ModelRunner() : GlfwRunner("hello models", 1000, 1000) {}
 
     void doInit() override {
         load_shaders();
-        init_obj();
-        init_buffers();
+        initObj();
+        initBuffers();
         glEnable(GL_DEPTH_TEST);
         setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
@@ -40,15 +40,15 @@ struct modelRunner final : glfw_runner {
         }
     }
 
-    void init_obj() {
-        const std::unordered_map<MeshAttribType, mesh_attrib> attribs = {
-            {MeshAttribType_Position, mesh_attrib(6, 0)},
-            {MeshAttribType_Normal, mesh_attrib(6, 3)},
+    void initObj() {
+        const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
+            {MeshAttribType_Position, MeshAttrib(6, 0)},
+            {MeshAttribType_Normal, MeshAttrib(6, 3)},
         };
         loadObj(Model_Suzanne, vbuf, &vcount, ibuf, &icount, &attribs);
     }
 
-    void init_buffers() {
+    void initBuffers() {
         GLuint vao, vbo, ebo;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -68,18 +68,18 @@ struct modelRunner final : glfw_runner {
     }
 
     void load_shaders() {
-        char vert[get_file_size("shader/model.vert")];
-        read_file_raw("shader/model.vert", vert);
+        char vert[getFileSize("shader/model.vert")];
+        readFileRaw("shader/model.vert", vert);
 
-        char frag[get_file_size("shader/model.frag")];
-        read_file_raw("shader/model.frag", frag);
+        char frag[getFileSize("shader/model.frag")];
+        readFileRaw("shader/model.frag", frag);
 
         const char* sources[] = { vert, frag };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const GLint buffer_lengths[] = { (GLint) sizeof(vert), (GLint) sizeof(frag) };
         const char* uniforms[] = { "u_model" };
         GLuint* uniform_locations[] = { &u_model };
-        shader = create_shader_program(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
+        shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
                                        uniforms, uniform_locations, sizeof(uniforms) / sizeof(char*));
     }
 
@@ -91,7 +91,7 @@ struct modelRunner final : glfw_runner {
 
 };
 
-modelRunner runner;
+ModelRunner runner;
 
 int main(const int argc, const char **argv) {
     return runner.run();

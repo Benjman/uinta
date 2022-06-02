@@ -13,7 +13,7 @@ constexpr metric_t METRICS_INVALID = -1;
 #define METRICS_VALIDATE_STRIDE(type) if (METRICS_STRIDE != sizeof(type)) \
     throw std::runtime_error(std::string("[ERROR] metrics_controller.cpp - unexpected return from sizeof(") + #type + ")")
 
-metrics_controller::metrics_controller() {
+MetricsController::MetricsController() {
     // validate stride is correct
     METRICS_VALIDATE_STRIDE(int);
     METRICS_VALIDATE_STRIDE(unsigned int);
@@ -23,11 +23,11 @@ metrics_controller::metrics_controller() {
     memset(assignments, 0, METRICS_MAX_STORAGE * METRICS_STRIDE);
 }
 
-metrics_controller::~metrics_controller() {
+MetricsController::~MetricsController() {
     free(storage);
 }
 
-metric_t metrics_controller::init_metric(const unsigned int type, const char* const name) noexcept {
+metric_t MetricsController::init_metric(const unsigned int type, const char* const name) noexcept {
     for (int i = 0; i < METRICS_MAX_STORAGE; i++) {
         if (!assignments[i]) {
             metric_type[i] = type;
@@ -40,22 +40,22 @@ metric_t metrics_controller::init_metric(const unsigned int type, const char* co
     return METRICS_INVALID;
 }
 
-void metrics_controller::set(const metric_t handle, const float v) noexcept {
+void MetricsController::set(const metric_t handle, const float v) noexcept {
     auto* position = (float*) storage + handle * METRICS_STRIDE;
     *position = v;
 }
 
-void metrics_controller::set(const metric_t handle, const int v) noexcept {
+void MetricsController::set(const metric_t handle, const int v) noexcept {
     auto* position = (int*) storage + handle * METRICS_STRIDE;
     *position = v;
 }
 
-void metrics_controller::set(const metric_t handle, const unsigned int v) noexcept {
+void MetricsController::set(const metric_t handle, const unsigned int v) noexcept {
     auto* position = (unsigned int*) storage + handle * METRICS_STRIDE;
     *position = v;
 }
 
-float metrics_controller::getf(const metric_t handle) noexcept {
+float MetricsController::getf(const metric_t handle) noexcept {
     if (handle <= METRICS_INVALID) {
         SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
         return 0.0f;
@@ -64,7 +64,7 @@ float metrics_controller::getf(const metric_t handle) noexcept {
     return *position;
 }
 
-int metrics_controller::geti(const metric_t handle) noexcept {
+int MetricsController::geti(const metric_t handle) noexcept {
     if (handle <= METRICS_INVALID) {
         SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
         return 0;
@@ -73,7 +73,7 @@ int metrics_controller::geti(const metric_t handle) noexcept {
     return *position;
 }
 
-unsigned int metrics_controller::getui(const metric_t handle) noexcept {
+unsigned int MetricsController::getui(const metric_t handle) noexcept {
     if (handle <= METRICS_INVALID) {
         SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
         return 0u;
