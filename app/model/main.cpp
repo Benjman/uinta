@@ -77,10 +77,10 @@ struct ModelRunner final : GlfwRunner {
         const char* sources[] = { vert, frag };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const GLint buffer_lengths[] = { (GLint) sizeof(vert), (GLint) sizeof(frag) };
-        const char* uniforms[] = { "u_model" };
-        GLuint* uniform_locations[] = { &u_model };
+        const std::vector<std::string> uniforms({ "u_model" });
+        const std::vector<GLuint*> locations = { &u_model };
         shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
-                                       uniforms, uniform_locations, sizeof(uniforms) / sizeof(char*));
+                                     uniforms, locations);
     }
 
     void doRender() override {

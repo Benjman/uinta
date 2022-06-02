@@ -186,11 +186,10 @@ struct RayPickingRunner final : GlfwRunner {
         const char* sources[] = { vert, frag };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const GLint source_lengths[] = { (GLint) sizeof(vert), (GLint) sizeof(frag) };
-        const char* uniforms[] = { "u_mvp" };
-        GLuint* locations[] = { &u_mvp };
-
+        const std::vector<std::string> uniforms({ "u_mvp" });
+        const std::vector<GLuint*> locations = { &u_mvp };
         shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), source_lengths,
-                                       uniforms, locations, sizeof(locations) / sizeof(GLuint*));
+                                     uniforms, locations);
     }
 
     void doPreTick(const RunnerState& state) override {

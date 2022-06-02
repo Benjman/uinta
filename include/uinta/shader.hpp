@@ -3,12 +3,14 @@
 
 #include <uinta/gl.h>
 
+#include <string>
+#include <vector>
+
 GLuint createShaderProgram(const char** sources,
                            const GLenum* stages,
                            const unsigned int stage_count,
                            const GLint* buffer_lengths,
-                           const char** uniform_names = nullptr,
-                           GLuint** uniform_locations = nullptr,
-                           const unsigned int uniform_count = 0) noexcept; // TODO these should be vectors, this would eliminate the need for stage_count and uniform counts.
+                           const std::vector<std::string> uniformNames = std::vector<std::string>(),
+                           const std::vector<GLuint*> uniformLocations = std::vector<GLuint*>());
 
 #endif // UINTA_SHADER_H

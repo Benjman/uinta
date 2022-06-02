@@ -9,16 +9,15 @@ void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 
 GLuint createShaderProgram(const char** sources,
                            const GLenum* stages,
-                           const unsigned int stage_count,
-                           const GLint* buffer_lengths,
-                           const char** uniform_names,
-                           GLuint** uniform_locations,
-                           const unsigned int uniform_count) noexcept {
+                           const unsigned int stageCount,
+                           const GLint* bufferLengths,
+                           const std::vector<std::string> uniformNames,
+                           const std::vector<GLuint*> uniformLocations) {
     GLuint id = glCreateProgram();
 
-    for (auto i = 0; i < stage_count; i++) {
+    for (auto i = 0; i < stageCount; i++) {
         GLuint stageId = glCreateShader(stages[i]);
-        glShaderSource(stageId, 1, &sources[i], &buffer_lengths[i]);
+        glShaderSource(stageId, 1, &sources[i], &bufferLengths[i]);
         glCompileShader(stageId);
         checkCompileErrors(id, stageId);
         glAttachShader(id, stageId);
@@ -29,11 +28,11 @@ GLuint createShaderProgram(const char** sources,
     checkCompileErrors(id, GL_LINK_STATUS);
     glUseProgram(id);
 
-    for (auto i = 0; i < uniform_count; i++) {
-        GLuint loc = glGetUniformLocation(id, uniform_names[i]);
+    for (auto i = 0; i < uniformNames.size(); i++) {
+        GLuint loc = glGetUniformLocation(id, uniformNames.at(i).c_str());
         if (loc == -1)
-            SPDLOG_ERROR("createShaderProgram - Uniform '{}' not found.", uniform_names[i]);
-        *uniform_locations[i] = loc;
+            SPDLOG_ERROR("createShaderProgram - Uniform '{}' not found.", uniformNames.at(i));
+        *uniformLocations.at(i) = loc;
     }
 
     return id;

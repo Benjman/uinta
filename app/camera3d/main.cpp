@@ -111,10 +111,10 @@ public:
         const char* sources[] = { vshader, fshader };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
         const GLint buffer_lengths[] = { (GLint) sizeof(vshader), (GLint) sizeof(fshader) };
-        const char* uniforms[] = { "u_mvp" };
-        GLuint* locations[] = { &u_mvp };
+        const std::vector<std::string> uniforms({ "u_mvp" });
+        const std::vector<GLuint*> locations = { &u_mvp };
         shader = createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
-                                       uniforms, locations, sizeof(locations) / sizeof(GLuint*));
+                                     uniforms, locations);
     }
 
     void doTick(const RunnerState &state) override {

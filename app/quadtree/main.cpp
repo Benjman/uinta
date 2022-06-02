@@ -73,11 +73,12 @@ struct QuadtreeRunner final : GlfwRunner {
             "}\0";
         const char* sources[] = { vshader, fshader };
         const GLenum stages[] = { GL_VERTEX_SHADER, GL_FRAGMENT_SHADER };
-        const char* uniform_names[] = { "u_color" };
         const GLint buffer_lengths[] = { (GLint) strlen(vshader), (GLint) strlen(fshader) };
         GLuint* uniform_locs[] = { &u_color };
+        const std::vector<std::string> uniforms({ "u_color" });
+        const std::vector<GLuint*> locations = { &u_color };
         createShaderProgram(sources, stages, sizeof(stages) / sizeof(GLenum), buffer_lengths,
-                              uniform_names, uniform_locs, sizeof(uniform_locs) / sizeof(GLuint*));
+                            uniforms, locations);
     }
 
     void doRender() override {
