@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #define private public
-#include <math.hpp>
+#include <uinta/math.hpp>
 
 TEST(running_avg, init_state) {
     running_avg avg(10);

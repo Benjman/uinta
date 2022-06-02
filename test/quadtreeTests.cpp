@@ -6,7 +6,7 @@
 #include <entt/entt.hpp>
 
 #define private public
-#include <quadtree.hpp>
+#include <uinta/quadtree.hpp>
 
 TEST(quadtree, constructorValidations_spatialAlignment) {
     bool thrown = false;

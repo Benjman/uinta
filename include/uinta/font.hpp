@@ -251,7 +251,8 @@ void store_color(const float, const float, const float, const font_mesh_attrib&,
 #ifdef UINTA_FONT_IMPLEMENTATION
 
 #include <stdexcept>
-#include <logging.hpp>
+
+#include <uinta/logging.hpp>
 
 namespace font {
     std::vector<font_ctx> fonts;

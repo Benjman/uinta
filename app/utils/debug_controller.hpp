@@ -1,11 +1,11 @@
 #ifndef SHOWCASE_DEBUG_CONTROLLER_HPP
 #define SHOWCASE_DEBUG_CONTROLLER_HPP
 
-#include <buffer.hpp>
-#include <font.hpp>
-#include <macros.hpp>
-#include <math.hpp>
-#include <metrics.hpp>
+#include <uinta/buffer.hpp>
+#include <uinta/font.hpp>
+#include <uinta/macros.hpp>
+#include <uinta/math.hpp>
+#include <uinta/metrics.hpp>
 
 #include <chrono>
 

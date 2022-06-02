@@ -1,9 +1,9 @@
 #ifndef UINTA_CAMERA2D_H
 #define UINTA_CAMERA2D_H
 
-#include <input.hpp>
-#include <math.hpp>
-#include <runner.hpp>
+#include <uinta/input.hpp>
+#include <uinta/math.hpp>
+#include <uinta/runner.hpp>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>

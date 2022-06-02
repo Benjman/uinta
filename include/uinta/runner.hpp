@@ -1,8 +1,8 @@
 #ifndef UINTA_APP_RUNNER_HPP
 #define UINTA_APP_RUNNER_HPP
 
-#include "logging.hpp"
-#include <input.hpp>
+#include <uinta/input.hpp>
+#include <uinta/logging.hpp>
 
 #include <GL/gl.h>
 #include <glm/vec3.hpp>

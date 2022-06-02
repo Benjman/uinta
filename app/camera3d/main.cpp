@@ -1,17 +1,17 @@
-#include "imgui.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <file.hpp>
-#include <mesh.hpp>
-#include <model.hpp>
-#include <math.hpp>
+#include <uinta/file.hpp>
+#include <uinta/mesh.hpp>
+#include <uinta/model.hpp>
+#include <uinta/math.hpp>
 
 #define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <imgui.h>
 
 struct camera3dRunner final : glfw_runner {
 public:

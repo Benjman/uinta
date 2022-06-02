@@ -1,12 +1,12 @@
+#include <uinta/file.hpp>
+#include <uinta/logging.hpp>
+#include <uinta/model.hpp>
+
+#include <cstring> // for memset
 #include <stdexcept>
 #include <vector>
-#include <cstring> // for memset
 
 #include <glm/vec3.hpp>
-
-#include <file.hpp>
-#include <logging.hpp>
-#include <model.hpp>
 
 const char* const getObjPath(const Models model) {
     switch (model) {

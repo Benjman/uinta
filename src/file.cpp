@@ -1,12 +1,11 @@
-#include <file.hpp>
 #include <uinta/cfg.hpp>
+#include <uinta/logging.hpp>
+#include <uinta/file.hpp>
 
 #include <ios>
 #include <istream>
 #include <cstring>
 #include <fstream>
-
-#include <logging.hpp>
 
 namespace internal {
 

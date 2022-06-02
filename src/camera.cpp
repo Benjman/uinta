@@ -1,4 +1,4 @@
-#include <camera.hpp>
+#include <uinta/camera.hpp>
 
 #include <glm/glm.hpp>
 

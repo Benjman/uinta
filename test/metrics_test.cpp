@@ -1,5 +1,6 @@
+#include <uinta/metrics.hpp>
+
 #include <gtest/gtest.h>
-#include <metrics.hpp>
 
 TEST(metrics, initial_state) {
     auto m = metrics_controller();

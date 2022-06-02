@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include <math.hpp>
+
+#include <uinta/math.hpp>
 
 TEST(smooth_float, initial) {
     ASSERT_EQ(1.0, smooth_float().agility);

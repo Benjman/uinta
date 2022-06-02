@@ -1,7 +1,7 @@
 #ifndef UINTA_GLFW_RUNNER_HPP
 #define UINTA_GLFW_RUNNER_HPP
 
-#include <runner.hpp>
+#include <uinta/runner.hpp>
 
 #include <GLFW/glfw3.h>
 

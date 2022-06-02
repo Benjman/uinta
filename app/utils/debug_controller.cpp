@@ -1,14 +1,14 @@
 #include <glad/glad.h>
 
+#include "debug_controller.hpp"
+
+#include <uinta/file.hpp>
+#include <uinta/logging.hpp>
+#include <uinta/shader.hpp>
+
 #include <chrono>
 #include <cmath>
 #include <cstring>
-
-#include "debug_controller.hpp"
-
-#include <file.hpp>
-#include <logging.hpp>
-#include <shader.hpp>
 
 using namespace font;
 const std::unordered_map<font_mesh_attrib_t, font_mesh_attrib> attribs = {

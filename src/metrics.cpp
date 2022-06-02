@@ -1,5 +1,5 @@
-#include <metrics.hpp>
-#include <logging.hpp>
+#include <uinta/metrics.hpp>
+#include <uinta/logging.hpp>
 
 #include <algorithm>
 #include <cassert>

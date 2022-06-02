@@ -1,9 +1,10 @@
-#include "glm/gtc/quaternion.hpp"
-#include "spdlog/spdlog.h"
-#include <quadtree.hpp>
+#include <uinta/logging.hpp>
+#include <uinta/quadtree.hpp>
 
 #include <math.h> // for ceilf
 #include <memory.h> // for memcpy
+
+#include <glm/gtc/quaternion.hpp>
 
 static unsigned int maxCount = 0;
 

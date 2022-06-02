@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 
-#include <logging.hpp>
-#include <runner.hpp>
+#include <uinta/logging.hpp>
+#include <uinta/runner.hpp>
 
 void setSpdlogLevel();
 

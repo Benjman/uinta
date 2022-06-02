@@ -54,6 +54,7 @@ set(UINTA_LIBS ${UINTA_LIBS} EnTT::EnTT)
 
 set(SPDLOG_BUILD_SHARED TRUE)
 add_subdirectory(./lib/spdlog)
+set(UINTA_INCLUDES ${UINTA_INCLUDES} ./lib/spdlog/include)
 
 
 include_directories(./include ${UINTA_INCLUDES})

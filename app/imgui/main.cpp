@@ -1,10 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <cstdlib>
-
 #define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
+
+#include <cstdlib>
 
 struct imgui_runner final : glfw_runner {
     unsigned int frame = 0;

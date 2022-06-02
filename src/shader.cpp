@@ -1,10 +1,9 @@
-#include "spdlog/spdlog.h"
 #include <cstdio>
 #include <glad/glad.h>
 
-#include <logging.hpp>
-#include <macros.hpp>
-#include <shader.hpp>
+#include <uinta/logging.hpp>
+#include <uinta/macros.hpp>
+#include <uinta/shader.hpp>
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 

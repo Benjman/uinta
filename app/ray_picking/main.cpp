@@ -1,17 +1,17 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <uinta/math.hpp>
+#include <uinta/camera.hpp>
+
+#define UINTA_APP_UTILS_IMPL
+#include "../utils/utils.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/imgui.h>
-
-#include <math.hpp>
-#include "camera.hpp"
-
-#define UINTA_APP_UTILS_IMPL
-#include "../utils/utils.hpp"
 
 smooth_float ortho_size = smooth_float(5.0, 10.0);
 int imgui_level = 3;

@@ -1,19 +1,19 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <uinta/file.hpp>
+#include <uinta/macros.hpp>
+#include <uinta/mesh.hpp>
+#include <uinta/model.hpp>
+#include <uinta/shader.hpp>
+
+#define UINTA_APP_UTILS_IMPL
+#include "../utils/utils.hpp"
+
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <file.hpp>
-#include <macros.hpp>
-#include <mesh.hpp>
-#include <model.hpp>
-#include <shader.hpp>
-
-#define UINTA_APP_UTILS_IMPL
-#include "../utils/utils.hpp"
 
 struct modelRunner final : glfw_runner {
     unsigned int icount = 0, vcount = 0;

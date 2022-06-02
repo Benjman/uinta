@@ -1,10 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "glfw_runner.hpp"
+#include <uinta/input.hpp>
+#include <uinta/logging.hpp>
 
-#include <input.hpp>
-#include <logging.hpp>
+#include "glfw_runner.hpp"
 
 #define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 #define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION

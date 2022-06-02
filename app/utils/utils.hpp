@@ -1,10 +1,9 @@
 #ifndef UINTA_APP_UTILS_HPP
 #define UINTA_APP_UTILS_HPP
 
+#include <uinta/camera.hpp>
 #include <uinta/cfg.hpp>
-
-#include <camera.hpp>
-#include <logging.hpp>
+#include <uinta/logging.hpp>
 
 #include ".././utils/debug_controller.hpp"
 #include ".././utils/glfw_runner.hpp"

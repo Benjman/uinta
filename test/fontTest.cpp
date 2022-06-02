@@ -1,5 +1,6 @@
+#include <uinta/font.hpp>
+
 #include <gtest/gtest.h>
-#include <font.hpp>
 
 TEST(font, renderableCount) {
     // ascii chars from 33 to 126

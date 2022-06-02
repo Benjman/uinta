@@ -1,4 +1,6 @@
-#include <math.hpp>
+#include <uinta/math.hpp>
+
+#include <algorithm> // std::min
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -33,7 +35,6 @@ running_avg::~running_avg() {
     delete[] buffer;
 }
 
-#include <algorithm> // std::min
 float running_avg::avg() noexcept {
     if (!cursor)
         return 0.0;
@@ -94,7 +95,6 @@ void smooth_float::force(float v) noexcept {
     target = v;
 }
 
-#include <cstdio>
 void smooth_float::tick(const float dt) noexcept {
     float diff = (target - current);
     current += diff * agility * dt;

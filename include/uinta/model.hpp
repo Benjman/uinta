@@ -1,12 +1,11 @@
 #ifndef UINTA_MODEL_HPP
 #define UINTA_MODEL_HPP
 
-#include <string>
+#include <uinta/mesh.hpp>
 
 #include <cstdio>
+#include <string>
 #include <unordered_map>
-
-#include <mesh.hpp>
 
 // TODO this all needs to be namespaced
 

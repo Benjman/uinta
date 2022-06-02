@@ -1,4 +1,4 @@
-#include <input.hpp>
+#include <uinta/input.hpp>
 
 const char* getKeyStr(input_key_t key) noexcept {
     if (key == KEY_SPACE) return "SPACE";

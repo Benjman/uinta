@@ -1,10 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <buffer.hpp>
-#include <macros.hpp>
-#include <mesh.hpp>
-#include <quadtree.hpp>
+#include <uinta/buffer.hpp>
+#include <uinta/macros.hpp>
+#include <uinta/mesh.hpp>
+#include <uinta/quadtree.hpp>
 
 #define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"

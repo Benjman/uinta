@@ -1,13 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <cstdio>
+#include <uinta/font.hpp>
+#include <uinta/macros.hpp>
 
 #define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
 
-#include <font.hpp>
-#include <macros.hpp>
+#include <cstdio>
 
 const unsigned int VBUF_SIZE = KILOBYTES(15);
 const unsigned int IBUF_SIZE = KILOBYTES(15);
