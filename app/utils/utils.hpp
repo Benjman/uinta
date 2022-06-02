@@ -4,6 +4,7 @@
 #include <uinta/cfg.hpp>
 
 #include <camera.hpp>
+#include <logging.hpp>
 
 #include ".././utils/debug_controller.hpp"
 #include ".././utils/glfw_runner.hpp"

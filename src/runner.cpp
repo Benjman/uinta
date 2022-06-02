@@ -1,5 +1,7 @@
+#include "spdlog/spdlog.h"
 #include <glad/glad.h>
 
+#include <logging.hpp>
 #include <runner.hpp>
 
 Display::Display(const std::string& title, unsigned int width, unsigned int height) noexcept :
@@ -71,20 +73,20 @@ void Runner::handleCursorPositionChanged(const double xpos, const double ypos) {
 }
 
 void Runner::handleScrollInput(const double xoffset, const double yoffset) {
-    printf("Mouse scroll (%+.1f, %+.1f)\n", xoffset, yoffset);
+    spdlog::debug("Runner::handleScrollInput - Mouse scroll (%+.1f, %+.1f)", xoffset, yoffset);
     state.input.scrolldx = xoffset;
     state.input.scrolldy = yoffset;
 }
 
 void Runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
-    printf("Key %s event: %s%s\n", getActionStr(action), getModsStr(mods), getKeyStr(key));
+    spdlog::debug("Runner::handleKeyInput - Key %s event: %s%s\n", getActionStr(action), getModsStr(mods), getKeyStr(key));
     if (action == ACTION_PRESS) state.input.keyPressed(key, mods);
     if (action == ACTION_RELEASE) state.input.keyReleased(key, mods);
     if (action == ACTION_REPEAT) state.input.keyRepeated(key, mods);
 }
 
 void Runner::handleMouseButtonInput(const int button, const int action, const int mods) {
-    printf("Mouse %s event: %s%s\n", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
+    spdlog::debug("Runner::handleMouseButtonInput - Mouse %s event: %s%s\n", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
     if (action == ACTION_PRESS) state.input.mouseButtonPressed(button, mods);
     if (action == ACTION_RELEASE) state.input.mouseButtonReleased(button, mods);
     state.input.flags = mods;

@@ -29,10 +29,13 @@ set(UINTA_SRCS ${UINTA_SRCS}
   )
 
 
-set(UINTA_INCLUDES ${UINTA_INCLUDES} ${CMAKE_BINARY_DIR}/generated)
-set(UINTA_LIB_PATH ${CMAKE_BINARY_DIR}/lib/)
-set(UINTA_RES_PATH ${CMAKE_BINARY_DIR}/res/)
-configure_file(${CMAKE_SOURCE_DIR}/cmake/cfg.hpp.in ${CMAKE_BINARY_DIR}/generated/uinta/cfg.hpp)
+set(UINTA_LIB_PATH        ${CMAKE_BINARY_DIR}/lib/)
+set(UINTA_RES_PATH        ${CMAKE_BINARY_DIR}/res/)
+set(UINTA_GENERATED_PATH  ${CMAKE_BINARY_DIR}/generated)
+
+
+set(UINTA_INCLUDES ${UINTA_INCLUDES} ${UINTA_GENERATED_PATH})
+configure_file(./cmake/cfg.hpp.in ${UINTA_GENERATED_PATH}/uinta/cfg.hpp)
 
 
 if ("Debug" STREQUAL "${CMAKE_BUILD_TYPE}")
@@ -49,6 +52,7 @@ add_subdirectory(./lib/entt)
 set(UINTA_LIBS ${UINTA_LIBS} EnTT::EnTT)
 add_subdirectory(./lib/spdlog)
 set(UINTA_LIBS ${UINTA_LIBS} ${SPDLOG_SRCS})
+set(UINTA_INCLUDES ${UINTA_INCLUDES} ./lib/spdlog/include)
 
 
 include_directories(./include ${UINTA_INCLUDES})

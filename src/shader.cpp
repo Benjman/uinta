@@ -1,8 +1,10 @@
+
 #include <cstdio>
 #include <glad/glad.h>
 
-#include <shader.hpp>
+#include <logging.hpp>
 #include <macros.hpp>
+#include <shader.hpp>
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 
@@ -31,8 +33,8 @@ GLuint create_shader_program(const char** sources,
     for (auto i = 0; i < uniform_count; i++) {
         GLuint loc = glGetUniformLocation(id, uniform_names[i]);
         if (loc == -1)
-            printf("[WARN] Couldn't find uniform location for '%s'\n", uniform_names[i]);
-        *uniform_locations[i] = glGetUniformLocation(id, uniform_names[i]);
+            spdlog::error("create_shader_program - Uniform '{}' not found.", uniform_names[i]);
+        *uniform_locations[i] = loc;
     }
 
     return id;
