@@ -157,7 +157,7 @@ int findOrInsertFaceData(const objface& face, std::vector<objface>& face_data, c
             return i;
         }
     }
-    // TODO warning that we couldn't find or insert
+    SPDLOG_WARN("Failed to find appropriate index. This is a \"critical\" warniung");
     return -1;
 }
 

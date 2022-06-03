@@ -208,7 +208,7 @@ void Quad::removeEntity(entt::entity entity) noexcept {
             return;
         }
     }
-    SPDLOG_WARN("Failed to find entity to remove."); // TODO logging
+    SPDLOG_WARN("Failed to find entity to remove.");
 }
 
 void Quad::removeQuad(const Quad *quad) noexcept {
