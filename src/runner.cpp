@@ -50,7 +50,7 @@ void Runner::render() {
     doPreRender();
     doRender();
     doPostRender();
-    swap_buffers();
+    swapBuffers();
 }
 
 void Runner::shutdown() {

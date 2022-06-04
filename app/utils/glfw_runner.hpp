@@ -33,7 +33,7 @@ protected:
     void internalShutdown() override;
     void pollInput() override;
     bool shouldExit() override;
-    void swap_buffers() override;
+    void swapBuffers() override;
     void register_callbacks();
 
     void imguiInit();

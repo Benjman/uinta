@@ -173,7 +173,7 @@ void GlfwRunner::internalInit() {
 void GlfwRunner::internalShutdown() {
 }
 
-void GlfwRunner::swap_buffers() {
+void GlfwRunner::swapBuffers() {
     glfwSwapBuffers(window);
 }
 
