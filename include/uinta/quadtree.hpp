@@ -5,6 +5,8 @@
 
 #include <entt/entity/fwd.hpp>
 
+namespace uinta {
+
 static const inline char QUAD_MIN_CELL_SIZE          = 1;
 static const inline char QUAD_ENTITY_STORE_SIZE_STEP = 2;
 
@@ -56,5 +58,7 @@ private:
 
   void removeQuad(const Quad *quad) noexcept;
 };
+
+} // namespace uinta
 
 #endif // UINTA_QUAD_TREE_H

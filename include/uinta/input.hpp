@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <unordered_set>
 
+namespace uinta {
+
 using input_key_t    = int;
 using mouse_button_t = int;
 
@@ -202,5 +204,7 @@ const char *getKeyStr(input_key_t key) noexcept;
 const char *getActionStr(input_key_t action) noexcept;
 const char *getModsStr(input_key_t mods) noexcept;
 const char *const getMouseButtonStr(mouse_button_t button) noexcept;
+
+} // namespace uinta
 
 #endif // UINTA_INPUT_HPP

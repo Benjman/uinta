@@ -6,7 +6,9 @@
 
 #include <glm/vec3.hpp>
 
-const char *const getObjPath(const Models model) {
+using namespace uinta;
+
+const char *const uinta::getObjPath(const Models model) {
   switch (model) {
   case Model_Cube:
     return "model/cube.obj";
@@ -27,6 +29,7 @@ const char *const getObjPath(const Models model) {
 /** Internal loading of obj files **/
 /***********************************/
 
+namespace uinta {
 struct objface {
   int vert, uv, norm, index;
 
@@ -47,13 +50,13 @@ void packVertices(const MeshAttrib &, float *const, unsigned int *cont, const st
 void parseFile(std::string &, std::vector<std::string> &, std::vector<std::string> &, std::vector<std::string> &,
                std::vector<std::string> &);
 void extractLineFloats(const std::vector<std::string> &lines, float *const buffer, const unsigned int size, const char delimiter);
-void extractLineData(const std::vector<std::string> &lines, unsigned int *const buffer, const unsigned int size,
-                     const char delimiter);
 void processFaceStrs(std::string *, std::vector<objface> &, unsigned int);
 void processFaces(const std::vector<std::string> &, std::vector<objface> &, unsigned int *const);
 
-void loadObj(const Models model, float *const vbuf, unsigned int *vcount, unsigned int *const ibuf, unsigned int *icount,
-             const std::unordered_map<MeshAttribType, MeshAttrib> *const attribs) {
+} // namespace uinta
+
+void uinta::loadObj(const Models model, float *const vbuf, unsigned int *vcount, unsigned int *const ibuf, unsigned int *icount,
+                    const std::unordered_map<MeshAttribType, MeshAttrib> *const attribs) {
   if (!attribs->size()) {
     SPDLOG_WARN("Unable to parse .obj file: No attributes provided!");
     return;
@@ -92,7 +95,8 @@ void loadObj(const Models model, float *const vbuf, unsigned int *vcount, unsign
     packVertices(*attrib, vbuf, vcount, face_data, vertices);
 }
 
-void processFaces(const std::vector<std::string> &face_lines, std::vector<objface> &result, unsigned int *const indexbuffer) {
+void uinta::processFaces(const std::vector<std::string> &face_lines, std::vector<objface> &result,
+                         unsigned int *const indexbuffer) {
   /*
       Face lines describe a single triangle in the format of:
           `f {vert}/{uv}/{norm} {vert}/{uv}/{norm} {vert}/{uv}/{norm}`
@@ -118,8 +122,8 @@ void processFaces(const std::vector<std::string> &face_lines, std::vector<objfac
   }
 }
 
-void packNormals(const MeshAttrib &attrib, float *const vbuf, unsigned int *const vcount, const std::vector<objface> &face_data,
-                 const float *const normal_data) {
+void uinta::packNormals(const MeshAttrib &attrib, float *const vbuf, unsigned int *const vcount,
+                        const std::vector<objface> &face_data, const float *const normal_data) {
   for (int i = 0, len = face_data.size(); i < len; i++) {
     const unsigned int index = face_data.at(i).norm - 1;
     if (index < 0)
@@ -129,8 +133,8 @@ void packNormals(const MeshAttrib &attrib, float *const vbuf, unsigned int *cons
   }
 }
 
-void packUVs(const MeshAttrib &attrib, float *const vbuf, unsigned int *const vcount, const std::vector<objface> &face_data,
-             const float *const uv_data) {
+void uinta::packUVs(const MeshAttrib &attrib, float *const vbuf, unsigned int *const vcount,
+                    const std::vector<objface> &face_data, const float *const uv_data) {
   for (int i = 0, len = face_data.size(); i < len; i++) {
     const unsigned int index = face_data.at(i).uv - 1;
     if (index < 0)
@@ -140,8 +144,8 @@ void packUVs(const MeshAttrib &attrib, float *const vbuf, unsigned int *const vc
   }
 }
 
-void packVertices(const MeshAttrib &attrib, float *const vbuf, unsigned int *const vcount, const std::vector<objface> &face_data,
-                  const float *const vertex_data) {
+void uinta::packVertices(const MeshAttrib &attrib, float *const vbuf, unsigned int *const vcount,
+                         const std::vector<objface> &face_data, const float *const vertex_data) {
   for (int i = 0, len = face_data.size(); i < len; i++) {
     const unsigned int index = face_data.at(i).vert - 1;
     if (index < 0)
@@ -151,7 +155,7 @@ void packVertices(const MeshAttrib &attrib, float *const vbuf, unsigned int *con
   }
 }
 
-int findOrInsertFaceData(const objface &face, std::vector<objface> &face_data, const unsigned int max) {
+int uinta::findOrInsertFaceData(const objface &face, std::vector<objface> &face_data, const unsigned int max) {
   for (int i = 0; i < max; i++) {
     if (face_data[i] == face)
       return i;
@@ -166,7 +170,7 @@ int findOrInsertFaceData(const objface &face, std::vector<objface> &face_data, c
   return -1;
 }
 
-void processFaceStrs(std::string *values, std::vector<objface> &result, unsigned int index) {
+void uinta::processFaceStrs(std::string *values, std::vector<objface> &result, unsigned int index) {
   for (int i = 0; i < 3; i++) {
     std::string tmp  = std::string(values[i]);
     std::string vert = tmp.substr(0, tmp.find('/'));
@@ -189,8 +193,8 @@ void processFaceStrs(std::string *values, std::vector<objface> &result, unsigned
 /**
 Reads an obj format file provided by parameter `objBuffer` line-by-line and extracts `v`, `vt`, `vn`, and `f` attributed data.
 **/
-void parseFile(std::string &objBuffer, std::vector<std::string> &vertex_lines, std::vector<std::string> &uv_lines,
-               std::vector<std::string> &normal_lines, std::vector<std::string> &face_lines) {
+void uinta::parseFile(std::string &objBuffer, std::vector<std::string> &vertex_lines, std::vector<std::string> &uv_lines,
+                      std::vector<std::string> &normal_lines, std::vector<std::string> &face_lines) {
   std::string line;
   std::string flag;
   std::string data;
@@ -218,8 +222,8 @@ void parseFile(std::string &objBuffer, std::vector<std::string> &vertex_lines, s
   }
 }
 
-void extractLineFloats(const std::vector<std::string> &lines, float *const buffer, const unsigned int size,
-                       const char delimiter) {
+void uinta::extractLineFloats(const std::vector<std::string> &lines, float *const buffer, const unsigned int size,
+                              const char delimiter) {
   for (int i = 0, len = lines.size(); i < len; i++) {
     std::string tmp = std::string(lines.at(i));
     for (int j = 0; j < size; j++) {

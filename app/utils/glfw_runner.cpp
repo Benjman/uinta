@@ -22,6 +22,8 @@
 #include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
 #include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
 
+using namespace uinta;
+
 GlfwRunner::~GlfwRunner() {
   if (window)
     glfwDestroyWindow(window);
@@ -66,7 +68,7 @@ void GlfwRunner::register_callbacks() {
   });
 }
 
-void createGLFWWindow(GlfwRunner &runner) {
+void uinta::createGLFWWindow(GlfwRunner &runner) {
   logger_t logger = spdlog::stderr_color_mt("createGLFWWindow");
   SPDLOG_LOGGER_INFO(logger, "Initializing GLFW...", runner.display.title.c_str(), runner.display.width, runner.display.height);
   spdlog::stopwatch sw;

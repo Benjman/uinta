@@ -8,6 +8,8 @@
 #include <glm/vec3.hpp>
 #include <string>
 
+namespace uinta {
+
 const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
 struct Display {
@@ -83,5 +85,7 @@ private:
   GLbitfield clear_mask      = GL_COLOR_BUFFER_BIT;
   glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
 };
+
+} // namespace uinta
 
 #endif // UINTA_APP_RUNNER_HPP

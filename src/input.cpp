@@ -1,6 +1,8 @@
 #include <uinta/input.hpp>
 
-const char *getKeyStr(input_key_t key) noexcept {
+using namespace uinta;
+
+const char *uinta::getKeyStr(input_key_t key) noexcept {
   if (key == KEY_SPACE)
     return "SPACE";
   if (key == KEY_APOSTROPHE)
@@ -244,7 +246,7 @@ const char *getKeyStr(input_key_t key) noexcept {
   return "KEY_UNKNOWN";
 }
 
-const char *getActionStr(input_key_t action) noexcept {
+const char *uinta::getActionStr(input_key_t action) noexcept {
   if (action == ACTION_PRESS)
     return "press";
   if (action == ACTION_RELEASE)
@@ -254,14 +256,14 @@ const char *getActionStr(input_key_t action) noexcept {
   return "ACTION UNKNOWN";
 }
 
-const char *getModsStr(int mods) noexcept {
+const char *uinta::getModsStr(int mods) noexcept {
   // TODO implement mods string
   if (mods == 0)
     return "";
   return "NOT IMPLEMENTED";
 }
 
-const char *const getMouseButtonStr(mouse_button_t button) noexcept {
+const char *const uinta::getMouseButtonStr(mouse_button_t button) noexcept {
   if (button == MOUSE_BUTTON_LEFT)
     return "button left";
   if (button == MOUSE_BUTTON_RIGHT)

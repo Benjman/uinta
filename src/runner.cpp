@@ -3,7 +3,11 @@
 #include <uinta/logging.hpp>
 #include <uinta/runner.hpp>
 
+using namespace uinta;
+
+namespace uinta {
 void setSpdlogLevel();
+} // namespace uinta
 
 Display::Display(const std::string &title, unsigned int width, unsigned int height) noexcept
     : title(std::string(title)), width(width), height(height) {
@@ -107,8 +111,7 @@ void Runner::handleWindowSizeChanged(const int width, const int height) {
   state.display.height = height;
 }
 
-void setSpdlogLevel() {
-
+void uinta::setSpdlogLevel() {
 #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
   spdlog::set_level(spdlog::level::trace);
 #endif

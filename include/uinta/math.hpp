@@ -6,6 +6,8 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
+namespace uinta {
+
 struct RunningAvg final {
 public:
   unsigned int count;
@@ -95,12 +97,14 @@ struct SmoothVec3 {
   }
 };
 
+void updateViewMatrix(glm::mat4 &view, const glm::vec3 pos, const float pitch, const float yaw);
+
 inline float map0to1Range(const float value, const float min, const float max) { return (value - min) / (max - min); }
 
 inline float map0to1RangeClamped(const float value, const float min, const float max) {
   return std::clamp(map0to1Range(value, min, max), 0.0f, 1.0f);
 }
 
-void updateViewMatrix(glm::mat4 &view, const glm::vec3 pos, const float pitch, const float yaw);
+} // namespace uinta
 
 #endif // UINTA_MATH_H

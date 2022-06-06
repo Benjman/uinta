@@ -10,6 +10,8 @@
 #include <cmath>
 #include <cstring>
 
+using namespace uinta;
+
 using namespace font;
 const std::unordered_map<FontMeshAttribTypes, FontMeshAttrib> attribs = {
     {FontMeshAttrib_Position, FontMeshAttrib(7, 0)},

@@ -9,6 +9,8 @@
 
 #include <cstdio>
 
+namespace uinta {
+
 const unsigned int VBUF_SIZE = KILOBYTES(15);
 const unsigned int IBUF_SIZE = KILOBYTES(15);
 
@@ -131,6 +133,6 @@ public:
   }
 };
 
-FontRunner runner;
+} // namespace uinta
 
-int main(const int argc, const char **argv) { return runner.run(); }
+int main(const int argc, const char **argv) { return FontRunner().run(); }

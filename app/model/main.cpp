@@ -15,19 +15,24 @@
 #include <unordered_map>
 #include <glm/gtc/matrix_transform.hpp>
 
+namespace uinta {
+
 struct ModelRunner final : GlfwRunner {
   unsigned int icount = 0, vcount = 0;
 
   GLuint shader, u_model;
-  float vbuf[MEGABYTES(5)];
-  unsigned int ibuf[MEGABYTES(5)];
 
   ModelRunner() : GlfwRunner("hello models", 1000, 1000) {}
 
   void doInit() override {
+    unsigned int size = KILOBYTES(100);
+
+    GLfloat vbuf[size];
+    GLuint ibuf[size];
+
     load_shaders();
-    initObj();
     initBuffers();
+    initObj(vbuf, size, ibuf, size);
     glEnable(GL_DEPTH_TEST);
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
@@ -40,12 +45,15 @@ struct ModelRunner final : GlfwRunner {
     }
   }
 
-  void initObj() {
+  void initObj(GLfloat *const vbuf, const unsigned int vbufCount, GLuint *const ibuf, const unsigned int ibufCount) {
     const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
         {MeshAttribType_Position, MeshAttrib(6, 0)},
         {MeshAttribType_Normal,   MeshAttrib(6, 3)},
     };
-    loadObj(Model_Cube, vbuf, &vcount, ibuf, &icount, &attribs);
+    loadObj(Model_Suzanne, vbuf, &vcount, ibuf, &icount, &attribs);
+
+    glBufferData(GL_ARRAY_BUFFER, vbufCount * sizeof(GLfloat), vbuf, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufCount * sizeof(GLuint), ibuf, GL_STATIC_DRAW);
   }
 
   void initBuffers() {
@@ -62,9 +70,6 @@ struct ModelRunner final : GlfwRunner {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vbuf), vbuf, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibuf), ibuf, GL_STATIC_DRAW);
   }
 
   void load_shaders() {
@@ -89,6 +94,6 @@ struct ModelRunner final : GlfwRunner {
   }
 };
 
-ModelRunner runner;
+} // namespace uinta
 
-int main(const int argc, const char **argv) { return runner.run(); }
+int main(const int argc, const char **argv) { return ModelRunner().run(); }

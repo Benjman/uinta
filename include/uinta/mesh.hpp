@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 
+namespace uinta {
+
 struct Quad;
 
 extern void generateMesh(const Quad *qt, float *vertexBuffer, unsigned int *indexBuffer, unsigned int *vertexCount,
@@ -34,5 +36,7 @@ struct MeshAttrib final {
 const MeshAttrib *findMeshAttrib(
     MeshAttribType,
     const std::unordered_map<MeshAttribType, MeshAttrib> *); // TODO this should take a reference to an unordered_map, not a ptr
+
+} // namespace uinta
 
 #endif // UINTA_GENERATORS_H

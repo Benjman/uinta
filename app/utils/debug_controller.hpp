@@ -11,6 +11,8 @@
 
 #include <glm/vec2.hpp>
 
+namespace uinta {
+
 // TODO move all timer stuff to its own controller
 using debug_timer_t = int;
 
@@ -52,5 +54,7 @@ private:
   std::chrono::time_point<std::chrono::high_resolution_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
   bool timerAssignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
 };
+
+} // namespace uinta
 
 #endif // !SHOWCASE_DEBUG_CONTROLLER_HPP

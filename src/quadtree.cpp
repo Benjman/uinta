@@ -6,6 +6,8 @@
 
 #include <glm/gtc/quaternion.hpp>
 
+using namespace uinta;
+
 static unsigned int maxCount = 0;
 
 void validateQuad(const Quad &quad) {

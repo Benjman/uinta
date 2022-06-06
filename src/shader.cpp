@@ -5,10 +5,27 @@
 #include <uinta/macros.hpp>
 #include <uinta/shader.hpp>
 
-void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
+namespace uinta {
+void checkCompileErrors(const GLuint shader, const GLenum type) {
+  GLint success = 1;
+  GLchar info[KILOBYTES(1)];
 
-GLuint createShaderProgram(const std::vector<std::string> &sources, const std::vector<GLenum> &stages,
-                           const std::vector<std::string> &uniformNames, const std::vector<GLuint *> &uniformLocations) {
+  if (type == GL_LINK_STATUS) {
+    glGetProgramiv(shader, GL_LINK_STATUS, &success);
+    if (!success)
+      glGetProgramInfoLog(shader, KILOBYTES(1), 0, info);
+  } else {
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+      glGetShaderInfoLog(shader, KILOBYTES(1), 0, info);
+  }
+  if (!success)
+    SPDLOG_ERROR("{}", info);
+}
+} // namespace uinta
+
+GLuint uinta::createShaderProgram(const std::vector<std::string> &sources, const std::vector<GLenum> &stages,
+                                  const std::vector<std::string> &uniformNames, const std::vector<GLuint *> &uniformLocations) {
   GLuint id = glCreateProgram();
 
   if (sources.size() != stages.size()) {
@@ -46,19 +63,4 @@ GLuint createShaderProgram(const std::vector<std::string> &sources, const std::v
   return id;
 }
 
-void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {
-  GLint success = 1;
-  GLchar info[KILOBYTES(1)];
-
-  if (type == GL_LINK_STATUS) {
-    glGetProgramiv(shader, GL_LINK_STATUS, &success);
-    if (!success)
-      glGetProgramInfoLog(shader, KILOBYTES(1), 0, info);
-  } else {
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-      glGetShaderInfoLog(shader, KILOBYTES(1), 0, info);
-  }
-  if (!success)
-    SPDLOG_ERROR("{}", info);
-}
+void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {}

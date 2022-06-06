@@ -1,6 +1,8 @@
 #ifndef UINTA_METRICS_HPP
 #define UINTA_METRICS_HPP
 
+namespace uinta {
+
 using metric_t = int;
 
 constexpr unsigned int METRIC_FLOAT = 0;
@@ -29,5 +31,7 @@ struct MetricsController final {
   int geti(const metric_t handle) noexcept;
   unsigned int getui(const metric_t handle) noexcept;
 };
+
+} // namespace uinta
 
 #endif // UINTA_METRICS_HPP

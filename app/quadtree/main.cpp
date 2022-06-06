@@ -9,6 +9,8 @@
 #define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
 
+namespace uinta {
+
 struct QuadtreeRunner final : GlfwRunner {
   unsigned int width  = 1088;
   unsigned int height = 1088;
@@ -145,6 +147,6 @@ struct QuadtreeRunner final : GlfwRunner {
   }
 };
 
-QuadtreeRunner runner;
+} // namespace uinta
 
-int main(const int argc, const char **argv) { return runner.run(); }
+int main(const int argc, const char **argv) { return QuadtreeRunner().run(); }

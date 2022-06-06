@@ -4,6 +4,8 @@
 #include <uinta/runner.hpp>
 #include <GLFW/glfw3.h>
 
+namespace uinta {
+
 struct GlfwRunner : Runner {
   GLFWwindow *window;
 
@@ -42,8 +44,6 @@ private:
 
 void createGLFWWindow(GlfwRunner &view);
 
-const char *getKeyStr(int key) noexcept;
-const char *getActionStr(int action) noexcept;
-const char *getModsStr(int mods) noexcept;
+} // namespace uinta
 
 #endif // UINTA_GLFW_RUNNER_HPP

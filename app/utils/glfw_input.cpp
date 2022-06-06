@@ -5,6 +5,8 @@
 
 #include <uinta/input.hpp>
 
+namespace uinta {
+
 input_key_t ACTION_PRESS   = GLFW_PRESS;
 input_key_t ACTION_RELEASE = GLFW_RELEASE;
 input_key_t ACTION_REPEAT  = GLFW_REPEAT;
@@ -150,5 +152,7 @@ mouse_button_t MOUSE_BUTTON_LAST   = GLFW_MOUSE_BUTTON_LAST;
 mouse_button_t MOUSE_BUTTON_LEFT   = GLFW_MOUSE_BUTTON_LEFT;
 mouse_button_t MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
 mouse_button_t MOUSE_BUTTON_RIGHT  = GLFW_MOUSE_BUTTON_RIGHT;
+
+} // namespace uinta
 
 #endif // !UINTA_GLFW_INPUT_CPP

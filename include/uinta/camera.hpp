@@ -9,6 +9,8 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
+namespace uinta {
+
 const inline glm::vec3 WORLD_UP      = glm::vec3(0.0, 0.0, 1.0);
 const inline glm::vec3 WORLD_RIGHT   = glm::vec3(1.0, 0.0, 0.0);
 const inline glm::vec3 WORLD_FORWARD = glm::vec3(0.0, 1.0, 0.0);
@@ -111,5 +113,7 @@ struct Camera {
 
   void tick(const RunnerState &state);
 };
+
+} // namespace uinta
 
 #endif // UINTA_CAMERA2D_HglfwSetWindowSizeCallback

@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-// TODO this all needs to be namespaced
+namespace uinta {
 
 enum Models {
   Model_Cube,
@@ -22,5 +22,7 @@ const char *const getObjPath(const Models);
 void loadObj(const Models model, float *const vbuf, unsigned int *const vcount, unsigned int *const ibuf, unsigned int *icount,
              const std::unordered_map<MeshAttribType, MeshAttrib> *const attribs);
 // TODO a way to load obj files without it being specified as a `Models` type
+
+} // namespace uinta
 
 #endif // UINTA_MODEL_HPP

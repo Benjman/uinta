@@ -13,7 +13,9 @@
 #include <glm/ext.hpp>
 #include <imgui.h>
 
-struct camera3dRunner final : GlfwRunner {
+namespace uinta {
+
+struct Camera3dRunner final : GlfwRunner {
 public:
   Camera camera;
 
@@ -25,7 +27,7 @@ public:
   gl_buf vbo;
   gl_buf ebo;
 
-  camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {}
+  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {}
 
   void doInit() override {
     initShader();
@@ -150,6 +152,6 @@ public:
   void doShutdown() override { imguiShutdown(); }
 };
 
-camera3dRunner runner;
+} // namespace uinta
 
-int main(const int argc, const char **argv) { return runner.run(); }
+int main(const int argc, const char **argv) { return Camera3dRunner().run(); }

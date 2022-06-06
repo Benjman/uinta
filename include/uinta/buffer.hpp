@@ -3,6 +3,8 @@
 
 #include <uinta/gl.h>
 
+namespace uinta {
+
 struct gl_buf {
   GLuint id;
   unsigned int count, max, offset;
@@ -24,5 +26,7 @@ struct gl_buf {
     return *this;
   }
 };
+
+} // namespace uinta
 
 #endif // UINTA_BUFFER_HPP

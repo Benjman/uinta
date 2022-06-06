@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+using namespace uinta;
+
 CameraConfig::CameraConfig(const CameraConfig &other) { *this = other; }
 
 CameraConfig &CameraConfig::operator=(const CameraConfig &other) {

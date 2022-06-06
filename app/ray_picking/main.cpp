@@ -12,7 +12,7 @@
 SmoothFloat ortho_size = SmoothFloat(5.0, 10.0);
 int imgui_level        = 3;
 
-struct RayPickingCameraConfigs : CameraConfig {};
+namespace uinta {
 
 struct RayPickingRunner final : GlfwRunner {
   SmoothVec3 cam_pos = glm::vec3(0.0);
@@ -263,6 +263,6 @@ struct RayPickingRunner final : GlfwRunner {
   void doShutdown() override { imguiShutdown(); }
 };
 
-RayPickingRunner runner;
+} // namespace uinta
 
-int main(const int argc, const char **argv) { return runner.run(); }
+int main(const int argc, const char **argv) { return RayPickingRunner().run(); }

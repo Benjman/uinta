@@ -1,6 +1,5 @@
 add_subdirectory(camera3d)
 add_subdirectory(font)
-add_subdirectory(imgui)
 add_subdirectory(model)
 add_subdirectory(quadtree)
 add_subdirectory(ray_picking)

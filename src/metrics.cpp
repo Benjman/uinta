@@ -7,6 +7,8 @@
 #include <cstring>
 #include <stdexcept>
 
+using namespace uinta;
+
 constexpr unsigned int METRICS_STRIDE = sizeof(float);
 constexpr metric_t METRICS_INVALID    = -1;
 

@@ -7,7 +7,7 @@
 #include <cstring>
 #include <fstream>
 
-namespace internal {
+namespace uinta::internal {
 
 bool isFileValid(const std::ifstream &file, const std::string &path) {
   if (file && file.good()) {
@@ -27,17 +27,17 @@ void readFileInternal(const std::string &path, std::ios::openmode mode, char *co
   file.close();
 }
 
-} // namespace internal
+} // namespace uinta::internal
 
-void readFileRaw(const char *const relativePath, char *const buffer) {
+void uinta::readFileRaw(const char *const relativePath, char *const buffer) {
   internal::readFileInternal(std::string(RES_PATH) + relativePath, std::ios::in, buffer);
 }
 
-void readFileBinary(const char *const relativePath, char *const buffer) {
+void uinta::readFileBinary(const char *const relativePath, char *const buffer) {
   internal::readFileInternal(std::string(RES_PATH) + relativePath, std::ios::binary, buffer);
 }
 
-unsigned int getFileSize(const char *const relativePath) {
+unsigned int uinta::getFileSize(const char *const relativePath) {
   std::string path = std::string(RES_PATH) + relativePath;
   std::ifstream file(path, std::ifstream::ate | std::ifstream::binary);
   if (!internal::isFileValid(file, path))
