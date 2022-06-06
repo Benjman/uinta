@@ -7,60 +7,58 @@
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept;
 
-GLuint createShaderProgram(const std::vector<std::string>& sources,
-                           const std::vector<GLenum>& stages,
-                           const std::vector<std::string>& uniformNames,
-                           const std::vector<GLuint*>& uniformLocations) {
-    GLuint id = glCreateProgram();
+GLuint createShaderProgram(const std::vector<std::string> &sources, const std::vector<GLenum> &stages,
+                           const std::vector<std::string> &uniformNames, const std::vector<GLuint *> &uniformLocations) {
+  GLuint id = glCreateProgram();
 
-    if (sources.size() != stages.size()) {
-        SPDLOG_ERROR("`sources` and `stages` sizes do not match. Aborting shader creation.");
-        return GL_ZERO;
-    }
+  if (sources.size() != stages.size()) {
+    SPDLOG_ERROR("`sources` and `stages` sizes do not match. Aborting shader creation.");
+    return GL_ZERO;
+  }
 
-    for (auto i = 0; i < stages.size(); i++) {
-        const GLuint stageId = glCreateShader(stages.at(i));
-        const GLchar* cstr = sources.at(i).c_str();
-        const GLint length = sources.at(i).size();
-        glShaderSource(stageId, 1, &cstr, &length);
-        glCompileShader(stageId);
-        checkCompileErrors(id, stageId);
-        glAttachShader(id, stageId);
-        glDeleteShader(stageId);
-    }
+  for (auto i = 0; i < stages.size(); i++) {
+    const GLuint stageId = glCreateShader(stages.at(i));
+    const GLchar *cstr   = sources.at(i).c_str();
+    const GLint length   = sources.at(i).size();
+    glShaderSource(stageId, 1, &cstr, &length);
+    glCompileShader(stageId);
+    checkCompileErrors(id, stageId);
+    glAttachShader(id, stageId);
+    glDeleteShader(stageId);
+  }
 
-    glLinkProgram(id);
-    checkCompileErrors(id, GL_LINK_STATUS);
-    glUseProgram(id);
+  glLinkProgram(id);
+  checkCompileErrors(id, GL_LINK_STATUS);
+  glUseProgram(id);
 
-    if (uniformNames.size() != uniformLocations.size()) {
-        SPDLOG_WARN("`uniformNames` and `uniformLocations` sizes do not match. Ignoring uniform lookup.");
-        return id;
-    }
-
-    for (auto i = 0; i < uniformNames.size(); i++) {
-        GLuint loc = glGetUniformLocation(id, uniformNames.at(i).c_str());
-        if (loc == -1)
-            SPDLOG_ERROR("createShaderProgram - Uniform '{}' not found.", uniformNames.at(i));
-        *uniformLocations.at(i) = loc;
-    }
-
+  if (uniformNames.size() != uniformLocations.size()) {
+    SPDLOG_WARN("`uniformNames` and `uniformLocations` sizes do not match. Ignoring uniform lookup.");
     return id;
+  }
+
+  for (auto i = 0; i < uniformNames.size(); i++) {
+    GLuint loc = glGetUniformLocation(id, uniformNames.at(i).c_str());
+    if (loc == -1)
+      SPDLOG_ERROR("createShaderProgram - Uniform '{}' not found.", uniformNames.at(i));
+    *uniformLocations.at(i) = loc;
+  }
+
+  return id;
 }
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {
-    GLint success = 1;
-    GLchar info[KILOBYTES(1)];
+  GLint success = 1;
+  GLchar info[KILOBYTES(1)];
 
-    if (type == GL_LINK_STATUS) {
-        glGetProgramiv(shader, GL_LINK_STATUS, &success);
-        if (!success)
-            glGetProgramInfoLog(shader, KILOBYTES(1), 0, info);
-    } else {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success)
-            glGetShaderInfoLog(shader, KILOBYTES(1), 0, info);
-    }
+  if (type == GL_LINK_STATUS) {
+    glGetProgramiv(shader, GL_LINK_STATUS, &success);
     if (!success)
-        SPDLOG_ERROR("{}", info);
+      glGetProgramInfoLog(shader, KILOBYTES(1), 0, info);
+  } else {
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+      glGetShaderInfoLog(shader, KILOBYTES(1), 0, info);
+  }
+  if (!success)
+    SPDLOG_ERROR("{}", info);
 }

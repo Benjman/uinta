@@ -1,14 +1,15 @@
 #ifndef UINTA_INPUT_HPP
 #define UINTA_INPUT_HPP
 
+#include <algorithm>
 #include <unordered_set>
 
-using input_key_t = int;
+using input_key_t    = int;
 using mouse_button_t = int;
 
-const input_key_t KEY_UNKNOWN        = -1;
-const input_key_t ACTION_UNKNOWN     = -1;
-const input_key_t MOD_UNKNOWN        = -1;
+const input_key_t KEY_UNKNOWN    = -1;
+const input_key_t ACTION_UNKNOWN = -1;
+const input_key_t MOD_UNKNOWN    = -1;
 
 // input and mouse keys are defined per-platform. Example in glfw_runner.cpp
 extern input_key_t KEY_SPACE;
@@ -154,133 +155,52 @@ extern mouse_button_t MOUSE_BUTTON_RIGHT;
 extern mouse_button_t MOUSE_BUTTON_MIDDLE;
 
 struct InputState final {
-    int flags = 0;
-    float cursorx, cursory;
-    float cursordx, cursordy;
-    float scrolldx, scrolldy;
-    std::unordered_set<input_key_t> keys_down;
-    std::unordered_set<input_key_t> keys_pressed;
-    std::unordered_set<input_key_t> keys_released;
-    std::unordered_set<input_key_t> keys_repeated;
-    std::unordered_set<mouse_button_t> mouse_down;
-    std::unordered_set<mouse_button_t> mouse_pressed;
-    std::unordered_set<mouse_button_t> mouse_released;
+  int flags = 0;
+  float cursorx, cursory;
+  float cursordx, cursordy;
+  float scrolldx, scrolldy;
+  std::unordered_set<input_key_t> keys_down;
+  std::unordered_set<input_key_t> keys_pressed;
+  std::unordered_set<input_key_t> keys_released;
+  std::unordered_set<input_key_t> keys_repeated;
+  std::unordered_set<mouse_button_t> mouse_down;
+  std::unordered_set<mouse_button_t> mouse_pressed;
+  std::unordered_set<mouse_button_t> mouse_released;
 
-    void reset() {
-        cursordx = 0;
-        cursordy = 0;
-        scrolldx = 0;
-        scrolldy = 0;
-        keys_pressed.clear();
-        keys_released.clear();
-        keys_repeated.clear();
-        mouse_pressed.clear();
-        mouse_released.clear();
-    }
+  void reset() {
+    cursordx = 0;
+    cursordy = 0;
+    scrolldx = 0;
+    scrolldy = 0;
+    keys_pressed.clear();
+    keys_released.clear();
+    keys_repeated.clear();
+    mouse_pressed.clear();
+    mouse_released.clear();
+  }
 
-    bool isAltDown() const {
-        return flags & MOD_ALT;
-    }
-
-    bool isAnyKeyDown() const {
-        return keys_down.size();
-    }
-
-    bool isCtrlDown() const {
-        return flags & MOD_CONTROL;
-    }
-
-    bool isAnyMouseBonttonDown() const {
-        return mouse_down.size();
-    }
-
-    bool isShiftDown() const {
-        return flags & MOD_SHIFT;
-    }
-
-    bool isKeyDown(input_key_t key) const {
-        for (auto value : keys_down)
-            if (value == key)
-                return true;
-        return false;
-    }
-
-    bool isKeyPressed(input_key_t key) const {
-        for (auto value : keys_pressed)
-            if (value == key)
-                return true;
-        return false;
-    }
-
-    bool isKeyReleased(input_key_t key) const {
-        for (auto value : keys_released)
-            if (value == key)
-                return true;
-        return false;
-    }
-
-    bool isMouseButtonDown(mouse_button_t button) const {
-        for (auto value : mouse_down)
-            if (value == button)
-                return true;
-        return false;
-    }
-
-    bool isMouseButtonPressed(mouse_button_t button) const {
-        for (auto value : mouse_pressed)
-            if (value == button)
-                return true;
-        return false;
-    }
-
-    bool isMouseButtonReleased(mouse_button_t button) const {
-        for (auto value : mouse_released)
-            if (value == button)
-                return true;
-        return false;
-    }
-
-    bool isKeyRepeated(input_key_t key) const {
-        for (auto value : keys_repeated)
-            if (value == key)
-                return true;
-        return false;
-    }
-
-    void keyPressed(const input_key_t key, const int flags) {
-        this->flags = flags;
-        keys_pressed.insert(key);
-        keys_down.insert(key);
-    }
-
-    void keyReleased(const input_key_t key, const int flags) {
-        this->flags = flags;
-        keys_released.insert(key);
-        keys_down.erase(key);
-    }
-
-    void keyRepeated(const input_key_t key, const int flags) {
-        this->flags = flags;
-        keys_repeated.insert(key);
-    }
-
-    void mouseButtonPressed(const input_key_t key, const int flags) {
-        this->flags = flags;
-        mouse_pressed.insert(key);
-        mouse_down.insert(key);
-    }
-
-    void mouseButtonReleased(const input_key_t key, const int flags) {
-        this->flags = flags;
-        mouse_released.insert(key);
-        mouse_down.erase(key);
-    }
-
+  bool isAltDown() const { return flags & MOD_ALT; }
+  bool isAnyKeyDown() const { return keys_down.size(); }
+  bool isAnyMouseBonttonDown() const { return mouse_down.size(); }
+  bool isCtrlDown() const { return flags & MOD_CONTROL; }
+  bool isKeyDown(input_key_t key) const;
+  bool isKeyPressed(input_key_t key) const;
+  bool isKeyReleased(input_key_t key) const;
+  bool isKeyRepeated(input_key_t key) const;
+  bool isMouseButtonDown(mouse_button_t button) const;
+  bool isMouseButtonPressed(mouse_button_t button) const;
+  bool isMouseButtonReleased(mouse_button_t button) const;
+  bool isShiftDown() const;
+  void keyPressed(const input_key_t key, const int flags);
+  void keyReleased(const input_key_t key, const int flags);
+  void keyRepeated(const input_key_t key, const int flags);
+  void mouseButtonPressed(const input_key_t key, const int flags);
+  void mouseButtonReleased(const input_key_t key, const int flags);
 };
 
-const char* getKeyStr(input_key_t key) noexcept;
-const char* getActionStr(input_key_t action) noexcept;
-const char* getModsStr(input_key_t mods) noexcept;
-const char* const getMouseButtonStr(mouse_button_t button) noexcept;
+const char *getKeyStr(input_key_t key) noexcept;
+const char *getActionStr(input_key_t action) noexcept;
+const char *getModsStr(input_key_t mods) noexcept;
+const char *const getMouseButtonStr(mouse_button_t button) noexcept;
 
 #endif // UINTA_INPUT_HPP

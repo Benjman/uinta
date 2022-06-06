@@ -10,7 +10,6 @@
 
 #endif // UINTA_APP_UTILS_HPP
 
-
 #ifdef UINTA_APP_UTILS_IMPL
 
 #include ".././utils/debug_controller.cpp"

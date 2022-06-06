@@ -17,41 +17,40 @@ using debug_timer_t = int;
 constexpr unsigned int DEBUG_CONTROLLER_MAX_TIMERS = 8;
 
 struct DebugController final {
-    GLuint shader;
+  GLuint shader;
 
-    GLuint vao;
-    gl_buf vbo;
-    gl_buf ebo;
+  GLuint vao;
+  gl_buf vbo;
+  gl_buf ebo;
 
-    GLfloat vbuf[KILOBYTES(15)];
-    GLuint ibuf[KILOBYTES(15)];
+  GLfloat vbuf[KILOBYTES(15)];
+  GLuint ibuf[KILOBYTES(15)];
 
-    glm::vec2 view_size;
+  glm::vec2 view_size;
 
-    font::font_t font_handle;
+  font::font_t font_handle;
 
-    MetricsController metrics;
-    unsigned int metric_row = 0, ioff = 0;
+  MetricsController metrics;
+  unsigned int metric_row = 0, ioff = 0;
 
-    DebugController(unsigned int view_width, unsigned int view_height) noexcept;
+  DebugController(unsigned int view_width, unsigned int view_height) noexcept;
 
-    void init();
-    void initBuffers();
-    void initFont();
-    void initShader();
-    void render();
-    void uploadBuffers();
+  void init();
+  void initBuffers();
+  void initFont();
+  void initShader();
+  void render();
+  void uploadBuffers();
 
-    debug_timer_t createTimer() noexcept;
-    double durationMicro(const debug_timer_t handle) noexcept;
-    double durationMilli(const debug_timer_t handle) noexcept;
-    void meshMetric(const metric_t handle, const std::string append = "");
-    void resetTimer(const debug_timer_t handle) noexcept;
+  debug_timer_t createTimer() noexcept;
+  double durationMicro(const debug_timer_t handle) noexcept;
+  double durationMilli(const debug_timer_t handle) noexcept;
+  void meshMetric(const metric_t handle, const std::string append = "");
+  void resetTimer(const debug_timer_t handle) noexcept;
 
 private:
-    std::chrono::time_point<std::chrono::high_resolution_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
-    bool timerAssignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
-
+  std::chrono::time_point<std::chrono::high_resolution_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
+  bool timerAssignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
 };
 
 #endif // !SHOWCASE_DEBUG_CONTROLLER_HPP
