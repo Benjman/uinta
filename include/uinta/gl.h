@@ -2,7 +2,7 @@
 #define UINTA_GL_H
 
 #ifdef __APPLE__
-#define GL_SILENCe_DEPRECATION
+#define GL_SILENCE_DEPRECATION
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
