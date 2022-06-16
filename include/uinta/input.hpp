@@ -1,7 +1,6 @@
 #ifndef UINTA_INPUT_HPP
 #define UINTA_INPUT_HPP
 
-#include <algorithm>
 #include <unordered_set>
 
 namespace uinta {
@@ -200,9 +199,9 @@ struct InputState final {
   void mouseButtonReleased(const input_key_t key, const int flags);
 };
 
-const char *getKeyStr(input_key_t key) noexcept;
-const char *getActionStr(input_key_t action) noexcept;
-const char *getModsStr(input_key_t mods) noexcept;
+const char *const getKeyStr(input_key_t key) noexcept;
+const char *const getActionStr(input_key_t action) noexcept;
+const char *const getModsStr(input_key_t mods) noexcept;
 const char *const getMouseButtonStr(mouse_button_t button) noexcept;
 
 } // namespace uinta

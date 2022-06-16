@@ -1,8 +1,10 @@
 #include <uinta/input.hpp>
 
+#include <algorithm>
+
 using namespace uinta;
 
-const char *uinta::getKeyStr(input_key_t key) noexcept {
+const char *const uinta::getKeyStr(input_key_t key) noexcept {
   if (key == KEY_SPACE)
     return "SPACE";
   if (key == KEY_APOSTROPHE)
@@ -246,7 +248,7 @@ const char *uinta::getKeyStr(input_key_t key) noexcept {
   return "KEY_UNKNOWN";
 }
 
-const char *uinta::getActionStr(input_key_t action) noexcept {
+const char *const uinta::getActionStr(input_key_t action) noexcept {
   if (action == ACTION_PRESS)
     return "press";
   if (action == ACTION_RELEASE)
@@ -256,7 +258,7 @@ const char *uinta::getActionStr(input_key_t action) noexcept {
   return "ACTION UNKNOWN";
 }
 
-const char *uinta::getModsStr(int mods) noexcept {
+const char *const uinta::getModsStr(int mods) noexcept {
   // TODO implement mods string
   if (mods == 0)
     return "";
