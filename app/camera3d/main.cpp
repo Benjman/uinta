@@ -132,19 +132,7 @@ public:
 
   void doRender() override {
     glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
-
-    ImGui::Begin("Camera");
-    ImGui::SetWindowSize(ImVec2(275, 200));
-    ImGui::Text("Translation:   wasd or right-mouse");
-    ImGui::Text("Rotation:      cv or middle-mouse");
-    ImGui::Text("Distance:      y-scroll");
-    ImGui::NewLine();
-    ImGui::NewLine();
-    ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
-    ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x(), camera.target.y(), camera.target.z());
-    ImGui::Text("Pitch        %+.2f", camera.pitch);
-    ImGui::Text("Yaw          %+.2f", camera.yaw);
-    ImGui::End();
+    imguiCamera(camera);
   }
 
   void doPostRender() override { imguiPostRender(); }

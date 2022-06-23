@@ -7,6 +7,7 @@
 
 #include ".././utils/debug_controller.hpp"
 #include ".././utils/glfw_runner.hpp"
+#include ".././utils/imgui_utils.hpp"
 
 #endif // UINTA_APP_UTILS_HPP
 
@@ -14,5 +15,6 @@
 
 #include ".././utils/debug_controller.cpp"
 #include ".././utils/glfw_runner.cpp"
+#include ".././utils/imgui_util.cpp"
 
 #endif // UINTA_APP_UTILS_IMPL

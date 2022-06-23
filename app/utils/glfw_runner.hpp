@@ -6,6 +6,8 @@
 
 namespace uinta {
 
+class Camera;
+
 struct GlfwRunner : Runner {
   GLFWwindow *window;
 
