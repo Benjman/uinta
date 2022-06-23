@@ -35,13 +35,15 @@ struct RayPickingRunner final : GlfwRunner {
   glm::vec4 eyeSpace;
   glm::vec4 worldSpace;
 
-  RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) { cam_pos.z(1.0); }
+  RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) {
+    cam_pos.z(1.0);
+    enableImGui();
+  }
 
   void doInit() override {
     initShader();
     initBuffers();
     initGrid();
-    imguiInit();
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     setBackground(glm::vec3(216, 204, 192) / glm::vec3(255.0f));
   }
@@ -216,8 +218,6 @@ struct RayPickingRunner final : GlfwRunner {
   }
 
   void doPreRender() override {
-    imguiPreRender();
-
     m_proj = glm::ortho((double)-ortho_size.current, (double)ortho_size.current, (double)-ortho_size.current,
                         (double)ortho_size.current, 0.0001, 1000.0);
     updateViewMatrix(m_view, cam_pos, 0, 0);
@@ -259,8 +259,6 @@ struct RayPickingRunner final : GlfwRunner {
     eyeSpace   = glm::inverse(m_proj) * clipSpace;
     worldSpace = glm::inverse(m_view) * eyeSpace;
   }
-
-  void doShutdown() override { imguiShutdown(); }
 };
 
 } // namespace uinta

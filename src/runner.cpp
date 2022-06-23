@@ -54,9 +54,11 @@ void Runner::tick(float runtime) {
 void Runner::render() {
   glClearColor(background_color.r, background_color.g, background_color.b, 1.0);
   glClear(clear_mask);
+  internalPreRender();
   doPreRender();
   doRender();
   doPostRender();
+  internalPostRender();
   swapBuffers();
 }
 

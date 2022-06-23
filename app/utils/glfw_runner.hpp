@@ -27,21 +27,26 @@ struct GlfwRunner : Runner {
   virtual void doShutdown() override {}
 
 protected:
-  double getRuntime() override;
   void internalInit() override;
   void internalShutdown() override;
+  void internalPreRender() override;
+  void internalPostRender() override;
+
+  double getRuntime() override;
   void pollInput() override;
   bool shouldExit() override;
   void swapBuffers() override;
   void register_callbacks();
 
-  void imguiInit();
+  void enableImGui() { imguiEnabled = true; }
   void imguiPreRender();
   void imguiPostRender();
-  void imguiShutdown();
 
 private:
   bool imguiEnabled = false;
+
+  void imguiInit();
+  void imguiShutdown();
 };
 
 void createGLFWWindow(GlfwRunner &view);

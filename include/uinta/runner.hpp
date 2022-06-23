@@ -76,10 +76,15 @@ struct Runner {
 protected:
   virtual void internalInit()     = 0;
   virtual void internalShutdown() = 0;
-  virtual void swapBuffers()      = 0;
-  virtual void pollInput()        = 0;
-  virtual bool shouldExit()       = 0;
-  virtual double getRuntime()     = 0;
+
+  virtual void internalPreRender() {}
+  virtual void internalRender() {}
+  virtual void internalPostRender() {}
+
+  virtual void swapBuffers()  = 0;
+  virtual void pollInput()    = 0;
+  virtual bool shouldExit()   = 0;
+  virtual double getRuntime() = 0;
 
 private:
   GLbitfield clear_mask      = GL_COLOR_BUFFER_BIT;

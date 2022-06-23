@@ -11,7 +11,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
-#include <imgui.h>
 
 namespace uinta {
 
@@ -27,7 +26,7 @@ public:
   gl_buf vbo;
   gl_buf ebo;
 
-  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {}
+  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) { enableImGui(); }
 
   void doInit() override {
     initShader();
@@ -35,7 +34,6 @@ public:
     GLuint indices[KILOBYTES(20)];
     initGround(vertices, indices);
     init_buffers(vertices, indices);
-    imguiInit();
 
     glEnable(GL_DEPTH_TEST);
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -117,8 +115,6 @@ public:
   void doTick(const RunnerState &state) override { camera.tick(state); }
 
   void doPreRender() override {
-    imguiPreRender();
-
     glUseProgram(shader);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
@@ -134,10 +130,6 @@ public:
     glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
     imguiCamera(camera);
   }
-
-  void doPostRender() override { imguiPostRender(); }
-
-  void doShutdown() override { imguiShutdown(); }
 };
 
 } // namespace uinta

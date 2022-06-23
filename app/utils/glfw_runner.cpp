@@ -37,9 +37,24 @@ GlfwRunner::~GlfwRunner() {
 void GlfwRunner::internalInit() {
   createGLFWWindow(*this);
   register_callbacks();
+  imguiInit();
 }
 
-void GlfwRunner::internalShutdown() {}
+void GlfwRunner::internalShutdown() { imguiShutdown(); }
+
+void GlfwRunner::internalPreRender() {
+#ifdef IMGUI_API
+  if (imguiEnabled)
+    imguiPreRender();
+#endif
+}
+
+void GlfwRunner::internalPostRender() {
+#ifdef IMGUI_API
+  if (imguiEnabled)
+    imguiPostRender();
+#endif
+}
 
 void GlfwRunner::swapBuffers() { glfwSwapBuffers(window); }
 
@@ -111,6 +126,8 @@ bool GlfwRunner::shouldExit() { return glfwWindowShouldClose(window); }
 
 void GlfwRunner::imguiInit() {
 #ifdef IMGUI_API
+  if (!imguiEnabled)
+    return;
   imguiEnabled = true;
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
