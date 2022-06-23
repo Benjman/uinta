@@ -2,6 +2,8 @@
 #include <uinta/logging.hpp>
 #include <uinta/file.hpp>
 
+#include <spdlog/spdlog.h>
+
 #include <ios>
 #include <istream>
 #include <cstring>

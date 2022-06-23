@@ -1,6 +1,8 @@
 #include <uinta/metrics.hpp>
 #include <uinta/logging.hpp>
 
+#include <spdlog/spdlog.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cstdio>

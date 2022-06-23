@@ -6,6 +6,8 @@
 #include <uinta/logging.hpp>
 #include <uinta/shader.hpp>
 
+#include <spdlog/spdlog.h>
+
 #include <chrono>
 #include <cmath>
 #include <cstring>

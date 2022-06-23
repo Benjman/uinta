@@ -5,6 +5,7 @@
 #include <memory.h> // for memcpy
 
 #include <glm/gtc/quaternion.hpp>
+#include <spdlog/spdlog.h>
 
 using namespace uinta;
 

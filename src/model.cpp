@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <glm/vec3.hpp>
+#include <spdlog/spdlog.h>
 
 using namespace uinta;
 

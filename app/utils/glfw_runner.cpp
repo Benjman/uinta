@@ -22,6 +22,10 @@
 #include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
 #include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
 
+#include <spdlog/spdlog.h>
+#include <spdlog/stopwatch.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 using namespace uinta;
 
 GlfwRunner::~GlfwRunner() {

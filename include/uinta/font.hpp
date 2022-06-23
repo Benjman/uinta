@@ -230,6 +230,7 @@ void store_color(const float, const float, const float, const FontMeshAttrib &, 
 #include <stdexcept>
 
 #include <uinta/logging.hpp>
+#include <spdlog/spdlog.h>
 
 namespace font {
 std::vector<font_ctx> fonts;

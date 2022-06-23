@@ -5,6 +5,8 @@
 #include <uinta/macros.hpp>
 #include <uinta/shader.hpp>
 
+#include <spdlog/spdlog.h>
+
 namespace uinta {
 void checkCompileErrors(const GLuint shader, const GLenum type) {
   GLint success = 1;

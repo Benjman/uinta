@@ -3,6 +3,9 @@
 #include <uinta/logging.hpp>
 #include <uinta/runner.hpp>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 using namespace uinta;
 
 namespace uinta {
