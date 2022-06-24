@@ -14,7 +14,7 @@ struct GlfwRunner : Runner {
   GlfwRunner(const std::string &title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
   ~GlfwRunner();
 
-  virtual void doInit() override {}
+  virtual bool doInit() override { return true; }
 
   virtual void doPreTick(const RunnerState &state) override {}
   virtual void doTick(const RunnerState &state) override {}
@@ -27,7 +27,7 @@ struct GlfwRunner : Runner {
   virtual void doShutdown() override {}
 
 protected:
-  void internalInit() override;
+  bool internalInit() override;
   void internalShutdown() override;
   void internalPreRender() override;
   void internalPostRender() override;

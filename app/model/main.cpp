@@ -24,7 +24,7 @@ struct ModelRunner final : GlfwRunner {
 
   ModelRunner() : GlfwRunner("hello models", 1000, 1000) {}
 
-  void doInit() override {
+  bool doInit() override {
     unsigned int size = KILOBYTES(100);
 
     GLfloat vbuf[size];
@@ -35,6 +35,8 @@ struct ModelRunner final : GlfwRunner {
     initObj(vbuf, size, ibuf, size);
     glEnable(GL_DEPTH_TEST);
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    return true;
   }
 
   void doPreTick(const RunnerState &state) override {

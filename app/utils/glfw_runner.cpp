@@ -34,10 +34,13 @@ GlfwRunner::~GlfwRunner() {
   glfwTerminate();
 }
 
-void GlfwRunner::internalInit() {
+bool GlfwRunner::internalInit() {
   createGLFWWindow(*this);
+  if (window == NULL)
+    return false;
   register_callbacks();
   imguiInit();
+  return true;
 }
 
 void GlfwRunner::internalShutdown() { imguiShutdown(); }
@@ -88,10 +91,13 @@ void GlfwRunner::register_callbacks() {
 }
 
 void uinta::createGLFWWindow(GlfwRunner &runner) {
+  spdlog::stopwatch sw;
   logger_t logger = spdlog::stderr_color_mt("createGLFWWindow");
   SPDLOG_LOGGER_INFO(logger, "Initializing GLFW...", runner.display.title.c_str(), runner.display.width, runner.display.height);
-  spdlog::stopwatch sw;
-  glfwInit();
+
+  if (!glfwInit())
+    return SPDLOG_LOGGER_ERROR(logger, "Failed to initialize GLFW!");
+
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -99,22 +105,18 @@ void uinta::createGLFWWindow(GlfwRunner &runner) {
 
   SPDLOG_LOGGER_INFO(logger, "Creating GLFW window \"{}\" ({}x{})...", runner.display.title.c_str(), runner.display.width,
                      runner.display.height);
+
   runner.window = glfwCreateWindow(runner.display.width, runner.display.height, runner.display.title.c_str(), NULL, NULL);
-  if (runner.window == NULL) {
-    glfwTerminate();
-    SPDLOG_LOGGER_ERROR(logger, "Failed to create GLFW window.");
-    throw std::exception();
-    return;
-  }
+  if (runner.window == NULL)
+    return SPDLOG_LOGGER_ERROR(logger, "Failed to create GLFW window!");
 
   glfwSetWindowUserPointer(runner.window, &runner);
   glfwMakeContextCurrent(runner.window);
 
   SPDLOG_LOGGER_INFO(logger, "Loading GLAD...");
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    SPDLOG_LOGGER_ERROR(logger, "Failed to load GLAD.");
-    throw std::exception();
-  }
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    return SPDLOG_LOGGER_ERROR(logger, "Failed to load GLAD!");
+
   SPDLOG_LOGGER_INFO(logger, "GLFW initialization completed in {} seconds", sw.elapsed().count());
 }
 

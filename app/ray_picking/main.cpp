@@ -40,12 +40,13 @@ struct RayPickingRunner final : GlfwRunner {
     enableImGui();
   }
 
-  void doInit() override {
+  bool doInit() override {
     initShader();
     initBuffers();
     initGrid();
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     setBackground(glm::vec3(216, 204, 192) / glm::vec3(255.0f));
+    return true;
   }
 
   void initBuffers() {

@@ -44,7 +44,7 @@ struct Runner {
 
   Runner(const std::string &title, unsigned int width, unsigned int height) noexcept;
 
-  void init();
+  bool init();
   int run();
   void tick(float dt);
   void render();
@@ -61,7 +61,7 @@ struct Runner {
   void handleScrollInput(const double xoffset, const double yoffset);
   void handleWindowSizeChanged(const int width, const int height);
 
-  virtual void doInit() {}
+  virtual bool doInit() { return true; }
 
   virtual void doPreTick(const RunnerState &state) {}
   virtual void doTick(const RunnerState &state) {}
@@ -74,7 +74,7 @@ struct Runner {
   virtual void doShutdown() {}
 
 protected:
-  virtual void internalInit()     = 0;
+  virtual bool internalInit()     = 0;
   virtual void internalShutdown() = 0;
 
   virtual void internalPreRender() {}

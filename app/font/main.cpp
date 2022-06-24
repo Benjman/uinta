@@ -47,7 +47,7 @@ public:
 
   FontRunner() : GlfwRunner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
-  void doInit() override {
+  bool doInit() override {
     initFont();
     initShader();
     initBuffers();
@@ -57,6 +57,8 @@ public:
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    return true;
   }
 
   void doRender() override { glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0); }

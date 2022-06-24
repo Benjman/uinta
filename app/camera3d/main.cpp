@@ -28,7 +28,7 @@ public:
 
   Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) { enableImGui(); }
 
-  void doInit() override {
+  bool doInit() override {
     initShader();
     GLfloat vertices[KILOBYTES(20)];
     GLuint indices[KILOBYTES(20)];
@@ -37,6 +37,8 @@ public:
 
     glEnable(GL_DEPTH_TEST);
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    return true;
   }
 
   void init_buffers(GLfloat *const vertices, GLuint *const indices) {

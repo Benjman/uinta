@@ -36,9 +36,10 @@ struct QuadtreeRunner final : GlfwRunner {
     squareHeight = (float)squareSize / display.height;
   }
 
-  void doInit() override {
+  bool doInit() override {
     initShader();
     initBuffers();
+    return true;
   }
 
   void initBuffers() {

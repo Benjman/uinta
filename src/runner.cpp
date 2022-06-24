@@ -23,13 +23,13 @@ Runner::Runner(const std::string &title, unsigned int width, unsigned int height
   logger = spdlog::stdout_color_mt("Runner");
 }
 
-void Runner::init() {
-  internalInit();
-  doInit();
-}
+bool Runner::init() { return internalInit() && doInit(); }
 
 int Runner::run() {
-  init();
+  if (!init()) {
+    SPDLOG_LOGGER_ERROR(logger, "Failed to initialize runner! Exiting application.");
+    return EXIT_FAILURE;
+  }
   while (!shouldExit()) {
     pollInput();
     do {
