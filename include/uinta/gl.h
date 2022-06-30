@@ -7,7 +7,6 @@
 #include <OpenGL/glu.h>
 #else
 #include <GL/gl.h>
-#include <GL/glu.h>
 #endif // __APPLE__
 
 #endif // UINTA_GL_H
