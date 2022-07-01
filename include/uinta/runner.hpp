@@ -35,6 +35,14 @@ struct RunnerState final {
 
   InputState input;
   Display display;
+
+  RunnerState() {
+    tick = 0;
+    delta = 0.0;
+    runtime = 0.0;
+    input = InputState();
+    display = Display();
+  }
 };
 
 struct Runner {
