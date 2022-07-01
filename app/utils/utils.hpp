@@ -7,7 +7,7 @@
 
 #include ".././utils/debug_controller.hpp"
 #include ".././utils/glfw_runner.hpp"
-#include ".././utils/imgui_utils.hpp"
+#include ".././utils/imgui_util.hpp"
 
 #endif // UINTA_APP_UTILS_HPP
 
