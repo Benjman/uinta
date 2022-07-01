@@ -6,6 +6,11 @@
      implementation into that C/C++ file.
 **/
 
+/* TODO
+ * Uinta should be including only fonts that are custom to the game. All other fonts should be found on the path, with a
+ * fallback font, if not found. (Fallback font should be included with this engine)
+ */
+
 #ifndef UINTA_FONT_H
 #define UINTA_FONT_H
 
