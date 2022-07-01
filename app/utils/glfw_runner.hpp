@@ -38,15 +38,6 @@ protected:
   void swapBuffers() override;
   void register_callbacks();
 
-  void enableImGui() { imguiEnabled = true; }
-  void imguiPreRender();
-  void imguiPostRender();
-
-private:
-  bool imguiEnabled = false;
-
-  void imguiInit();
-  void imguiShutdown();
 };
 
 void createGLFWWindow(GlfwRunner &view);

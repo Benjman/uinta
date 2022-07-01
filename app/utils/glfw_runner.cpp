@@ -5,22 +5,7 @@
 #include <uinta/logging.hpp>
 
 #include "glfw_runner.hpp"
-#include "glfw_input.cpp"
-
-#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
-#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
-#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-
-#include <imgui.h>
-#include <imgui/backends/imgui_impl_opengl3.h>
-#include <imgui/backends/imgui_impl_glfw.h>
-
-#include "../../lib/imgui/imgui.cpp"
-#include "../../lib/imgui/imgui_draw.cpp"
-#include "../../lib/imgui/imgui_tables.cpp"
-#include "../../lib/imgui/imgui_widgets.cpp"
-#include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
-#include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
+#include "imgui_util.hpp"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/stopwatch.h>
@@ -39,23 +24,17 @@ bool GlfwRunner::internalInit() {
   if (window == NULL)
     return false;
   register_callbacks();
-  imguiInit();
+  imgui::init(window);
   return true;
 }
 
-void GlfwRunner::internalShutdown() { imguiShutdown(); }
+void GlfwRunner::internalShutdown() { uinta::imgui::shutdown(window); }
 
-void GlfwRunner::internalPreRender() {
-#ifdef IMGUI_API
-  if (imguiEnabled)
-    imguiPreRender();
-#endif
-}
+void GlfwRunner::internalPreRender() { imgui::preRender(window); }
 
 void GlfwRunner::internalPostRender() {
-#ifdef IMGUI_API
-  if (imguiEnabled)
-    imguiPostRender();
+#ifndef IMGUI_API_DISABLED
+  imgui::postRender(window);
 #endif
 }
 
@@ -125,45 +104,3 @@ double GlfwRunner::getRuntime() { return glfwGetTime(); }
 void GlfwRunner::pollInput() { glfwPollEvents(); }
 
 bool GlfwRunner::shouldExit() { return glfwWindowShouldClose(window); }
-
-void GlfwRunner::imguiInit() {
-#ifdef IMGUI_API
-  if (!imguiEnabled)
-    return;
-  imguiEnabled = true;
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGui::StyleColorsDark();
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
-#endif // IMGUI_API
-}
-
-void GlfwRunner::imguiPreRender() {
-#ifdef IMGUI_API
-  if (!imguiEnabled)
-    return;
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
-  ImGui::NewFrame();
-#endif // IMGUI_API
-}
-void GlfwRunner::imguiPostRender() {
-#ifdef IMGUI_API
-  if (!imguiEnabled)
-    return;
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#endif // IMGUI_API
-}
-
-void GlfwRunner::imguiShutdown() {
-#ifdef IMGUI_API
-  if (!imguiEnabled)
-    return;
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
-  imguiEnabled = false;
-#endif // IMGUI_API
-}

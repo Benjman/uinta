@@ -1,10 +1,68 @@
+#ifndef IMGUI_API_DISABLED
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include "imgui_util.hpp"
+
+#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
+#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+
+#include <imgui.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_glfw.h>
+
+#include "../../lib/imgui/imgui.cpp"
+#include "../../lib/imgui/imgui_draw.cpp"
+#include "../../lib/imgui/imgui_tables.cpp"
+#include "../../lib/imgui/imgui_widgets.cpp"
+#include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
+#include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
 
 #include <uinta/camera.hpp>
 
 #include <imgui.h>
+#endif // IMGUI_API_DISABLED
 
-void uinta::imguiCamera(const Camera &camera) {
+void uinta::imgui::init(GLFWwindow *const window) {
+#ifndef IMGUI_API_DISABLED
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGui::StyleColorsDark();
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init("#version 330 core");
+#endif // IMGUI_API_DISABLED
+}
+
+void uinta::imgui::preRender(GLFWwindow *const window) {
+#ifndef IMGUI_API_DISABLED
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
+#endif // IMGUI_API_DISABLED
+}
+
+void render(GLFWwindow *const) {
+#ifndef IMGUI_API_DISABLED
+#endif // IMGUI_API_DISABLED
+}
+
+void uinta::imgui::postRender(GLFWwindow *const window) {
+#ifndef IMGUI_API_DISABLED
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif // IMGUI_API_DISABLED
+}
+
+void uinta::imgui::shutdown(GLFWwindow *const window) {
+#ifndef IMGUI_API_DISABLED
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+#endif // IMGUI_API_DISABLED
+}
+
+void uinta::imgui::camera(const uinta::Camera &camera) {
   ImGui::Begin("Camera");
   ImGui::SetWindowSize(ImVec2(275, 200));
   ImGui::Text("Translation:   wasd or right-mouse");

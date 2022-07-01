@@ -3,18 +3,15 @@
 
 #include <uinta/camera.hpp>
 #include <uinta/cfg.hpp>
+#include <uinta/file.hpp>
 #include <uinta/logging.hpp>
+#include <uinta/math.hpp>
+#include <uinta/mesh.hpp>
+#include <uinta/model.hpp>
+#include <uinta/shader.hpp>
 
-#include ".././utils/debug_controller.hpp"
-#include ".././utils/glfw_runner.hpp"
-#include ".././utils/imgui_util.hpp"
+#include "./debug_controller.hpp"
+#include "./glfw_runner.hpp"
+#include "./imgui_util.hpp"
 
 #endif // UINTA_APP_UTILS_HPP
-
-#ifdef UINTA_APP_UTILS_IMPL
-
-#include ".././utils/debug_controller.cpp"
-#include ".././utils/glfw_runner.cpp"
-#include ".././utils/imgui_util.cpp"
-
-#endif // UINTA_APP_UTILS_IMPL

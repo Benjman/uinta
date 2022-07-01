@@ -1,16 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <uinta/file.hpp>
-#include <uinta/mesh.hpp>
-#include <uinta/model.hpp>
-#include <uinta/math.hpp>
-
-#define UINTA_APP_UTILS_IMPL
-#include "../utils/utils.hpp"
-
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+
+#include "../utils/utils.hpp"
 
 namespace uinta {
 
@@ -26,7 +20,7 @@ public:
   gl_buf vbo;
   gl_buf ebo;
 
-  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) { enableImGui(); }
+  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {}
 
   bool doInit() override {
     initShader();
@@ -130,10 +124,10 @@ public:
 
   void doRender() override {
     glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
-    imguiCamera(camera);
+    imgui::camera(camera);
   }
 };
 
 } // namespace uinta
 
-int main(const int argc, const char **argv) { return Camera3dRunner().run(); }
+int main(const int argc, const char **argv) { return uinta::Camera3dRunner().run(); }

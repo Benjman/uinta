@@ -1,13 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <uinta/math.hpp>
-#include <uinta/camera.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-#define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <imgui.h>
+
+using namespace uinta;
 
 SmoothFloat ortho_size = SmoothFloat(5.0, 10.0);
 int imgui_level        = 3;
@@ -35,10 +35,7 @@ struct RayPickingRunner final : GlfwRunner {
   glm::vec4 eyeSpace;
   glm::vec4 worldSpace;
 
-  RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) {
-    cam_pos.z(1.0);
-    enableImGui();
-  }
+  RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) { cam_pos.z(1.0); }
 
   bool doInit() override {
     initShader();
@@ -252,8 +249,6 @@ struct RayPickingRunner final : GlfwRunner {
     ImGui::End();
   }
 
-  void doPostRender() override { imguiPostRender(); }
-
   void updateCursorVectors() {
     ndcSpace   = glm::vec2(2.0 * cursor_pos.x / display.height - 1.0, -2.0 * cursor_pos.y / display.height + 1.0);
     clipSpace  = glm::vec4(ndcSpace, -1.0, 1.0);
@@ -264,4 +259,4 @@ struct RayPickingRunner final : GlfwRunner {
 
 } // namespace uinta
 
-int main(const int argc, const char **argv) { return RayPickingRunner().run(); }
+int main(const int argc, const char **argv) { return uinta::RayPickingRunner().run(); }

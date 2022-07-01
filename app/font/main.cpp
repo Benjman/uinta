@@ -1,15 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <uinta/font.hpp>
-#include <uinta/macros.hpp>
-
-#define UINTA_APP_UTILS_IMPL
-#include "../utils/utils.hpp"
-
 #include <cstdio>
 
+#include "../utils/utils.hpp"
+
 namespace uinta {
+
+using namespace font;
 
 const unsigned int VBUF_SIZE = KILOBYTES(15);
 const unsigned int IBUF_SIZE = KILOBYTES(15);
@@ -137,4 +135,4 @@ public:
 
 } // namespace uinta
 
-int main(const int argc, const char **argv) { return FontRunner().run(); }
+int main(const int argc, const char **argv) { return uinta::FontRunner().run(); }

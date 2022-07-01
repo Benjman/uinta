@@ -1,13 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <uinta/file.hpp>
-#include <uinta/macros.hpp>
-#include <uinta/mesh.hpp>
-#include <uinta/model.hpp>
-#include <uinta/shader.hpp>
-
-#define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
 
 #include <cstdlib>
@@ -98,4 +91,4 @@ struct ModelRunner final : GlfwRunner {
 
 } // namespace uinta
 
-int main(const int argc, const char **argv) { return ModelRunner().run(); }
+int main(const int argc, const char **argv) { return uinta::ModelRunner().run(); }

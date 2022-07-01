@@ -1,12 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <uinta/buffer.hpp>
-#include <uinta/macros.hpp>
-#include <uinta/mesh.hpp>
+#include <entt/fwd.hpp>
+
 #include <uinta/quadtree.hpp>
 
-#define UINTA_APP_UTILS_IMPL
 #include "../utils/utils.hpp"
 
 namespace uinta {
@@ -150,4 +148,4 @@ struct QuadtreeRunner final : GlfwRunner {
 
 } // namespace uinta
 
-int main(const int argc, const char **argv) { return QuadtreeRunner().run(); }
+int main(const int argc, const char **argv) { return uinta::QuadtreeRunner().run(); }
