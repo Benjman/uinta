@@ -67,6 +67,11 @@ void GlfwRunner::register_callbacks() {
     GlfwRunner *runner = (GlfwRunner *)glfwGetWindowUserPointer(window);
     runner->handleWindowSizeChanged(width, height);
   });
+
+  // glfwSetWindowPosCallback(window, [](GLFWwindow *window, int xpos, int ypos) {
+  //   GlfwRunner *runner = (GlfwRunner *)glfwGetWindowUserPointer(window);
+  //   SPDLOG_LOGGER_INFO(runner->logger, "GLFW window pos {}, {}", xpos, ypos);
+  // });
 }
 
 void uinta::createGLFWWindow(GlfwRunner &runner) {
