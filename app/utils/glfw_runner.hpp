@@ -16,9 +16,9 @@ struct GlfwRunner : Runner {
 
   virtual bool doInit() override { return true; }
 
-  virtual void doPreTick(const RunnerState &state) override {}
-  virtual void doTick(const RunnerState &state) override {}
-  virtual void doPostTick(const RunnerState &state) override {}
+  virtual void doPreTick(const RunnerState &) override {}
+  virtual void doTick(const RunnerState &) override {}
+  virtual void doPostTick(const RunnerState &) override {}
 
   virtual void doPreRender() override {}
   virtual void doRender() override {}
@@ -28,19 +28,25 @@ struct GlfwRunner : Runner {
 
 protected:
   bool internalInit() override;
-  void internalShutdown() override;
+  void register_callbacks();
+  void pollInput() override;
+  double getRuntime() override;
+
+  void internalPreTick() override;
+  void internalTick() override;
+  void internalPostTick() override;
+
+  void swapBuffers() override;
   void internalPreRender() override;
+  void internalRender() override;
   void internalPostRender() override;
 
-  double getRuntime() override;
-  void pollInput() override;
-  bool shouldExit() override;
-  void swapBuffers() override;
-  void register_callbacks();
+  void internalShutdown() override;
 
+  bool shouldExit() override;
 };
 
-void createGLFWWindow(GlfwRunner &view);
+void createGLFWWindow(GlfwRunner &);
 
 } // namespace uinta
 

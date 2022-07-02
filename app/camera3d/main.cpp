@@ -124,7 +124,7 @@ public:
 
   void doRender() override {
     glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
-    imgui::camera(camera);
+    imgui::view::camera(camera);
   }
 };
 

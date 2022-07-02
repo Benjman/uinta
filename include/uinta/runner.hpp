@@ -37,10 +37,10 @@ struct RunnerState final {
   Display display;
 
   RunnerState() {
-    tick = 0;
-    delta = 0.0;
+    tick    = 0;
+    delta   = 0.0;
     runtime = 0.0;
-    input = InputState();
+    input   = InputState();
     display = Display();
   }
 };
@@ -82,17 +82,22 @@ struct Runner {
   virtual void doShutdown() {}
 
 protected:
-  virtual bool internalInit()     = 0;
-  virtual void internalShutdown() = 0;
+  virtual bool internalInit() = 0;
+
+  virtual bool shouldExit()   = 0;
+  virtual double getRuntime() = 0;
+  virtual void pollInput()    = 0;
+  virtual void swapBuffers()  = 0;
+
+  virtual void internalPreTick() {}
+  virtual void internalTick() {}
+  virtual void internalPostTick() {}
 
   virtual void internalPreRender() {}
   virtual void internalRender() {}
   virtual void internalPostRender() {}
 
-  virtual void swapBuffers()  = 0;
-  virtual void pollInput()    = 0;
-  virtual bool shouldExit()   = 0;
-  virtual double getRuntime() = 0;
+  virtual void internalShutdown() = 0;
 
 private:
   GLbitfield clear_mask      = GL_COLOR_BUFFER_BIT;

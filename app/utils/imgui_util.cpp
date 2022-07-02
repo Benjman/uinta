@@ -42,7 +42,7 @@ void uinta::imgui::preRender(GLFWwindow *const window) {
 #endif // IMGUI_API_DISABLED
 }
 
-void render(GLFWwindow *const) {
+void uinta::imgui::render(GLFWwindow *const) {
 #ifndef IMGUI_API_DISABLED
 #endif // IMGUI_API_DISABLED
 }
@@ -62,7 +62,7 @@ void uinta::imgui::shutdown(GLFWwindow *const window) {
 #endif // IMGUI_API_DISABLED
 }
 
-void uinta::imgui::camera(const uinta::Camera &camera) {
+void uinta::imgui::view::camera(const Camera &camera) {
   ImGui::Begin("Camera");
   ImGui::SetWindowSize(ImVec2(275, 200));
   ImGui::Text("Translation:   wasd or right-mouse");

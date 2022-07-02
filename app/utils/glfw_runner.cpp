@@ -1,15 +1,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/stopwatch.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
 
 #include "glfw_runner.hpp"
 #include "imgui_util.hpp"
-
-#include <spdlog/spdlog.h>
-#include <spdlog/stopwatch.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 
 using namespace uinta;
 
@@ -27,18 +27,6 @@ bool GlfwRunner::internalInit() {
   imgui::init(window);
   return true;
 }
-
-void GlfwRunner::internalShutdown() { uinta::imgui::shutdown(window); }
-
-void GlfwRunner::internalPreRender() { imgui::preRender(window); }
-
-void GlfwRunner::internalPostRender() {
-#ifndef IMGUI_API_DISABLED
-  imgui::postRender(window);
-#endif
-}
-
-void GlfwRunner::swapBuffers() { glfwSwapBuffers(window); }
 
 void GlfwRunner::register_callbacks() {
   glfwSetKeyCallback(window, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -68,11 +56,35 @@ void GlfwRunner::register_callbacks() {
     runner->handleWindowSizeChanged(width, height);
   });
 
-  // glfwSetWindowPosCallback(window, [](GLFWwindow *window, int xpos, int ypos) {
-  //   GlfwRunner *runner = (GlfwRunner *)glfwGetWindowUserPointer(window);
-  //   SPDLOG_LOGGER_INFO(runner->logger, "GLFW window pos {}, {}", xpos, ypos);
-  // });
+  glfwSetWindowPosCallback(window, [](GLFWwindow *window, int xpos, int ypos) {
+    GlfwRunner *runner = (GlfwRunner *)glfwGetWindowUserPointer(window);
+    SPDLOG_LOGGER_DEBUG(runner->logger, "GLFW window pos {}, {}", xpos, ypos);
+  });
 }
+
+void GlfwRunner::pollInput() { glfwPollEvents(); }
+
+double GlfwRunner::getRuntime() { return glfwGetTime(); }
+
+void GlfwRunner::internalPreTick() {}
+void GlfwRunner::internalTick() {}
+void GlfwRunner::internalPostTick() {}
+
+void GlfwRunner::swapBuffers() { glfwSwapBuffers(window); }
+
+void GlfwRunner::internalPreRender() { imgui::preRender(window); }
+
+void GlfwRunner::internalRender() { imgui::render(window); }
+
+void GlfwRunner::internalPostRender() {
+#ifndef IMGUI_API_DISABLED
+  imgui::postRender(window);
+#endif
+}
+
+void GlfwRunner::internalShutdown() { uinta::imgui::shutdown(window); }
+
+bool GlfwRunner::shouldExit() { return glfwWindowShouldClose(window); }
 
 void uinta::createGLFWWindow(GlfwRunner &runner) {
   spdlog::stopwatch sw;
@@ -103,9 +115,3 @@ void uinta::createGLFWWindow(GlfwRunner &runner) {
 
   SPDLOG_LOGGER_INFO(logger, "GLFW initialization completed in {} seconds", sw.elapsed().count());
 }
-
-double GlfwRunner::getRuntime() { return glfwGetTime(); }
-
-void GlfwRunner::pollInput() { glfwPollEvents(); }
-
-bool GlfwRunner::shouldExit() { return glfwWindowShouldClose(window); }
