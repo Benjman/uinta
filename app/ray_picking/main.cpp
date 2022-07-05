@@ -9,13 +9,16 @@
 
 using namespace uinta;
 
-SmoothFloat ortho_size = SmoothFloat(5.0, 10.0);
-int imgui_level        = 3;
+int imgui_level = 3;
+const inline float zoom_speed = 2.0;
+const inline float zoom_min = 1.0;
+const inline float zoom_max = 30.0;
 
 namespace uinta {
 
 struct RayPickingRunner final : GlfwRunner {
   SmoothVec3 cam_pos = glm::vec3(0.0);
+  SmoothFloat zoom = SmoothFloat(5.0, 10.0);
 
   GLuint vao;
   gl_buf vbo;
@@ -177,9 +180,6 @@ struct RayPickingRunner final : GlfwRunner {
     cursor_pos = glm::vec2(state.input.cursorx, state.input.cursory);
     updateCursorVectors();
 
-    if (!state.input.isAnyKeyDown())
-      return;
-
     float magnitude = 8.0 * state.delta;
 
     if (state.input.isKeyDown(KEY_W))
@@ -191,11 +191,8 @@ struct RayPickingRunner final : GlfwRunner {
     if (state.input.isKeyDown(KEY_D))
       cam_pos.smooth_float_x() += magnitude;
 
-    // change ortho size
-    if (state.input.isKeyDown(KEY_EQUAL))
-      ortho_size = std::max(1.0f, ortho_size.target - magnitude);
-    if (state.input.isKeyDown(KEY_MINUS))
-      ortho_size += magnitude;
+    zoom -= magnitude * state.input.scrolldy * zoom_speed;
+    zoom.target = std::max(1.0f, std::min(10.0f, zoom.target));
 
     // change imgui scale
     if (state.input.isKeyDown(KEY_I))
@@ -206,18 +203,18 @@ struct RayPickingRunner final : GlfwRunner {
       cam_pos.smooth_float_x() = 0.0;
       cam_pos.smooth_float_y() = 0.0;
 
-      ortho_size = 1.0;
+      zoom = 1.0;
     }
   }
 
   void doTick(const RunnerState &state) override {
     cam_pos.tick(state.delta);
-    ortho_size.tick(state.delta);
+    zoom.tick(state.delta);
   }
 
   void doPreRender() override {
-    m_proj = glm::ortho((double)-ortho_size.current, (double)ortho_size.current, (double)-ortho_size.current,
-                        (double)ortho_size.current, 0.0001, 1000.0);
+    m_proj = glm::ortho((double)-zoom.current, (double)zoom.current, (double)-zoom.current,
+                        (double)zoom.current, 0.0001, 1000.0);
     updateViewMatrix(m_view, cam_pos, 0, 0);
 
     glm::mat4 model(1.0);
