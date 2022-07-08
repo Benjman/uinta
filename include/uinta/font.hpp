@@ -329,7 +329,7 @@ void font::getCharQuad(const char c, const font_ctx &font, stbtt_aligned_quad *q
 
 #include <regex>
 unsigned int font::getRenderableCharCount(const std::string &value) noexcept {
-  const std::regex expression("[\x21-\x7E]");
+  const std::regex expression("[!-~]");
   const char *s = value.c_str();
   return std::ptrdiff_t(std::distance(std::cregex_iterator(s, &s[value.size()], expression), std::cregex_iterator()));
 }

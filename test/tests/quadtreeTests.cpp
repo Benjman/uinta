@@ -8,11 +8,13 @@
 #define private public
 #include <uinta/quadtree.hpp>
 
+using namespace uinta;
+
 TEST(quadtree, constructorValidations_spatialAlignment) {
   bool thrown = false;
 
   try {
-    quad(vec2(8.0), vec2(0.0, 16));
+    Quad(glm::vec2(8.0), glm::vec2(0.0, 16));
   } catch (const std::runtime_error e) {
     thrown = true;
     EXPECT_STREQ("bottomRightBounds must be aligned after the topRightBounds spatially.", e.what());
@@ -20,7 +22,7 @@ TEST(quadtree, constructorValidations_spatialAlignment) {
   ASSERT_TRUE(thrown) << "bounds alignment validation not executed";
 
   try {
-    quad(vec2(8.0), vec2(18.0, 2.0));
+    Quad(glm::vec2(8.0), glm::vec2(18.0, 2.0));
   } catch (const std::runtime_error e) {
     thrown = true;
     EXPECT_STREQ("bottomRightBounds must be aligned after the topRightBounds spatially.", e.what());
@@ -34,7 +36,7 @@ TEST(quadtree, constructorValidations_boundsArePowersOf2) {
   bool thrown = false;
 
   try {
-    quad(vec2(), vec2(8, 16));
+    Quad(glm::vec2(), glm::vec2(8, 16));
   } catch (const std::runtime_error e) {
     thrown = true;
     EXPECT_STREQ("quad boundaries must be a square", e.what());
@@ -47,7 +49,7 @@ TEST(quadtree, constructorValidations_boundsAreSquares) {
   bool thrown = false;
 
   try {
-    quad(vec2(), vec2(8, 16));
+    Quad(glm::vec2(), glm::vec2(8, 16));
   } catch (const std::runtime_error e) {
     thrown = true;
     EXPECT_STREQ("quad boundaries must be a square", e.what());
@@ -60,7 +62,7 @@ TEST(quadtree, constructorValidations_minBoundarySize) {
   bool thrown = false;
 
   try {
-    quad(vec2(0.0, 0.0), vec2(5.0, 10.0), 10);
+    Quad(glm::vec2(0.0, 0.0), glm::vec2(5.0, 10.0), 10);
   } catch (const std::runtime_error e) {
     thrown = true;
     EXPECT_STREQ("quad width must be at least the size of the minimum cell size", e.what());
@@ -68,7 +70,7 @@ TEST(quadtree, constructorValidations_minBoundarySize) {
   ASSERT_TRUE(thrown) << "quad size width validation not executed";
 
   try {
-    quad(vec2(0.0, 0.0), vec2(10.0, 5.0), 10);
+    Quad(glm::vec2(0.0, 0.0), glm::vec2(10.0, 5.0), 10);
   } catch (const std::runtime_error e) {
     EXPECT_STREQ("quad height must be at least the size of the minimum cell size", e.what());
     return;
@@ -84,7 +86,7 @@ TEST(quadtree, constructorValidations_wholeNumberedBounds) {
   // bool thrown = false;
   //
   // try {
-  //     quad(vec2(0.5, 1.0), vec2(1.0));
+  //     Quad(glm::vec2(0.5, 1.0), glm::vec2(1.0));
   // } catch (const std::runtime_error e) {
   //     thrown = true;
   //     EXPECT_STREQ("quad.topLeftBounds.x must be an integer.", e.what());
@@ -93,7 +95,7 @@ TEST(quadtree, constructorValidations_wholeNumberedBounds) {
   // thrown = false;
   //
   // try {
-  //     quad(vec2(1.0, 0.5), vec2(1.0));
+  //     Quad(glm::vec2(1.0, 0.5), glm::vec2(1.0));
   // } catch (const std::runtime_error e) {
   //     thrown = true;
   //     EXPECT_STREQ("quad.topLeftBounds.y must be an integer.", e.what());
@@ -102,7 +104,7 @@ TEST(quadtree, constructorValidations_wholeNumberedBounds) {
   // thrown = false;
   //
   // try {
-  //     quad(vec2(1.0), vec2(0.5, 1.0));
+  //     Quad(glm::vec2(1.0), glm::vec2(0.5, 1.0));
   // } catch (const std::runtime_error e) {
   //     thrown = true;
   //     EXPECT_STREQ("quad.bottomRightBounds.x must be an integer.", e.what());
@@ -111,7 +113,7 @@ TEST(quadtree, constructorValidations_wholeNumberedBounds) {
   // thrown = false;
   //
   // try {
-  //     quad(vec2(1.0), vec2(1.0, 0.5));
+  //     Quad(glm::vec2(1.0), glm::vec2(1.0, 0.5));
   // } catch (const std::runtime_error e) {
   //     thrown = true;
   //     EXPECT_STREQ("quad.bottomRightBounds.y must be an integer.", e.what());
@@ -119,48 +121,48 @@ TEST(quadtree, constructorValidations_wholeNumberedBounds) {
   // ASSERT_TRUE(thrown) << "quad.bottomRightBounds.y must be an integer exception not thrown.";
   // thrown = false;
   //
-  // quad(VALID_TOP_LEFT, VALID_BOTTOM_RIGHT);
+  // Quad(VALID_TOP_LEFT, VALID_BOTTOM_RIGHT);
 }
 
 TEST(quadtree, isInBounds) {
-  quad qt(vec2(2.0), vec2(10.0));
-  ASSERT_TRUE(qt.isInBounds(vec2(2.0))) << "quad.isInBounds check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(2.0, 10.0))) << "quad.isInBounds check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(10.0))) << "quad.isInBounds check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(10.0, 2.0))) << "quad.isInBounds check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(7.0))) << "quad.isInBounds check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(2.1, 10.0))) << "quad.isInBounds check has failed.";
+  Quad qt(glm::vec2(2.0), glm::vec2(10.0));
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(2.0))) << "quad.isInBounds check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(2.0, 10.0))) << "quad.isInBounds check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(10.0))) << "quad.isInBounds check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(10.0, 2.0))) << "quad.isInBounds check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(7.0))) << "quad.isInBounds check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(2.1, 10.0))) << "quad.isInBounds check has failed.";
 
-  ASSERT_TRUE(qt.isInBounds(vec2(2.1))) << "quad.isInBounds inside top-left check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(2.1, 9.9))) << "quad.isInBounds inside bottom-left check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(9.9))) << "quad.isInBounds inside bottom-right check failed.";
-  ASSERT_TRUE(qt.isInBounds(vec2(9.9, 2.1))) << "quad.isInBounds inside top-right check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(2.1))) << "quad.isInBounds inside top-left check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(2.1, 9.9))) << "quad.isInBounds inside bottom-left check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(9.9))) << "quad.isInBounds inside bottom-right check failed.";
+  ASSERT_TRUE(qt.isInBounds(glm::vec2(9.9, 2.1))) << "quad.isInBounds inside top-right check failed.";
 
-  ASSERT_FALSE(qt.isInBounds(vec2(1.9, 2.0))) << "quad.isInBounds outside top-left horizontal check failed.";
-  ASSERT_FALSE(qt.isInBounds(vec2(2.0, 1.9))) << "quad.isInBounds outside top-left vertical check failed.";
-  ASSERT_FALSE(qt.isInBounds(vec2(10.0, 1.9))) << "quad.isInBounds outside top-right vertical check failed.";
-  ASSERT_FALSE(qt.isInBounds(vec2(10.1, 2.0))) << "quad.isInBounds outside top-right horizontal check failed.";
-  ASSERT_FALSE(qt.isInBounds(vec2(10.1, 10.0))) << "quad.isInBounds outside bottom-right horizontal check failed.";
-  ASSERT_FALSE(qt.isInBounds(vec2(10.0, 10.1))) << "quad.isInBounds outside bottom-right vertical check failed.";
-  ASSERT_FALSE(qt.isInBounds(vec2(2.0, 10.1))) << "quad.isInBounds outside bottom-left vertical check failed.";
-  ASSERT_FALSE(qt.isInBounds(vec2(1.9, 10.0))) << "quad.isInBounds outside bottom-left horizontal check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(1.9, 2.0))) << "quad.isInBounds outside top-left horizontal check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(2.0, 1.9))) << "quad.isInBounds outside top-left vertical check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(10.0, 1.9))) << "quad.isInBounds outside top-right vertical check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(10.1, 2.0))) << "quad.isInBounds outside top-right horizontal check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(10.1, 10.0))) << "quad.isInBounds outside bottom-right horizontal check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(10.0, 10.1))) << "quad.isInBounds outside bottom-right vertical check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(2.0, 10.1))) << "quad.isInBounds outside bottom-left vertical check failed.";
+  ASSERT_FALSE(qt.isInBounds(glm::vec2(1.9, 10.0))) << "quad.isInBounds outside bottom-left horizontal check failed.";
 }
 
 TEST(quadtree, initialState) {
   ASSERT_EQ(1.0, QUAD_MIN_CELL_SIZE);
 
-  quad noParams;
+  Quad noParams;
   ASSERT_EQ(nullptr, noParams.bottomRight) << "quad.bottomRight should be initialized to null.";
   ASSERT_EQ(nullptr, noParams.bottomLeft) << "quad.bottomLeft should be initialized to null.";
   ASSERT_EQ(nullptr, noParams.topRight) << "quad.topRight should be initialized to null.";
   ASSERT_EQ(nullptr, noParams.topLeft) << "quad.topLeft should be initialized to null.";
-  ASSERT_EQ(vec2(0.0), noParams.topLeftBounds) << "quad.topRightBounds should initialize to vec2(0.0).";
-  ASSERT_EQ(vec2(QUAD_MIN_CELL_SIZE), noParams.bottomRightBounds)
-      << "quad.topRightBounds should initialize to vec2(QUAD_MIN_CELL_SIZE).";
+  ASSERT_EQ(glm::vec2(0.0), noParams.topLeftBounds) << "quad.topRightBounds should initialize to glm::vec2(0.0).";
+  ASSERT_EQ(glm::vec2(QUAD_MIN_CELL_SIZE), noParams.bottomRightBounds)
+      << "quad.topRightBounds should initialize to glm::vec2(QUAD_MIN_CELL_SIZE).";
   ASSERT_EQ(nullptr, noParams.entityStore) << "quad.topLeft should be initialized to null.";
   ASSERT_EQ(0, noParams.entityCount) << "quad.entityCount should initialize to 0.";
 
-  quad withBounds(vec2(0), vec2(2));
+  Quad withBounds(glm::vec2(0), glm::vec2(2));
   ASSERT_EQ(nullptr, withBounds.bottomRight) << "quad.bottomRight should be initialized to null.";
   ASSERT_EQ(nullptr, withBounds.bottomLeft) << "quad.bottomLeft should be initialized to null.";
   ASSERT_EQ(nullptr, withBounds.topRight) << "quad.topRight should be initialized to null.";
@@ -172,7 +174,7 @@ TEST(quadtree, addEntity) {
   entt::registry registry;
   entt::entity entity = registry.create();
 
-  quad qt;
+  Quad qt;
   qt.addEntity(entity);
   ASSERT_EQ(qt.entityStore[0], entity);
   ASSERT_EQ(1, qt.entityCount);
@@ -195,7 +197,7 @@ TEST(quadtree, removeEntity) {
   entt::registry registry;
   entt::entity entities[10];
 
-  quad qt;
+  Quad qt;
   for (int i = 0; i < 10; i++) {
     entities[i] = registry.create();
     qt.addEntity(entities[i]);
@@ -215,32 +217,32 @@ TEST(quadtree, insert_topLevel) {
   // This test validates a single layer deep, on all four quads
   entt::registry registry;
   entt::entity entity = registry.create();
-  quad qt(vec2(), vec2(64));
+  Quad qt(glm::vec2(), glm::vec2(64));
 
   ASSERT_EQ(nullptr, qt.topLeft);
   ASSERT_EQ(nullptr, qt.topRight);
   ASSERT_EQ(nullptr, qt.bottomLeft);
   ASSERT_EQ(nullptr, qt.bottomRight);
 
-  qt.insert(entity, vec2(16));
+  qt.insert(entity, glm::vec2(16));
   ASSERT_NE(nullptr, qt.topLeft);
   ASSERT_EQ(nullptr, qt.topRight);
   ASSERT_EQ(nullptr, qt.bottomLeft);
   ASSERT_EQ(nullptr, qt.bottomRight);
 
-  qt.insert(entity, vec2(48, 16));
+  qt.insert(entity, glm::vec2(48, 16));
   ASSERT_NE(nullptr, qt.topLeft);
   ASSERT_NE(nullptr, qt.topRight);
   ASSERT_EQ(nullptr, qt.bottomLeft);
   ASSERT_EQ(nullptr, qt.bottomRight);
 
-  qt.insert(entity, vec2(16, 48));
+  qt.insert(entity, glm::vec2(16, 48));
   ASSERT_NE(nullptr, qt.topLeft);
   ASSERT_NE(nullptr, qt.topRight);
   ASSERT_NE(nullptr, qt.bottomLeft);
   ASSERT_EQ(nullptr, qt.bottomRight);
 
-  qt.insert(entity, vec2(48));
+  qt.insert(entity, glm::vec2(48));
   ASSERT_NE(nullptr, qt.topLeft);
   ASSERT_NE(nullptr, qt.topRight);
   ASSERT_NE(nullptr, qt.bottomLeft);
@@ -252,16 +254,16 @@ TEST(quadtree, insert_recursive) {
   entt::registry registry;
   entt::entity entity = registry.create();
 
-  quad qt(vec2(), vec2(64));
-  qt.insert(entity, vec2(1));
+  Quad qt(glm::vec2(), glm::vec2(64));
+  qt.insert(entity, glm::vec2(1));
 
-  quad *inspect;
+  Quad *inspect;
   for (int i = 0; i < 6; i++) {
     inspect = i == 0 ? qt.topLeft : inspect->topLeft;
     ASSERT_NE(nullptr, inspect) << "Top-left quad should have been created when inserted from parent.";
     ASSERT_EQ(i == 5 ? 1 : 0, inspect->entityCount) << "Entities should only be stored at the lowest level.";
-    ASSERT_EQ(vec2(0), inspect->topLeftBounds) << "We're always pushing to top-left, so top-left bound should be at origin.";
-    ASSERT_EQ(vec2(32 >> i).x, inspect->bottomRightBounds.x) << "Bounds should be half their parent size.";
+    ASSERT_EQ(glm::vec2(0), inspect->topLeftBounds) << "We're always pushing to top-left, so top-left bound should be at origin.";
+    ASSERT_EQ(glm::vec2(32 >> i).x, inspect->bottomRightBounds.x) << "Bounds should be half their parent size.";
 
     ASSERT_EQ(nullptr, inspect->topRight) << "quad.topRight wasn't inserted to and should be null.";
     ASSERT_EQ(nullptr, inspect->bottomLeft) << "quad.bottomLeft wasn't inserted to and should be null.";
@@ -272,8 +274,8 @@ TEST(quadtree, insert_recursive) {
 TEST(quadtree, removeEntity_parentHeirarchy) {
   entt::registry registry;
   entt::entity entity = registry.create();
-  quad qt(vec2(), vec2(4));
-  qt.insert(entity, vec2(1));
+  Quad qt(glm::vec2(), glm::vec2(4));
+  qt.insert(entity, glm::vec2(1));
 
   ASSERT_NE(nullptr, qt.topLeft);
   ASSERT_EQ(&qt, qt.topLeft->parent);
