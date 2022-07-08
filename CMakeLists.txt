@@ -30,6 +30,7 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/metrics.cpp
   ./src/model.cpp
   ./src/quadtree.cpp
+  ./src/resource.cpp
   ./src/runner.cpp
   ./src/shader.cpp
 
@@ -57,13 +58,18 @@ add_subdirectory(./lib/spdlog)
 set(UINTA_LIBS ${UINTA_LIBS} spdlog)
 
 add_library(uinta STATIC ${UINTA_SRCS})
-configure_file(./cmake/cfg.hpp.in ${UINTA_GENERATED_PATH}/uinta/cfg.hpp)
 include_directories(./include ${UINTA_INCLUDES})
 target_link_libraries(uinta PUBLIC ${UINTA_LIBS})
 
+set(UINTA_RES_PATHS ${CMAKE_CURRENT_LIST_DIR}/res)
 add_subdirectory(app)
 
 # testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true ..`
 if (UINTA_TEST)
   add_subdirectory(test) # FIXME issues with tests not building...
 endif()
+
+message(STATUS "Resource paths found: ${UINTA_RES_PATHS}")
+
+configure_file(./cmake/cfg.hpp.in ${UINTA_GENERATED_PATH}/uinta/cfg.hpp)
+message(STATUS "Created configuration file: ${UINTA_GENERATED_PATH}/uinta/cfg.hpp")

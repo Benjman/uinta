@@ -3,7 +3,11 @@
 
 // cmake generates this implementation. edits should be made to uinta/cmake/cfg.hpp.in
 
-const inline char* RES_PATH = "${UINTA_RES_PATH}";
-const inline char* LIB_PATH = "${UINTA_LIB_PATH}";
+const inline char *const RES_PATH = "${UINTA_RES_PATH}";
+const inline char *const LIB_PATH = "${UINTA_LIB_PATH}";
+
+// `RES_PATH` is expected to be a semicolon delimited list of paths to look for resource files.
+const inline char *const RES_PATHS = "${UINTA_RES_PATHS}";
+const inline char *const RES_PATHS_DELIM = ";";
 
 #endif // UINTA_CFG_H
