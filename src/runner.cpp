@@ -20,10 +20,20 @@ Display::Display(const std::string &title, unsigned int width, unsigned int heig
 Runner::Runner(const std::string &title, unsigned int width, unsigned int height) noexcept : display(title, width, height) {
   state.display = Display(title, width, height);
   setSpdlogLevel();
-  logger = spdlog::stdout_color_mt("Runner");
+  logger    = spdlog::stdout_color_mt("Runner");
 }
 
-bool Runner::init() { return internalInit() && doInit(); }
+bool Runner::init() {
+  if (!internalInit())
+    return false;
+  if (!doInit())
+    return false;
+
+  bool successInternal = internalInit();
+  bool successInit     = doInit();
+
+  return internalInit() && doInit();
+}
 
 int Runner::run() {
   if (!init()) {

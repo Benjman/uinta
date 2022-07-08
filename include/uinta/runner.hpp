@@ -3,6 +3,7 @@
 
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
+#include <uinta/resource.hpp>
 
 #include <GL/gl.h>
 #include <glm/vec3.hpp>
@@ -49,6 +50,7 @@ struct Runner {
   Display display;
   RunnerState state;
   logger_t logger;
+  resource::ResourceManager resources;
 
   Runner(const std::string &title, unsigned int width, unsigned int height) noexcept;
 

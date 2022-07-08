@@ -11,6 +11,12 @@ using namespace uinta;
 //     ASSERT_EQ(0, m.assignments[i]) << "Failed on iteration " << std::to_string(i);
 // }
 
+// TEST(metrics, initial_state) {
+//   auto m = MetricsController();
+//   for (unsigned int i = 0; i < METRICS_MAX_STORAGE; i++)
+//     ASSERT_EQ(0, m.assignments[i]) << "Failed on iteration " << std::to_string(i);
+// }
+
 // TEST(metrics, init_metric) {
 //   auto m = MetricsController();
 //   ASSERT_NE(METRIC_FLOAT, m.metric_type[0]);

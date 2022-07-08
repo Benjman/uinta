@@ -12,9 +12,9 @@ namespace resource {
 
 inline const uint16_t UINTA_RES_MAX_RESOURCES      = 256;
 inline const uint16_t UINTA_RES_HANDLE_T_MAX_VALUE = 65535;
-inline const uint16_t UINTA_RES_ID_MASK    = 0xFFFF;
-inline const uint32_t UINTA_RES_VALID_MASK = 0x10000;
-inline const u_char UINTA_RES_VALID_SHIFT = 16;
+inline const uint16_t UINTA_RES_ID_MASK            = 0xFFFF;
+inline const uint32_t UINTA_RES_VALID_MASK         = 0x10000;
+inline const u_char UINTA_RES_VALID_SHIFT          = 16;
 
 using resource_handle_t = uint32_t;
 
