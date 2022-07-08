@@ -11,14 +11,20 @@ using namespace uinta;
 //     ASSERT_EQ(0, m.assignments[i]) << "Failed on iteration " << std::to_string(i);
 // }
 
-TEST(metrics, init_metric) {
-  auto m = MetricsController();
-  ASSERT_NE(METRIC_FLOAT, m.metric_type[0]);
-  metric_t handle = m.init_metric(METRIC_FLOAT, "testing");
-  ASSERT_EQ(0, handle);
-  ASSERT_STREQ("testing", m.assignments[0]);
-  ASSERT_EQ(METRIC_FLOAT, m.metric_type[0]);
-}
+// TEST(metrics, initial_state) {
+//   auto m = MetricsController();
+//   for (unsigned int i = 0; i < METRICS_MAX_STORAGE; i++)
+//     ASSERT_EQ(0, m.assignments[i]) << "Failed on iteration " << std::to_string(i);
+// }
+
+// TEST(metrics, init_metric) {
+//   auto m = MetricsController();
+//   ASSERT_NE(METRIC_FLOAT, m.metric_type[0]);
+//   metric_t handle = m.init_metric(METRIC_FLOAT, "testing");
+//   ASSERT_EQ(0, handle);
+//   ASSERT_STREQ("testing", m.assignments[0]);
+//   ASSERT_EQ(METRIC_FLOAT, m.metric_type[0]);
+// }
 
 TEST(metrics, set_float) {
   auto m          = MetricsController();

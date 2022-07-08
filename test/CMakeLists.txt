@@ -8,6 +8,7 @@ add_executable(tests
   ./tests/math
   ./tests/metrics_test.cpp
   ./tests/quadtreeTests.cpp
+  ./tests/resource.cpp
   ./tests/running_avg.cpp
 
   )

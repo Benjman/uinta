@@ -150,4 +150,8 @@ void uinta::setSpdlogLevel() {
 #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_CRITICAL
   spdlog::set_level(spdlog::level::critical);
 #endif
+
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_OFF
+  spdlog::set_level(spdlog::level::off);
+#endif
 }
