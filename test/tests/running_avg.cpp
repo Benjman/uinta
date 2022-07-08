@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #define private public
-#include <uinta/math.hpp>
+#include <uinta/math/running_avg.hpp>
 
 using namespace uinta;
 

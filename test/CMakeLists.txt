@@ -3,14 +3,12 @@ include_directories(../include)
 add_executable(tests
   ./main.cpp
 
-  # ./fontTest.cpp
-  # ./math/mat_test.cpp
-  # ./math/vecTests.cpp
-  # ./metrics_test.cpp
-  # ./quadtreeTests.cpp
 
-  ./running_avg.cpp
-  ./math/smooth_float_test.cpp
+  ./tests/fontTest.cpp
+  ./tests/math
+  ./tests/metrics_test.cpp
+  ./tests/quadtreeTests.cpp
+  ./tests/running_avg.cpp
 
   )
 
