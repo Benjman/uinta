@@ -3,6 +3,7 @@
 
 #include <glm/vec3.hpp>
 
+namespace uinta {
 struct SmoothFloat final {
   float agility;
   float current;
@@ -68,5 +69,6 @@ struct SmoothVec3 {
     return *this;
   }
 };
+}
 
 #endif // UINTA_MATH_SMOOTH_FLOAT_HPP

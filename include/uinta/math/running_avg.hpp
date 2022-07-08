@@ -1,6 +1,7 @@
 #ifndef UINTA_MATH_RUNNING_AVG_HPP
 #define UINTA_MATH_RUNNING_AVG_HPP
 
+namespace uinta {
 struct RunningAvg final {
 public:
   unsigned int count;
@@ -23,5 +24,6 @@ private:
   bool dirty;
   unsigned int position;
 };
+}
 
 #endif // UINTA_MATH_RUNNING_AVG_HPP

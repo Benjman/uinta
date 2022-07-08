@@ -1,5 +1,9 @@
 #include <uinta/math/running_avg.hpp>
 
+#include <algorithm>
+
+using namespace uinta;
+
 RunningAvg::RunningAvg(const unsigned int sample_size) noexcept {
   buffer   = new float[sample_size];
   mavg     = 0.0;
@@ -44,5 +48,3 @@ void RunningAvg::add(float v) noexcept {
   position++;
   // TODO check for cursor violating uint max
 }
-
-

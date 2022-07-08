@@ -1,5 +1,7 @@
 #include <uinta/math/smooth_float.hpp>
 
+using namespace uinta;
+
 SmoothFloat::SmoothFloat(const float start, const float agility) noexcept : current(start), target(start), agility(agility) {}
 
 SmoothFloat::SmoothFloat(const SmoothFloat &other) noexcept { *this = other; }
