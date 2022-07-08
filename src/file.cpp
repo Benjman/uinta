@@ -32,17 +32,17 @@ void readFileInternal(const std::string &path, std::ios::openmode mode, char *co
 } // namespace uinta::internal
 
 void uinta::readFileRaw(const char *const relativePath, char *const buffer) {
-  internal::readFileInternal(std::string(RES_PATH) + relativePath, std::ios::in, buffer);
+  // internal::readFileInternal(std::string(RES_PATH) + relativePath, std::ios::in, buffer);
 }
 
 void uinta::readFileBinary(const char *const relativePath, char *const buffer) {
-  internal::readFileInternal(std::string(RES_PATH) + relativePath, std::ios::binary, buffer);
+  // internal::readFileInternal(std::string(RES_PATH) + relativePath, std::ios::binary, buffer);
 }
 
 unsigned int uinta::getFileSize(const char *const relativePath) {
-  std::string path = std::string(RES_PATH) + relativePath;
-  std::ifstream file(path, std::ifstream::ate | std::ifstream::binary);
-  if (!internal::isFileValid(file, path))
-    return 0;
-  return file.tellg();
+  // std::string path = std::string(RES_PATH) + relativePath;
+  // std::ifstream file(path, std::ifstream::ate | std::ifstream::binary);
+  // if (!internal::isFileValid(file, path))
+    // return 0;
+  // return file.tellg();
 }
