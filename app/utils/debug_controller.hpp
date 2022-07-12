@@ -1,15 +1,12 @@
 #ifndef SHOWCASE_DEBUG_CONTROLLER_HPP
 #define SHOWCASE_DEBUG_CONTROLLER_HPP
 
+#include <chrono>
 #include <uinta/buffer.hpp>
 #include <uinta/font.hpp>
 #include <uinta/macros.hpp>
 #include <uinta/math.hpp>
 #include <uinta/metrics.hpp>
-
-#include <chrono>
-
-#include <glm/vec2.hpp>
 
 namespace uinta {
 
@@ -22,8 +19,8 @@ struct DebugController final {
   GLuint shader;
 
   GLuint vao;
-  gl_buf vbo;
-  gl_buf ebo;
+  GpuMemoryRegion vbo;
+  GpuMemoryRegion ebo;
 
   GLfloat vbuf[KILOBYTES(15)];
   GLuint ibuf[KILOBYTES(15)];
@@ -50,11 +47,11 @@ struct DebugController final {
   void meshMetric(const metric_t handle, const std::string append = "");
   void resetTimer(const debug_timer_t handle) noexcept;
 
-private:
+ private:
   std::chrono::time_point<std::chrono::high_resolution_clock> timers[DEBUG_CONTROLLER_MAX_TIMERS]{};
   bool timerAssignments[DEBUG_CONTROLLER_MAX_TIMERS]{false};
 };
 
-} // namespace uinta
+}  // namespace uinta
 
-#endif // !SHOWCASE_DEBUG_CONTROLLER_HPP
+#endif  // !SHOWCASE_DEBUG_CONTROLLER_HPP

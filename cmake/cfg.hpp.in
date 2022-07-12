@@ -1,26 +1,26 @@
-#ifndef UINTA_CFG_H
-#define UINTA_CFG_H
+#ifndef UINTA_CFG_HPP
+#define UINTA_CFG_HPP
 
+//
 // cmake generates this implementation. edits should be made to uinta/cmake/cfg.hpp.in
-
-namespace uinta {
+//
 
 #ifndef UINTA_LIB_PATHS
-#define UINTA_LIB_PATHS "${UINTA_LIB_PATH}";
-#endif // UINTA_LIB_PATH
+#define UINTA_LIB_PATHS "${UINTA_LIB_PATH}"
+#endif  // UINTA_LIB_PATH
 
 #ifndef UINTA_RES_PATHS
-#define UINTA_RES_PATHS "${UINTA_RES_PATHS}";
-#endif // UINTA_RES_PATH
+#define UINTA_RES_PATHS "${UINTA_RES_PATHS}"
+#endif  // UINTA_RES_PATH
 
 #ifndef UINTA_RES_PATHS_DELIM
-#define UINTA_RES_PATHS_DELIM ";";
-#endif // UINTA_RES_PATH_DELIM
+#define UINTA_RES_PATHS_DELIM ';'
+#endif  // UINTA_RES_PATH_DELIM
 
-const inline char *const LIB_PATH        = UINTA_LIB_PATHS;
-const inline char *const RES_PATHS_DELIM = UINTA_RES_PATHS_DELIM;
-const inline char *const RES_PATHS       = UINTA_RES_PATHS;
+namespace uinta {
+const inline char* const LIB_PATH = UINTA_LIB_PATHS;
+const inline char* const RES_PATHS = UINTA_RES_PATHS;
+const inline char RES_PATHS_DELIM = UINTA_RES_PATHS_DELIM;
+}  // namespace uinta
 
-} // namespace uinta
-
-#endif // UINTA_CFG_H
+#endif  // UINTA_CFG_HPP

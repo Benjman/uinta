@@ -1,7 +1,3 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
 #include "../utils/utils.hpp"
@@ -9,23 +5,30 @@
 namespace uinta {
 
 struct Camera3dRunner final : GlfwRunner {
-public:
   Camera camera;
 
   GLuint u_mvp;
-  glm::mat4 model = glm::mat4(1.0);
+  glm::mat4 model;
 
   GLuint shader;
   GLuint vao;
-  gl_buf vbo;
-  gl_buf ebo;
+  GpuMemoryRegion vbo;
+  GpuMemoryRegion ebo;
 
-  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {}
+  const file_t *vert, *frag, *cube;
+
+  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) { model = glm::mat4(1.0); }
+
+  void doInitResources() override {
+    vert = fileManager.registerFile("camera3d.vert", ResourceType::Text);
+    frag = fileManager.registerFile("camera3d.frag", ResourceType::Text);
+    cube = fileManager.registerFile("model/cube.obj", ResourceType::Text);
+  }
 
   bool doInit() override {
     initShader();
-    GLfloat vertices[KILOBYTES(20)];
-    GLuint indices[KILOBYTES(20)];
+    GLfloat vertices[KILOBYTES(1)];
+    GLuint indices[KILOBYTES(1)];
     initGround(vertices, indices);
     init_buffers(vertices, indices);
 
@@ -35,7 +38,7 @@ public:
     return true;
   }
 
-  void init_buffers(GLfloat *const vertices, GLuint *const indices) {
+  void init_buffers(GLfloat* const vertices, GLuint* const indices) {
     glGenVertexArrays(1, &vao);
 
     GLuint ids[2];
@@ -52,30 +55,27 @@ public:
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void *)(6 * sizeof(GLfloat)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
   }
 
-  void initGround(GLfloat *const vertices, GLuint *const indices) {
+  void initGround(GLfloat* const vertices, GLuint* const indices) {
     unsigned int local_vcount = 0, local_icount = 0;
-
     const MeshAttrib pos_attrib(9, 0), norm_attrib(9, 3), color_attrib(9, 6);
-
     const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
-        {MeshAttribType_Position, pos_attrib  },
-        {MeshAttribType_Normal,   norm_attrib },
-        {MeshAttribType_Color,    color_attrib},
+        {MeshAttribType_Position, pos_attrib},
+        {MeshAttribType_Normal, norm_attrib},
+        {MeshAttribType_Color, color_attrib},
     };
-
-    loadObj(Model_Cube, vertices, &local_vcount, indices, &local_icount, &attribs);
+    loadObj(fileManager.getDataChars(cube), vertices, &local_vcount, indices, &local_icount, &attribs);
 
     const glm::vec3 top(0.051, 0.933, 0.996);
-    const glm::vec3 sides     = glm::vec3(0.025, 0.465, 0.465);
+    const glm::vec3 sides = glm::vec3(0.025, 0.465, 0.465);
     const glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(15, 3, 15));
 
-    local_vcount *= 1.5; // loadObj doesn't load colors, so we adjust for color attrib
+    local_vcount *= 1.5;  // loadObj doesn't load colors, so we adjust for color attrib
     for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
       // transform to floor
       auto pos = transform * glm::vec4(vertices[i + pos_attrib.offset + 0], vertices[i + pos_attrib.offset + 1] - 1,
@@ -86,8 +86,8 @@ public:
       glm::vec3 color(0);
       glm::vec3 norm = glm::vec3(vertices[i + norm_attrib.offset + 0], vertices[i + norm_attrib.offset + 1],
                                  vertices[i + norm_attrib.offset + 2]);
-      color += sides * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));     // paint sides
-      color += top * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0))); // paint top
+      color += sides * glm::abs(glm::dot(norm, glm::vec3(1, 0, 1)));      // paint sides
+      color += top * std::max(0.0f, glm::dot(norm, glm::vec3(0, 1, 0)));  // paint top
       memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
     }
 
@@ -96,19 +96,13 @@ public:
   }
 
   void initShader() {
-    char vshader[getFileSize("shader/camera3d.vert")];
-    char fshader[getFileSize("shader/camera3d.frag")];
-    readFileRaw("shader/camera3d.vert", vshader);
-    readFileRaw("shader/camera3d.frag", fshader);
-    const std::vector<std::string> sources({std::string(vshader, sizeof(vshader)), std::string(fshader, sizeof(fshader))});
-    const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
-    const std::vector<std::string> uniforms({"u_mvp"});
-    const std::vector<GLuint *> locations = {&u_mvp};
-
-    shader = createShaderProgram(sources, stages, uniforms, locations);
+    shader = createShaderProgram({fileManager.getDataChars(vert), fileManager.getDataChars(frag)},
+                                 {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"u_mvp"}, {&u_mvp});
+    fileManager.release(vert);
+    fileManager.release(frag);
   }
 
-  void doTick(const RunnerState &state) override { camera.tick(state); }
+  void doTick(const RunnerState& state) override { camera.tick(state); }
 
   void doPreRender() override {
     glUseProgram(shader);
@@ -128,6 +122,6 @@ public:
   }
 };
 
-} // namespace uinta
+}  // namespace uinta
 
-int main(const int argc, const char **argv) { return uinta::Camera3dRunner().run(); }
+int main(const int argc, const char** argv) { return uinta::Camera3dRunner().run(); }

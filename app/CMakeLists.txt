@@ -17,10 +17,10 @@ function (app name)
 endfunction()
 
 app(camera3d)
-app(font)
+# app(font)
 app(model)
 app(quadtree)
 app(ray_picking)
-app(terrain)
+# app(terrain)
 
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)

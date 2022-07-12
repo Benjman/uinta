@@ -1,24 +1,27 @@
 #ifndef UINTA_GLFW_RUNNER_HPP
 #define UINTA_GLFW_RUNNER_HPP
 
-#include <uinta/runner.hpp>
 #include <GLFW/glfw3.h>
+
+#include <uinta/runner.hpp>
 
 namespace uinta {
 
 class Camera;
 
 struct GlfwRunner : Runner {
-  GLFWwindow *window;
+  GLFWwindow* window;
 
-  GlfwRunner(const std::string &title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
+  GlfwRunner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
   ~GlfwRunner();
 
+ protected:
   virtual bool doInit() override { return true; }
+  virtual void doInitResources() override {}
 
-  virtual void doPreTick(const RunnerState &) override {}
-  virtual void doTick(const RunnerState &) override {}
-  virtual void doPostTick(const RunnerState &) override {}
+  virtual void doPreTick(const RunnerState&) override {}
+  virtual void doTick(const RunnerState&) override {}
+  virtual void doPostTick(const RunnerState&) override {}
 
   virtual void doPreRender() override {}
   virtual void doRender() override {}
@@ -26,11 +29,7 @@ struct GlfwRunner : Runner {
 
   virtual void doShutdown() override {}
 
-protected:
   bool internalInit() override;
-  void register_callbacks();
-  void pollInput() override;
-  double getRuntime() override;
 
   void internalPreTick() override;
   void internalTick() override;
@@ -44,10 +43,14 @@ protected:
   void internalShutdown() override;
 
   bool shouldExit() override;
+
+  double getRuntime() override;
+  void pollInput() override;
+  void register_callbacks();
 };
 
-void createGLFWWindow(GlfwRunner &);
+void createGLFWWindow(GlfwRunner&);
 
-} // namespace uinta
+}  // namespace uinta
 
-#endif // UINTA_GLFW_RUNNER_HPP
+#endif  // UINTA_GLFW_RUNNER_HPP

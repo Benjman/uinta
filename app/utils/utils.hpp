@@ -1,9 +1,13 @@
 #ifndef UINTA_APP_UTILS_HPP
 #define UINTA_APP_UTILS_HPP
 
+// clang-format off
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
+
 #include <uinta/camera.hpp>
 #include <uinta/cfg.hpp>
-#include <uinta/file.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/math.hpp>
 #include <uinta/mesh.hpp>
@@ -14,4 +18,4 @@
 #include "./glfw_runner.hpp"
 #include "./imgui_util.hpp"
 
-#endif // UINTA_APP_UTILS_HPP
+#endif  // UINTA_APP_UTILS_HPP

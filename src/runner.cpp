@@ -1,38 +1,38 @@
 #include <glad/glad.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 #include <uinta/logging.hpp>
 #include <uinta/runner.hpp>
-
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 
 using namespace uinta;
 
 namespace uinta {
 void setSpdlogLevel();
-} // namespace uinta
+}  // namespace uinta
 
-Display::Display(const std::string &title, unsigned int width, unsigned int height) noexcept
+Display::Display(const std::string& title, unsigned int width, unsigned int height) noexcept
     : title(std::string(title)), width(width), height(height) {
   aspectRatio = (float)width / (float)height;
 }
 
-Runner::Runner(const std::string &title, unsigned int width, unsigned int height) noexcept : display(title, width, height) {
+Runner::Runner(const std::string& title, unsigned int width, unsigned int height) noexcept : display(title, width, height) {
   state.display = Display(title, width, height);
   setSpdlogLevel();
-  logger    = spdlog::stdout_color_mt("Runner");
+  logger = spdlog::stdout_color_mt("Runner");
 }
 
-bool Runner::init() {
-  if (!internalInit())
-    return false;
-  if (!doInit())
-    return false;
+bool Runner::init() { return initResources() && internalInit() && doInit(); }
 
-  bool successInternal = internalInit();
-  bool successInit     = doInit();
+bool Runner::initResources() {
+  fileManager.init();
+  modelManager.init();
 
-  return internalInit() && doInit();
+  doInitResources();
+
+  fileManager.loadAllFiles();
+  modelManager.loadAllModels();
+  return true;
 }
 
 int Runner::run() {
@@ -52,7 +52,7 @@ int Runner::run() {
 }
 
 void Runner::tick(float runtime) {
-  state.delta   = runtime - state.runtime;
+  state.delta = runtime - state.runtime;
   state.runtime = runtime;
   state.tick++;
   doPreTick(state);
@@ -64,11 +64,16 @@ void Runner::tick(float runtime) {
 void Runner::render() {
   glClearColor(background_color.r, background_color.g, background_color.b, 1.0);
   glClear(clear_mask);
+
   internalPreRender();
   doPreRender();
+
+  internalRender();
   doRender();
+
   doPostRender();
   internalPostRender();
+
   swapBuffers();
 }
 
@@ -86,13 +91,13 @@ bool Runner::shouldRenderFrame() {
 
 void Runner::setClearMask(const GLbitfield mask) { clear_mask = mask; }
 
-void Runner::setBackground(const glm::vec3 &background) { background_color = background; }
+void Runner::setBackground(const glm::vec3& background) { background_color = background; }
 
 void Runner::handleCursorPositionChanged(const double xpos, const double ypos) {
   state.input.cursordx = xpos - state.input.cursorx;
   state.input.cursordy = ypos - state.input.cursory;
-  state.input.cursorx  = xpos;
-  state.input.cursory  = ypos;
+  state.input.cursorx = xpos;
+  state.input.cursory = ypos;
 }
 
 void Runner::handleScrollInput(const double xoffset, const double yoffset) {
@@ -104,25 +109,20 @@ void Runner::handleScrollInput(const double xoffset, const double yoffset) {
 void Runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
   SPDLOG_LOGGER_DEBUG(logger, "Runner::handleKeyInput - Key {} event: {}{}", getActionStr(action), getModsStr(mods),
                       getKeyStr(key));
-  if (action == ACTION_PRESS)
-    state.input.keyPressed(key, mods);
-  if (action == ACTION_RELEASE)
-    state.input.keyReleased(key, mods);
-  if (action == ACTION_REPEAT)
-    state.input.keyRepeated(key, mods);
+  if (action == ACTION_PRESS) state.input.keyPressed(key, mods);
+  if (action == ACTION_RELEASE) state.input.keyReleased(key, mods);
+  if (action == ACTION_REPEAT) state.input.keyRepeated(key, mods);
 }
 
 void Runner::handleMouseButtonInput(const int button, const int action, const int mods) {
   SPDLOG_LOGGER_DEBUG(logger, "Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
-  if (action == ACTION_PRESS)
-    state.input.mouseButtonPressed(button, mods);
-  if (action == ACTION_RELEASE)
-    state.input.mouseButtonReleased(button, mods);
+  if (action == ACTION_PRESS) state.input.mouseButtonPressed(button, mods);
+  if (action == ACTION_RELEASE) state.input.mouseButtonReleased(button, mods);
   state.input.flags = mods;
 }
 
 void Runner::handleWindowSizeChanged(const int width, const int height) {
-  state.display.width  = width;
+  state.display.width = width;
   state.display.height = height;
 }
 

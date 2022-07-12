@@ -1,8 +1,9 @@
+// clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+// clang-format on
 
 #include <entt/fwd.hpp>
-
 #include <uinta/quadtree.hpp>
 
 #include "../utils/utils.hpp"
@@ -10,14 +11,14 @@
 namespace uinta {
 
 struct QuadtreeRunner final : GlfwRunner {
-  unsigned int width  = 1088;
+  unsigned int width = 1088;
   unsigned int height = 1088;
 
   GLfloat vertices[KILOBYTES(2)];
   GLuint indices[KILOBYTES(2)];
 
-  Quad qt         = Quad(glm::vec2(32), glm::vec2(1056), 16);
-  float qt_width  = qt.bottomRightBounds.x - qt.topLeftBounds.x;
+  Quad qt = Quad(glm::vec2(32), glm::vec2(1056), 16);
+  float qt_width = qt.bottomRightBounds.x - qt.topLeftBounds.x;
   float qt_height = qt.bottomRightBounds.y - qt.topLeftBounds.y;
 
   unsigned int squareSize = 16;
@@ -26,12 +27,19 @@ struct QuadtreeRunner final : GlfwRunner {
 
   GLuint u_color = 0u;
 
-  gl_buf vbo;
-  gl_buf ebo;
+  GpuMemoryRegion vbo;
+  GpuMemoryRegion ebo;
+
+  const resource_t *vert, *frag;
 
   QuadtreeRunner() : GlfwRunner("hello quadtree", 1088, 1088) {
-    squareWidth  = (float)squareSize / display.width;
+    squareWidth = (float)squareSize / display.width;
     squareHeight = (float)squareSize / display.height;
+  }
+
+  void doInitResources() override {
+    vert = fileManager.registerFile("quadtree.vert", ResourceType::Text);
+    frag = fileManager.registerFile("quadtree.frag", ResourceType::Text);
   }
 
   bool doInit() override {
@@ -55,27 +63,15 @@ struct QuadtreeRunner final : GlfwRunner {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), 0, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), 0, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
   }
 
   void initShader() {
-    const char *vshader = "#version 330 core\n"
-                          "layout (location = 0) in vec2 in_pos;"
-                          "out vec3 pass_color;"
-                          "void main() {"
-                          "   gl_Position = vec4(in_pos.x, in_pos.y, 1.0, 1.0);"
-                          "}\0";
-    const char *fshader = "#version 330 core\n"
-                          "out vec4 out_color;"
-                          "uniform vec3 u_color;"
-                          "void main() {"
-                          "   out_color = vec4(u_color, 1.0);"
-                          "}\0";
-    const std::vector<std::string> sources({std::string(vshader, strlen(vshader)), std::string(fshader, strlen(fshader))});
+    const std::vector<std::string> sources({fileManager.getDataChars(vert), fileManager.getDataChars(frag)});
     const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
     const std::vector<std::string> uniforms({"u_color"});
-    const std::vector<GLuint *> locations = {&u_color};
+    const std::vector<GLuint*> locations = {&u_color};
     createShaderProgram(sources, stages, uniforms, locations);
   }
 
@@ -87,15 +83,15 @@ struct QuadtreeRunner final : GlfwRunner {
     glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
 
     glUniform3f(u_color, 0.0f, 1.0f, 1.0f);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)(ebo.count * sizeof(GLuint)));
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(ebo.count * sizeof(GLuint)));
 
     glUniform3f(u_color, 1.0f, 1.0f, 0.0f);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)((ebo.count + 6) * sizeof(GLuint)));
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((ebo.count + 6) * sizeof(GLuint)));
   }
 
-  void doTick(const RunnerState &state) override {
-    vbo.count  = 0;
-    ebo.count  = 0;
+  void doTick(const RunnerState& state) override {
+    vbo.count = 0;
+    ebo.count = 0;
     ebo.offset = 0;
 
     float cos_inner = 0.25 * (std::cos(state.runtime * 0.13) + 2);
@@ -126,7 +122,7 @@ struct QuadtreeRunner final : GlfwRunner {
     squareOuterNorm.x = 2 * squareOuterNorm.x - 1;
     squareOuterNorm.y = -2 * squareOuterNorm.y + 1;
 
-    GLuint squareIndices[]   = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4};
+    GLuint squareIndices[] = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4};
     GLfloat squareVertices[] = {
         squareInnerNorm.x - squareWidth * 0.5f,  squareInnerNorm.y + squareHeight * 0.5f, squareInnerNorm.x - squareWidth * 0.5f,
         squareInnerNorm.y - squareHeight * 0.5f, squareInnerNorm.x + squareWidth * 0.5f,  squareInnerNorm.y - squareHeight * 0.5f,
@@ -137,8 +133,7 @@ struct QuadtreeRunner final : GlfwRunner {
         squareOuterNorm.x + squareWidth * 0.5f,  squareOuterNorm.y + squareHeight * 0.5f,
     };
 
-    for (int i = 0; i < 12; i++)
-      squareIndices[i] += ebo.offset;
+    for (int i = 0; i < 12; i++) squareIndices[i] += ebo.offset;
 
     // upload squares
     glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vbo.count, sizeof(squareVertices), squareVertices);
@@ -146,6 +141,6 @@ struct QuadtreeRunner final : GlfwRunner {
   }
 };
 
-} // namespace uinta
+}  // namespace uinta
 
-int main(const int argc, const char **argv) { return uinta::QuadtreeRunner().run(); }
+int main(const int argc, const char** argv) { return uinta::QuadtreeRunner().run(); }

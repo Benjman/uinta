@@ -1,12 +1,14 @@
+// clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include "../utils/utils.hpp"
+// clang-format on
 
 #include <cstdlib>
 #include <cstring>
-#include <unordered_map>
 #include <glm/gtc/matrix_transform.hpp>
+#include <unordered_map>
+
+#include "../utils/utils.hpp"
 
 namespace uinta {
 
@@ -16,6 +18,14 @@ struct ModelRunner final : GlfwRunner {
   GLuint shader, u_model;
 
   ModelRunner() : GlfwRunner("hello models", 1000, 1000) {}
+
+  const resource_t *vert, *frag, *model;
+
+  void doInitResources() override {
+    vert = fileManager.registerFile("model.vert", ResourceType::Text);
+    frag = fileManager.registerFile("model.frag", ResourceType::Text);
+    model = fileManager.registerFile("model/suzanne.obj", ResourceType::Text);
+  }
 
   bool doInit() override {
     unsigned int size = KILOBYTES(100);
@@ -32,7 +42,7 @@ struct ModelRunner final : GlfwRunner {
     return true;
   }
 
-  void doPreTick(const RunnerState &state) override {
+  void doPreTick(const RunnerState& state) override {
     if (state.input.isKeyPressed(KEY_SPACE)) {
       glDeleteProgram(shader);
       load_shaders();
@@ -40,12 +50,13 @@ struct ModelRunner final : GlfwRunner {
     }
   }
 
-  void initObj(GLfloat *const vbuf, const unsigned int vbufCount, GLuint *const ibuf, const unsigned int ibufCount) {
+  void initObj(GLfloat* const vbuf, const unsigned int vbufCount, GLuint* const ibuf, const unsigned int ibufCount) {
     const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
         {MeshAttribType_Position, MeshAttrib(6, 0)},
-        {MeshAttribType_Normal,   MeshAttrib(6, 3)},
+        {MeshAttribType_Normal, MeshAttrib(6, 3)},
     };
-    loadObj(Model_Suzanne, vbuf, &vcount, ibuf, &icount, &attribs);
+
+    loadObj(fileManager.getDataChars(model), vbuf, &vcount, ibuf, &icount, &attribs);
 
     glBufferData(GL_ARRAY_BUFFER, vbufCount * sizeof(GLfloat), vbuf, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufCount * sizeof(GLuint), ibuf, GL_STATIC_DRAW);
@@ -63,23 +74,19 @@ struct ModelRunner final : GlfwRunner {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
   }
 
   void load_shaders() {
-    char vert[getFileSize("shader/model.vert")];
-    readFileRaw("shader/model.vert", vert);
-
-    char frag[getFileSize("shader/model.frag")];
-    readFileRaw("shader/model.frag", frag);
-
-    const std::vector<std::string> sources({std::string(vert, sizeof(vert)), std::string(frag, sizeof(frag))});
+    const std::vector<std::string> sources({fileManager.getDataChars(vert), fileManager.getDataChars(frag)});
     const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
     const std::vector<std::string> uniforms({"u_model"});
-    const std::vector<GLuint *> locations = {&u_model};
+    const std::vector<GLuint*> locations = {&u_model};
 
     shader = createShaderProgram(sources, stages, uniforms, locations);
+    fileManager.release(vert);
+    fileManager.release(frag);
   }
 
   void doRender() override {
@@ -89,6 +96,6 @@ struct ModelRunner final : GlfwRunner {
   }
 };
 
-} // namespace uinta
+}  // namespace uinta
 
-int main(const int argc, const char **argv) { return uinta::ModelRunner().run(); }
+int main(const int argc, const char** argv) { return uinta::ModelRunner().run(); }

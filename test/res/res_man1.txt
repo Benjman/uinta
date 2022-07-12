@@ -1,0 +1,4 @@
+File 1
+
+Used for ResourceManager integration tests.
+DO NOT CHANGE OR DELETE!

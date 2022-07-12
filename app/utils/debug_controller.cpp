@@ -1,24 +1,24 @@
+// clang-format off
 #include <glad/glad.h>
+// clang-format on
 
 #include "debug_controller.hpp"
-
-#include <uinta/file.hpp>
-#include <uinta/logging.hpp>
-#include <uinta/shader.hpp>
 
 #include <spdlog/spdlog.h>
 
 #include <chrono>
 #include <cmath>
 #include <cstring>
+#include <uinta/logging.hpp>
+#include <uinta/shader.hpp>
 
 using namespace uinta;
 
 using namespace font;
 const std::unordered_map<FontMeshAttribTypes, FontMeshAttrib> attribs = {
     {FontMeshAttrib_Position, FontMeshAttrib(7, 0)},
-    {FontMeshAttrib_UV,       FontMeshAttrib(7, 2)},
-    {FontMeshAttrib_Color,    FontMeshAttrib(7, 4)},
+    {FontMeshAttrib_UV, FontMeshAttrib(7, 2)},
+    {FontMeshAttrib_Color, FontMeshAttrib(7, 4)},
 };
 
 DebugController::DebugController(unsigned int view_width, unsigned int view_height) noexcept
@@ -48,43 +48,45 @@ void DebugController::initBuffers() {
 
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void *)(2 * sizeof(GLfloat)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void *)(4 * sizeof(GLfloat)));
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(4 * sizeof(GLfloat)));
   glEnableVertexAttribArray(2);
 
   uploadBuffers();
 }
 
 void DebugController::initFont() {
-  auto type   = font::ProggyCleanTT_Nerd_Font_Complete_Mono;
-  font_handle = font::initFont(type, 256, 256);
-  unsigned char data[getFileSize(getFontPath(type))];
-  readFileBinary(getFontPath(type), (char *)data);
-  font::load_font(font_handle, data);
+  // auto type = font::ProggyCleanTT_Nerd_Font_Complete_Mono;
+  // font_handle = font::initFont(type, 256, 256);
+  // unsigned char data[getFileSize(getFontPath(type))];
+  // readFileBinary(getFontPath(type), (char*)data);
+  // font::load_font(font_handle, data);
 }
 
 void DebugController::initShader() {
-  const char *vshader = "#version 330 core\n"
-                        "layout (location = 0) in vec2 in_pos;"
-                        "layout (location = 1) in vec2 in_uv;"
-                        "layout (location = 2) in vec3 in_color;"
-                        "out vec2 pass_uv;"
-                        "out vec3 pass_color;"
-                        "void main() {"
-                        "  pass_uv = in_uv;"
-                        "  pass_color = in_color;"
-                        "  gl_Position = vec4(in_pos, 0.0, 1.0);"
-                        "}\0";
+  const char* vshader =
+      "#version 330 core\n"
+      "layout (location = 0) in vec2 in_pos;"
+      "layout (location = 1) in vec2 in_uv;"
+      "layout (location = 2) in vec3 in_color;"
+      "out vec2 pass_uv;"
+      "out vec3 pass_color;"
+      "void main() {"
+      "  pass_uv = in_uv;"
+      "  pass_color = in_color;"
+      "  gl_Position = vec4(in_pos, 0.0, 1.0);"
+      "}\0";
 
-  const char *fshader = "#version 330 core\n"
-                        "in vec2 pass_uv;"
-                        "in vec3 pass_color;"
-                        "uniform sampler2D atlas;"
-                        "out vec4 out_color;"
-                        "void main() {"
-                        "  out_color = vec4(pass_color, texture(atlas, pass_uv).r);"
-                        "}\0";
+  const char* fshader =
+      "#version 330 core\n"
+      "in vec2 pass_uv;"
+      "in vec3 pass_color;"
+      "uniform sampler2D atlas;"
+      "out vec4 out_color;"
+      "void main() {"
+      "  out_color = vec4(pass_color, texture(atlas, pass_uv).r);"
+      "}\0";
 
   const std::vector<std::string> sources({std::string(vshader, strlen(vshader)), std::string(fshader, strlen(fshader))});
   const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
@@ -94,8 +96,7 @@ void DebugController::initShader() {
 }
 
 void DebugController::render() {
-  if (!ebo.count)
-    return;
+  if (!ebo.count) return;
 
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
@@ -113,7 +114,7 @@ void DebugController::render() {
 
   vbo.count = 0;
   ebo.count = 0;
-  ioff      = 0;
+  ioff = 0;
 
   metric_row = 0;
 }
@@ -154,23 +155,23 @@ double DebugController::durationMilli(const debug_timer_t handle) noexcept {
 }
 
 void DebugController::meshMetric(const metric_t handle, const std::string append) {
-  auto text    = font::text(metrics.assignments[handle], 20.0);
+  auto text = font::text(metrics.assignments[handle], 20.0);
   text.color_r = 0.6;
   text.color_g = 0.6;
   text.color_b = 0.3;
-  text.pos_y   = text.line_size * metric_row;
+  text.pos_y = text.line_size * metric_row;
   switch (metrics.metric_type[handle]) {
-  case METRIC_FLOAT:
-    text.value += " " + std::to_string(metrics.getf(handle)) + " " + append;
-    break;
+    case METRIC_FLOAT:
+      text.value += " " + std::to_string(metrics.getf(handle)) + " " + append;
+      break;
 
-  case METRIC_INT:
-    text.value += " " + std::to_string(metrics.geti(handle)) + " " + append;
-    break;
+    case METRIC_INT:
+      text.value += " " + std::to_string(metrics.geti(handle)) + " " + append;
+      break;
 
-  case METRIC_UINT:
-    text.value += " " + std::to_string(metrics.getui(handle)) + " " + append;
-    break;
+    case METRIC_UINT:
+      text.value += " " + std::to_string(metrics.getui(handle)) + " " + append;
+      break;
   }
   font::generate_mesh(&text, font_handle, view_size.x, view_size.y, &attribs, &vbuf[vbo.count], &vbo.count, &ibuf[ebo.count],
                       &ebo.count, &ioff);

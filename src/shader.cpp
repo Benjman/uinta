@@ -24,10 +24,9 @@ void checkCompileErrors(const GLuint shader, const GLenum type) {
   if (!success)
     SPDLOG_ERROR("{}", info);
 }
-} // namespace uinta
 
-GLuint uinta::createShaderProgram(const std::vector<std::string> &sources, const std::vector<GLenum> &stages,
-                                  const std::vector<std::string> &uniformNames, const std::vector<GLuint *> &uniformLocations) {
+GLuint createShaderProgram(const std::vector<std::string> &sources, const std::vector<GLenum> &stages,
+                           const std::vector<std::string> &uniformNames, const std::vector<GLuint *> &uniformLocations) {
   GLuint id = glCreateProgram();
 
   if (sources.size() != stages.size()) {
@@ -64,5 +63,7 @@ GLuint uinta::createShaderProgram(const std::vector<std::string> &sources, const
 
   return id;
 }
+
+} // namespace uinta
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {}

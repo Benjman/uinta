@@ -1,13 +1,16 @@
 #ifndef UINTA_APP_RUNNER_HPP
 #define UINTA_APP_RUNNER_HPP
 
-#include <uinta/input.hpp>
-#include <uinta/logging.hpp>
-#include <uinta/resource.hpp>
-
 #include <GL/gl.h>
+
 #include <glm/vec3.hpp>
 #include <string>
+
+#include "uinta/cfg.hpp"
+#include "uinta/input.hpp"
+#include "uinta/logging.hpp"
+#include "uinta/model.hpp"
+#include "uinta/resource.hpp"
 
 namespace uinta {
 
@@ -21,7 +24,7 @@ struct Display {
 
   Display() : Display("", 0, 0) {}
 
-  Display(const std::string &title, const unsigned int width, const unsigned int height) noexcept;
+  Display(const std::string& title, const unsigned int width, const unsigned int height) noexcept;
 };
 
 struct RunnerState final {
@@ -38,10 +41,10 @@ struct RunnerState final {
   Display display;
 
   RunnerState() {
-    tick    = 0;
-    delta   = 0.0;
+    tick = 0;
+    delta = 0.0;
     runtime = 0.0;
-    input   = InputState();
+    input = InputState();
     display = Display();
   }
 };
@@ -50,11 +53,14 @@ struct Runner {
   Display display;
   RunnerState state;
   logger_t logger;
-  resource::ResourceManager resources;
 
-  Runner(const std::string &title, unsigned int width, unsigned int height) noexcept;
+  FileManager fileManager = FileManager(MEGABYTES(1));
+  ModelManager modelManager = ModelManager(MEGABYTES(10));
+
+  Runner(const std::string& title, unsigned int width, unsigned int height) noexcept;
 
   bool init();
+  bool initResources();
   int run();
   void tick(float dt);
   void render();
@@ -63,7 +69,7 @@ struct Runner {
   bool shouldRenderFrame();
 
   void setClearMask(const GLbitfield mask);
-  void setBackground(const glm::vec3 &background);
+  void setBackground(const glm::vec3& background);
 
   void handleCursorPositionChanged(const double xpos, const double ypos);
   void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
@@ -71,41 +77,39 @@ struct Runner {
   void handleScrollInput(const double xoffset, const double yoffset);
   void handleWindowSizeChanged(const int width, const int height);
 
-  virtual bool doInit() { return true; }
-
-  virtual void doPreTick(const RunnerState &state) {}
-  virtual void doTick(const RunnerState &state) {}
-  virtual void doPostTick(const RunnerState &state) {}
-
-  virtual void doPreRender() {}
-  virtual void doRender() {}
-  virtual void doPostRender() {}
-
-  virtual void doShutdown() {}
-
-protected:
+ protected:
   virtual bool internalInit() = 0;
 
-  virtual bool shouldExit()   = 0;
-  virtual double getRuntime() = 0;
-  virtual void pollInput()    = 0;
-  virtual void swapBuffers()  = 0;
+  virtual bool doInit() { return true; }
+  virtual void doInitResources() {}
 
   virtual void internalPreTick() {}
+  virtual void doPreTick(const RunnerState& state) {}
   virtual void internalTick() {}
+  virtual void doTick(const RunnerState& state) {}
   virtual void internalPostTick() {}
+  virtual void doPostTick(const RunnerState& state) {}
 
   virtual void internalPreRender() {}
+  virtual void doPreRender() {}
   virtual void internalRender() {}
+  virtual void doRender() {}
   virtual void internalPostRender() {}
+  virtual void doPostRender() {}
+  virtual void swapBuffers() = 0;
 
   virtual void internalShutdown() = 0;
+  virtual void doShutdown() {}
 
-private:
-  GLbitfield clear_mask      = GL_COLOR_BUFFER_BIT;
+  virtual bool shouldExit() = 0;
+  virtual double getRuntime() = 0;
+  virtual void pollInput() = 0;
+
+ private:
+  GLbitfield clear_mask = GL_COLOR_BUFFER_BIT;
   glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
 };
 
-} // namespace uinta
+}  // namespace uinta
 
-#endif // UINTA_APP_RUNNER_HPP
+#endif  // UINTA_APP_RUNNER_HPP
