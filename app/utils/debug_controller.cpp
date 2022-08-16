@@ -36,12 +36,12 @@ void DebugController::initBuffers() {
   glGenVertexArrays(1, &vao);
   GLuint ids[2];
   glGenBuffers(2, ids);
-  vbo.id = ids[0];
-  ebo.id = ids[1];
+  vbo.vboId = ids[0];
+  ebo.vboId = ids[1];
 
   glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
   glBufferData(GL_ARRAY_BUFFER, vbo.max, nullptr, GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo.max, nullptr, GL_STATIC_DRAW);
@@ -102,8 +102,8 @@ void DebugController::render() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
   uploadBuffers();
 

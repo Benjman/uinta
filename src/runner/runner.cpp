@@ -19,16 +19,12 @@ Runner::Runner(const std::string& title, unsigned int width, unsigned int height
   logger = spdlog::stdout_color_mt("Runner");
 }
 
-bool Runner::init() { return initResources() && internalInit() && doInit(); }
+bool Runner::init() { return initIO() && internalInit() && doInit(); }
 
-bool Runner::initResources() {
+bool Runner::initIO() {
   fileManager.init();
-  modelManager.init();
-
-  doInitResources();
-
-  fileManager.loadAllFiles();
-  modelManager.loadAllModels();
+  doInitFiles();
+  fileManager.loadAll();
   return true;
 }
 

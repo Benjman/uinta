@@ -1,4 +1,4 @@
-#include "uinta/resource/resource_manager.hpp"
+#include "uinta/resource.hpp"
 
 using namespace uinta;
 

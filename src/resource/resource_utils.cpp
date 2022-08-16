@@ -1,4 +1,4 @@
-#include "./utils.hpp"
+#include "./resource_utils.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -6,8 +6,7 @@
 
 #include "uinta/cfg.hpp"
 
-void uinta::parseResourcePaths(const std::string& paths, const char delim, std::vector<std::string>& buffer,
-                               const logger_t& logger) {
+void uinta::parseResourcePaths(const std::string& paths, const char delim, std::vector<std::string>& buffer) {
   std::string val;
   int start = 0;
   int end = 0;
@@ -18,14 +17,14 @@ void uinta::parseResourcePaths(const std::string& paths, const char delim, std::
     if (val.length()) {
       if (val.at(val.length() - 1) != '/') val = val + '/';
       buffer.emplace_back(std::string(val));
-      SPDLOG_LOGGER_DEBUG(logger, "Resource path '{}' registered", val);
+      SPDLOG_DEBUG("Resource path '{}' registered", val);
     }
     start = end + 1;  // +1 for delim
   } while (end != -1);
   if (buffer.size() > 0) {
-    SPDLOG_LOGGER_INFO(logger, "Found {} resource paths.", buffer.size());
+    SPDLOG_INFO("Found {} resource paths.", buffer.size());
   } else {
-    SPDLOG_LOGGER_WARN(logger, "Failed to parse any resource paths from input '{}'!", RES_PATHS);
+    SPDLOG_WARN("Failed to parse any resource paths from input '{}'!", RES_PATHS);
   }
 }
 

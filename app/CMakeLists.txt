@@ -21,6 +21,5 @@ app(camera3d)
 app(model)
 app(quadtree)
 app(ray_picking)
-# app(terrain)
 
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)

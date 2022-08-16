@@ -6,7 +6,7 @@ add_executable(tests ./main.cpp
   ./tests/math.cpp
   ./tests/metrics_test.cpp
   ./tests/quadtreeTests.cpp
-  ./tests/resourceManagerTests.cpp
+  ./tests/fileManagerTests.cpp
   ./tests/running_avg.cpp
 
   )

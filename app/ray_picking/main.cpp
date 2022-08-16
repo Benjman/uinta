@@ -23,8 +23,8 @@ struct RayPickingRunner final : GlfwRunner {
   SmoothFloat zoom = SmoothFloat(5.0, 10.0);
 
   GLuint vao;
-  GpuMemoryRegion vbo;
-  GpuMemoryRegion ebo;
+  GpuMemoryArena vbo;
+  GpuMemoryArena ebo;
 
   glm::vec2 cursor_pos = glm::vec2(0.0);
 
@@ -40,13 +40,13 @@ struct RayPickingRunner final : GlfwRunner {
   glm::vec4 eyeSpace;
   glm::vec4 worldSpace;
 
-  const resource_t *vert, *frag;
+  const file_t *vert, *frag;
 
   RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) { cam_pos.z(1.0); }
 
-  void doInitResources() override {
-    vert = fileManager.registerFile("ray_picking.vert", ResourceType::Text);
-    frag = fileManager.registerFile("ray_picking.frag", ResourceType::Text);
+  void doInitFiles() override {
+    vert = fileManager.registerFile("ray_picking.vert", FileType::Text);
+    frag = fileManager.registerFile("ray_picking.frag", FileType::Text);
   }
 
   bool doInit() override {
@@ -63,12 +63,12 @@ struct RayPickingRunner final : GlfwRunner {
 
     GLuint ids[2];
     glGenBuffers(2, ids);
-    vbo.id = ids[0];
-    ebo.id = ids[1];
+    vbo.vboId = ids[0];
+    ebo.vboId = ids[1];
 
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
@@ -162,8 +162,8 @@ struct RayPickingRunner final : GlfwRunner {
 
     // upload buffers
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
   }
@@ -175,8 +175,8 @@ struct RayPickingRunner final : GlfwRunner {
     const std::vector<GLuint*> locations = {&u_mvp};
 
     shader = createShaderProgram(sources, stages, uniforms, locations);
-    fileManager.release(vert);
-    fileManager.release(frag);
+    fileManager.releaseFile(vert);
+    fileManager.releaseFile(frag);
   }
 
   void doPreTick(const RunnerState& state) override {
@@ -225,8 +225,8 @@ struct RayPickingRunner final : GlfwRunner {
     glUseProgram(shader);
 
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
     glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &mvp[0][0]);
 

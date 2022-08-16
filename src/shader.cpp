@@ -1,32 +1,31 @@
-#include <cstdio>
 #include <glad/glad.h>
+#include <spdlog/spdlog.h>
 
+#include <cstdio>
 #include <uinta/logging.hpp>
 #include <uinta/macros.hpp>
 #include <uinta/shader.hpp>
 
-#include <spdlog/spdlog.h>
-
 namespace uinta {
 void checkCompileErrors(const GLuint shader, const GLenum type) {
   GLint success = 1;
-  GLchar info[KILOBYTES(1)];
-
   if (type == GL_LINK_STATUS) {
     glGetProgramiv(shader, GL_LINK_STATUS, &success);
-    if (!success)
+    if (!success) {
+      GLchar info[KILOBYTES(1)];
       glGetProgramInfoLog(shader, KILOBYTES(1), 0, info);
+    }
   } else {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
+    if (!success) {
+      GLchar info[KILOBYTES(1)];
       glGetShaderInfoLog(shader, KILOBYTES(1), 0, info);
+    }
   }
-  if (!success)
-    SPDLOG_ERROR("{}", info);
 }
 
-GLuint createShaderProgram(const std::vector<std::string> &sources, const std::vector<GLenum> &stages,
-                           const std::vector<std::string> &uniformNames, const std::vector<GLuint *> &uniformLocations) {
+GLuint createShaderProgram(const std::vector<std::string>& sources, const std::vector<GLenum>& stages,
+                           const std::vector<std::string>& uniformNames, const std::vector<GLuint*>& uniformLocations) {
   GLuint id = glCreateProgram();
 
   if (sources.size() != stages.size()) {
@@ -36,8 +35,8 @@ GLuint createShaderProgram(const std::vector<std::string> &sources, const std::v
 
   for (auto i = 0; i < stages.size(); i++) {
     const GLuint stageId = glCreateShader(stages.at(i));
-    const GLchar *cstr   = sources.at(i).c_str();
-    const GLint length   = sources.at(i).size();
+    const GLchar* cstr = sources.at(i).c_str();
+    const GLint length = sources.at(i).size();
     glShaderSource(stageId, 1, &cstr, &length);
     glCompileShader(stageId);
     checkCompileErrors(id, stageId);
@@ -56,14 +55,13 @@ GLuint createShaderProgram(const std::vector<std::string> &sources, const std::v
 
   for (auto i = 0; i < uniformNames.size(); i++) {
     GLuint loc = glGetUniformLocation(id, uniformNames.at(i).c_str());
-    if (loc == -1)
-      SPDLOG_ERROR("createShaderProgram - Uniform '{}' not found.", uniformNames.at(i));
+    if (loc == -1) SPDLOG_ERROR("createShaderProgram - Uniform '{}' not found.", uniformNames.at(i));
     *uniformLocations.at(i) = loc;
   }
 
   return id;
 }
 
-} // namespace uinta
+}  // namespace uinta
 
 void checkCompileErrors(const GLuint shader, const GLenum type) noexcept {}

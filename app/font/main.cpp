@@ -45,13 +45,13 @@ struct FontRunner final : GlfwRunner {
   GLuint ebo;
   GLuint shader;
 
-  const resource_t *vert, *frag;
+  const file_t *vert, *frag;
 
   FontRunner() : GlfwRunner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
-  void doInitResources() override {
-    vert = resources.registerResource("font.vert", ResourceType::Text);
-    frag = resources.registerResource("font.frag", ResourceType::Text);
+  void doInitFiles() override {
+    vert = fileManager.registerFile("font.vert", FileType::Text);
+    frag = fileManager.registerFile("font.frag", FileType::Text);
   }
 
   bool doInit() override {
@@ -105,7 +105,7 @@ struct FontRunner final : GlfwRunner {
   }
 
   void initShader() {
-    const std::vector<std::string> sources({resources.getDataChars(vert), resources.getDataChars(frag)});
+    const std::vector<std::string> sources({fileManager.getDataChars(vert), fileManager.getDataChars(frag)});
     const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
     shader = createShaderProgram(sources, stages);
 
@@ -113,6 +113,7 @@ struct FontRunner final : GlfwRunner {
   }
 
   void initFont() {
+    // TODO this should use the fileManager binary loader
     auto type = font::DejaVuSans;
     font = font::initFont(type, 256, 256);
     unsigned char data[getFileSize(getFontPath(type))];
