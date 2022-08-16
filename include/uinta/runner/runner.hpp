@@ -7,7 +7,7 @@
 #include <string>
 
 #include "./runner_state.hpp"
-#include "uinta/resource.hpp"
+#include "uinta/io.hpp"
 
 namespace uinta {
 
@@ -15,16 +15,14 @@ const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
 struct Runner {
   Display display;
+  FileManager fileManager;
   RunnerState state;
   logger_t logger;
-
-  FileManager fileManager = FileManager(MEGABYTES(1));
-  ModelManager modelManager = ModelManager(MEGABYTES(10));
 
   Runner(const std::string& title, unsigned int width, unsigned int height) noexcept;
 
   bool init();
-  bool initResources();
+  bool initIO();
   int run();
   void tick(float dt);
   void render();
@@ -45,7 +43,7 @@ struct Runner {
   virtual bool internalInit() = 0;
 
   virtual bool doInit() { return true; }
-  virtual void doInitResources() {}
+  virtual void doInitFiles() {}
 
   virtual void internalPreTick() {}
   virtual void doPreTick(const RunnerState& state) {}

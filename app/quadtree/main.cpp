@@ -27,19 +27,20 @@ struct QuadtreeRunner final : GlfwRunner {
 
   GLuint u_color = 0u;
 
-  GpuMemoryRegion vbo;
-  GpuMemoryRegion ebo;
+  GpuMemoryArena vbo;
+  GpuMemoryArena ebo;
 
-  const resource_t *vert, *frag;
+  const file_t* vert;
+  const file_t* frag;
 
   QuadtreeRunner() : GlfwRunner("hello quadtree", 1088, 1088) {
     squareWidth = (float)squareSize / display.width;
     squareHeight = (float)squareSize / display.height;
   }
 
-  void doInitResources() override {
-    vert = fileManager.registerFile("quadtree.vert", ResourceType::Text);
-    frag = fileManager.registerFile("quadtree.frag", ResourceType::Text);
+  void doInitFiles() override {
+    vert = fileManager.registerFile("quadtree.vert", FileType::Text);
+    frag = fileManager.registerFile("quadtree.frag", FileType::Text);
   }
 
   bool doInit() override {
@@ -53,12 +54,12 @@ struct QuadtreeRunner final : GlfwRunner {
     glGenVertexArrays(1, &vao);
     GLuint ids[2];
     glGenBuffers(2, ids);
-    vbo.id = ids[0];
-    ebo.id = ids[1];
+    vbo.vboId = ids[0];
+    ebo.vboId = ids[1];
     glBindVertexArray(vao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), 0, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), 0, GL_STATIC_DRAW);
@@ -73,6 +74,8 @@ struct QuadtreeRunner final : GlfwRunner {
     const std::vector<std::string> uniforms({"u_color"});
     const std::vector<GLuint*> locations = {&u_color};
     createShaderProgram(sources, stages, uniforms, locations);
+    fileManager.releaseFile(vert);
+    fileManager.releaseFile(frag);
   }
 
   void doRender() override {

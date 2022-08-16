@@ -12,17 +12,17 @@ struct Camera3dRunner final : GlfwRunner {
 
   GLuint shader;
   GLuint vao;
-  GpuMemoryRegion vbo;
-  GpuMemoryRegion ebo;
+  GpuMemoryArena vbo;
+  GpuMemoryArena ebo;
 
   const file_t *vert, *frag, *cube;
 
   Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) { model = glm::mat4(1.0); }
 
-  void doInitResources() override {
-    vert = fileManager.registerFile("camera3d.vert", ResourceType::Text);
-    frag = fileManager.registerFile("camera3d.frag", ResourceType::Text);
-    cube = fileManager.registerFile("model/cube.obj", ResourceType::Text);
+  void doInitFiles() override {
+    vert = fileManager.registerFile("camera3d.vert", FileType::Text);
+    frag = fileManager.registerFile("camera3d.frag", FileType::Text);
+    cube = fileManager.registerFile("model/cube.obj", FileType::Text);
   }
 
   bool doInit() override {
@@ -43,12 +43,12 @@ struct Camera3dRunner final : GlfwRunner {
 
     GLuint ids[2];
     glGenBuffers(2, ids);
-    vbo.id = ids[0];
-    ebo.id = ids[1];
+    vbo.vboId = ids[0];
+    ebo.vboId = ids[1];
 
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
     glBufferData(GL_ARRAY_BUFFER, vbo.count * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo.count * sizeof(GLuint), indices, GL_STATIC_DRAW);
@@ -93,13 +93,15 @@ struct Camera3dRunner final : GlfwRunner {
 
     vbo.count += local_vcount;
     ebo.count += local_icount;
+
+    fileManager.releaseFile(cube);
   }
 
   void initShader() {
     shader = createShaderProgram({fileManager.getDataChars(vert), fileManager.getDataChars(frag)},
                                  {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"u_mvp"}, {&u_mvp});
-    fileManager.release(vert);
-    fileManager.release(frag);
+    fileManager.releaseFile(vert);
+    fileManager.releaseFile(frag);
   }
 
   void doTick(const RunnerState& state) override { camera.tick(state); }
@@ -107,8 +109,8 @@ struct Camera3dRunner final : GlfwRunner {
   void doPreRender() override {
     glUseProgram(shader);
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
     updateViewMatrix(camera.view, camera.position, camera.pitch, camera.yaw);
     glm::mat4 proj_mat = glm::perspective(glm::radians(camera.config.fov), (float)display.width / (float)display.height,

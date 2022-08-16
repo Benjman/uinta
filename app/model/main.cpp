@@ -19,12 +19,12 @@ struct ModelRunner final : GlfwRunner {
 
   ModelRunner() : GlfwRunner("hello models", 1000, 1000) {}
 
-  const resource_t *vert, *frag, *model;
+  const file_t *vert, *frag, *model;
 
-  void doInitResources() override {
-    vert = fileManager.registerFile("model.vert", ResourceType::Text);
-    frag = fileManager.registerFile("model.frag", ResourceType::Text);
-    model = fileManager.registerFile("model/suzanne.obj", ResourceType::Text);
+  void doInitFiles() override {
+    vert = fileManager.registerFile("model.vert", FileType::Text);
+    frag = fileManager.registerFile("model.frag", FileType::Text);
+    model = fileManager.registerFile("model/suzanne.obj", FileType::Text);
   }
 
   bool doInit() override {
@@ -85,8 +85,8 @@ struct ModelRunner final : GlfwRunner {
     const std::vector<GLuint*> locations = {&u_model};
 
     shader = createShaderProgram(sources, stages, uniforms, locations);
-    fileManager.release(vert);
-    fileManager.release(frag);
+    fileManager.releaseFile(vert);
+    fileManager.releaseFile(frag);
   }
 
   void doRender() override {

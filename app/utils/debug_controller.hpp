@@ -19,8 +19,8 @@ struct DebugController final {
   GLuint shader;
 
   GLuint vao;
-  GpuMemoryRegion vbo;
-  GpuMemoryRegion ebo;
+  GpuMemoryArena vbo;
+  GpuMemoryArena ebo;
 
   GLfloat vbuf[KILOBYTES(15)];
   GLuint ibuf[KILOBYTES(15)];

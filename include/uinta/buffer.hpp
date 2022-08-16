@@ -1,27 +1,27 @@
 #ifndef UINTA_BUFFER_HPP
 #define UINTA_BUFFER_HPP
 
-#include <uinta/gl.h>
+#include <cstdint>
 
 namespace uinta {
 
-struct GpuMemoryRegion {
-  GLuint id;
+struct GpuMemoryArena {
+  uint32_t vboId;
   unsigned int count;
   unsigned int max;
   unsigned int offset;
 
-  GpuMemoryRegion() noexcept {
-    id = 0;
+  GpuMemoryArena() noexcept {
+    vboId = 0;
     count = 0;
     max = 0;
     offset = 0;
   }
 
-  GpuMemoryRegion(const GpuMemoryRegion& other) noexcept { *this = other; }
+  GpuMemoryArena(const GpuMemoryArena& other) noexcept { *this = other; }
 
-  GpuMemoryRegion& operator=(const GpuMemoryRegion& other) noexcept {
-    id = other.id;
+  GpuMemoryArena& operator=(const GpuMemoryArena& other) noexcept {
+    vboId = other.vboId;
     max = other.max;
     count = other.count;
     offset = other.offset;

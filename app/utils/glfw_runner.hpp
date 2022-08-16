@@ -9,7 +9,7 @@ namespace uinta {
 
 class Camera;
 
-struct GlfwRunner : Runner {
+struct GlfwRunner : public Runner {
   GLFWwindow* window;
 
   GlfwRunner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
@@ -17,7 +17,7 @@ struct GlfwRunner : Runner {
 
  protected:
   virtual bool doInit() override { return true; }
-  virtual void doInitResources() override {}
+  virtual void doInitFiles() override {}
 
   virtual void doPreTick(const RunnerState&) override {}
   virtual void doTick(const RunnerState&) override {}

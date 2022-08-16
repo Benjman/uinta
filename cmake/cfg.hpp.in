@@ -18,9 +18,11 @@
 #endif  // UINTA_RES_PATH_DELIM
 
 namespace uinta {
+
 const inline char* const LIB_PATH = UINTA_LIB_PATHS;
-const inline char* const RES_PATHS = UINTA_RES_PATHS;
-const inline char RES_PATHS_DELIM = UINTA_RES_PATHS_DELIM;
+const inline char* const UINTA_FILE_SEARCH_PATHS = UINTA_RES_PATHS;
+const inline char UINTA_FILE_SEARCH_PATHS_DELIM = UINTA_RES_PATHS_DELIM;
+
 }  // namespace uinta
 
 #endif  // UINTA_CFG_HPP
