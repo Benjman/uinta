@@ -8,7 +8,9 @@
 #include "./math/smooth_float.hpp"
 
 namespace uinta {
-void updateViewMatrix(glm::mat4& view, const glm::vec3& pos, const float pitch, const float yaw);
-}
+
+void genViewMatrix(glm::mat4& view, const glm::vec3& pos, const float pitch, const float yaw);
+
+}  // namespace uinta
 
 #endif  // UINTA_MATH_H

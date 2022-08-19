@@ -1,6 +1,7 @@
 #include <glm/ext.hpp>
 
 #include "../utils/utils.hpp"
+#include "uinta/math.hpp"
 
 namespace uinta {
 
@@ -112,10 +113,13 @@ struct Camera3dRunner final : GlfwRunner {
     glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
 
-    updateViewMatrix(camera.view, camera.position, camera.pitch, camera.yaw);
-    glm::mat4 proj_mat = glm::perspective(glm::radians(camera.config.fov), (float)display.width / (float)display.height,
-                                          camera.config.nearPlane, camera.config.farPlane);
-    glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(proj_mat * camera.view * model)[0][0]);
+    glm::mat4 view(1.0);
+    genViewMatrix(view, camera);
+
+    glm::mat4 projection(1.0);
+    genPerspectiveMatrix(projection, camera, display.aspectRatio);
+
+    glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(projection * view * model)[0][0]);
   }
 
   void doRender() override {
