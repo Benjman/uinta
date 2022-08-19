@@ -13,9 +13,16 @@
 namespace uinta {
 
 struct ModelRunner final : GlfwRunner {
+  Vao vao = Vao({
+      VertexAttribute(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0),
+      VertexAttribute(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))),
+  });
+  Vbo vbo = Vbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+
   unsigned int icount = 0, vcount = 0;
 
   GLuint shader, u_model;
+  const file_t *f_vert, *f_frag, *f_model;
 
   ModelRunner() : GlfwRunner("hello models", 1000, 1000) {}
 
@@ -28,16 +35,19 @@ struct ModelRunner final : GlfwRunner {
   }
 
   bool doInit() override {
-    unsigned int size = KILOBYTES(100);
-
-    GLfloat vbuf[size];
-    GLuint ibuf[size];
-
-    load_shaders();
-    initBuffers();
-    initObj(vbuf, size, ibuf, size);
     glEnable(GL_DEPTH_TEST);
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    GLfloat vbuf[KILOBYTES(100)];
+    GLuint ibuf[KILOBYTES(100)];
+    initObj(vbuf, ibuf);
+
+    initVao(vao);
+    initVbo(vbo);
+    upload(vbo, vbuf, vcount * sizeof(GLfloat));
+    indexBuffer(vao, ibuf, icount * sizeof(GLuint));
+
+    load_shaders();
 
     return true;
   }
@@ -79,14 +89,14 @@ struct ModelRunner final : GlfwRunner {
   }
 
   void load_shaders() {
-    const std::vector<std::string> sources({fileManager.getDataChars(vert), fileManager.getDataChars(frag)});
+    const std::vector<std::string> sources({fileManager.getDataChars(f_vert), fileManager.getDataChars(f_frag)});
     const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
     const std::vector<std::string> uniforms({"u_model"});
     const std::vector<GLuint*> locations = {&u_model};
 
     shader = createShaderProgram(sources, stages, uniforms, locations);
-    fileManager.releaseFile(vert);
-    fileManager.releaseFile(frag);
+    fileManager.releaseFile(f_vert);
+    fileManager.releaseFile(f_frag);
   }
 
   void doRender() override {

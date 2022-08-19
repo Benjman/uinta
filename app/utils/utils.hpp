@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
+#include <uinta/buffer.hpp>
 #include <uinta/camera.hpp>
 #include <uinta/cfg.hpp>
 #include <uinta/io.hpp>
@@ -15,7 +16,7 @@
 #include <uinta/model.hpp>
 #include <uinta/shader.hpp>
 
-#include "./debug_controller.hpp"
+// #include "./debug_controller.hpp"
 #include "./glfw_runner.hpp"
 #include "./imgui_util.hpp"
 
