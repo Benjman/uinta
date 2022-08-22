@@ -84,14 +84,14 @@ TEST(ResourceManager_releaseFile, isBuffered_false) {
   ASSERT_FALSE(rm.isBuffered(handle));
 }
 
-TEST(ResourceManager_releaseFile, blockList_reset) {
+TEST(ResourceManager_releaseFile, links_reset) {
   FileManager rm(0);
   rm.init();
   auto* handle = rm.registerFile("test", FileType::Text);
-  rm.blockList.at(rm.getId(handle)) = MemoryLink(nullptr, 1);
-  ASSERT_EQ(1, rm.blockList.at(rm.getId(handle)).size);
+  rm.links.at(rm.getId(handle)) = MemoryLink(nullptr, 1);
+  ASSERT_EQ(1, rm.links.at(rm.getId(handle)).size);
   rm.releaseFile(handle);
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle)).size);
 }
 
 TEST(ResourceManager_releaseFile, isActive_false) {
@@ -117,12 +117,12 @@ TEST(ResourceManager_registerFile, handlePath) {
   ASSERT_EQ("path", rm.handlePaths.at(rm.getId(handle)));
 }
 
-TEST(ResourceManager_registerFile, blockList) {
+TEST(ResourceManager_registerFile, links) {
   FileManager rm(0);
   rm.init();
   auto* handle = rm.registerFile("path", FileType::Text);
-  ASSERT_EQ(1, rm.blockList.size());
-  ASSERT_EQ(MemoryLink(), rm.blockList.at(rm.getId(handle)));
+  ASSERT_EQ(1, rm.links.size());
+  ASSERT_EQ(MemoryLink(), rm.links.at(rm.getId(handle)));
 }
 
 TEST(ResourceManager_registerFile, active) {
@@ -143,7 +143,7 @@ TEST(ResourceManager_getSize, happyPath) {
   FileManager rm(KILOBYTES(1));
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle)).size);
   rm.loadAll();
   ASSERT_EQ(77, rm.getSize(handle));
 }
@@ -152,7 +152,7 @@ TEST(ResourceManager_getSize, loadedButInactive) {
   FileManager rm(KILOBYTES(1));
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle)).size);
   rm.loadAll();
   ASSERT_EQ(77, rm.getSize(handle));
   rm.releaseFile(handle);
@@ -199,18 +199,18 @@ TEST(ResourceManager_loadAllFiles, spaceReserved) {
   FileManager rm(100);
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle)).ptr);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle)).ptr);
   rm.loadAll();
-  ASSERT_NE(nullptr, rm.blockList.at(rm.getId(handle)).ptr);
+  ASSERT_NE(nullptr, rm.links.at(rm.getId(handle)).ptr);
 }
 
 TEST(ResourceManager_loadAllFiles, loadsData) {
   FileManager rm(100);
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle)).ptr);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle)).ptr);
   rm.loadAll();
-  ASSERT_NE(nullptr, rm.blockList.at(rm.getId(handle)).ptr);
+  ASSERT_NE(nullptr, rm.links.at(rm.getId(handle)).ptr);
   std::string data = rm.getDataChars(handle);
   ASSERT_TRUE(data.starts_with("File 1"));
 }
@@ -220,10 +220,10 @@ TEST(ResourceManager_reserveSpace, blockResets) {
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
   rm.setIsActive(handle, false);
-  rm.blockList.at(rm.getId(handle)) = MemoryLink(nullptr, 1);
-  ASSERT_EQ(1, rm.blockList.at(rm.getId(handle)).size);
+  rm.links.at(rm.getId(handle)) = MemoryLink(nullptr, 1);
+  ASSERT_EQ(1, rm.links.at(rm.getId(handle)).size);
   rm.reserveSpace(handle);
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle)).size);
 }
 
 TEST(ResourceManager_reserveSpace, reserveMoreThanAvailable) {
@@ -231,19 +231,19 @@ TEST(ResourceManager_reserveSpace, reserveMoreThanAvailable) {
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
   rm.loadAll();
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle)).size);
 }
 
 TEST(ResourceManager_reserveSpace, firstItem) {
   FileManager rm(100);
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle)).size);
   rm.loadAll();
-  ASSERT_EQ(77, rm.blockList.at(rm.getId(handle)).size);
-  ASSERT_EQ(rm.storage, rm.blockList.at(rm.getId(handle)).ptr);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle)).back);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle)).forward);
+  ASSERT_EQ(77, rm.links.at(rm.getId(handle)).size);
+  ASSERT_EQ(rm.storage, rm.links.at(rm.getId(handle)).ptr);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle)).back);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle)).forward);
 }
 
 TEST(ResourceManager_reserveSpace, secondItem) {
@@ -252,10 +252,10 @@ TEST(ResourceManager_reserveSpace, secondItem) {
   auto* handle1 = rm.registerFile("res_man1.txt", FileType::Text);
   auto* handle2 = rm.registerFile("res_man2.txt", FileType::Text);
   rm.loadAll();
-  auto handle1Size = rm.blockList.at(rm.getId(handle1)).size;
-  ASSERT_EQ((char*)rm.storage + handle1Size + 1, rm.blockList.at(rm.getId(handle2)).ptr);
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle1)), rm.blockList.at(rm.getId(handle2)).back);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle2)).forward);
+  auto handle1Size = rm.links.at(rm.getId(handle1)).size;
+  ASSERT_EQ((char*)rm.storage + handle1Size + 1, rm.links.at(rm.getId(handle2)).ptr);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle1)), rm.links.at(rm.getId(handle2)).back);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle2)).forward);
 }
 
 TEST(ResourceManager_reserveSpace, thirdItem) {
@@ -265,16 +265,16 @@ TEST(ResourceManager_reserveSpace, thirdItem) {
   auto* handle2 = rm.registerFile("res_man2.txt", FileType::Text);
   auto* handle3 = rm.registerFile("res_man3.txt", FileType::Text);
   rm.loadAll();
-  auto handle1Size = rm.blockList.at(rm.getId(handle1)).size;
-  auto handle2Size = rm.blockList.at(rm.getId(handle1)).size;
+  auto handle1Size = rm.links.at(rm.getId(handle1)).size;
+  auto handle2Size = rm.links.at(rm.getId(handle1)).size;
 
-  ASSERT_EQ((char*)rm.storage + handle1Size + handle2Size + 2, rm.blockList.at(rm.getId(handle3)).ptr);
+  ASSERT_EQ((char*)rm.storage + handle1Size + handle2Size + 2, rm.links.at(rm.getId(handle3)).ptr);
 
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle1)), rm.blockList.at(rm.getId(handle2)).back);
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle3)), rm.blockList.at(rm.getId(handle2)).forward);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle1)), rm.links.at(rm.getId(handle2)).back);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle3)), rm.links.at(rm.getId(handle2)).forward);
 
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle2)), rm.blockList.at(rm.getId(handle3)).back);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle3)).forward);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle2)), rm.links.at(rm.getId(handle3)).back);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle3)).forward);
 }
 
 TEST(ResourceManager_reserveSpace, noSpaceLeft) {
@@ -283,9 +283,9 @@ TEST(ResourceManager_reserveSpace, noSpaceLeft) {
   auto* handle1 = rm.registerFile("res_man1.txt", FileType::Text);
   auto* handle2 = rm.registerFile("res_man2.txt", FileType::Text);
   rm.loadAll();
-  ASSERT_NE(nullptr, rm.blockList.at(rm.getId(handle1)).ptr);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle2)).ptr);
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle2)).size);
+  ASSERT_NE(nullptr, rm.links.at(rm.getId(handle1)).ptr);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle2)).ptr);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle2)).size);
 }
 
 TEST(ResourceManager_reserveSpace, orphaned_headspace) {
@@ -297,7 +297,7 @@ TEST(ResourceManager_reserveSpace, orphaned_headspace) {
   rm.releaseFile(handle1);
   auto* handle3 = rm.registerFile("res_man3.txt", FileType::Text);
   rm.loadAll();
-  ASSERT_EQ((char*)rm.storage, rm.blockList.at(rm.getId(handle3)).ptr);
+  ASSERT_EQ((char*)rm.storage, rm.links.at(rm.getId(handle3)).ptr);
 }
 
 TEST(ResourceManager_reserveSpace, orphaned_middle) {
@@ -310,8 +310,8 @@ TEST(ResourceManager_reserveSpace, orphaned_middle) {
   rm.releaseFile(handle2);
   auto* handle4 = rm.registerFile("res_man4.txt", FileType::Text);
   rm.loadAll();
-  auto& block1 = rm.blockList.at(rm.getId(handle1));
-  ASSERT_EQ((char*)block1.ptr + block1.size + 1, rm.blockList.at(rm.getId(handle4)).ptr);
+  auto& block1 = rm.links.at(rm.getId(handle1));
+  ASSERT_EQ((char*)block1.ptr + block1.size + 1, rm.links.at(rm.getId(handle4)).ptr);
 }
 
 TEST(ResourceManager_reserveSpace, orphaned_tail) {
@@ -323,8 +323,8 @@ TEST(ResourceManager_reserveSpace, orphaned_tail) {
   rm.releaseFile(handle2);
   auto* handle3 = rm.registerFile("res_man3.txt", FileType::Text);
   rm.loadAll();
-  auto& block1 = rm.blockList.at(rm.getId(handle1));
-  ASSERT_EQ((char*)block1.ptr + block1.size + 1, rm.blockList.at(rm.getId(handle3)).ptr);
+  auto& block1 = rm.links.at(rm.getId(handle1));
+  ASSERT_EQ((char*)block1.ptr + block1.size + 1, rm.links.at(rm.getId(handle3)).ptr);
 }
 
 TEST(ResourceManager_releaseFile, resetsBlock) {
@@ -332,9 +332,9 @@ TEST(ResourceManager_releaseFile, resetsBlock) {
   rm.init();
   auto* handle = rm.registerFile("res_man1.txt", FileType::Text);
   rm.loadAll();
-  ASSERT_EQ(77, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(77, rm.links.at(rm.getId(handle)).size);
   rm.releaseFile(handle);
-  ASSERT_EQ(0, rm.blockList.at(rm.getId(handle)).size);
+  ASSERT_EQ(0, rm.links.at(rm.getId(handle)).size);
 }
 
 TEST(ResourceManager_releaseFile, releaseFile_head) {
@@ -344,9 +344,9 @@ TEST(ResourceManager_releaseFile, releaseFile_head) {
   auto* handle2 = rm.registerFile("res_man2.txt", FileType::Text);
   auto* handle3 = rm.registerFile("res_man3.txt", FileType::Text);
   rm.loadAll();
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle1)), rm.blockList.at(rm.getId(handle2)).back);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle1)), rm.links.at(rm.getId(handle2)).back);
   rm.releaseFile(handle1);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle2)).back);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle2)).back);
 }
 
 TEST(ResourceManager_releaseFile, releaseFile_middle) {
@@ -356,11 +356,11 @@ TEST(ResourceManager_releaseFile, releaseFile_middle) {
   auto* handle2 = rm.registerFile("res_man2.txt", FileType::Text);
   auto* handle3 = rm.registerFile("res_man3.txt", FileType::Text);
   rm.loadAll();
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle2)), rm.blockList.at(rm.getId(handle1)).forward);
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle2)), rm.blockList.at(rm.getId(handle3)).back);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle2)), rm.links.at(rm.getId(handle1)).forward);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle2)), rm.links.at(rm.getId(handle3)).back);
   rm.releaseFile(handle2);
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle3)), rm.blockList.at(rm.getId(handle1)).forward);
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle1)), rm.blockList.at(rm.getId(handle3)).back);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle3)), rm.links.at(rm.getId(handle1)).forward);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle1)), rm.links.at(rm.getId(handle3)).back);
 }
 
 TEST(ResourceManager_releaseFile, releaseFile_tail) {
@@ -370,7 +370,7 @@ TEST(ResourceManager_releaseFile, releaseFile_tail) {
   auto* handle2 = rm.registerFile("res_man2.txt", FileType::Text);
   auto* handle3 = rm.registerFile("res_man3.txt", FileType::Text);
   rm.loadAll();
-  ASSERT_EQ(&rm.blockList.at(rm.getId(handle3)), rm.blockList.at(rm.getId(handle2)).forward);
+  ASSERT_EQ(&rm.links.at(rm.getId(handle3)), rm.links.at(rm.getId(handle2)).forward);
   rm.releaseFile(handle3);
-  ASSERT_EQ(nullptr, rm.blockList.at(rm.getId(handle2)).forward);
+  ASSERT_EQ(nullptr, rm.links.at(rm.getId(handle2)).forward);
 }

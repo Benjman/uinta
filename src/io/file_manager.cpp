@@ -30,12 +30,14 @@ FileManager::~FileManager() {
   storageSize = 0;
 }
 
-void FileManager::init(const std::string searchPaths, const char delim) { parseFileSearchPaths(searchPaths, delim, fileSearchPaths); }
+void FileManager::init(const std::string searchPaths, const char delim) {
+  parseFileSearchPaths(searchPaths, delim, fileSearchPaths);
+}
 
 const file_t* const FileManager::registerFile(const std::string& relativePath, const FileType type) {
-  file_t* handle = handles.emplace_back(new file_t(handles.size()));
+  auto* handle = handles.emplace_back(new file_t(handles.size()));
   handlePaths.emplace_back(relativePath);
-  blockList.emplace_back(MemoryLink());
+  links.emplace_back(MemoryLink());
 
   releaseFile(handle, true);
   setIsActive(handle, true);
@@ -50,10 +52,10 @@ void FileManager::releaseFile(const file_t* const handle, bool force) {
   setPath(handle, "");
   setIsBuffered(handle, false);
   setIsActive(handle, false);
-  MemoryLink& block = blockList.at(getId(handle));
-  if (block.back) block.back->forward = block.forward;
-  if (block.forward) block.forward->back = block.back;
-  block = MemoryLink();
+  auto& link = links.at(getId(handle));
+  if (link.back) link.back->forward = link.forward;
+  if (link.forward) link.forward->back = link.back;
+  link = MemoryLink();
 }
 
 const bool FileManager::isActive(const file_t* const handle) const {
@@ -65,7 +67,7 @@ const bool FileManager::isBuffered(const file_t* const handle) const {
   return isActive(handle) && *handle & UINTA_FILE_IS_BUFFERED_MASK;
 }
 
-const void* FileManager::getData(const file_t* const handle) const { return blockList.at(getId(handle)).ptr; }
+const void* FileManager::getData(const file_t* const handle) const { return links.at(getId(handle)).ptr; }
 
 const char* FileManager::getDataChars(const file_t* const handle) const { return (char*)getData(handle); }
 
@@ -73,7 +75,7 @@ const std::string& FileManager::getPath(const file_t* const handle) const { retu
 
 const file_size_t FileManager::getSize(const file_t* const handle) const {
   if (!isActive(handle)) return 0;
-  return blockList.at(getId(handle)).size;
+  return links.at(getId(handle)).size;
 }
 
 const FileType FileManager::getType(const file_t* const handle) const { return (FileType)(*handle & UINTA_FILE_TYPE_MASK); }
@@ -81,10 +83,10 @@ const FileType FileManager::getType(const file_t* const handle) const { return (
 const file_t FileManager::getId(const file_t* const handle) const { return *handle & UINTA_FILE_ID_MASK; }
 
 void FileManager::reserveSpace(const file_t* const handle) {
-  auto& block = blockList.at(getId(handle)) = MemoryLink();
+  auto& link = links.at(getId(handle)) = MemoryLink();
   if (!isActive(handle)) return;
 
-  bool hasSpace = true;
+  auto hasSpace = true;
   auto size = std::filesystem::file_size(getPath(handle));
 
   if (storageSize < size) {
@@ -92,51 +94,51 @@ void FileManager::reserveSpace(const file_t* const handle) {
     return;
   }
 
-  // It's possible that the head of the buffer has been released, so let's try to use it:
-  MemoryLink* frb = nullptr;  // first reserved block
-  for (int i = 0; i < blockList.size(); i++) {
+  // it's possible that the head of the buffer has been released; let's try to use it:
+  MemoryLink* frl = nullptr;  // first reserved link
+  for (int i = 0; i < links.size(); i++) {
     if (!isBuffered(handles.at(i))) continue;
-    auto& block = blockList.at(i);
-    if (frb == nullptr || frb->ptr > block.ptr) {
-      frb = &block;
+    auto& link = links.at(i);
+    if (!frl || frl->ptr > link.ptr) {
+      frl = &link;
     }
   }
-  if (frb != nullptr) {
-    file_size_t headSpace = (char*)frb->ptr - (char*)storage;
-    if (headSpace >= size + 1) {
-      frb->back = &block;
-      block.forward = frb;
-      block.ptr = storage;
-      block.size = size;
+  if (frl != nullptr) {
+    auto headSpace = (char*)frl->ptr - (char*)storage;
+    if (headSpace > size) {
+      frl->back = &link;
+      link.forward = frl;
+      link.ptr = storage;
+      link.size = size;
       return;
     }
   }
 
-  // Find storage between neighbors:
-  for (auto& b : blockList) {
-    if (!b.ptr) continue;                                                      // block isn't actively in storage
-    if (b.forward) {                                                           // check for orphaned space
-      if ((char*)b.forward->ptr - (char*)b.ptr - b.size - 1 < size) continue;  // not enough space, move on
-    } else {                                                                   // handle tail of the buffer
-      if ((char*)storage + storageSize - (char*)b.ptr - b.size - 1 < size) {
+  // find storage between neighbors:
+  for (auto& neighbor : links) {
+    if (!neighbor.ptr) continue;  // link isn't actively in storage
+    if (neighbor.forward) {       // check for orphaned space
+      if ((char*)neighbor.forward->ptr - (char*)neighbor.ptr - neighbor.size - 1 < size) continue;  // not enough space, move on
+    } else {                                                                                        // handle tail of the buffer
+      if ((char*)storage + storageSize - (char*)neighbor.ptr - neighbor.size - 1 < size) {          // no space at tail
         SPDLOG_WARN("Insufficient space when attempting to allocate memory for file '{}'!", getPath(handle));
         hasSpace = false;
         continue;  // not enough space at tail
       }
     }
-    block.ptr = (char*)b.ptr + b.size + 1;
-    block.size = size;
-    block.back = &b;
-    block.forward = b.forward;
-    if (block.forward) block.forward->back = &block;
-    b.forward = &block;
+    link.ptr = (char*)neighbor.ptr + neighbor.size + 1;
+    link.size = size;
+    link.back = &neighbor;
+    link.forward = neighbor.forward;
+    if (link.forward) link.forward->back = &link;
+    neighbor.forward = &link;
     return;
   }
 
   if (hasSpace) {
-    // We're the first element in storage:
-    block.ptr = storage;
-    block.size = size;
+    // we're the first element in storage:
+    link.ptr = storage;
+    link.size = size;
   }
 }
 
@@ -150,13 +152,13 @@ void FileManager::loadHandle(const file_t* const handle) {
   if (!isActive(handle) || isBuffered(handle)) return;
   auto absPath = findPath(getPath(handle), fileSearchPaths);
   if (absPath.empty()) {
-    SPDLOG_ERROR("Failed to find file '{}'.", getPath(handle));
+    SPDLOG_ERROR("Failed to find file '{}'!", getPath(handle));
     releaseFile(handle);
     return;
   }
   setPath(handle, absPath);
   reserveSpace(handle);
-  if (blockList.at(getId(handle)).ptr) loadHandleData(handle);
+  if (links.at(getId(handle)).ptr) loadHandleData(handle);
 }
 
 void FileManager::loadHandleData(const file_t* const handle) {
@@ -188,8 +190,8 @@ void FileManager::loadFileText(const file_t* const handle) {
     SPDLOG_ERROR("Failed to open file at '{}'", getPath(handle));
     return;
   }
-  auto& block = blockList.at(getId(handle));
-  stream.read(static_cast<char*>(block.ptr), block.size);
+  auto& link = links.at(getId(handle));
+  stream.read(static_cast<char*>(link.ptr), link.size);
   stream.close();
 }
 

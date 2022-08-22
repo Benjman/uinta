@@ -39,7 +39,7 @@ class FileManager {
   std::vector<std::string> fileSearchPaths;
 
   std::vector<file_t*> handles;
-  std::vector<MemoryLink> blockList;
+  std::vector<MemoryLink> links;
   std::vector<std::string> handlePaths;
 
   size_t storageSize;
@@ -50,7 +50,6 @@ class FileManager {
   void reserveSpace(const file_t* const handle);
 
   void loadHandleData(const file_t* const handle);
-
   void loadFileBinary(const file_t* const handle);
   void loadFileText(const file_t* const handle);
 
