@@ -1,3 +1,3 @@
-#include "./runner/display.hpp"
-#include "./runner/runner.hpp"
-#include "./runner/runner_state.hpp"
+#include <uinta/runner/display.hpp>
+#include <uinta/runner/runner.hpp>
+#include <uinta/runner/runner_state.hpp>

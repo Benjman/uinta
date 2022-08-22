@@ -7,13 +7,13 @@ namespace uinta {
 
 struct Display {
   std::string title;
-  unsigned int width;
-  unsigned int height;
+  uint32_t width;
+  uint32_t height;
   float aspectRatio;
 
   Display() : Display("", 0, 0) {}
 
-  Display(const std::string& title, const unsigned int width, const unsigned int height) noexcept;
+  Display(const std::string& title, const uint32_t width, const uint32_t height) noexcept;
 };
 
 }  // namespace uinta

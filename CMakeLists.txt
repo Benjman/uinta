@@ -22,9 +22,9 @@ set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
 set(UINTA_SRCS ${UINTA_SRCS} 
 
   ./src/camera.cpp
+  ./src/file_manager.cpp
   ./src/font.cpp
   ./src/input.cpp
-  ./src/io.cpp
   ./src/math.cpp
   ./src/memory/memory_link.cpp
   ./src/mesh.cpp
@@ -64,7 +64,7 @@ target_link_libraries(uinta PUBLIC ${UINTA_LIBS})
 set(UINTA_RES_PATHS ${CMAKE_CURRENT_LIST_DIR}/res)
 add_subdirectory(app)
 
-# testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true ..`
+# testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true`
 if (UINTA_TEST)
   message(STATUS "Including tests")
 

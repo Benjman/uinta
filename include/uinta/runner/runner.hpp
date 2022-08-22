@@ -1,31 +1,35 @@
-#ifndef UINTA_APP_RUNNER_HPP
-#define UINTA_APP_RUNNER_HPP
+#ifndef UINTA_RUNNER_RUNNER_HPP
+#define UINTA_RUNNER_RUNNER_HPP
 
-#include <GL/gl.h>
+#include <uinta/gl.h>
 
 #include <glm/vec3.hpp>
 #include <string>
-
-#include "./runner_state.hpp"
-#include "uinta/io.hpp"
+#include <uinta/io.hpp>
+#include <uinta/logging.hpp>
+#include <uinta/runner/display.hpp>
+#include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
 
-const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
+inline const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
-struct Runner {
+class Runner {
+ public:
   Display display;
   FileManager fileManager;
   RunnerState state;
-  logger_t logger;
 
-  Runner(const std::string& title, unsigned int width, unsigned int height) noexcept;
+  Runner(const std::string& title, uint32_t width, uint32_t height) noexcept;
+
+  ~Runner();
+
+  int run();
 
   bool init();
-  bool initIO();
-  int run();
   void tick(float dt);
   void render();
+  void clearBuffer();
   void shutdown();
 
   bool shouldRenderFrame();
@@ -40,39 +44,42 @@ struct Runner {
   void handleWindowSizeChanged(const int width, const int height);
 
  protected:
-  virtual bool internalInit() = 0;
+  GLbitfield clearMask = GL_COLOR_BUFFER_BIT;
+  glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
 
-  virtual bool doInit() { return true; }
-  virtual void doInitFiles() {}
-
-  virtual void internalPreTick() {}
-  virtual void doPreTick(const RunnerState& state) {}
-  virtual void internalTick() {}
-  virtual void doTick(const RunnerState& state) {}
-  virtual void internalPostTick() {}
-  virtual void doPostTick(const RunnerState& state) {}
-
-  virtual void internalPreRender() {}
-  virtual void doPreRender() {}
-  virtual void internalRender() {}
-  virtual void doRender() {}
-  virtual void internalPostRender() {}
-  virtual void doPostRender() {}
-  virtual void swapBuffers() = 0;
-
-  virtual void internalShutdown() = 0;
-  virtual void doShutdown() {}
-
-  virtual void doHandleWindowSizeChanged(const int width, const int height) {}
   virtual bool shouldExit() = 0;
   virtual double getRuntime() = 0;
   virtual void pollInput() = 0;
+  virtual void swapBuffers() = 0;
 
- private:
-  GLbitfield clear_mask = GL_COLOR_BUFFER_BIT;
-  glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
+  // clang-format off
+  virtual bool doInit() { return true; }
+
+  virtual void internalPreTick() {}
+  virtual void internalTick() {}
+  virtual void internalPostTick() {}
+
+  virtual void internalPreRender() {}
+  virtual void internalRender() {}
+  virtual void internalPostRender() {}
+
+  virtual void doPreTick(const RunnerState& state) {}
+  virtual void doTick(const RunnerState& state) {}
+  virtual void doPostTick(const RunnerState& state) {}
+
+  virtual void doPreRender(const RunnerState& state) {}
+  virtual void doRender(const RunnerState& state) {}
+  virtual void doPostRender(const RunnerState& state) {}
+
+  virtual void doShutdown() {}
+
+  virtual void doHandleWindowSizeChanged(const int width, const int height) {}
+
+  virtual bool internalInit() { return true; }
+  virtual void internalShutdown() {}
+  // clang-format on
 };
 
 }  // namespace uinta
 
-#endif  // UINTA_APP_RUNNER_HPP
+#endif  // UINTA_RUNNER_RUNNER_HPP

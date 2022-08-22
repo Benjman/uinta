@@ -4,8 +4,6 @@
 
 #include "debug_controller.hpp"
 
-#include <spdlog/spdlog.h>
-
 #include <chrono>
 #include <cmath>
 #include <cstring>

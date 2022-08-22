@@ -4,17 +4,12 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-
-#include "uinta/camera/static_camera.hpp"
-#include "uinta/input.hpp"
-#include "uinta/math.hpp"
-#include "uinta/runner.hpp"
+#include <uinta/camera/basic_camera.hpp>
+#include <uinta/input.hpp>
+#include <uinta/math.hpp>
+#include <uinta/runner.hpp>
 
 namespace uinta {
-
-const inline glm::vec3 WORLD_UP = glm::vec3(0.0, 0.0, 1.0);
-const inline glm::vec3 WORLD_RIGHT = glm::vec3(1.0, 0.0, 0.0);
-const inline glm::vec3 WORLD_FORWARD = glm::vec3(0.0, 1.0, 0.0);
 
 struct CameraConfig {
   float fov = 40.0;

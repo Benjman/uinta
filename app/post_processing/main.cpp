@@ -1,127 +1,230 @@
-// clang-format off
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-// clang-format on
-
-#include <cstdlib>
-#include <cstring>
-#include <glm/gtc/matrix_transform.hpp>
-#include <unordered_map>
+#include <stb/stb_image.h>
+#include <uinta/gl.h>
 
 #include "../utils/utils.hpp"
+#include "./PostProcessingCamera.hpp"
+#include "./PostProcessingShaders.hpp"
 
 namespace uinta {
 
-struct PostProcessingRunner final : GlfwRunner {
-  uint32_t indexCount = 0;
+class PostProcessingRunner final : public GlfwRunner {
+  PostProcessingCamera camera;
+  PostProcessingShaders shaders;
 
-  GLuint shader, u_mvp, u_near, u_far;
-  glm::mat4 model;
-  glm::mat4 view;
-  glm::mat4 projection;
+  GLuint cubeTexture;
+  GLuint cubeVao;
+  GLuint cubeVbo;
 
-  StaticCamera camera;
-  float nearPlane = 0.1;
-  float farPlane = 15.0;
+  GLuint colorBufferTexture;
+  GLuint fbo;
+  GLuint quadVao;
+  GLuint quadVbo;
+  GLuint rbo;
 
-  PostProcessingRunner() : GlfwRunner("hello fbo", 1000, 1000) {
-    camera.position = glm::vec3(0, 0, 5);
-    camera.pitch = 0.0;
-  }
-
-  const file_t *vert_file, *frag_file, *cube_file;
-
-  void doInitFiles() override {
-    vert_file = fileManager.registerFile("post_processing.vert", FileType::Text);
-    frag_file = fileManager.registerFile("post_processing.frag", FileType::Text);
-    cube_file = fileManager.registerFile(getObjPath(Model_Cube), FileType::Text);
+ public:
+  PostProcessingRunner() : GlfwRunner("Hello Post Processing", 1280, 720) {
   }
 
   bool doInit() override {
-    setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // shader
+    const file_t* const cubeTextureFile = fileManager.registerFile("textures/container.jpg", FileType::Text);
+    fileManager.loadAll();
 
-    initShaders();
-    initBuffers();
-    initObj();
-    initScene();
-    initView();
+    shaders.init(fileManager);
+    glUseProgram(shaders.scene);
+    glUniform1i(shaders.u_texture1, 0);
 
-    glEnable(GL_DEPTH_TEST);
+    cubeTexture = loadTexture(cubeTextureFile);
+
+    // clang-format off
+    // models
+    float cubeVertices[] = {
+        // positions          // texture Coords
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+    // clang-format on
+
+    // cube VAO
+    glGenVertexArrays(1, &cubeVao);
+    glGenBuffers(1, &cubeVbo);
+    glBindVertexArray(cubeVao);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    // framebuffer configuration
+    // -------------------------
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    // create a color attachment texture
+    glGenTextures(1, &colorBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, colorBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, display.width, display.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferTexture, 0);
+    // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, display.width,
+                          display.height);  // use a single renderbuffer object for both a depth AND stencil buffer.
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);  // now actually attach it
+    // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+      SPDLOG_ERROR("Framebuffer is not complete!");
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // screen quad
+    // clang-format off
+    float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+      // positions   // texCoords
+      -1.0f,  1.0f,  0.0f, 1.0f,
+      -1.0f, -1.0f,  0.0f, 0.0f,
+       1.0f, -1.0f,  1.0f, 0.0f,
+
+      -1.0f,  1.0f,  0.0f, 1.0f,
+       1.0f, -1.0f,  1.0f, 0.0f,
+       1.0f,  1.0f,  1.0f, 1.0f
+    };
+    // clang-format on
+
+    glGenVertexArrays(1, &quadVao);
+    glGenBuffers(1, &quadVbo);
+    glBindVertexArray(quadVao);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
     return true;
   }
 
-  void doPreTick(const RunnerState& state) override {
-    if (state.input.isKeyPressed(KEY_SPACE)) {
-      glDeleteProgram(shader);
-      initShaders();
+  void doTick(const RunnerState& state) override {
+    camera.tick(state);
+  }
+
+  void doPreRender(const RunnerState& state) override {
+    camera.updateView(state);
+  }
+
+  void doRender(const RunnerState& state) override {
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glEnable(GL_DEPTH_TEST);  // enable depth testing (is disabled for rendering screen-space quad)
+
+    glClearColor(0.3, 0.3, 0.3, 1.0);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+    glEnable(GL_DEPTH_TEST);
+    glUseProgram(shaders.scene);
+    glBindVertexArray(cubeVao);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, cubeTexture);
+
+    glm::mat4 view = camera.view;
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), display.aspectRatio, 0.1f, 100.0f);
+    glm::mat4 model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
+    glUniformMatrix4fv(shaders.u_mvp, 1, GL_FALSE, &(projection * view * model)[0][0]);
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // render FBO
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_DEPTH_TEST);  // disable depth test so screen-space quad isn't discarded due to depth test.
+    // clear all relevant buffers
+    // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(shaders.screen);
+    glBindVertexArray(quadVao);
+    glBindTexture(GL_TEXTURE_2D, colorBufferTexture);  // use the color attachment texture as the texture of the quad plane
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+  }
+
+  // TODO move this to some utility header
+  GLuint loadTexture(const file_t* const handle) {
+    int width, height, componentCount;
+    unsigned char* data = stbi_load(fileManager.getPath(handle).c_str(), &width, &height, &componentCount, 0);
+
+    if (!data) {
+      SPDLOG_ERROR("Texture failed to load at path '{}'", fileManager.getPath(handle));
+      return GL_ZERO;
     }
-  }
 
-  void initObj() {
-    uint32_t size = KILOBYTES(100);
-    uint32_t vertexCount = 0;
-    GLfloat vbuf[size];
-    GLuint ibuf[size];
+    GLuint id;
+    glGenTextures(1, &id);
 
-    const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
-        {MeshAttribType_Position, MeshAttrib(3, 0)},
-    };
+    GLenum format;
+    if (componentCount == 1)
+      format = GL_RED;
+    else if (componentCount == 3)
+      format = GL_RGB;
+    else if (componentCount == 4)
+      format = GL_RGBA;
 
-    loadObj(fileManager.getDataChars(cube_file), vbuf, &vertexCount, ibuf, &indexCount, &attribs);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(GLfloat), vbuf, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(GLuint), ibuf, GL_STATIC_DRAW);
-  }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  void initBuffers() {
-    GLuint vao, vbo, ebo;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
+    stbi_image_free(data);
 
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-    glEnableVertexAttribArray(0);
-  }
-
-  void initScene() {}
-
-  void initView() {
-    float fov = glm::radians(45.0);
-    projection = glm::perspective(fov, display.aspectRatio, nearPlane, farPlane);
-    genViewMatrix(view, camera.position, camera.pitch, camera.yaw);
-  }
-
-  void initShaders() {
-    const std::vector<std::string> sources({fileManager.getDataChars(vert_file), fileManager.getDataChars(frag_file)});
-    const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
-    const std::vector<std::string> uniforms({"u_mvp", "u_nearPlane", "u_farPlane"});
-    const std::vector<GLuint*> locations = {&u_mvp, &u_near, &u_far};
-
-    shader = createShaderProgram(sources, stages, uniforms, locations);
-    // fileManager.releaseFile(vert_file);
-    // fileManager.releaseFile(frag_file);
-
-    glUseProgram(shader);
-
-    glUniform1f(u_near, nearPlane);
-    glUniform1f(u_far, farPlane);
-  }
-
-  void doRender() override {
-    model = glm::mat4(1.0);
-    // model = glm::scale(model, glm::vec3(0.5));
-    model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-    glm::mat4 mvp = projection * view * model;
-    glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &mvp[0][0]);
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+    return id;
   }
 };
 
 }  // namespace uinta
 
-int main(const int argc, const char** argv) { return uinta::PostProcessingRunner().run(); }
+int main(const int argc, const char** argv) {
+  return uinta::PostProcessingRunner().run();
+}

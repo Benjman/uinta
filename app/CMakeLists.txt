@@ -1,5 +1,4 @@
 function (app name)
-  message(STATUS "Adding ${CMAKE_CURRENT_LIST_DIR}/${name}")
   add_executable(${name} ./${name}/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/debug_controller.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_input.cpp
@@ -8,19 +7,21 @@ function (app name)
     )
 
   if (IS_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${name}/res)
-    message(STATUS "Adding ${CMAKE_CURRENT_LIST_DIR}/${name}/res to \$\{UINTA_RES_PATHS\}")
     set(UINTA_RES_PATHS ${UINTA_RES_PATHS} ${CMAKE_CURRENT_LIST_DIR}/${name}/res PARENT_SCOPE)
+    message(STATUS "Added '${CMAKE_CURRENT_LIST_DIR}/${name}/res' to UINTA_RES_PATHS")
   endif()
 
-  target_link_libraries(${name} PRIVATE uinta)
   target_include_directories(${name} PRIVATE ${GL_INCLUDES})
+  target_link_libraries(${name} PRIVATE uinta)
+
+  message(STATUS "Added app '${name}'")
 endfunction()
 
-# app(camera3d)
+app(camera3d)
 # app(font)
-# app(model)
-# app(quadtree)
-# app(ray_picking)
+app(model)
+app(quadtree)
+app(ray_picking)
 app(post_processing)
 
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)

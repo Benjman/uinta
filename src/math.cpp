@@ -1,6 +1,5 @@
 #include <algorithm>  // std::min, std::clamp
 #include <glm/ext.hpp>
-#include <glm/glm.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <uinta/math.hpp>
 
@@ -9,8 +8,8 @@
 
 using namespace uinta;
 
-void uinta::genViewMatrix(glm::mat4& view, const glm::vec3& pos, const float pitch, const float yaw) {
-  glm::mat4 transform_x = glm::eulerAngleX(glm::radians(pitch));
-  glm::mat4 transform_y = glm::eulerAngleY(glm::radians(yaw));
+void uinta::genViewMatrix(glm::mat4& view, const glm::vec3& pos, const float pitchDeg, const float yawDeg) {
+  glm::mat4 transform_x = glm::eulerAngleX(glm::radians(pitchDeg));
+  glm::mat4 transform_y = glm::eulerAngleY(glm::radians(yawDeg));
   view = glm::translate(transform_x * transform_y, -pos);
 }

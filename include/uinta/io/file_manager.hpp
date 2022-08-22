@@ -2,12 +2,10 @@
 #define UINTA_IO_FILE_MANAGER_HPP
 
 #include <string>
+#include <uinta/cfg.hpp>
+#include <uinta/io/fwd.hpp>
+#include <uinta/memory/memory_link.hpp>
 #include <vector>
-
-#include "uinta/cfg.hpp"
-#include "uinta/io/fwd.hpp"
-#include "uinta/logging.hpp"
-#include "uinta/memory/memory_link.hpp"
 
 namespace uinta {
 
@@ -45,13 +43,15 @@ class FileManager {
   size_t storageSize;
   void* storage = nullptr;
 
-  const file_t getId(const file_t* const handle) const;
-
   void reserveSpace(const file_t* const handle);
+  void parseFileSearchPaths(const std::string& searchPaths, const char delim);
+  std::string findPath(const std::string& path);
 
   void loadHandleData(const file_t* const handle);
   void loadFileBinary(const file_t* const handle);
   void loadFileText(const file_t* const handle);
+
+  const file_t getId(const file_t* const handle) const;
 
   void setIsActive(const file_t* const handle, const bool isActive);
   void setIsBuffered(const file_t* const handle, const bool isLoaded);
