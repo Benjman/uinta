@@ -36,9 +36,7 @@ struct QuadtreeRunner final : GlfwRunner {
   QuadtreeRunner() : GlfwRunner("hello quadtree", 1088, 1088) {
     squareWidth = (float)squareSize / display.width;
     squareHeight = (float)squareSize / display.height;
-  }
 
-  void doInitFiles() override {
     vert = fileManager.registerFile("quadtree.vert", FileType::Text);
     frag = fileManager.registerFile("quadtree.frag", FileType::Text);
   }
@@ -78,7 +76,7 @@ struct QuadtreeRunner final : GlfwRunner {
     fileManager.releaseFile(frag);
   }
 
-  void doRender() override {
+  void doRender(const RunnerState& state) override {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -146,4 +144,6 @@ struct QuadtreeRunner final : GlfwRunner {
 
 }  // namespace uinta
 
-int main(const int argc, const char** argv) { return uinta::QuadtreeRunner().run(); }
+int main(const int argc, const char** argv) {
+  return uinta::QuadtreeRunner().run();
+}

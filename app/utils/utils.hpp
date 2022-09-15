@@ -1,10 +1,7 @@
 #ifndef UINTA_APP_UTILS_HPP
 #define UINTA_APP_UTILS_HPP
 
-// clang-format off
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-// clang-format on
+#include <uinta/gl.h>
 
 #include <uinta/buffer.hpp>
 #include <uinta/camera.hpp>

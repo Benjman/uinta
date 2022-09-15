@@ -1,14 +1,14 @@
 #ifndef UINTA_RUNNER_RUNNER_STATE_HPP
 #define UINTA_RUNNER_RUNNER_STATE_HPP
 
-#include "./display.hpp"
-#include "uinta/input.hpp"
+#include <uinta/input.hpp>
+#include <uinta/runner/display.hpp>
 
 namespace uinta {
 
 struct RunnerState final {
-  /// tick cycle iteration
-  unsigned int tick;
+  /// tick cycle
+  uint32_t tick;
 
   /// time in seconds since last tick cycle
   float delta;
@@ -23,8 +23,6 @@ struct RunnerState final {
     tick = 0;
     delta = 0.0;
     runtime = 0.0;
-    input = InputState();
-    display = Display();
   }
 };
 

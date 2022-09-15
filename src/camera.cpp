@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 #include <uinta/camera.hpp>
-
-#include "uinta/math.hpp"
+#include <uinta/math.hpp>
 
 using namespace uinta;
 

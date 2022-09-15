@@ -1,7 +1,8 @@
 #include <glm/ext.hpp>
+#include <uinta/math.hpp>
 
 #include "../utils/utils.hpp"
-#include "uinta/math.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace uinta {
 
@@ -18,9 +19,8 @@ struct Camera3dRunner final : GlfwRunner {
 
   const file_t *vert, *frag, *cube;
 
-  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) { model = glm::mat4(1.0); }
-
-  void doInitFiles() override {
+  Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {
+    model = glm::mat4(1.0);
     vert = fileManager.registerFile("camera3d.vert", FileType::Text);
     frag = fileManager.registerFile("camera3d.frag", FileType::Text);
     cube = fileManager.registerFile("model/cube.obj", FileType::Text);
@@ -63,14 +63,14 @@ struct Camera3dRunner final : GlfwRunner {
   }
 
   void initGround(GLfloat* const vertices, GLuint* const indices) {
-    unsigned int local_vcount = 0, local_icount = 0;
+    uint32_t local_vcount = 0, local_icount = 0, ioff = 0;
     const MeshAttrib pos_attrib(9, 0), norm_attrib(9, 3), color_attrib(9, 6);
     const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
         {MeshAttribType_Position, pos_attrib},
         {MeshAttribType_Normal, norm_attrib},
         {MeshAttribType_Color, color_attrib},
     };
-    loadObj(fileManager.getDataChars(cube), vertices, &local_vcount, indices, &local_icount, &attribs);
+    loadObj(fileManager.getDataChars(cube), vertices, &local_vcount, indices, &local_icount, &ioff, &attribs);
 
     const glm::vec3 top(0.051, 0.933, 0.996);
     const glm::vec3 sides = glm::vec3(0.025, 0.465, 0.465);
@@ -105,9 +105,11 @@ struct Camera3dRunner final : GlfwRunner {
     fileManager.releaseFile(frag);
   }
 
-  void doTick(const RunnerState& state) override { camera.tick(state); }
+  void doTick(const RunnerState& state) override {
+    camera.tick(state);
+  }
 
-  void doPreRender() override {
+  void doPreRender(const RunnerState& state) override {
     glUseProgram(shader);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
@@ -116,13 +118,15 @@ struct Camera3dRunner final : GlfwRunner {
     glm::mat4 view(1.0);
     genViewMatrix(view, camera);
 
-    glm::mat4 projection(1.0);
-    genPerspectiveMatrix(projection, camera, display.aspectRatio);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.config.fov), (float)display.width / (float)display.height,
+                                            camera.config.nearPlane, camera.config.farPlane);
 
     glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(projection * view * model)[0][0]);
+
+    clearBuffer();
   }
 
-  void doRender() override {
+  void doRender(const RunnerState& state) override {
     glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
     imgui::view::camera(camera);
   }
@@ -130,4 +134,6 @@ struct Camera3dRunner final : GlfwRunner {
 
 }  // namespace uinta
 
-int main(const int argc, const char** argv) { return uinta::Camera3dRunner().run(); }
+int main(const int argc, const char** argv) {
+  return uinta::Camera3dRunner().run();
+}

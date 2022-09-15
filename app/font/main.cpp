@@ -47,9 +47,7 @@ struct FontRunner final : GlfwRunner {
 
   const file_t *vert, *frag;
 
-  FontRunner() : GlfwRunner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {}
-
-  void doInitFiles() override {
+  FontRunner() : GlfwRunner("hello font", WINDOW_WIDTH, WINDOW_HEIGHT) {
     vert = fileManager.registerFile("font.vert", FileType::Text);
     frag = fileManager.registerFile("font.frag", FileType::Text);
   }
@@ -68,7 +66,9 @@ struct FontRunner final : GlfwRunner {
     return true;
   }
 
-  void doRender() override { glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0); }
+  void doRender(const RunnerState& state) override {
+    glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
+  }
 
   void initBuffers() {
     glGenVertexArrays(1, &vao);
@@ -124,4 +124,6 @@ struct FontRunner final : GlfwRunner {
 
 }  // namespace uinta
 
-int main(const int argc, const char** argv) { return uinta::FontRunner().run(); }
+int main(const int argc, const char** argv) {
+  return uinta::FontRunner().run();
+}

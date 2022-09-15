@@ -24,15 +24,13 @@ struct ModelRunner final : GlfwRunner {
   GLuint shader, u_model;
   const file_t *f_vert, *f_frag, *f_model;
 
-  ModelRunner() : GlfwRunner("hello models", 1000, 1000) {}
-
-  const file_t *vert, *frag, *model;
-
-  void doInitFiles() override {
+  ModelRunner() : GlfwRunner("hello models", 1000, 1000) {
     vert = fileManager.registerFile("model.vert", FileType::Text);
     frag = fileManager.registerFile("model.frag", FileType::Text);
     model = fileManager.registerFile("model/suzanne.obj", FileType::Text);
   }
+
+  const file_t *vert, *frag, *model;
 
   bool doInit() override {
     glEnable(GL_DEPTH_TEST);
@@ -61,12 +59,14 @@ struct ModelRunner final : GlfwRunner {
   }
 
   void initObj(GLfloat* const vbuf, const unsigned int vbufCount, GLuint* const ibuf, const unsigned int ibufCount) {
+    uint32_t ioff = 0;
+
     const std::unordered_map<MeshAttribType, MeshAttrib> attribs = {
         {MeshAttribType_Position, MeshAttrib(6, 0)},
         {MeshAttribType_Normal, MeshAttrib(6, 3)},
     };
 
-    loadObj(fileManager.getDataChars(model), vbuf, &vcount, ibuf, &icount, &attribs);
+    loadObj(fileManager.getDataChars(model), vbuf, &vcount, ibuf, &icount, &ioff, &attribs);
 
     glBufferData(GL_ARRAY_BUFFER, vbufCount * sizeof(GLfloat), vbuf, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufCount * sizeof(GLuint), ibuf, GL_STATIC_DRAW);
@@ -99,7 +99,8 @@ struct ModelRunner final : GlfwRunner {
     fileManager.releaseFile(f_frag);
   }
 
-  void doRender() override {
+  void doRender(const RunnerState& state) override {
+    clearBuffer();
     glm::mat4 model = glm::rotate(glm::mat4(1.0), (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
     glUniformMatrix4fv(u_model, 1, GL_FALSE, &model[0][0]);
     glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
@@ -108,4 +109,6 @@ struct ModelRunner final : GlfwRunner {
 
 }  // namespace uinta
 
-int main(const int argc, const char** argv) { return uinta::ModelRunner().run(); }
+int main(const int argc, const char** argv) {
+  return uinta::ModelRunner().run();
+}

@@ -2,14 +2,13 @@
 #define UINTA_MATH_H
 
 #include <glm/mat4x4.hpp>
-
-#include "./math/map.hpp"
-#include "./math/running_avg.hpp"
-#include "./math/smooth_float.hpp"
+#include <uinta/math/map.hpp>
+#include <uinta/math/running_avg.hpp>
+#include <uinta/math/smooth_float.hpp>
 
 namespace uinta {
 
-void genViewMatrix(glm::mat4& view, const glm::vec3& pos, const float pitch, const float yaw);
+void genViewMatrix(glm::mat4& view, const glm::vec3& pos, const float pitchDeg, const float yawDeg);
 
 }  // namespace uinta
 

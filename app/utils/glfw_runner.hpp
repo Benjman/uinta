@@ -1,15 +1,14 @@
 #ifndef UINTA_GLFW_RUNNER_HPP
 #define UINTA_GLFW_RUNNER_HPP
 
-#include <GLFW/glfw3.h>
-
 #include <uinta/runner.hpp>
 
 namespace uinta {
 
 class Camera;
 
-struct GlfwRunner : public Runner {
+class GlfwRunner : public Runner {
+ public:
   GLFWwindow* window;
 
   GlfwRunner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
@@ -17,23 +16,20 @@ struct GlfwRunner : public Runner {
 
  protected:
   virtual bool doInit() override { return true; }
-  virtual void doInitFiles() override {}
 
   virtual void doPreTick(const RunnerState&) override {}
   virtual void doTick(const RunnerState&) override {}
   virtual void doPostTick(const RunnerState&) override {}
 
-  virtual void doPreRender() override {}
-  virtual void doRender() override {}
-  virtual void doPostRender() override {}
+  virtual void doPreRender(const RunnerState& state) override {}
+  virtual void doRender(const RunnerState& state) override {}
+  virtual void doPostRender(const RunnerState& state) override {}
 
   virtual void doShutdown() override {}
 
-  bool internalInit() override;
+  virtual void doHandleWindowSizeChanged(const int width, const int height) override {}
 
-  void internalPreTick() override;
-  void internalTick() override;
-  void internalPostTick() override;
+  bool internalInit() override;
 
   void swapBuffers() override;
   void internalPreRender() override;

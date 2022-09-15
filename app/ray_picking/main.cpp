@@ -42,9 +42,9 @@ struct RayPickingRunner final : GlfwRunner {
 
   const file_t *vert, *frag;
 
-  RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) { cam_pos.z(1.0); }
+  RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) {
+    cam_pos.z(1.0);
 
-  void doInitFiles() override {
     vert = fileManager.registerFile("ray_picking.vert", FileType::Text);
     frag = fileManager.registerFile("ray_picking.frag", FileType::Text);
   }
@@ -211,17 +211,20 @@ struct RayPickingRunner final : GlfwRunner {
     zoom.tick(state.delta);
   }
 
-  void doPreRender() override {
+  void doPreRender(const RunnerState& state) override {
     m_proj = glm::ortho((double)-zoom.current, (double)zoom.current, (double)-zoom.current, (double)zoom.current, 0.0001, 1000.0);
-    updateViewMatrix(m_view, cam_pos, 0, 0);
+    genViewMatrix(m_view, cam_pos, 0, 0);
+    // updateViewMatrix(m_view, cam_pos, 0, 0);
 
     glm::mat4 model(1.0);
     mvp = m_proj * m_view * model;
 
     updateCursorVectors();
+
+    clearBuffer();
   }
 
-  void doRender() override {
+  void doRender(const RunnerState& state) override {
     glUseProgram(shader);
 
     glBindVertexArray(vao);
@@ -250,4 +253,6 @@ struct RayPickingRunner final : GlfwRunner {
 
 }  // namespace uinta
 
-int main(const int argc, const char** argv) { return uinta::RayPickingRunner().run(); }
+int main(const int argc, const char** argv) {
+  return uinta::RayPickingRunner().run();
+}
