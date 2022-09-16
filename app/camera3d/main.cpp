@@ -3,19 +3,25 @@
 
 #include "../utils/utils.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "uinta/buffer.hpp"
 
 namespace uinta {
 
 struct Camera3dRunner final : GlfwRunner {
   Camera camera;
 
+  Vao vao = Vao({
+      VertexAttrib(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0),
+      VertexAttrib(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))),
+      VertexAttrib(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat))),
+  });
+  Vbo vbo = Vbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+  uint32_t icount = 0, vcount = 0;
+
   GLuint u_mvp;
   glm::mat4 model;
 
   GLuint shader;
-  GLuint vao;
-  GpuMemoryArena vbo;
-  GpuMemoryArena ebo;
 
   const file_t *vert, *frag, *cube;
 
@@ -28,38 +34,20 @@ struct Camera3dRunner final : GlfwRunner {
 
   bool doInit() override {
     initShader();
+
     GLfloat vertices[KILOBYTES(1)];
     GLuint indices[KILOBYTES(1)];
     initGround(vertices, indices);
-    init_buffers(vertices, indices);
+
+    initVao(vao);
+    upload(vbo, vertices, vcount * sizeof(GLfloat));
+    initVertexAttribs(vao);
+    indexBuffer(vao, indices, icount * sizeof(GLuint));
 
     glEnable(GL_DEPTH_TEST);
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     return true;
-  }
-
-  void init_buffers(GLfloat* const vertices, GLuint* const indices) {
-    glGenVertexArrays(1, &vao);
-
-    GLuint ids[2];
-    glGenBuffers(2, ids);
-    vbo.vboId = ids[0];
-    ebo.vboId = ids[1];
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
-
-    glBufferData(GL_ARRAY_BUFFER, vbo.count * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo.count * sizeof(GLuint), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
   }
 
   void initGround(GLfloat* const vertices, GLuint* const indices) {
@@ -92,8 +80,8 @@ struct Camera3dRunner final : GlfwRunner {
       memcpy(&vertices[i + color_attrib.offset], &color[0], 3 * sizeof(GLfloat));
     }
 
-    vbo.count += local_vcount;
-    ebo.count += local_icount;
+    vcount += local_vcount;
+    icount += local_icount;
 
     fileManager.releaseFile(cube);
   }
@@ -111,9 +99,7 @@ struct Camera3dRunner final : GlfwRunner {
 
   void doPreRender(const RunnerState& state) override {
     glUseProgram(shader);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
+    bind(vao);
 
     glm::mat4 view(1.0);
     genViewMatrix(view, camera);
@@ -127,7 +113,7 @@ struct Camera3dRunner final : GlfwRunner {
   }
 
   void doRender(const RunnerState& state) override {
-    glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
     imgui::view::camera(camera);
   }
 };

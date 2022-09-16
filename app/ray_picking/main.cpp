@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../utils/utils.hpp"
+#include "uinta/buffer.hpp"
 
 using namespace uinta;
 
@@ -22,9 +23,12 @@ struct RayPickingRunner final : GlfwRunner {
   SmoothVec3 cam_pos = glm::vec3(0.0);
   SmoothFloat zoom = SmoothFloat(5.0, 10.0);
 
-  GLuint vao;
-  GpuMemoryArena vbo;
-  GpuMemoryArena ebo;
+  Vao vao = Vao({
+      VertexAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0),
+      VertexAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))),
+  });
+  Vbo vbo = Vbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+  uint32_t icount = 0, vcount = 0;
 
   glm::vec2 cursor_pos = glm::vec2(0.0);
 
@@ -51,29 +55,10 @@ struct RayPickingRunner final : GlfwRunner {
 
   bool doInit() override {
     initShader();
-    initBuffers();
     initGrid();
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     setBackground(glm::vec3(216, 204, 192) / glm::vec3(255.0f));
     return true;
-  }
-
-  void initBuffers() {
-    glGenVertexArrays(1, &vao);
-
-    GLuint ids[2];
-    glGenBuffers(2, ids);
-    vbo.vboId = ids[0];
-    ebo.vboId = ids[1];
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
   }
 
   void initGrid() {
@@ -109,16 +94,16 @@ struct RayPickingRunner final : GlfwRunner {
             vectors[1].z, node_color.r, node_color.g, node_color.b, vectors[2].x, vectors[2].y, vectors[2].z, node_color.r,
             node_color.g, node_color.b, vectors[3].x, vectors[3].y, vectors[3].z, node_color.r, node_color.g, node_color.b,
         };
-        memcpy(&vertices[vbo.count], tmp_vertices, sizeof(tmp_vertices));
+        memcpy(&vertices[vcount], tmp_vertices, sizeof(tmp_vertices));
 
         GLuint tmp_indices[]{
             0 + ioff, 1 + ioff, 2 + ioff, 2 + ioff, 3 + ioff, 0 + ioff,
         };
-        memcpy(&indices[ebo.count], tmp_indices, sizeof(tmp_indices));
+        memcpy(&indices[icount], tmp_indices, sizeof(tmp_indices));
 
         ioff += 4;
-        ebo.count += 6;
-        vbo.count += 24;
+        vcount += 24;
+        icount += 6;
       }
     }
 
@@ -129,16 +114,16 @@ struct RayPickingRunner final : GlfwRunner {
           -x_start, node_half * 0.25f,  0.0, 0.0, 0.5, 0.5, -x_start, -node_half * 0.25f, 0.0, 0.0, 0.5, 0.5,
           x_start,  -node_half * 0.25f, 0.0, 0.0, 0.5, 0.5, x_start,  node_half * 0.25f,  0.0, 0.0, 0.5, 0.5,
       };
-      memcpy(&vertices[vbo.count], tmp_vertices, sizeof(tmp_vertices));
+      memcpy(&vertices[vcount], tmp_vertices, sizeof(tmp_vertices));
 
       GLuint tmp_indices[]{
           0 + ioff, 1 + ioff, 2 + ioff, 2 + ioff, 3 + ioff, 0 + ioff,
       };
-      memcpy(&indices[ebo.count], tmp_indices, sizeof(tmp_indices));
+      memcpy(&indices[icount], tmp_indices, sizeof(tmp_indices));
 
       ioff += 4;
-      ebo.count += 6;
-      vbo.count += 24;
+      icount += 6;
+      vcount += 24;
     }
 
     // y-axis line
@@ -148,24 +133,23 @@ struct RayPickingRunner final : GlfwRunner {
           -node_half * 0.25f, y_start,  0.0, 0.5, 0.0, 0.5, -node_half * 0.25f, -y_start, 0.0, 0.5, 0.0, 0.5,
           node_half * 0.25f,  -y_start, 0.0, 0.5, 0.0, 0.5, node_half * 0.25f,  y_start,  0.0, 0.5, 0.0, 0.5,
       };
-      memcpy(&vertices[vbo.count], tmp_vertices, sizeof(tmp_vertices));
+      memcpy(&vertices[vcount], tmp_vertices, sizeof(tmp_vertices));
 
       GLuint tmp_indices[]{
           0 + ioff, 1 + ioff, 2 + ioff, 2 + ioff, 3 + ioff, 0 + ioff,
       };
-      memcpy(&indices[ebo.count], tmp_indices, sizeof(tmp_indices));
+      memcpy(&indices[icount], tmp_indices, sizeof(tmp_indices));
 
       ioff += 4;
-      ebo.count += 6;
-      vbo.count += 24;
+      icount += 6;
+      vcount += 24;
     }
 
     // upload buffers
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    initVao(vao);
+    upload(vbo, vertices, sizeof(vertices));
+    initVertexAttribs(vao);
+    indexBuffer(vao, indices, sizeof(indices));
   }
 
   void initShader() {
@@ -227,13 +211,9 @@ struct RayPickingRunner final : GlfwRunner {
   void doRender(const RunnerState& state) override {
     glUseProgram(shader);
 
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.vboId);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.vboId);
-
+    bind(vao);
     glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &mvp[0][0]);
-
-    glDrawElements(GL_TRIANGLES, ebo.count, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
 
     if (!imgui_level) return;
     ImGui::Begin("Cursor info");

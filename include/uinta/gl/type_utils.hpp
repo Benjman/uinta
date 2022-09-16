@@ -2660,8 +2660,7 @@ inline std::string getGlEnumName(const GLenum e) {
     case GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW:
       return "GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW";
     default:
-      return "Unsupported OpenGL enum to name conversion. This is likely because it is a common value such as GL_ZERO, GL_ONE, "
-             "etc.";
+      return "Unsupported OpenGL enum to name conversion.";
   }
 }
 }  // namespace uinta

@@ -5,11 +5,9 @@
 
 #include <vector>
 
-#include "uinta/gl/type_utils.hpp"
-
 namespace uinta {
 
-struct VertexAttribute {
+struct VertexAttrib {
   GLuint index;
   GLint size;
   GLenum type;
@@ -17,18 +15,18 @@ struct VertexAttribute {
   GLsizei stride;
   const void* pointer;
 
-  VertexAttribute() : VertexAttribute(GL_ZERO, 0, GL_TYPE, GL_FALSE, GL_ZERO, GL_ZERO) {
+  VertexAttrib() : VertexAttrib(GL_ZERO, 0, GL_TYPE, GL_FALSE, GL_ZERO, GL_ZERO) {
   }
 
-  VertexAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer)
+  VertexAttrib(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer)
       : index(index), size(size), type(type), normalized(normalized), stride(stride), pointer(pointer) {
   }
 
-  VertexAttribute(const VertexAttribute& other) {
+  VertexAttrib(const VertexAttrib& other) {
     *this = other;
   }
 
-  VertexAttribute& operator=(const VertexAttribute& rhs) {
+  VertexAttrib& operator=(const VertexAttrib& rhs) {
     index = rhs.index;
     size = rhs.size;
     type = rhs.type;
@@ -68,10 +66,10 @@ struct Vbo {
 
 struct Vao {
   GLuint id = GL_ZERO;
-  std::vector<VertexAttribute> attributes;
+  std::vector<VertexAttrib> attribs;
   Vbo indexBuffer = Vbo(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
 
-  Vao(const std::vector<VertexAttribute>& attributes) : attributes(std::vector(attributes)) {
+  Vao(const std::vector<VertexAttrib>& attribs) : attribs(std::vector(attribs)) {
   }
 
   Vao(const Vao& other) {
@@ -79,8 +77,9 @@ struct Vao {
   }
 
   Vao& operator=(const Vao& rhs) {
+    attribs = std::vector<VertexAttrib>(rhs.attribs);
     id = rhs.id;
-    attributes = std::vector<VertexAttribute>(attributes);
+    indexBuffer = rhs.indexBuffer;
     return *this;
   }
 };
@@ -89,16 +88,16 @@ inline void bind(const Vao& vao);
 inline void bind(const Vbo& vbo);
 inline void destroy(Vao& vao);
 inline void destroy(Vbo& vbo);
-inline void disableVertexAttributes(Vao& vao);
-inline void enableVertexAttributes(Vao& vao);
-inline void indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size);
+inline void disableVertexAttribs(Vao& vao);
+inline void enableVertexAttribs(Vao& vao);
+inline void indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size, GLsizeiptr offset = 0);
 inline void initVao(Vao& vao);
 inline void initVbo(Vbo& vbo);
+inline void initVertexAttribs(Vao& vao);
 inline void resize(Vbo& vbo, GLsizeiptr size);
 inline void unbind(const Vao& unused);
 inline void unbind(const Vbo& vao);
-inline void upload(Vbo& vbo, const GLfloat* const data, GLsizeiptr size);
-inline void upload(Vbo& vbo, const GLuint* const data, GLsizeiptr size);
+inline bool upload(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset = 0);
 
 inline void bind(const Vao& vao) {
   glBindVertexArray(vao.id);
@@ -115,7 +114,7 @@ inline void destroy(Vao& vao) {
     return;
   }
   bind(vao);
-  disableVertexAttributes(vao);
+  disableVertexAttribs(vao);
   glDeleteVertexArrays(1, &vao.id);
   UINTA_glGetError("glDeleteVertexArrays");
   vao = Vao({});
@@ -129,50 +128,59 @@ inline void destroy(Vbo& vbo) {
   UINTA_glGetError("glDeleteBuffers");
 }
 
-inline void disableVertexAttributes(Vao& vao) {
+inline void disableVertexAttribs(Vao& vao) {
   if (vao.id == GL_ZERO) {
     return;
   }
-  for (auto& attrib : vao.attributes) {
+  for (auto& attrib : vao.attribs) {
     glDisableVertexAttribArray(vao.id);
     UINTA_glGetError("glDisableVertexAttribArray");
   }
 }
 
-inline void enableVertexAttributes(Vao& vao) {
+inline void enableVertexAttribs(Vao& vao) {
   if (vao.id == GL_ZERO) {
     initVao(vao);
   }
   bind(vao);
-  for (auto& attrib : vao.attributes) {
+  for (auto& attrib : vao.attribs) {
     glEnableVertexAttribArray(vao.id);
     UINTA_glGetError("glEnableVertexAttribArray");
   }
 }
 
-inline void indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size) {
+inline void indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size, GLsizeiptr offset) {
   if (vao.id == GL_ZERO) {
     initVao(vao);
   }
   if (vao.indexBuffer.id == GL_ZERO) {
     initVbo(vao.indexBuffer);
   }
-  upload(vao.indexBuffer, data, size);
+  bind(vao);
+  if (upload(vao.indexBuffer, data, size, offset)) {
+    initVertexAttribs(vao);
+  }
 }
 
 inline void initVao(Vao& vao) {
   glGenVertexArrays(1, &vao.id);
   UINTA_glGetError("glGenVertexArrays");
-  SPDLOG_DEBUG("VAO initialized with ID {}.", vao.id);
-  enableVertexAttributes(vao);
+  SPDLOG_DEBUG("Initialized VAO {}.", vao.id);
   bind(vao);
 }
 
 inline void initVbo(Vbo& vbo) {
   glGenBuffers(1, &vbo.id);
   UINTA_glGetError("glGenBuffers");
-  SPDLOG_DEBUG("{} initialized with ID {}.", getGlEnumName(vbo.target), vbo.id);
+  SPDLOG_DEBUG("Initialized {} {}.", getGlEnumName(vbo.target), vbo.id);
   bind(vbo);
+}
+
+inline void initVertexAttribs(Vao& vao) {
+  for (auto& a : vao.attribs) {
+    glVertexAttribPointer(a.index, a.size, a.type, a.normalized, a.stride, a.pointer);
+    glEnableVertexAttribArray(a.index);
+  }
 }
 
 inline void resize(Vbo& vbo, GLsizeiptr size) {
@@ -183,7 +191,7 @@ inline void resize(Vbo& vbo, GLsizeiptr size) {
     bind(vbo);
     glBufferData(vbo.target, size, nullptr, vbo.usage);
     UINTA_glGetError("glBufferData");
-    SPDLOG_DEBUG("Allocated {} bytes for {}.", size, getGlEnumName(vbo.target));
+    SPDLOG_DEBUG("Allocated {} bytes for {} {}.", size, getGlEnumName(vbo.target), vbo.id);
   } else {
     GLuint newId;
     glGenBuffers(1, &newId);
@@ -192,7 +200,7 @@ inline void resize(Vbo& vbo, GLsizeiptr size) {
     UINTA_glGetError("glBindBuffer");
     glBufferData(vbo.target, size, nullptr, vbo.usage);
     UINTA_glGetError("glBufferData");
-    SPDLOG_DEBUG("Resized {} from {} to {}.", getGlEnumName(vbo.target), vbo.size, size);
+    SPDLOG_DEBUG("Resized {} from {} to {} bytes.", getGlEnumName(vbo.target), vbo.size, size);
     if (vbo.size) {
       glBindBuffer(GL_COPY_WRITE_BUFFER, newId);
       UINTA_glGetError("glBindBuffer");
@@ -205,8 +213,8 @@ inline void resize(Vbo& vbo, GLsizeiptr size) {
     glDeleteBuffers(1, &vbo.id);
     UINTA_glGetError("glDeleteBuffers");
     vbo.id = newId;
-    vbo.max = size;
   }
+  vbo.max = size;
 }
 
 inline void unbind(const Vao& unused) {
@@ -219,27 +227,22 @@ inline void unbind(const Vbo& vao) {
   UINTA_glGetError("glBindBuffer");
 }
 
-inline void upload(Vbo& vbo, const GLfloat* const data, GLsizeiptr size) {
+inline bool upload(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset) {
+  bool resized = false;
   if (vbo.id == GL_ZERO) {
     initVbo(vbo);
   }
-  if (vbo.max < vbo.size + size) {
-    resize(vbo, vbo.size + size);
+  if (vbo.max < offset + size) {
+    resize(vbo, offset + size);
+    resized = true;
   }
   bind(vbo);
-  glBufferSubData(vbo.target, vbo.size, size, data);
+  glBufferSubData(vbo.target, offset, size, data);
   UINTA_glGetError("glBufferSubData");
-  vbo.size += size;
-}
-
-inline void upload(Vbo& vbo, const GLuint* const data, GLsizeiptr size) {
-  if (vbo.max < vbo.size + size) {
-    resize(vbo, vbo.size + size);
+  if (offset + size > vbo.size) {
+    vbo.size = offset + size;
   }
-  bind(vbo);
-  glBufferSubData(vbo.target, vbo.size, size, data);
-  UINTA_glGetError("glBufferSubData");
-  vbo.size += size;
+  return resized;
 }
 
 }  // namespace uinta
