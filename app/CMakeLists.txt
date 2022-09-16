@@ -17,10 +17,8 @@ function (app name)
   message(STATUS "Added app '${name}'")
 endfunction()
 
-# app(camera3d)
-# app(font)
+app(camera3d)
 app(model)
-app(quadtree)
 app(ray_picking)
 app(post_processing)
 

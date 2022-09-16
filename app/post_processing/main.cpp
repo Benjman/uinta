@@ -4,6 +4,7 @@
 #include "../utils/utils.hpp"
 #include "./PostProcessingCamera.hpp"
 #include "./PostProcessingShaders.hpp"
+#include "uinta/buffer.hpp"
 
 namespace uinta {
 
@@ -12,13 +13,20 @@ class PostProcessingRunner final : public GlfwRunner {
   PostProcessingShaders shaders;
 
   GLuint cubeTexture;
-  GLuint cubeVao;
-  GLuint cubeVbo;
+  Vao cubeVao = Vao({
+      VertexAttrib(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0),
+      VertexAttrib(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))),
+  });
+  Vbo cubeVbo = Vbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+
+  Vao quadVao = Vao({
+      VertexAttrib(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0),
+      VertexAttrib(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float))),
+  });
+  Vbo quadVbo = Vbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 
   GLuint colorBufferTexture;
   GLuint fbo;
-  GLuint quadVao;
-  GLuint quadVbo;
   GLuint rbo;
 
  public:
@@ -85,15 +93,9 @@ class PostProcessingRunner final : public GlfwRunner {
     // clang-format on
 
     // cube VAO
-    glGenVertexArrays(1, &cubeVao);
-    glGenBuffers(1, &cubeVbo);
-    glBindVertexArray(cubeVao);
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    initVao(cubeVao);
+    upload(cubeVbo, cubeVertices, sizeof(cubeVertices));
+    initVertexAttribs(cubeVao);
 
     // framebuffer configuration
     // -------------------------
@@ -132,15 +134,9 @@ class PostProcessingRunner final : public GlfwRunner {
     };
     // clang-format on
 
-    glGenVertexArrays(1, &quadVao);
-    glGenBuffers(1, &quadVbo);
-    glBindVertexArray(quadVao);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    initVao(quadVao);
+    upload(quadVbo, quadVertices, sizeof(quadVertices));
+    initVertexAttribs(quadVao);
 
     return true;
   }
@@ -162,7 +158,7 @@ class PostProcessingRunner final : public GlfwRunner {
 
     glEnable(GL_DEPTH_TEST);
     glUseProgram(shaders.scene);
-    glBindVertexArray(cubeVao);
+    bind(cubeVao);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, cubeTexture);
 
@@ -182,7 +178,7 @@ class PostProcessingRunner final : public GlfwRunner {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaders.screen);
-    glBindVertexArray(quadVao);
+    bind(quadVao);
     glBindTexture(GL_TEXTURE_2D, colorBufferTexture);  // use the color attachment texture as the texture of the quad plane
     glDrawArrays(GL_TRIANGLES, 0, 6);
   }
