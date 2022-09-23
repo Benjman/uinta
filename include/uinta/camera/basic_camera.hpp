@@ -5,7 +5,7 @@
 
 namespace uinta {
 
-inline const glm::vec3 WORLD_UP = glm::vec3(0.0, 1.0, 0.0);
+inline const glm::vec3 WORLD_UP = glm::vec3(0.0, 0.0, 1.0);
 inline const glm::vec3 WORLD_RIGHT = glm::vec3(1.0, 0.0, 0.0);
 inline const glm::vec3 WORLD_FORWARD = glm::vec3(0.0, 0.0, -1.0);
 
