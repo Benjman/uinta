@@ -17,6 +17,7 @@ void checkCompileErrors(GLuint shader, GLenum type) {
       GLchar info[KILOBYTES(1)];
       glGetProgramInfoLog(shader, KILOBYTES(1), 0, info);
       UINTA_glGetError("glGetProgramInfoLog");
+      SPDLOG_ERROR(info);
     }
   } else {
     GLint isCompiled = 0;
@@ -26,6 +27,7 @@ void checkCompileErrors(GLuint shader, GLenum type) {
       GLchar info[KILOBYTES(1)];
       glGetShaderInfoLog(type, KILOBYTES(1), 0, info);
       UINTA_glGetError("glGetShaderInfoLog");
+      SPDLOG_ERROR(info);
     }
   }
 }
