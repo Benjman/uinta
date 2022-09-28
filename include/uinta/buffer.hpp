@@ -177,6 +177,9 @@ inline void initVbo(Vbo& vbo) {
 }
 
 inline void initVertexAttribs(Vao& vao) {
+  if (!vao.id) {
+    initVao(vao);
+  }
   for (auto& a : vao.attribs) {
     glVertexAttribPointer(a.index, a.size, a.type, a.normalized, a.stride, a.pointer);
     glEnableVertexAttribArray(a.index);
