@@ -67,6 +67,9 @@ void FileManager::releaseFile(const file_t* const handle, bool force) {
 }
 
 const bool FileManager::isActive(const file_t* const handle) const {
+  if (handle == nullptr || getId(handle) > handles.size()) {
+    SPDLOG_WARN("Invalid handle {}!", *handle);
+  }
   if (handles.at(getId(handle)) != handle) return false;
   return *handle & UINTA_FILE_IS_ACTIVE_MASK;
 }
@@ -206,10 +209,18 @@ void FileManager::loadHandle(const file_t* const handle) {
   }
   setPath(handle, absPath);
   reserveSpace(handle);
-  if (links.at(getId(handle)).ptr) loadHandleData(handle);
+  if (links.at(getId(handle)).ptr == nullptr) {
+    SPDLOG_ERROR("Invalid storage pointer for '{}'!", getPath(handle));
+    return;
+  }
+  loadHandleData(handle);
 }
 
 void FileManager::loadHandleData(const file_t* const handle) {
+  if (!isActive(handle)) {
+    SPDLOG_WARN("Attempted to load handle data on an inactive handle for '{}'.", getPath(handle));
+    return;
+  }
   switch (getType(handle)) {
     case FileType::Binary:
       loadFileBinary(handle);
@@ -249,11 +260,11 @@ void FileManager::setIsActive(const file_t* const handle, const bool isActive) {
   if (isActive) *h |= UINTA_FILE_IS_ACTIVE_MASK;
 }
 
-void FileManager::setIsBuffered(const file_t* const handle, const bool isLoaded) {
+void FileManager::setIsBuffered(const file_t* const handle, const bool isBuffered) {
   if (!isActive(handle)) return;
   auto* h = handles.at(getId(handle));
   *h &= ~UINTA_FILE_IS_BUFFERED_MASK;
-  if (isLoaded) *h |= UINTA_FILE_IS_BUFFERED_MASK;
+  if (isBuffered) *h |= UINTA_FILE_IS_BUFFERED_MASK;
 }
 
 void FileManager::setPath(const file_t* const handle, const std::string& path) {
