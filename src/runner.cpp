@@ -7,16 +7,12 @@
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
 
-namespace uinta {
-void setSpdlogLevel();
-}  // namespace uinta
-
 using namespace uinta;
 
 Runner::Runner(const std::string& title, uint32_t width, uint32_t height) noexcept : display(title, width, height) {
+  initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
   state.display = Display(title, width, height);
-  setSpdlogLevel();
 }
 
 bool Runner::init() {
@@ -127,43 +123,6 @@ void Runner::handleWindowSizeChanged(const int width, const int height) {
   state.display.width = width;
   state.display.height = height;
   doHandleWindowSizeChanged(width, height);
-}
-
-void uinta::setSpdlogLevel() {
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
-  spdlog::set_level(spdlog::level::trace);
-  SPDLOG_INFO("Logging level set to trace.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
-  spdlog::set_level(spdlog::level::debug);
-  SPDLOG_INFO("Logging level set to debug.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
-  spdlog::set_level(spdlog::level::info);
-  SPDLOG_INFO("Logging level set to info.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_WARN
-  spdlog::set_level(spdlog::level::warn);
-  SPDLOG_INFO("Logging level set to warn.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_ERROR
-  spdlog::set_level(spdlog::level::err);
-  SPDLOG_INFO("Logging level set to error.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_CRITICAL
-  spdlog::set_level(spdlog::level::critical);
-  SPDLOG_INFO("Logging level set to critical.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_OFF
-  spdlog::set_level(spdlog::level::off);
-  SPDLOG_INFO("Logging level set to off.");
-#endif
 }
 
 Runner::~Runner() {
