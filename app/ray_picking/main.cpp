@@ -8,7 +8,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../utils/utils.hpp"
-#include "uinta/buffer.hpp"
 
 using namespace uinta;
 
@@ -170,19 +169,19 @@ struct RayPickingRunner final : GlfwRunner {
 
     float magnitude = 8.0 * state.delta;
 
-    if (state.input.isKeyDown(KEY_W)) cam_pos.smooth_float_y() += magnitude;
-    if (state.input.isKeyDown(KEY_A)) cam_pos.smooth_float_x() -= magnitude;
-    if (state.input.isKeyDown(KEY_S)) cam_pos.smooth_float_y() -= magnitude;
-    if (state.input.isKeyDown(KEY_D)) cam_pos.smooth_float_x() += magnitude;
+    if (isKeyDown(state.input, KEY_W)) cam_pos.smooth_float_y() += magnitude;
+    if (isKeyDown(state.input, KEY_A)) cam_pos.smooth_float_x() -= magnitude;
+    if (isKeyDown(state.input, KEY_S)) cam_pos.smooth_float_y() -= magnitude;
+    if (isKeyDown(state.input, KEY_D)) cam_pos.smooth_float_x() += magnitude;
 
     zoom -= magnitude * state.input.scrolldy * zoom_speed;
     zoom.target = std::max(1.0f, std::min(10.0f, zoom.target));
 
     // change imgui scale
-    if (state.input.isKeyDown(KEY_I)) state.input.isShiftDown() ? std::max(0, --imgui_level) : std::min(3, ++imgui_level);
+    if (isKeyDown(state.input, KEY_I)) isShiftDown(state.input) ? std::max(0, --imgui_level) : std::min(3, ++imgui_level);
 
     // reset view
-    if (state.input.isKeyDown(KEY_R)) {
+    if (isKeyDown(state.input, KEY_R)) {
       cam_pos.smooth_float_x() = 0.0;
       cam_pos.smooth_float_y() = 0.0;
 

@@ -47,28 +47,43 @@ struct CameraConfig {
 struct CameraControls {
   const CameraConfig& config;
 
-  CameraControls(const CameraConfig& config) : config(config) {}
+  CameraControls(const CameraConfig& config) : config(config) {
+  }
 
-  float zoom(const RunnerState& state) { return state.input.scrolldy * config.zoomSensitivity; }
+  float zoom(const RunnerState& state) {
+    return state.input.scrolldy * config.zoomSensitivity;
+  }
 
-  float goRight(const RunnerState& state) { return state.input.isKeyDown(KEY_D) || state.input.isKeyDown(KEY_RIGHT); }
+  float goRight(const RunnerState& state) {
+    return isKeyDown(state.input, KEY_D) || isKeyDown(state.input, KEY_RIGHT);
+  }
 
-  float goLeft(const RunnerState& state) { return state.input.isKeyDown(KEY_A) || state.input.isKeyDown(KEY_LEFT); }
+  float goLeft(const RunnerState& state) {
+    return isKeyDown(state.input, KEY_A) || isKeyDown(state.input, KEY_LEFT);
+  }
 
-  float goForward(const RunnerState& state) { return state.input.isKeyDown(KEY_W) || state.input.isKeyDown(KEY_UP); }
+  float goForward(const RunnerState& state) {
+    return isKeyDown(state.input, KEY_W) || isKeyDown(state.input, KEY_UP);
+  }
 
-  float goBackward(const RunnerState& state) { return state.input.isKeyDown(KEY_S) || state.input.isKeyDown(KEY_DOWN); }
+  float goBackward(const RunnerState& state) {
+    return isKeyDown(state.input, KEY_S) || isKeyDown(state.input, KEY_DOWN);
+  }
 
   float rotation(const RunnerState& state) {
-    if (state.input.isKeyDown(KEY_C)) return config.cinRotateSpeed;
-    if (state.input.isKeyDown(KEY_V)) return -config.cinRotateSpeed;
-    if (state.input.isMouseButtonDown(MOUSE_BUTTON_MIDDLE)) return state.input.cursordx * config.yawSensitivity;
+    if (isKeyDown(state.input, KEY_C)) return config.cinRotateSpeed;
+    if (isKeyDown(state.input, KEY_V)) return -config.cinRotateSpeed;
+    if (isMouseButtonDown(state.input, MOUSE_BUTTON_MIDDLE)) return state.input.cursordx * config.yawSensitivity;
     return 0.0;
   }
 
-  bool isDragging(const RunnerState& state) { return state.input.isMouseButtonDown(MOUSE_BUTTON_RIGHT); }
+  bool isDragging(const RunnerState& state) {
+    return isMouseButtonDown(state.input, MOUSE_BUTTON_RIGHT);
+  }
 
-  bool reset(const RunnerState& state) { return state.input.isKeyPressed(KEY_R); }
+  bool reset(const RunnerState& state) {
+    return isKeyPressed(state.input, KEY_R);
+  }
 
   glm::vec2 dragFactor(const RunnerState& state) {
     return glm::vec2(-state.input.cursordx, -state.input.cursordy) * glm::vec2(config.dragSensitivity);

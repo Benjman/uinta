@@ -40,7 +40,7 @@ struct ModelRunner final : GlfwRunner {
   }
 
   void doPreTick(const RunnerState& state) override {
-    if (state.input.isKeyPressed(KEY_SPACE)) {
+    if (isKeyPressed(state.input, KEY_SPACE)) {
       glDeleteProgram(shader);
       load_shaders();
       glUseProgram(shader);

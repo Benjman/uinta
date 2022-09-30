@@ -53,11 +53,11 @@ void Runner::tick(float runtime) {
   state.delta = runtime - state.runtime;
   state.runtime = runtime;
   state.tick++;
-  SPDLOG_TRACE("tick: {}, delta: {}, runtime: {}", state.tick, state.delta, state.runtime);
+  // SPDLOG_TRACE("tick: {}, delta: {}, runtime: {}", state.tick, state.delta, state.runtime);
   doPreTick(state);
   doTick(state);
   doPostTick(state);
-  state.input.reset();
+  reset(state.input);
 }
 
 void Runner::render() {
@@ -114,14 +114,14 @@ void Runner::handleScrollInput(const double xoffset, const double yoffset) {
 }
 
 void Runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
-  if (action == ACTION_PRESS) state.input.keyPressed(key, mods);
-  if (action == ACTION_RELEASE) state.input.keyReleased(key, mods);
-  if (action == ACTION_REPEAT) state.input.keyRepeated(key, mods);
+  if (action == ACTION_PRESS) keyPressed(state.input, key, mods);
+  if (action == ACTION_RELEASE) keyReleased(state.input, key, mods);
+  if (action == ACTION_REPEAT) keyRepeated(state.input, key, mods);
 }
 
 void Runner::handleMouseButtonInput(const int button, const int action, const int mods) {
-  if (action == ACTION_PRESS) state.input.mouseButtonPressed(button, mods);
-  if (action == ACTION_RELEASE) state.input.mouseButtonReleased(button, mods);
+  if (action == ACTION_PRESS) mouseButtonPressed(state.input, button, mods);
+  if (action == ACTION_RELEASE) mouseButtonReleased(state.input, button, mods);
   state.input.flags = mods;
 }
 
