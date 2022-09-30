@@ -1,6 +1,5 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
-#include <uinta/buffer.hpp>
 
 #include "../utils/utils.hpp"
 

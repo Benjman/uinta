@@ -19,11 +19,12 @@ set(UINTA_INCLUDES        ${UINTA_INCLUDES} ${UINTA_GENERATED_PATH})
 set(UINTA_LIB_PATH        ${CMAKE_BINARY_DIR}/lib)
 set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
 
-set(UINTA_SRCS ${UINTA_SRCS} 
+set(UINTA_SRCS ${UINTA_SRCS}
 
   ./src/camera.cpp
   ./src/file_manager.cpp
   ./src/font.cpp
+  ./src/gl.cpp
   ./src/input.cpp
   ./src/math.cpp
   ./src/memory/memory_link.cpp
@@ -67,10 +68,8 @@ add_subdirectory(app)
 # testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true`
 if (UINTA_TEST)
   message(STATUS "Including tests")
-
   set(INSTALL_GTEST ON CACHE BOOL "Createe googletest binaries.")
   add_subdirectory(./lib/googletest)
-
   add_subdirectory(test)
 endif()
 

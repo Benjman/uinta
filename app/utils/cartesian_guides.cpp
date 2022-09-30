@@ -3,6 +3,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <uinta/io/file_manager.hpp>
+#include <uinta/runner/display.hpp>
 #include <uinta/shader.hpp>
 
 using namespace uinta;

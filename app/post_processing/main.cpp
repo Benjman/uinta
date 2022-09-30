@@ -4,7 +4,6 @@
 #include "../utils/utils.hpp"
 #include "./PostProcessingCamera.hpp"
 #include "./PostProcessingShaders.hpp"
-#include "uinta/buffer.hpp"
 
 namespace uinta {
 
