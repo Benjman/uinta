@@ -15,9 +15,9 @@ function (app name)
 endfunction()
 
 app(camera3d)
-app(cartesian)
-app(model)
-app(ray_picking)
-app(post_processing)
+# app(cartesian)
+# app(model)
+# app(ray_picking)
+# app(post_processing)
 
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)

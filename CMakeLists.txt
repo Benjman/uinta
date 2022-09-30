@@ -21,7 +21,7 @@ set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
 
 set(UINTA_SRCS ${UINTA_SRCS}
 
-  ./src/camera.cpp
+  ./src/camera/target_camera.cpp
   ./src/file_manager.cpp
   ./src/font.cpp
   ./src/gl.cpp

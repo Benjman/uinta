@@ -3,6 +3,8 @@
 #include <uinta/math/map.hpp>
 #include <uinta/math/smooth_vec3.hpp>
 
+#include "./camera/target_camera.cpp"
+
 using namespace uinta;
 
 CameraConfig::CameraConfig(const CameraConfig& other) {

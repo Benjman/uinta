@@ -5,7 +5,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/camera/basic_camera.hpp>
-#include <uinta/camera/static_camera.hpp>
+#include <uinta/camera/target_camera.hpp>
 #include <uinta/input.hpp>
 #include <uinta/math/smooth_vec3.hpp>
 #include <uinta/runner.hpp>

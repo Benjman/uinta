@@ -1,21 +1,18 @@
 #ifndef UINTA_CAMERA_BASIC_CAMERA_HPP
 #define UINTA_CAMERA_BASIC_CAMERA_HPP
 
-#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 namespace uinta {
 
-inline const glm::vec3 WORLD_UP = glm::vec3(0.0, 0.0, 1.0);
-inline const glm::vec3 WORLD_RIGHT = glm::vec3(1.0, 0.0, 0.0);
-inline const glm::vec3 WORLD_FORWARD = glm::vec3(0.0, 0.0, -1.0);
+const glm::vec3 WORLD_UP{0.0, 1.0, 0.0};
+const glm::vec3 WORLD_RIGHT{0.0, 0.0, 1.0};
+const glm::vec3 WORLD_FORWARD{1.0, 0.0, 0.0};
 
 struct BasicCamera {
   glm::vec3 position;
-  float pitch;
-  float yaw;
-  float nearPlane = 0.1;
-  float farPlane = 15.0;
+  float pitch = 0.0;
+  float yaw = 0.0;
 
   BasicCamera() : BasicCamera(glm::vec3(0.0), 0.0, 0.0) {
   }

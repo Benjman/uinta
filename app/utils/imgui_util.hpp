@@ -4,7 +4,9 @@
 class GLFWwindow;
 
 namespace uinta {
+
 class Camera;
+class TargetCamera;
 
 namespace imgui {  // uinta::imgui
 void init(GLFWwindow* const);
@@ -15,6 +17,7 @@ void shutdown(GLFWwindow* const);
 
 namespace view {  // uinta::imgui::view
 void camera(const Camera&);
+void camera(const TargetCamera&);
 
 }  // namespace view
 }  // namespace imgui

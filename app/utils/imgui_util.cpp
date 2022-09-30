@@ -7,6 +7,9 @@
 #include "./imgui_util.hpp"
 // clang-format on
 
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
 #define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 #define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM

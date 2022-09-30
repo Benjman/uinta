@@ -7,25 +7,30 @@
 namespace uinta {
 
 struct Camera3dRunner final : GlfwRunner {
-  Camera camera;
+  TargetCamera cam{10};
 
-  Vao vao{{{0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0},
-           {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 3 * sizeof(GLfloat)},
-           {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 6 * sizeof(GLfloat)}}};
+  Vao vao{{
+      {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0},
+      {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 3 * sizeof(GLfloat)},
+      {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 6 * sizeof(GLfloat)},
+  }};
   Vbo vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
-  uint32_t icount = 0, vcount = 0;
-
-  GLuint u_mvp;
-  glm::mat4 model;
+  uint32_t icount = 0;
+  uint32_t vcount = 0;
 
   GLuint shader;
+  GLuint u_mvp;
 
-  const file_t *vert, *frag, *cube;
+  glm::mat4 model;
+
+  const file_t* vert;
+  const file_t* frag;
+  const file_t* cube;
 
   Camera3dRunner() : GlfwRunner("hello camera3d", 1000, 1000) {
     model = glm::mat4(1.0);
-    vert = fileManager.registerFile("camera3d.vert", FileType::Text);
-    frag = fileManager.registerFile("camera3d.frag", FileType::Text);
+    vert = fileManager.registerFile("camera3d.vs", FileType::Text);
+    frag = fileManager.registerFile("camera3d.fs", FileType::Text);
     cube = fileManager.registerFile("model/cube.obj", FileType::Text);
   }
 
@@ -112,7 +117,7 @@ struct Camera3dRunner final : GlfwRunner {
 
   void doRender(const RunnerState& state) override {
     glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
-    imgui::view::camera(camera);
+    imgui::view::camera(cam);
   }
 };
 
