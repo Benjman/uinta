@@ -26,7 +26,6 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/gl/vao.cpp
   ./src/gl/vbo.cpp
   ./src/gl/vertex_attrib.cpp
-  ./src/input.cpp
   ./src/logging.cpp
   ./src/math.cpp
   ./src/math/running_avg.cpp
