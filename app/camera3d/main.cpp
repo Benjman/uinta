@@ -9,12 +9,10 @@ namespace uinta {
 struct Camera3dRunner final : GlfwRunner {
   Camera camera;
 
-  Vao vao = Vao({
-      VertexAttrib(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0),
-      VertexAttrib(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))),
-      VertexAttrib(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat))),
-  });
-  Vbo vbo = Vbo(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+  Vao vao{{{0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0},
+           {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 3 * sizeof(GLfloat)},
+           {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 6 * sizeof(GLfloat)}}};
+  Vbo vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   uint32_t icount = 0, vcount = 0;
 
   GLuint u_mvp;
