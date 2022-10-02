@@ -18,7 +18,7 @@ uinta::Vao& uinta::Vao::operator=(const Vao& rhs) {
 
 void uinta::bind(const Vao& vao) {
   glBindVertexArray(vao.id);
-  UINTA_glGetError("glBindVertexArray");
+  UINTA_glGetError(glBindVertexArray);
 }
 
 void uinta::destroy(Vao& vao) {
@@ -28,7 +28,7 @@ void uinta::destroy(Vao& vao) {
   bind(vao);
   disableVertexAttribs(vao);
   glDeleteVertexArrays(1, &vao.id);
-  UINTA_glGetError("glDeleteVertexArrays");
+  UINTA_glGetError(glDeleteVertexArrays);
   vao = Vao({});
 }
 
@@ -38,7 +38,7 @@ void uinta::disableVertexAttribs(Vao& vao) {
   }
   for (const auto& attrib : vao.attribs) {
     glDisableVertexAttribArray(vao.id);
-    UINTA_glGetError("glDisableVertexAttribArray");
+    UINTA_glGetError(glDisableVertexAttribArray);
   }
 }
 
@@ -49,7 +49,7 @@ void uinta::enableVertexAttribs(Vao& vao) {
   bind(vao);
   for (const auto& attrib : vao.attribs) {
     glEnableVertexAttribArray(vao.id);
-    UINTA_glGetError("glEnableVertexAttribArray");
+    UINTA_glGetError(glEnableVertexAttribArray);
   }
 }
 
@@ -68,7 +68,7 @@ void uinta::indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size, GLs
 
 void uinta::initVao(Vao& vao) {
   glGenVertexArrays(1, &vao.id);
-  UINTA_glGetError("glGenVertexArrays");
+  UINTA_glGetError(glGenVertexArrays);
   SPDLOG_DEBUG("Initialized VAO {}.", vao.id);
   bind(vao);
 }
@@ -85,5 +85,5 @@ void uinta::initVertexAttribs(Vao& vao) {
 
 void uinta::unbind(const Vao& unused) {
   glBindVertexArray(0);
-  UINTA_glGetError("glBindVertexArray");
+  UINTA_glGetError(glBindVertexArray);
 }
