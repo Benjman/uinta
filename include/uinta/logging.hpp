@@ -6,8 +6,8 @@
 #endif  // SPDLOG_ACTIVE_LEVEL
 
 // #define SPDLOG_ACTIVE_LEVEL 0 /* trace */
-// #define SPDLOG_ACTIVE_LEVEL 1 /* debug */
-#define SPDLOG_ACTIVE_LEVEL 2 /* info */
+#define SPDLOG_ACTIVE_LEVEL 1 /* debug */
+// #define SPDLOG_ACTIVE_LEVEL 2 /* info */
 // #define SPDLOG_ACTIVE_LEVEL 3 /* warn */
 // #define SPDLOG_ACTIVE_LEVEL 4 /* error */
 // #define SPDLOG_ACTIVE_LEVEL 5 /* critical */

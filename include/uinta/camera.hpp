@@ -5,14 +5,10 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/camera/basic_camera.hpp>
+#include <uinta/camera/static_camera.hpp>
 #include <uinta/input.hpp>
-#include <uinta/math.hpp>
+#include <uinta/math/smooth_vec3.hpp>
 #include <uinta/runner.hpp>
-
-#include "uinta/camera/static_camera.hpp"
-#include "uinta/input.hpp"
-#include "uinta/math.hpp"
-#include "uinta/runner.hpp"
 
 namespace uinta {
 
@@ -113,21 +109,18 @@ struct Camera {
   CameraConfig config;
   CameraControls controls;
 
-  glm::vec3 position = glm::vec3(0.0);
-  float pitch, yaw;
+  glm::vec3 position{0};
+  float pitch;
+  float yaw;
 
   SmoothVec3 target;
   SmoothFloat angle;
   SmoothFloat dist;
 
   Camera(const CameraConfig& config = CameraConfig());
-
-  void tick(const RunnerState& state);
 };
 
-void genViewMatrix(glm::mat4& viewMatrix, const Camera& camera);
-glm::mat4 genPerspectiveMatrix(const Camera& camera, float aspectRatio);
-// glm::mat4 genOrthographicMatrix(const Camera& camera);
+void update(Camera&, const RunnerState&);
 
 }  // namespace uinta
 

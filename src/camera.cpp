@@ -1,10 +1,13 @@
 #include <glm/glm.hpp>
 #include <uinta/camera.hpp>
-#include <uinta/math.hpp>
+#include <uinta/math/map.hpp>
+#include <uinta/math/smooth_vec3.hpp>
 
 using namespace uinta;
 
-CameraConfig::CameraConfig(const CameraConfig& other) { *this = other; }
+CameraConfig::CameraConfig(const CameraConfig& other) {
+  *this = other;
+}
 
 CameraConfig& CameraConfig::operator=(const CameraConfig& other) {
   fov = other.fov;
@@ -31,57 +34,54 @@ CameraConfig& CameraConfig::operator=(const CameraConfig& other) {
 Camera::Camera(const CameraConfig& config)
     : config(CameraConfig(config)),
       controls(this->config),
-      target(config.startTarget),
+      target(10, config.startTarget),
       angle(config.startAngle, config.rotateAgility),
-      dist(config.startZoom, config.zoomAgility) {}
-
-void Camera::tick(const RunnerState& state) {
-  // angle
-  float angleDelta = controls.rotation(state);
-  angle -= angleDelta;
-  angle.tick(state.delta);
-
-  // zoom
-  float targetZoom = dist.target;
-  float zoomLevel = controls.zoom(state);
-  targetZoom -= zoomLevel;
-  targetZoom = glm::clamp(targetZoom, config.minZoom, config.maxZoom);
-
-  dist = targetZoom;
-  dist.tick(state.delta);
-
-  // target
-  glm::vec2 move = controls.moveDirection(state, config);
-  float speed = dist.current;
-  float yawRad = glm::radians(yaw);
-  float yawSideRad = glm::radians(yaw + 90.0);
-
-  float dx = move.y * speed * -glm::sin(yawRad);
-  float dz = move.y * speed * glm::cos(yawRad);
-  float sideDx = move.x * speed * glm::sin(yawSideRad);
-  float sideDz = move.x * speed * -glm::cos(yawSideRad);
-
-  target += glm::vec3(dx + sideDx, 0, dz + sideDz);
-  target.tick(state.delta);
-
-  // clamp values
-  yaw = std::fmod(360.0 - angle.current, 360.0);
-  pitch = map0to1RangeClamped(dist.current, config.minZoom, config.maxPitch);
-  pitch = dist.current;
-
-  // update position
-  float pitchRad = glm::radians(pitch);
-  float angleRad = glm::radians(angle.current);
-  float horizontal = dist.current * glm::cos(pitchRad);
-  float vertical = dist.current * glm::sin(pitchRad);
-
-  float x = target.x() + horizontal * glm::sin(angleRad);
-  float y = target.y() + vertical;
-  float z = target.z() + horizontal * glm::cos(angleRad);
-
-  position = glm::vec3(x, y, z);
+      dist(config.startZoom, config.zoomAgility) {
 }
 
-void uinta::genViewMatrix(glm::mat4& viewMatrix, const Camera& camera) {
-  genViewMatrix(viewMatrix, camera.position, camera.pitch, camera.yaw);
+void uinta::update(Camera& camera, const RunnerState& state) {
+  // angle
+  auto angleDelta = camera.controls.rotation(state);
+  camera.angle -= angleDelta;
+  update(camera.angle, state.delta);
+
+  // zoom
+  auto targetZoom = camera.dist.target;
+  auto zoomLevel = camera.controls.zoom(state);
+  targetZoom -= zoomLevel;
+  targetZoom = glm::clamp(targetZoom, camera.config.minZoom, camera.config.maxZoom);
+
+  camera.dist = targetZoom;
+  update(camera.dist, state.delta);
+
+  // target
+  glm::vec2 move = camera.controls.moveDirection(state, camera.config);
+  auto speed = camera.dist.current;
+  auto yawRad = glm::radians(camera.yaw);
+  auto yawSideRad = glm::radians(camera.yaw + 90.0);
+
+  auto dx = move.y * speed * -glm::sin(yawRad);
+  auto dz = move.y * speed * glm::cos(yawRad);
+  auto sideDx = move.x * speed * glm::sin(yawSideRad);
+  auto sideDz = move.x * speed * -glm::cos(yawSideRad);
+
+  camera.target += glm::vec3(dx + sideDx, 0, dz + sideDz);
+  update(camera.target, state.delta);
+
+  // clamp values
+  camera.yaw = std::fmod(360.0 - camera.angle.current, 360.0);
+  camera.pitch = map0to1RangeClamped(camera.dist.current, camera.config.minZoom, camera.config.maxPitch);
+  camera.pitch = camera.dist.current;
+
+  // update position
+  auto pitchRad = glm::radians(camera.pitch);
+  auto angleRad = glm::radians(camera.angle.current);
+  auto horizontal = camera.dist.current * glm::cos(pitchRad);
+  auto vertical = camera.dist.current * glm::sin(pitchRad);
+
+  auto x = camera.target.x + horizontal * glm::sin(angleRad);
+  auto y = camera.target.y + vertical;
+  auto z = camera.target.z + horizontal * glm::cos(angleRad);
+
+  camera.position = glm::vec3(x, y, z);
 }

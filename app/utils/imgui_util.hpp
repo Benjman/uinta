@@ -1,23 +1,23 @@
 #ifndef UINTA_IMGUI_UTILS_HPP
 #define UINTA_IMGUI_UTILS_HPP
 
-#include <GLFW/glfw3.h>
+class GLFWwindow;
 
 namespace uinta {
 class Camera;
 
-namespace imgui { // uinta::imgui
-void init(GLFWwindow *const);
-void preRender(GLFWwindow *const);
-void render(GLFWwindow *const);
-void postRender(GLFWwindow *const);
-void shutdown(GLFWwindow *const);
+namespace imgui {  // uinta::imgui
+void init(GLFWwindow* const);
+void preRender(GLFWwindow* const);
+void render(GLFWwindow* const);
+void postRender(GLFWwindow* const);
+void shutdown(GLFWwindow* const);
 
-namespace view { // uinta::imgui::view
-void camera(const Camera &);
+namespace view {  // uinta::imgui::view
+void camera(const Camera&);
 
-} // namespace view
-} // namespace imgui
-} // namespace uinta
+}  // namespace view
+}  // namespace imgui
+}  // namespace uinta
 
-#endif // UINTA_IMGUI_UTILS_HPP
+#endif  // UINTA_IMGUI_UTILS_HPP

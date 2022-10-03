@@ -19,7 +19,7 @@ const inline float zoom_max = 30.0;
 namespace uinta {
 
 struct RayPickingRunner final : GlfwRunner {
-  SmoothVec3 cam_pos = glm::vec3(0.0);
+  SmoothVec3 camPosition{10.0, 0, 0, 1};
   SmoothFloat zoom = SmoothFloat(5.0, 10.0);
 
   Vao vao = Vao({
@@ -46,8 +46,6 @@ struct RayPickingRunner final : GlfwRunner {
   const file_t *vert, *frag;
 
   RayPickingRunner() noexcept : GlfwRunner("hello ray picking", 1000, 1000) {
-    cam_pos.z(1.0);
-
     vert = fileManager.registerFile("ray_picking.vert", FileType::Text);
     frag = fileManager.registerFile("ray_picking.frag", FileType::Text);
   }
@@ -169,10 +167,10 @@ struct RayPickingRunner final : GlfwRunner {
 
     float magnitude = 8.0 * state.delta;
 
-    if (isKeyDown(state.input, KEY_W)) cam_pos.smooth_float_y() += magnitude;
-    if (isKeyDown(state.input, KEY_A)) cam_pos.smooth_float_x() -= magnitude;
-    if (isKeyDown(state.input, KEY_S)) cam_pos.smooth_float_y() -= magnitude;
-    if (isKeyDown(state.input, KEY_D)) cam_pos.smooth_float_x() += magnitude;
+    if (isKeyDown(state.input, KEY_W)) camPosition.y += magnitude;
+    if (isKeyDown(state.input, KEY_A)) camPosition.x -= magnitude;
+    if (isKeyDown(state.input, KEY_S)) camPosition.y -= magnitude;
+    if (isKeyDown(state.input, KEY_D)) camPosition.x += magnitude;
 
     zoom -= magnitude * state.input.scrolldy * zoom_speed;
     zoom.target = std::max(1.0f, std::min(10.0f, zoom.target));
@@ -182,25 +180,23 @@ struct RayPickingRunner final : GlfwRunner {
 
     // reset view
     if (isKeyDown(state.input, KEY_R)) {
-      cam_pos.smooth_float_x() = 0.0;
-      cam_pos.smooth_float_y() = 0.0;
+      camPosition.x = 0.0;
+      camPosition.y = 0.0;
 
       zoom = 1.0;
     }
   }
 
   void doTick(const RunnerState& state) override {
-    cam_pos.tick(state.delta);
-    zoom.tick(state.delta);
+    update(camPosition, state.delta);
+    update(zoom, state.delta);
   }
 
   void doPreRender(const RunnerState& state) override {
     m_proj = glm::ortho((double)-zoom.current, (double)zoom.current, (double)-zoom.current, (double)zoom.current, 0.0001, 1000.0);
-    genViewMatrix(m_view, cam_pos, 0, 0);
-    // updateViewMatrix(m_view, cam_pos, 0, 0);
+    m_view = glm::translate(glm::mat4(1.0), -glm::vec3(camPosition));
 
-    glm::mat4 model(1.0);
-    mvp = m_proj * m_view * model;
+    mvp = m_proj * m_view;
 
     updateCursorVectors();
 

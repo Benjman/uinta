@@ -1,8 +1,8 @@
 #include <glm/ext.hpp>
-#include <uinta/math.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 #include "../utils/utils.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 namespace uinta {
 
@@ -57,9 +57,9 @@ struct Camera3dRunner final : GlfwRunner {
     };
     loadObj(fileManager.getDataChars(cube), vertices, &local_vcount, indices, &local_icount, &ioff, &attribs);
 
-    const glm::vec3 top(0.051, 0.933, 0.996);
-    const glm::vec3 sides = glm::vec3(0.025, 0.465, 0.465);
-    const glm::mat4 transform = glm::scale(glm::mat4(1.0), glm::vec3(15, 3, 15));
+    glm::vec3 top(0.051, 0.933, 0.996);
+    glm::vec3 sides(0.025, 0.465, 0.465);
+    glm::mat4 transform = glm::scale(glm::mat4(1.0), {15, 3, 15});
 
     local_vcount *= 1.5;  // loadObj doesn't load colors, so we adjust for color attrib
     for (int i = 0; i < local_vcount; i += pos_attrib.stride) {
@@ -84,25 +84,26 @@ struct Camera3dRunner final : GlfwRunner {
   }
 
   void initShader() {
-    shader = createShaderProgram({fileManager.getDataChars(vert), fileManager.getDataChars(frag)},
-                                 {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"u_mvp"}, {&u_mvp});
+    const std::vector<std::string> sources = {fileManager.getDataChars(vert), fileManager.getDataChars(frag)};
+    shader = createShaderProgram(sources, {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"u_mvp"}, {&u_mvp});
     fileManager.releaseFile(vert);
     fileManager.releaseFile(frag);
   }
 
   void doTick(const RunnerState& state) override {
-    camera.tick(state);
+    update(camera, state);
   }
 
   void doPreRender(const RunnerState& state) override {
     glUseProgram(shader);
     bind(vao);
 
-    glm::mat4 view(1.0);
-    genViewMatrix(view, camera);
+    auto transform_x = glm::eulerAngleX(glm::radians(camera.pitch));
+    auto transform_y = glm::eulerAngleY(glm::radians(camera.yaw));
+    auto view = glm::translate(transform_x * transform_y, -camera.position);
 
-    glm::mat4 projection = glm::perspective(glm::radians(camera.config.fov), (float)display.width / (float)display.height,
-                                            camera.config.nearPlane, camera.config.farPlane);
+    auto projection =
+        glm::perspective(glm::radians(camera.config.fov), display.aspectRatio, camera.config.nearPlane, camera.config.farPlane);
 
     glUniformMatrix4fv(u_mvp, 1, GL_FALSE, &(projection * view * model)[0][0]);
 
