@@ -21,7 +21,7 @@ bool GlfwRunner::internalInit() {
 
 void GlfwRunner::register_callbacks() {
   glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-    SPDLOG_DEBUG("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
+    SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
     GlfwRunner* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
     if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner->window, true);
     runner->handleKeyInput(key, scancode, action, mods);
