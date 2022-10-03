@@ -6,7 +6,9 @@
 #include <uinta/cfg.hpp>
 #include <uinta/io.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/math.hpp>
+#include <uinta/math/map.hpp>
+#include <uinta/math/smooth_float.hpp>
+#include <uinta/math/smooth_vec3.hpp>
 #include <uinta/mesh.hpp>
 #include <uinta/model.hpp>
 #include <uinta/shader.hpp>

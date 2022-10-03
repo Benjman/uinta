@@ -1,42 +1,48 @@
 #include <uinta/math/smooth_float.hpp>
 
-using namespace uinta;
+uinta::SmoothFloat::SmoothFloat(float start, float agility) noexcept : current(start), target(start), agility(agility) {
+}
 
-SmoothFloat::SmoothFloat(const float start, const float agility) noexcept : current(start), target(start), agility(agility) {}
+uinta::SmoothFloat::SmoothFloat(const SmoothFloat& other) noexcept {
+  *this = other;
+}
 
-SmoothFloat::SmoothFloat(const SmoothFloat &other) noexcept { *this = other; }
-
-SmoothFloat &SmoothFloat::operator=(const SmoothFloat &other) noexcept {
+uinta::SmoothFloat& uinta::SmoothFloat::operator=(const SmoothFloat& other) noexcept {
   agility = other.agility;
   current = other.current;
-  target  = other.target;
+  target = other.target;
   return *this;
 }
 
-SmoothFloat &SmoothFloat::operator=(const float v) noexcept {
+uinta::SmoothFloat& uinta::SmoothFloat::operator=(float v) noexcept {
   target = v;
   return *this;
 }
 
-SmoothFloat &SmoothFloat::operator+=(const float v) noexcept {
+uinta::SmoothFloat& uinta::SmoothFloat::operator+=(float v) noexcept {
   target += v;
   return *this;
 }
 
-SmoothFloat &SmoothFloat::operator-=(const float v) noexcept {
+uinta::SmoothFloat& uinta::SmoothFloat::operator-=(float v) noexcept {
   target -= v;
   return *this;
 }
 
-void SmoothFloat::force() noexcept { force(target); }
-
-void SmoothFloat::force(float v) noexcept {
-  current = v;
-  target  = v;
+uinta::SmoothFloat::operator float() const {
+  return current;
 }
 
-void SmoothFloat::tick(const float dt) noexcept {
-  float diff = (target - current);
-  current += diff * agility * dt;
+void uinta::force(uinta::SmoothFloat& v) {
+  force(v, v.target);
 }
 
+void uinta::force(uinta::SmoothFloat& v, float value) {
+  v.current = value;
+  v.target = value;
+}
+
+void uinta::update(uinta::SmoothFloat& v, float dt) {
+  float diff = (v.target - v.current);
+  v.current += diff * v.agility * dt;
+}

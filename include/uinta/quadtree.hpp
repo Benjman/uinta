@@ -1,8 +1,6 @@
 #ifndef UINTA_QUAD_TREE_H
 #define UINTA_QUAD_TREE_H
 
-#include <uinta/math.hpp>
-
 #include <entt/entity/fwd.hpp>
 #include <glm/vec2.hpp>
 
