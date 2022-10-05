@@ -25,8 +25,6 @@ class FileManager {
 
   const file_t* const registerFile(const std::string& relativePath);
 
-  void releaseFile(const file_t* const handle, bool force = false);
-
   const bool isActive(const file_t* const handle) const;
   const bool isBuffered(const file_t* const handle) const;
 
@@ -36,7 +34,10 @@ class FileManager {
   const file_size_t getSize(const file_t* const handle) const;
 
   void loadAll();
-  void loadHandle(const file_t* const handle);
+  void loadFile(const file_t* const handle);
+  void loadFile(const std::vector<const file_t*>& handles);
+  void releaseFile(const file_t* const handle, bool force = false);
+  void releaseFile(const std::vector<const file_t*>& handles);
 
  private:
   std::vector<std::string> fileSearchPaths;
