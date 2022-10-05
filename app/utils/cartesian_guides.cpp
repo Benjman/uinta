@@ -10,18 +10,16 @@
 using namespace uinta;
 
 void CartesianGuides::init(FileManager& fm, const Display& display) {
-  auto* f_vert = fm.registerFile("shader/cartesianGuides.vert", FileType::Text);
-  auto* f_frag = fm.registerFile("shader/cartesianGuides.frag", FileType::Text);
-  fm.loadHandle(f_vert);
-  fm.loadHandle(f_frag);
+  auto f_vert = fm.registerFile("shader/cartesianGuides.vert", FileType::Text);
+  auto f_frag = fm.registerFile("shader/cartesianGuides.frag", FileType::Text);
+  fm.loadFiles({f_vert, f_frag});
 
   std::vector<std::string> sources = {fm.getDataChars(f_vert), fm.getDataChars(f_frag)};
   std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
   std::vector<std::string> uniforms = {"u_mvp", "u_color", "u_viewport", "u_bezierStrength"};
   std::vector<GLuint*> locations = {&u_mvp, &u_color, &u_viewport, &u_bezierStrength};
   shader = createShaderProgram(sources, stages, uniforms, locations);
-  fm.releaseFile(f_vert);
-  fm.releaseFile(f_frag);
+  fm.releaseFiles({f_vert, f_frag});
 
   glUseProgram(shader);
   glUniform2fv(u_viewport, 1, glm::value_ptr(glm::vec2(display.width, display.height)));

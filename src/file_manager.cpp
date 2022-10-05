@@ -66,6 +66,12 @@ void FileManager::releaseFile(const file_t* const handle, bool force) {
   link = MemoryLink();
 }
 
+void FileManager::releaseFile(std::vector<const file_t*> handles) {
+  for (auto* handle : handles) {
+    releaseFile(handle);
+  }
+}
+
 const bool FileManager::isActive(const file_t* const handle) const {
   if (handle == nullptr || getId(handle) > handles.size()) {
     SPDLOG_WARN("Invalid handle {}!", *handle);
@@ -195,11 +201,11 @@ void FileManager::parseFileSearchPaths(const std::string& searchPaths, const cha
 
 void FileManager::loadAll() {
   for (auto* handle : handles) {
-    loadHandle(handle);
+    loadFile(handle);
   }
 }
 
-void FileManager::loadHandle(const file_t* const handle) {
+void FileManager::loadFile(const file_t* const handle) {
   if (!isActive(handle) || isBuffered(handle)) return;
   auto absPath = findPath(getPath(handle));
   if (absPath.empty()) {
@@ -214,6 +220,11 @@ void FileManager::loadHandle(const file_t* const handle) {
     return;
   }
   loadHandleData(handle);
+}
+void FileManager::loadFile(const std::vector<const file_t*> handles) {
+  for (auto* handle : handles) {
+    loadFile(handle);
+  }
 }
 
 void FileManager::loadHandleData(const file_t* const handle) {
