@@ -18,7 +18,8 @@ enum Models {
 
 const char* const getObjPath(const Models);
 void loadObj(const std::string& buffer, float* const vbuf, uint32_t* const vcount, uint32_t* const ibuf, uint32_t* icount,
-             uint32_t* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>* const attribs);
+             uint32_t* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs);
+
 }  // namespace uinta
 
 #endif  // UINTA_MODEL_HPP

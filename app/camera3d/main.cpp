@@ -55,7 +55,7 @@ struct Camera3dRunner final : GlfwRunner {
         {MeshAttribType_Normal, norm_attrib},
         {MeshAttribType_Color, color_attrib},
     };
-    loadObj(fileManager.getDataChars(cube), vertices, &local_vcount, indices, &local_icount, &ioff, &attribs);
+    loadObj(fileManager.getDataChars(cube), vertices, &local_vcount, indices, &local_icount, &ioff, attribs);
 
     glm::vec3 top(0.051, 0.933, 0.996);
     glm::vec3 sides(0.025, 0.465, 0.465);

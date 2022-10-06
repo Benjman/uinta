@@ -53,7 +53,7 @@ struct ModelRunner final : GlfwRunner {
         {MeshAttribType_Normal, MeshAttrib(6, 3)},
     };
     uint32_t ioff = 0;
-    loadObj(fileManager.getDataChars(f_model), vbuf, &vcount, ibuf, &icount, &ioff, &attribs);
+    loadObj(fileManager.getDataChars(f_model), vbuf, &vcount, ibuf, &icount, &ioff, attribs);
   }
 
   void load_shaders() {

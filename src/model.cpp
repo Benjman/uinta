@@ -41,7 +41,9 @@ struct objface {
     index = -1;
   }
 
-  bool operator==(const objface& other) { return vert == other.vert && uv == other.uv && norm == other.norm; }
+  bool operator==(const objface& other) {
+    return vert == other.vert && uv == other.uv && norm == other.norm;
+  }
 };
 
 int findOrInsertFaceData(const objface&, std::vector<objface>&, const uint32_t);
@@ -57,8 +59,8 @@ void processFaces(const std::vector<std::string>&, std::vector<objface>&, uint32
 }  // namespace uinta
 
 void uinta::loadObj(const std::string& objBuffer, float* const vbuf, uint32_t* vcount, uint32_t* const ibuf, uint32_t* icount,
-                    uint32_t* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>* const attribs) {
-  if (!attribs->size()) {
+                    uint32_t* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
+  if (!attribs.size()) {
     SPDLOG_WARN("Unable to parse .obj file: No attributes provided!");
     return;
   }
@@ -84,11 +86,15 @@ void uinta::loadObj(const std::string& objBuffer, float* const vbuf, uint32_t* v
   std::vector<objface> faceData;
   processFaces(faceLines, faceData, ibuf, ioff);
 
-  if (const MeshAttrib* attrib = findMeshAttrib(MeshAttribType_Normal, attribs))
-    packNormals(*attrib, vbuf, vcount, faceData, normals);
-  if (const MeshAttrib* attrib = findMeshAttrib(MeshAttribType_UV, attribs)) packUVs(*attrib, vbuf, vcount, faceData, uvs);
-  if (const MeshAttrib* attrib = findMeshAttrib(MeshAttribType_Position, attribs))
-    packVertices(*attrib, vbuf, vcount, faceData, vertices);
+  if (hasMeshAttrib(MeshAttribType_Normal, attribs)) {
+    packNormals(findMeshAttrib(MeshAttribType_Normal, attribs), vbuf, vcount, faceData, normals);
+  }
+  if (hasMeshAttrib(MeshAttribType_UV, attribs)) {
+    packUVs(findMeshAttrib(MeshAttribType_UV, attribs), vbuf, vcount, faceData, uvs);
+  }
+  if (hasMeshAttrib(MeshAttribType_Position, attribs)) {
+    packVertices(findMeshAttrib(MeshAttribType_Position, attribs), vbuf, vcount, faceData, vertices);
+  }
 }
 
 void uinta::processFaces(const std::vector<std::string>& faceLines, std::vector<objface>& result, uint32_t* const indexbuffer,
