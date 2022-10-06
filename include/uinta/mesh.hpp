@@ -36,9 +36,8 @@ struct MeshAttrib final {
   }
 };
 
-const MeshAttrib *findMeshAttrib(
-    MeshAttribType,
-    const std::unordered_map<MeshAttribType, MeshAttrib> *); // TODO this should take a reference to an unordered_map, not a ptr
+MeshAttrib findMeshAttrib(MeshAttribType, const std::unordered_map<MeshAttribType, MeshAttrib>&);
+bool hasMeshAttrib(MeshAttribType, const std::unordered_map<MeshAttribType, MeshAttrib>&);
 
 }  // namespace uinta
 

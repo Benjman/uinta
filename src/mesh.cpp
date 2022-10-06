@@ -1,8 +1,14 @@
+#include <spdlog/spdlog.h>
+
 #include <uinta/mesh.hpp>
 #include <uinta/quadtree.hpp>
 
 const inline auto LINE_SIZE = 4;
 const inline auto LINE_SIZE_HALF = LINE_SIZE / 2.0f;
+
+namespace uinta {
+std::string enumToStringMeshAttrib(MeshAttribType);
+}
 
 using namespace uinta;
 
@@ -107,7 +113,29 @@ extern void uinta::generateMesh(const Quad* qt, float* vertexBuffer, unsigned in
   *indexCount += localIndexCount;
 }
 
-const MeshAttrib* uinta::findMeshAttrib(MeshAttribType type, const std::unordered_map<MeshAttribType, MeshAttrib>* attribs) {
-  if (attribs->find(type) == attribs->end()) return nullptr;
-  return &attribs->at(type);
+MeshAttrib uinta::findMeshAttrib(MeshAttribType type, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
+  if (attribs.find(type) == attribs.end()) {
+    SPDLOG_ERROR("Unable to find MeshAttrib '{}'!", enumToStringMeshAttrib(type));
+    return {0, 0};
+  }
+  return attribs.at(type);
+}
+
+bool uinta::hasMeshAttrib(MeshAttribType type, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
+  return attribs.find(type) != attribs.end();
+}
+
+std::string uinta::enumToStringMeshAttrib(MeshAttribType type) {
+  switch (type) {
+    case MeshAttribType_Color:
+      return "MeshAttribType_Color";
+    case MeshAttribType_Normal:
+      return "MeshAttribType_Normal";
+    case MeshAttribType_Position:
+      return "MeshAttribType_Position";
+    case MeshAttribType_UV:
+      return "MeshAttribType_UV";
+    default:
+      return "UNKNOWN MeshAttribType";
+  }
 }
