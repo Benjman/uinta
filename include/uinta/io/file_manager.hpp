@@ -17,7 +17,7 @@ class FileManager {
 
   void init(const std::string searchPaths = UINTA_FILE_SEARCH_PATHS, const char delim = UINTA_FILE_SEARCH_PATHS_DELIM);
 
-  const file_t* const registerFile(const std::string& relativePath, const FileType type);
+  const file_t* const registerFile(const std::string& relativePath, const FileType type = FileType::Text);
 
   const bool isActive(const file_t* const handle) const;
   const bool isBuffered(const file_t* const handle) const;
