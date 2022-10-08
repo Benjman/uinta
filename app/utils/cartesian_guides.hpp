@@ -15,19 +15,22 @@ struct RunnerState;
  * Utility to draw lines along the positive axis of each plane
  */
 class CartesianGuides {
- public:
-  void init(FileManager& fileManager, const Display& display);
+  friend void initShader(CartesianGuides&, FileManager&);
+  friend void initGrid(CartesianGuides&);
 
-  void doRender(const RunnerState& state, const glm::mat4& projView);
+ public:
+  void init(FileManager& fileManager);
+  void render(const glm::mat4& projView);
 
  private:
-  Vao vao{{{0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0}}};
+  Vao vao{{
+      {0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0},
+      {1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 2 * sizeof(GLfloat)},
+  }};
   Vbo vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   GLuint shader;
   GLuint u_mvp;
-  GLuint u_color;
-  GLuint u_viewport;
-  GLuint u_bezierStrength;
+  int vcount = 0;
 };
 
 }  // namespace uinta

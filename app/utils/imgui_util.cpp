@@ -19,6 +19,7 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 
 #include <uinta/camera.hpp>
+#include <uinta/math/direction.hpp>
 
 // FIXME there has to be a better way to point to library source files
 #include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
@@ -67,6 +68,28 @@ void uinta::imgui::shutdown(GLFWwindow* const window) {
 #endif  // IMGUI_API_DISABLED
 }
 
+void uinta::imgui::view::camera(const TargetCamera& camera) {
+  auto forward = getForward(camera.pitch, camera.yaw);
+  auto right = getRight(camera.yaw);
+  auto up = getUp(camera.pitch, camera.yaw);
+  ImGui::Begin("Camera");
+  ImGui::SetWindowSize(ImVec2(275, 300));
+  ImGui::Text("Translation:   wasd or right-mouse");
+  ImGui::Text("Rotation:      cv or middle-mouse");
+  ImGui::Text("Distance:      y-scroll");
+  ImGui::NewLine();
+  ImGui::NewLine();
+  ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
+  ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x, camera.target.y, camera.target.z);
+  ImGui::Text("Dist         %+.2f", camera.dist);
+  ImGui::Text("Pitch        %+.2f°", camera.pitch);
+  ImGui::Text("Yaw          %+.2f°", camera.yaw);
+  ImGui::Text("Forward      %+.2f %+.2f %+.2f", forward.x, forward.y, forward.z);
+  ImGui::Text("Right        %+.2f %+.2f %+.2f", right.x, right.y, right.z);
+  ImGui::Text("Up           %+.2f %+.2f %+.2f", up.x, up.y, up.z);
+  ImGui::End();
+}
+
 void uinta::imgui::view::camera(const Camera& camera) {
   ImGui::Begin("Camera");
   ImGui::SetWindowSize(ImVec2(275, 200));
@@ -77,7 +100,8 @@ void uinta::imgui::view::camera(const Camera& camera) {
   ImGui::NewLine();
   ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
   ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x.current, camera.target.y.current, camera.target.z.current);
-  ImGui::Text("Pitch        %+.2f", camera.pitch);
+  ImGui::Text("Dist         %+.2f°", camera.dist.current);
+  ImGui::Text("Pitch        %+.2f°", camera.pitch);
   ImGui::Text("Yaw          %+.2f", camera.yaw);
   ImGui::End();
 }

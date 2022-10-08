@@ -3,6 +3,7 @@
 #include <glm/trigonometric.hpp>
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/input/state.hpp>
+#include <uinta/math/direction.hpp>
 #include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
@@ -23,20 +24,20 @@ glm::mat4 uinta::getViewMatrix(const TargetCamera& cam) {
 }
 
 void uinta::processInput(TargetCamera& cam, const RunnerState& state) {
-  // translation
-  float translationSensivity = 1;
-  if (isKeyDown(state.input, KEY_E)) {
-    cam.target += translationSensivity * state.delta * WORLD_FORWARD;
-  }
-  if (isKeyDown(state.input, KEY_D)) {
-    cam.target -= translationSensivity * state.delta * WORLD_FORWARD;
-  }
-  if (isKeyDown(state.input, KEY_S)) {
-    cam.target -= translationSensivity * state.delta * WORLD_RIGHT;
-  }
-  if (isKeyDown(state.input, KEY_F)) {
-    cam.target += translationSensivity * state.delta * WORLD_RIGHT;
-  }
+  // // translation
+  // float translationSensivity = 1;
+  // if (isKeyDown(state.input, KEY_E)) {
+  //   cam.target += translationSensivity * state.delta * WORLD_FORWARD;
+  // }
+  // if (isKeyDown(state.input, KEY_D)) {
+  //   cam.target -= translationSensivity * state.delta * WORLD_FORWARD;
+  // }
+  // if (isKeyDown(state.input, KEY_S)) {
+  //   cam.target -= translationSensivity * state.delta * WORLD_RIGHT;
+  // }
+  // if (isKeyDown(state.input, KEY_F)) {
+  //   cam.target += translationSensivity * state.delta * WORLD_RIGHT;
+  // }
 
   // pitch
   float pitchSensivity = 1;

@@ -15,34 +15,29 @@ class CartesianRunner final : public GlfwRunner {
   }
 
   bool doInit() override {
-    guides.init(fileManager, display);
+    guides.init(fileManager);
     return true;
   }
 
   void doRender(const RunnerState& state) override {
     clearBuffer();
+    glm::mat4 view(1.0);
+    view = glm::rotate(view, glm::radians(90.f), glm::vec3(1, 0, 0));
+    view = glm::translate(view, -WORLD_UP);
 
-    glm::vec3 up = {0, 1, 0};
-    float cameraDist = 20;
-    float pitch = -1;
-    float yaw = 5 * cos(state.runtime);
-    float y = cameraDist * sin(glm::radians(-pitch));
-    float z = cameraDist * cos(glm::radians(-pitch));
-    float x = cameraDist * sin(glm::radians(-yaw));
-    auto view = glm::lookAt({x, y, z}, glm::vec3(0), up);
-    if (state.tick % 20 == 0) {
-      SPDLOG_INFO("Camera pos: ({}, {}, {})\tPitch: {}\tYaw: {}", x, y, z, pitch, yaw);
-    }
+    float orthoSize = 1.0;
+    // clang-format off
+    auto proj = glm::ortho(
+        -orthoSize * display.aspectRatio,
+         orthoSize * display.aspectRatio,
+        -orthoSize,
+         orthoSize,
+         0.1f,
+         100.0f
+        );
+    // clang-format on
 
-    float orthoSize = 5.0;
-    auto proj = glm::ortho(-orthoSize * display.aspectRatio,  // left
-                           orthoSize * display.aspectRatio,   // right
-                           -orthoSize,                        // bottom
-                           orthoSize,                         // top
-                           0.1f,                              // near
-                           100.0f);                           // far
-
-    guides.doRender(state, proj * view);
+    guides.render(proj * view);
   }
 };
 

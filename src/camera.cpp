@@ -3,6 +3,7 @@
 #include <uinta/math/map.hpp>
 #include <uinta/math/smooth_vec3.hpp>
 
+#include "./camera/basic_camera.cpp"
 #include "./camera/target_camera.cpp"
 
 using namespace uinta;

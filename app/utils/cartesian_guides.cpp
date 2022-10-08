@@ -1,106 +1,79 @@
 #include "./cartesian_guides.hpp"
 
-#include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/euler_angles.hpp>
 #include <uinta/io/file_manager.hpp>
-#include <uinta/runner/display.hpp>
+#include <uinta/mesh.hpp>
 #include <uinta/shader.hpp>
 
-using namespace uinta;
+namespace uinta {
 
-void CartesianGuides::init(FileManager& fm, const Display& display) {
-  auto f_vert = fm.registerFile("shader/cartesianGuides.vert", FileType::Text);
-  auto f_frag = fm.registerFile("shader/cartesianGuides.frag", FileType::Text);
-  fm.loadFiles({f_vert, f_frag});
-
-  std::vector<std::string> sources = {fm.getDataChars(f_vert), fm.getDataChars(f_frag)};
-  std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-  std::vector<std::string> uniforms = {"u_mvp", "u_color", "u_viewport", "u_bezierStrength"};
-  std::vector<GLuint*> locations = {&u_mvp, &u_color, &u_viewport, &u_bezierStrength};
-  shader = createShaderProgram(sources, stages, uniforms, locations);
-  fm.releaseFiles({f_vert, f_frag});
-
-  glUseProgram(shader);
-  glUniform2fv(u_viewport, 1, glm::value_ptr(glm::vec2(display.width, display.height)));
-  glUniform1f(u_bezierStrength, 1.0);
-
-  // clang-format off
-  float cube[] = {
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-  };
-  // clang-format on
-
-  initVao(vao);
-  upload(vbo, cube, sizeof(cube));
-  initVertexAttribs(vao);
+void CartesianGuides::init(FileManager& fm) {
+  initShader(*this, fm);
+  initGrid(*this);
 }
 
-void CartesianGuides::doRender(const RunnerState& state, const glm::mat4& projView) {
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+void initShader(CartesianGuides& guides, FileManager& fm) {
+  auto vs = fm.registerFile("shader/cartesianGuides.vs");
+  auto fs = fm.registerFile("shader/cartesianGuides.fs");
+  fm.loadFiles({vs, fs});
+
+  std::vector<std::string> sources = {fm.getDataChars(vs), fm.getDataChars(fs)};
+  std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+  guides.shader = createShaderProgram(sources, stages, {"u_mvp"}, {&guides.u_mvp});
+  fm.releaseFiles({vs, fs});
+}
+
+void initGrid(CartesianGuides& guides) {
+  float buffer[600];
+  float lineSize = 0.01;
+
+  auto colorX = glm::vec3(155, 34, 38) / 255.0f;
+  auto colorZ = glm::vec3(0, 95, 115) / 255.0f;
+  auto colorPrimary = glm::vec3(0, 25, 32) / 255.0f;
+
+  for (int isVert = 0; isVert <= 1; isVert++) {
+    for (int i = -4; i <= 5; i++) {
+      // clang-format off
+      auto v0 = isVert ? glm::vec2(-lineSize + i,  5) : glm::vec2(-5,  lineSize + i);
+      auto v1 = isVert ? glm::vec2(-lineSize + i, -5) : glm::vec2(-5, -lineSize + i);
+      auto v2 = isVert ? glm::vec2( lineSize + i, -5) : glm::vec2( 5, -lineSize + i);
+      auto v3 = isVert ? glm::vec2( lineSize + i,  5) : glm::vec2( 5,  lineSize + i);
+
+      auto color = colorPrimary;
+      if (i == 0) color = isVert ? colorZ : colorX;
+
+      float vertices[] = {
+        v0.x, v0.y, color.r, color.g, color.b,
+        v1.x, v1.y, color.r, color.g, color.b,
+        v2.x, v2.y, color.r, color.g, color.b,
+        v2.x, v2.y, color.r, color.g, color.b,
+        v3.x, v3.y, color.r, color.g, color.b,
+        v0.x, v0.y, color.r, color.g, color.b,
+      };
+      // clang-format on
+
+      memcpy(&buffer[guides.vcount * 5], vertices, sizeof(vertices));
+      guides.vcount += 6;
+    }
+  }
+
+  initVao(guides.vao);
+  upload(guides.vbo, buffer, guides.vcount * 6 * sizeof(float));
+  initVertexAttribs(guides.vao);
+}
+
+void CartesianGuides::render(const glm::mat4& projView) {
   glUseProgram(shader);
   bind(vao);
 
-  float lineSize = 0.03;
-  glm::mat4 model;
-
-  // x
-  model = glm::scale(glm::mat4(1.0), {200, lineSize, lineSize});
-  glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(projView * model));
-  glUniform3fv(u_color, 1, glm::value_ptr(glm::vec3(1, 0, 0)));
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-
-  // y
-  model = glm::scale(glm::mat4(1.0), {lineSize, 200, lineSize});
-  glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(projView * model));
-  glUniform3fv(u_color, 1, glm::value_ptr(glm::vec3(0, 1, 0)));
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-
-  // z
-  model = glm::scale(glm::mat4(1.0), {lineSize, lineSize, 200});
-  glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(projView * model));
-  glUniform3fv(u_color, 1, glm::value_ptr(glm::vec3(0, 0, 1)));
-  glDrawArrays(GL_TRIANGLES, 0, 36);
+  // TODO billboard quads http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards
+  // TODO draw range based on view frustum https://stackoverflow.com/questions/12836967
+  for (int z = -1; z <= 1; z++) {
+    for (int x = -1; x <= 1; x++) {
+      glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(projView * glm::translate(glm::mat4(1), {x * 10, 0, z * 10})));
+      glDrawArrays(GL_TRIANGLES, 0, vcount);
+    }
+  }
 }
+
+}  // namespace uinta
