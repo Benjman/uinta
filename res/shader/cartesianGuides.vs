@@ -9,5 +9,5 @@ uniform mat4 u_mvp;
 
 void main() {
   pass_color = vec4(in_color, 1.0);
-  gl_Position = u_mvp * vec4(in_pos.x, 0.0, in_pos.y, 1.0);
+  gl_Position = u_mvp * vec4(in_pos, 0.0, 1.0).xzyw;
 }

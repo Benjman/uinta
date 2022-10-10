@@ -1,18 +1,15 @@
-#include <glm/ext.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
-#include <uinta/camera/target_camera.hpp>
-#include <uinta/math/direction.hpp>
 
 #include "../utils/utils.hpp"
 
 namespace uinta {
 
-class Camera3dRunner : public GlfwRunner {
+class CameraRunner : public GlfwRunner {
  public:
+  TargetCamera cam{1};
   CartesianGuides guides;
 
-  Camera3dRunner() : GlfwRunner("Camera", 1920, 1080) {
+  CameraRunner() : GlfwRunner("Camera", 1920, 1080) {
     setClearMask(GL_COLOR_BUFFER_BIT);
     setBackground(glm::vec3(38, 70, 83) / 255.0f);
   }
@@ -22,18 +19,19 @@ class Camera3dRunner : public GlfwRunner {
     return true;
   }
 
+  void doTick(const RunnerState& state) override {
+    cam.position.x = 2 * cos(state.runtime);
+    cam.position.z = 2 * sin(state.runtime);
+    // cam.pitch = 45 + 45 * sin(state.runtime);
+    // cam.yaw = 45 + 45 * cos(state.runtime);
+    update(cam, state);
+  }
+
   void doRender(const RunnerState& state) override {
     clearBuffer();
 
-    // cam.yaw = 90 * sin(state.runtime);
-
-    auto view = glm::rotate(glm::mat4(1.0), glm::radians(90.f), glm::vec3(1, 0, 0));
-    view = glm::translate(view, -WORLD_UP);
-    view = glm::translate(view, WORLD_FORWARD * (float)sin(state.runtime));
-    view = glm::translate(view, glm::cross(WORLD_FORWARD, WORLD_UP) * (float)cos(state.runtime));
-
-    float orthoSize = 6.0;
     // clang-format off
+    float orthoSize = 6.0;
     auto proj = glm::ortho(
         -orthoSize * display.aspectRatio,
          orthoSize * display.aspectRatio,
@@ -44,12 +42,15 @@ class Camera3dRunner : public GlfwRunner {
         );
     // clang-format on
 
-    guides.render(proj * view);
+    // proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
+
+    guides.render(proj * getViewMatrix(cam));
+    imgui::view::camera(cam);
   }
 };
 
 }  // namespace uinta
 
 int main(const int argc, const char** argv) {
-  return uinta::Camera3dRunner().run();
+  return uinta::CameraRunner().run();
 }

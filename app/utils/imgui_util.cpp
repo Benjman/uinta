@@ -3,23 +3,18 @@
 // clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include "./imgui_util.hpp"
 // clang-format on
 
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include "./imgui_util.hpp"
 
 #define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 #define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
 #include <uinta/camera.hpp>
-#include <uinta/math/direction.hpp>
 
 // FIXME there has to be a better way to point to library source files
 #include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
@@ -71,7 +66,7 @@ void uinta::imgui::shutdown(GLFWwindow* const window) {
 void uinta::imgui::view::camera(const TargetCamera& camera) {
   auto forward = getForward(camera.pitch, camera.yaw);
   auto right = getRight(camera.yaw);
-  auto up = getUp(camera.pitch, camera.yaw);
+  auto up = getUp(forward, right);
   ImGui::Begin("Camera");
   ImGui::SetWindowSize(ImVec2(275, 300));
   ImGui::Text("Translation:   wasd or right-mouse");

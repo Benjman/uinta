@@ -11,10 +11,7 @@ class FileManager;
 struct Display;
 struct RunnerState;
 
-/**
- * Utility to draw lines along the positive axis of each plane
- */
-class CartesianGuides {
+class CartesianGuides {  // TODO rename me to `CartesianGrid` along with shaders
   friend void initShader(CartesianGuides&, FileManager&);
   friend void initGrid(CartesianGuides&);
 
