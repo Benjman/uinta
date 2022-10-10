@@ -11,23 +11,39 @@ class GlfwRunner : public Runner {
  public:
   GLFWwindow* window;
 
-  GlfwRunner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {}
+  GlfwRunner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {
+  }
+
   ~GlfwRunner();
 
  protected:
-  virtual bool doInit() override { return true; }
+  virtual bool doInit() override {
+    return true;
+  }
 
-  virtual void doPreTick(const RunnerState&) override {}
-  virtual void doTick(const RunnerState&) override {}
-  virtual void doPostTick(const RunnerState&) override {}
+  virtual void doPreTick(const RunnerState& state) override {
+  }
 
-  virtual void doPreRender(const RunnerState& state) override {}
-  virtual void doRender(const RunnerState& state) override {}
-  virtual void doPostRender(const RunnerState& state) override {}
+  virtual void doTick(const RunnerState& state) override {
+  }
 
-  virtual void doShutdown() override {}
+  virtual void doPostTick(const RunnerState& state) override {
+  }
 
-  virtual void doHandleWindowSizeChanged(const int width, const int height) override {}
+  virtual void doPreRender(const RunnerState& state) override {
+  }
+
+  virtual void doRender(const RunnerState& state) override {
+  }
+
+  virtual void doPostRender(const RunnerState& state) override {
+  }
+
+  virtual void doShutdown() override {
+  }
+
+  virtual void doHandleWindowSizeChanged(const int width, const int height) override {
+  }
 
   bool internalInit() override;
 
