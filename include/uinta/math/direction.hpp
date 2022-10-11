@@ -1,13 +1,14 @@
 #ifndef UINTA_MATH_DIRECTION_HPP
 #define UINTA_MATH_DIRECTION_HPP
 
-#include <glm/vec3.hpp>
+#include <glm/fwd.hpp>
 
 namespace uinta {
 
-const glm::vec3 WORLD_UP{0, 1, 0};
-const glm::vec3 WORLD_RIGHT{1, 0, 0};
-const glm::vec3 WORLD_FORWARD{0, 0, -1};
+extern const glm::vec3 WORLD_UP;
+extern const glm::vec3 WORLD_HORIZONTAL;
+extern const glm::vec3 WORLD_RIGHT;
+extern const glm::vec3 WORLD_FORWARD;
 
 glm::vec3 getForward(float pitch, float yaw);
 glm::vec3 getRight(float yaw);

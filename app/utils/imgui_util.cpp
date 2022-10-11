@@ -69,9 +69,9 @@ void uinta::imgui::view::camera(const TargetCamera& camera) {
   auto up = getUp(forward, right);
   ImGui::Begin("Camera");
   ImGui::SetWindowSize(ImVec2(275, 300));
-  ImGui::Text("Translation:   wasd or right-mouse");
-  ImGui::Text("Rotation:      cv or middle-mouse");
-  ImGui::Text("Distance:      y-scroll");
+  ImGui::Text("Translation:   edsf");
+  ImGui::Text("Yaw:           wr");
+  ImGui::Text("Pitch:         qa");
   ImGui::NewLine();
   ImGui::NewLine();
   ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);

@@ -20,8 +20,8 @@ class CameraRunner : public GlfwRunner {
   }
 
   void doTick(const RunnerState& state) override {
-    cam.position.x = 2 * cos(state.runtime);
-    cam.position.z = 2 * sin(state.runtime);
+    // cam.position.x = 2 * cos(state.runtime);
+    // cam.position.z = 2 * sin(state.runtime);
     // cam.pitch = 45 + 45 * sin(state.runtime);
     // cam.yaw = 45 + 45 * cos(state.runtime);
     update(cam, state);
@@ -31,7 +31,7 @@ class CameraRunner : public GlfwRunner {
     clearBuffer();
 
     // clang-format off
-    float orthoSize = 6.0;
+    float orthoSize = 3.0;
     auto proj = glm::ortho(
         -orthoSize * display.aspectRatio,
          orthoSize * display.aspectRatio,
