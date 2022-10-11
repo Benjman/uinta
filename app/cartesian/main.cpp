@@ -6,16 +6,16 @@
 namespace uinta {
 
 class CartesianRunner final : public GlfwRunner {
-  CartesianGuides guides;
+  CartesianGrid grid;
 
  public:
-  CartesianRunner() : GlfwRunner("Cartesian Guides", 1920, 1080) {
+  CartesianRunner() : GlfwRunner("Cartesian Grid", 1920, 1080) {
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     setBackground(glm::vec3(38, 70, 83) / 255.0f);
   }
 
   bool doInit() override {
-    guides.init(fileManager);
+    grid.init(fileManager);
     return true;
   }
 
@@ -37,7 +37,7 @@ class CartesianRunner final : public GlfwRunner {
         );
     // clang-format on
 
-    guides.render(proj * view);
+    grid.render(proj * view);
   }
 };
 

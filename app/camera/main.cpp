@@ -7,7 +7,7 @@ namespace uinta {
 class CameraRunner : public GlfwRunner {
  public:
   TargetCamera cam{1};
-  CartesianGuides guides;
+  CartesianGrid grid;
 
   CameraRunner() : GlfwRunner("Camera", 1920, 1080) {
     setClearMask(GL_COLOR_BUFFER_BIT);
@@ -15,7 +15,7 @@ class CameraRunner : public GlfwRunner {
   }
 
   bool doInit() override {
-    guides.init(fileManager);
+    grid.init(fileManager);
     return true;
   }
 
@@ -44,7 +44,7 @@ class CameraRunner : public GlfwRunner {
 
     // proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
 
-    guides.render(proj * getViewMatrix(cam));
+    grid.render(proj * getViewMatrix(cam));
     imgui::view::camera(cam);
   }
 };

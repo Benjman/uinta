@@ -1,5 +1,5 @@
-#ifndef UINTA_UTILS_CARTESIAN_GUIDES_HPP
-#define UINTA_UTILS_CARTESIAN_GUIDES_HPP
+#ifndef UINTA_UTILS_CARTESIAN_GRID_HPP
+#define UINTA_UTILS_CARTESIAN_GRID_HPP
 
 #include <glm/fwd.hpp>
 #include <uinta/gl/vao.hpp>
@@ -11,9 +11,9 @@ class FileManager;
 struct Display;
 struct RunnerState;
 
-class CartesianGuides {  // TODO rename me to `CartesianGrid` along with shaders
-  friend void initShader(CartesianGuides&, FileManager&);
-  friend void initGrid(CartesianGuides&);
+class CartesianGrid {
+  friend void initShader(CartesianGrid&, FileManager&);
+  friend void initGrid(CartesianGrid&);
 
  public:
   void init(FileManager& fileManager);
@@ -32,4 +32,4 @@ class CartesianGuides {  // TODO rename me to `CartesianGrid` along with shaders
 
 }  // namespace uinta
 
-#endif  // UINTA_UTILS_CARTESIAN_GUIDES_HPP
+#endif  // UINTA_UTILS_CARTESIAN_GRID_HPP

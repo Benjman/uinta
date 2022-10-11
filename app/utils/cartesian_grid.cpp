@@ -1,4 +1,4 @@
-#include "./cartesian_guides.hpp"
+#include "./cartesian_grid.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <uinta/io/file_manager.hpp>
@@ -7,30 +7,31 @@
 
 namespace uinta {
 
-void CartesianGuides::init(FileManager& fm) {
+void CartesianGrid::init(FileManager& fm) {
   initShader(*this, fm);
   initGrid(*this);
 }
 
-void initShader(CartesianGuides& guides, FileManager& fm) {
-  auto vs = fm.registerFile("shader/cartesianGuides.vs");
-  auto fs = fm.registerFile("shader/cartesianGuides.fs");
-  fm.loadFiles({vs, fs});
+void initShader(CartesianGrid& grid, FileManager& fm) {
+  auto vs = fm.registerFile("shader/cartesianGrid.vs");
+  auto fs = fm.registerFile("shader/cartesianGrid.fs");
+  fm.loadFile({vs, fs});
 
   std::vector<std::string> sources = {fm.getDataChars(vs), fm.getDataChars(fs)};
   std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-  guides.shader = createShaderProgram(sources, stages, {"u_mvp"}, {&guides.u_mvp});
-  fm.releaseFiles({vs, fs});
+  grid.shader = createShaderProgram(sources, stages, {"u_mvp"}, {&grid.u_mvp});
+  fm.releaseFile({vs, fs});
 }
 
-void initGrid(CartesianGuides& guides) {
+void initGrid(CartesianGrid& grid) {
   float buffer[600];
-  float lineSize = 0.01;
+  float lineSize = 0.005;
 
   auto colorX = glm::vec3(155, 34, 38) / 255.0f;
   auto colorZ = glm::vec3(0, 95, 115) / 255.0f;
   auto colorPrimary = glm::vec3(0, 25, 32) / 255.0f;
 
+  // TODO draw origins last so the primary lines aren't overlapping
   for (int isVert = 0; isVert <= 1; isVert++) {
     for (int i = -4; i <= 5; i++) {
       // clang-format off
@@ -52,17 +53,17 @@ void initGrid(CartesianGuides& guides) {
       };
       // clang-format on
 
-      memcpy(&buffer[guides.vcount * 5], vertices, sizeof(vertices));
-      guides.vcount += 6;
+      memcpy(&buffer[grid.vcount * 5], vertices, sizeof(vertices));
+      grid.vcount += 6;
     }
   }
 
-  initVao(guides.vao);
-  upload(guides.vbo, buffer, guides.vcount * 6 * sizeof(float));
-  initVertexAttribs(guides.vao);
+  initVao(grid.vao);
+  upload(grid.vbo, buffer, grid.vcount * 6 * sizeof(float));
+  initVertexAttribs(grid.vao);
 }
 
-void CartesianGuides::render(const glm::mat4& projView) {
+void CartesianGrid::render(const glm::mat4& projView) {
   glUseProgram(shader);
   bind(vao);
 
