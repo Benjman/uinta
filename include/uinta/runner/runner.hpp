@@ -17,6 +17,7 @@ class Runner {
   Display display;
   FileManager fileManager;
   RunnerState state;
+  float startTime;
 
   Runner(const std::string& title, uint32_t width, uint32_t height) noexcept;
 
