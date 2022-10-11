@@ -3,6 +3,8 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
+#include <spdlog/spdlog.h>
+
 #include <uinta/runner/runner.hpp>
 
 #include "./runner/display.cpp"
@@ -24,6 +26,7 @@ bool Runner::init() {
   fileManager.init();
   fileManager.loadAll();
   if (!internalInit() || !doInit()) return false;
+  startTime = getRuntime();
   SPDLOG_INFO("Completed initialization for '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
 }
@@ -50,6 +53,7 @@ int Runner::run() {
 }
 
 void Runner::tick(float runtime) {
+  runtime -= startTime;
   state.delta = runtime - state.runtime;
   state.runtime = runtime;
   state.tick++;
