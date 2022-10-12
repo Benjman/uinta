@@ -30,6 +30,20 @@ uinta::SmoothVec3& uinta::SmoothVec3::operator+=(const glm::vec3& v) {
   return *this;
 }
 
+uinta::SmoothVec3& uinta::SmoothVec3::operator-=(const glm::vec3& v) {
+  x -= v.x;
+  y -= v.y;
+  z -= v.z;
+  return *this;
+}
+
+uinta::SmoothVec3& uinta::SmoothVec3::operator=(const glm::vec3& v) {
+  x = v.x;
+  y = v.y;
+  z = v.z;
+  return *this;
+}
+
 uinta::SmoothVec3::operator glm::vec3() const {
   return {x.current, y.current, z.current};
 }

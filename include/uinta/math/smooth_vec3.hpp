@@ -15,10 +15,13 @@ struct SmoothVec3 {
   SmoothVec3(float agility, const glm::vec3&);
 
   SmoothVec3& operator+=(const glm::vec3&);
+  SmoothVec3& operator-=(const glm::vec3&);
+  SmoothVec3& operator=(const glm::vec3&);
 
   operator glm::vec3() const;
 };
 
+// TODO these need ot be inlined
 void update(SmoothVec3&, float);
 void force(uinta::SmoothVec3&);
 void force(uinta::SmoothVec3&, const glm::vec3&);
