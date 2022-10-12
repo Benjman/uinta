@@ -1,6 +1,6 @@
 #include <uinta/math/smooth_float.hpp>
 
-uinta::SmoothFloat::SmoothFloat(float start, float agility) noexcept : current(start), target(start), agility(agility) {
+uinta::SmoothFloat::SmoothFloat(float agility, float start) noexcept : agility(agility), current(start), target(start) {
 }
 
 uinta::SmoothFloat::SmoothFloat(const SmoothFloat& other) noexcept {
@@ -43,6 +43,6 @@ void uinta::force(uinta::SmoothFloat& v, float value) {
 }
 
 void uinta::update(uinta::SmoothFloat& v, float dt) {
-  float diff = (v.target - v.current);
+  auto diff = (v.target - v.current);
   v.current += diff * v.agility * dt;
 }

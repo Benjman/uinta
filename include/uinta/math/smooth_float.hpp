@@ -8,7 +8,7 @@ struct SmoothFloat final {
   float current;
   float target;
 
-  SmoothFloat(float start, float agility) noexcept;
+  SmoothFloat(float agility, float start) noexcept;
   SmoothFloat(const SmoothFloat& other) noexcept;
 
   SmoothFloat& operator=(const SmoothFloat& other) noexcept;
@@ -19,6 +19,7 @@ struct SmoothFloat final {
   operator float() const;
 };
 
+// TODO these need ot be inlined
 void force(SmoothFloat&);
 void force(SmoothFloat&, float value);
 void update(SmoothFloat&, float dt);

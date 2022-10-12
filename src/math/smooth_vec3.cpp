@@ -1,10 +1,10 @@
 #include <glm/vec3.hpp>
 #include <uinta/math/smooth_vec3.hpp>
 
-uinta::SmoothVec3::SmoothVec3(float agility, float x, float y, float z) : x(x, agility), y(y, agility), z(z, agility) {
+uinta::SmoothVec3::SmoothVec3(float agility, float x, float y, float z) : x(agility, x), y(agility, y), z(agility, z) {
 }
 
-uinta::SmoothVec3::SmoothVec3(float agility, const glm::vec3& v) : x(v.x, agility), y(v.y, agility), z(v.z, agility) {
+uinta::SmoothVec3::SmoothVec3(float agility, const glm::vec3& v) : x(agility, v.x), y(agility, v.y), z(agility, v.z) {
 }
 
 void uinta::update(uinta::SmoothVec3& v, float dt) {
