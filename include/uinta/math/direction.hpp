@@ -5,10 +5,10 @@
 
 namespace uinta {
 
-extern const glm::vec3 WORLD_UP;
+extern const glm::vec3 WORLD_FORWARD;
 extern const glm::vec3 WORLD_HORIZONTAL;
 extern const glm::vec3 WORLD_RIGHT;
-extern const glm::vec3 WORLD_FORWARD;
+extern const glm::vec3 WORLD_UP;
 
 glm::vec3 getForward(float pitch, float yaw);
 glm::vec3 getRight(float yaw);

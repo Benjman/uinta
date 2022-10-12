@@ -15,7 +15,6 @@ function (app name)
 endfunction()
 
 app(camera)
-# app(cartesian)
 # app(model)
 # app(ray_picking)
 # app(post_processing)

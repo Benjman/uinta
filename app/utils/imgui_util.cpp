@@ -64,21 +64,22 @@ void uinta::imgui::shutdown(GLFWwindow* const window) {
 }
 
 void uinta::imgui::view::camera(const TargetCamera& camera) {
-  auto forward = getForward(camera.pitch, camera.yaw);
-  auto right = getRight(camera.yaw);
+  auto forward = getForward(camera.pitch, camera.angle);
+  auto right = getRight(camera.angle);
   auto up = getUp(forward, right);
   ImGui::Begin("Camera");
   ImGui::SetWindowSize(ImVec2(275, 300));
   ImGui::Text("Translation:   edsf");
-  ImGui::Text("Yaw:           wr");
+  ImGui::Text("Angle:         wr");
   ImGui::Text("Pitch:         qa");
+  ImGui::Text("Dist:          cv");
   ImGui::NewLine();
   ImGui::NewLine();
   ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
-  ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x, camera.target.y, camera.target.z);
-  ImGui::Text("Dist         %+.2f", camera.dist);
-  ImGui::Text("Pitch        %+.2f°", camera.pitch);
-  ImGui::Text("Yaw          %+.2f°", camera.yaw);
+  ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x.current, camera.target.y.current, camera.target.z.current);
+  ImGui::Text("Dist         %+.2f", camera.dist.current);
+  ImGui::Text("Pitch        %+.2f°", fmod(360 - camera.pitch, 360));
+  ImGui::Text("Angle        %+.2f°", fmod(360 - camera.angle, 360));
   ImGui::Text("Forward      %+.2f %+.2f %+.2f", forward.x, forward.y, forward.z);
   ImGui::Text("Right        %+.2f %+.2f %+.2f", right.x, right.y, right.z);
   ImGui::Text("Up           %+.2f %+.2f %+.2f", up.x, up.y, up.z);
