@@ -8,7 +8,7 @@ out vec4 out_color;
 const vec3 obj_color = vec3(1.0, 0.3, 0.3);
 
 // light info
-const vec3 light_dir = normalize(vec3(0, 0, -1));
+const vec3 light_dir = normalize(vec3(0.25, 1, 0.5));
 const vec3 light_color = vec3(1);
 
 // ambient lighting
