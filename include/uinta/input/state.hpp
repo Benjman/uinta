@@ -1,14 +1,11 @@
 #ifndef UINTA_INPUT_STATE_HPP
 #define UINTA_INPUT_STATE_HPP
 
+#include <algorithm>
 #include <uinta/input/keys.hpp>
 #include <unordered_set>
 
 namespace uinta {
-
-namespace internal {
-bool isFoundInSet(const uinta::input_key_t key, const std::unordered_set<uinta::input_key_t>& set);
-}
 
 struct InputState final {
   int flags = 0;
@@ -41,31 +38,31 @@ inline bool isCtrlDown(const InputState& input) {
 }
 
 inline bool isKeyDown(const InputState& input, input_key_t key) {
-  return internal::isFoundInSet(key, input.keys_down);
+  return std::find(input.keys_down.begin(), input.keys_down.end(), key) != input.keys_down.end();
 }
 
 inline bool isKeyPressed(const InputState& input, input_key_t key) {
-  return internal::isFoundInSet(key, input.keys_pressed);
+  return std::find(input.keys_pressed.begin(), input.keys_pressed.end(), key) != input.keys_pressed.end();
 }
 
 inline bool isKeyReleased(const InputState& input, input_key_t key) {
-  return internal::isFoundInSet(key, input.keys_released);
+  return std::find(input.keys_released.begin(), input.keys_released.end(), key) != input.keys_released.end();
 }
 
 inline bool isKeyRepeated(const InputState& input, input_key_t key) {
-  return internal::isFoundInSet(key, input.keys_repeated);
+  return std::find(input.keys_repeated.begin(), input.keys_repeated.end(), key) != input.keys_repeated.end();
 }
 
 inline bool isMouseButtonDown(const InputState& input, mouse_button_t button) {
-  return internal::isFoundInSet(button, input.mouse_down);
+  return std::find(input.mouse_down.begin(), input.mouse_down.end(), button) != input.mouse_down.end();
 }
 
 inline bool isMouseButtonPressed(const InputState& input, mouse_button_t button) {
-  return internal::isFoundInSet(button, input.mouse_pressed);
+  return std::find(input.mouse_pressed.begin(), input.mouse_pressed.end(), button) != input.mouse_pressed.end();
 }
 
 inline bool isMouseButtonReleased(const InputState& input, mouse_button_t button) {
-  return internal::isFoundInSet(button, input.mouse_released);
+  return std::find(input.mouse_released.begin(), input.mouse_released.end(), button) != input.mouse_released.end();
 }
 
 inline bool isShiftDown(const InputState& input) {
