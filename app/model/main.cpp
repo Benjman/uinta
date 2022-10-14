@@ -9,8 +9,9 @@ struct ModelRunner final : GlfwRunner {
   CartesianGrid grid;
 
   Vao vao{{
-      {0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0},
-      {1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))},
+      {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0},
+      {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 3 * sizeof(GLfloat)},
+      {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 6 * sizeof(GLfloat)},
   }};
   Vbo vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   uint icount = 0;
@@ -41,28 +42,30 @@ struct ModelRunner final : GlfwRunner {
   }
 
   void initObj() {
-    auto file = fileManager.registerFile("model/test.obj", FileType::Text);
+    auto file = fileManager.registerFile("model/plane.obj", FileType::Text);
     fileManager.loadFile(file);
-    GLfloat vbuf[KILOBYTES(100)];
-    GLuint ibuf[KILOBYTES(100)];
+    GLfloat vertices[KILOBYTES(66)];
+    GLuint indices[KILOBYTES(66)];
+    for (int i = 0; i < sizeof(vertices) / sizeof(float); i++) vertices[i] = 1.0f;
     uint ioff = 0;
     uint vcount = 0;
-    loadObj(fileManager.getDataString(file), vbuf, &vcount, ibuf, &icount, &ioff,
+    loadObj(fileManager.getDataString(file), vertices, &vcount, indices, &icount, &ioff,
             {
-                {MeshAttribType_Position, {6, 0}},
-                {MeshAttribType_Normal, {6, 3}},
+                {MeshAttribType_Position, {9, 0}},
+                {MeshAttribType_Normal, {9, 3}},
+                {MeshAttribType_Color, {9, 6}},
             });
     initVao(vao);
-    upload(vbo, vbuf, vcount * sizeof(GLfloat));
+    upload(vbo, vertices, vcount * sizeof(GLfloat));
     initVertexAttribs(vao);
-    indexBuffer(vao, ibuf, icount * sizeof(GLuint));
+    indexBuffer(vao, indices, icount * sizeof(GLuint));
   }
 
   void initShader() {
     auto vert = fileManager.registerFile("model.vs");
     auto frag = fileManager.registerFile("model.fs");
     fileManager.loadFile({vert, frag});
-    const std::vector<std::string> sources({fileManager.getDataString(vert), fileManager.getDataString(frag)});
+    std::vector<std::string> sources({fileManager.getDataString(vert), fileManager.getDataString(frag)});
     shader = createShaderProgram(sources, {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"u_model", "u_mvp"}, {&u_model, &u_mvp});
     fileManager.releaseFile({vert, frag});
   }
@@ -77,7 +80,6 @@ struct ModelRunner final : GlfwRunner {
     glm::mat4 model(1);
     // model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
     model = glm::rotate(model, glm::radians(90.f), {1, 0, 0});
-    model = glm::scale(model, glm::vec3(0.5));
     glUniformMatrix4fv(u_model, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(proj * getViewMatrix(cam) * model));
     glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);

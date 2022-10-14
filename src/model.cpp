@@ -46,20 +46,21 @@ struct objface {
   }
 };
 
-int findOrInsertFaceData(const objface&, std::vector<objface>&, const uint32_t);
-void packNormals(const MeshAttrib&, float* const, uint32_t* cont, const std::vector<objface>&, const float* const);
-void packUVs(const MeshAttrib&, float* const, uint32_t* cont, const std::vector<objface>&, const float* const);
-void packVertices(const MeshAttrib&, float* const, uint32_t* cont, const std::vector<objface>&, const float* const);
+void extractLineFloats(const std::vector<std::string>& lines, float* const buffer, const uint size, const char delimiter);
+int findOrInsertFaceData(const objface&, std::vector<objface>&, const uint);
+void packColors(const MeshAttrib&, float* const, uint* cont, const std::vector<objface>&, const float* const);
+void packNormals(const MeshAttrib&, float* const, uint* cont, const std::vector<objface>&, const float* const);
+void packUVs(const MeshAttrib&, float* const, uint* cont, const std::vector<objface>&, const float* const);
+void packVertices(const MeshAttrib&, float* const, uint* cont, const std::vector<objface>&, const float* const, bool);
 void parseFile(const std::string&, std::vector<std::string>&, std::vector<std::string>&, std::vector<std::string>&,
                std::vector<std::string>&);
-void extractLineFloats(const std::vector<std::string>& lines, float* const buffer, const uint32_t size, const char delimiter);
 void processFaceStrs(std::string*, std::vector<objface>&);
-void processFaces(const std::vector<std::string>&, std::vector<objface>&, uint32_t* const, uint32_t* const);
+void processFaces(const std::vector<std::string>&, std::vector<objface>&, uint* const, uint* const);
 
 }  // namespace uinta
 
-void uinta::loadObj(const std::string& objBuffer, float* const vbuf, uint32_t* vcount, uint32_t* const ibuf, uint32_t* icount,
-                    uint32_t* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
+void uinta::loadObj(const std::string& objBuffer, float* const vbuf, uint* vcount, uint* const ibuf, uint* icount,
+                    uint* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
   if (!attribs.size()) {
     SPDLOG_WARN("Unable to parse .obj file: No attributes provided!");
     return;
@@ -74,8 +75,10 @@ void uinta::loadObj(const std::string& objBuffer, float* const vbuf, uint32_t* v
 
   *icount += faceLines.size() * 3;
 
-  float vertices[vertexLines.size() * 3];
-  extractLineFloats(vertexLines, vertices, 3, ' ');
+  bool hasColor = vertexLines.size() > 0 && 5 == std::count(vertexLines.at(0).begin(), vertexLines.at(0).end(), ' ');
+
+  float vertices[vertexLines.size() * (hasColor ? 6 : 3)];
+  extractLineFloats(vertexLines, vertices, hasColor ? 6 : 3, ' ');
 
   float uvs[uvLines.size() * 2];
   extractLineFloats(uvLines, uvs, 2, ' ');
@@ -93,21 +96,21 @@ void uinta::loadObj(const std::string& objBuffer, float* const vbuf, uint32_t* v
     packUVs(findMeshAttrib(MeshAttribType_UV, attribs), vbuf, vcount, faceData, uvs);
   }
   if (hasMeshAttrib(MeshAttribType_Position, attribs)) {
-    packVertices(findMeshAttrib(MeshAttribType_Position, attribs), vbuf, vcount, faceData, vertices);
+    packVertices(findMeshAttrib(MeshAttribType_Position, attribs), vbuf, vcount, faceData, vertices, hasColor);
+  }
+  if (hasMeshAttrib(MeshAttribType_Color, attribs)) {
+    if (!hasColor) {
+      SPDLOG_WARN("Mesh color data was requested, but the `.obj` file does not contain color data!");
+      return;
+    }
+    packColors(findMeshAttrib(MeshAttribType_Color, attribs), vbuf, vcount, faceData, vertices);
   }
 }
 
-void uinta::processFaces(const std::vector<std::string>& faceLines, std::vector<objface>& result, uint32_t* const indexbuffer,
-                         uint32_t* const ioff) {
-  /*
-      Face lines describe a single triangle in the format of:
-          `f {vert}/{uv}/{norm} {vert}/{uv}/{norm} {vert}/{uv}/{norm}`
-
-      As an example:
-          `f 1/2/3 4/5/6 7/8/9`
-  */
-  for (uint32_t i = 0, len = faceLines.size(); i < len; i++) {
-    std::string tmp = std::string(faceLines.at(i));
+void uinta::processFaces(const std::vector<std::string>& faceLines, std::vector<objface>& result, uint* const indexbuffer,
+                         uint* const ioff) {
+  for (uint i = 0, len = faceLines.size(); i < len; i++) {
+    auto tmp = std::string(faceLines.at(i));
 
     std::string strs[3];
     strs[0] = tmp.substr(0, tmp.find(' '));
@@ -126,37 +129,47 @@ void uinta::processFaces(const std::vector<std::string>& faceLines, std::vector<
   *ioff += faceLines.size() * 3;
 }
 
-void uinta::packNormals(const MeshAttrib& attrib, float* const vbuf, uint32_t* const vcount, const std::vector<objface>& faceData,
+void uinta::packColors(const MeshAttrib& attrib, float* const vbuf, uint* const vcount, const std::vector<objface>& faceData,
+                       const float* const vertexData) {
+  for (int i = 0, len = faceData.size(); i < len; i++) {
+    auto index = faceData.at(i).vert - 1;
+    if (index < 0) break;
+    memcpy(&vbuf[attrib.offset + attrib.stride * i], &vertexData[index * 6 + 3], 3 * sizeof(float));
+    *vcount += 3;
+  }
+}
+
+void uinta::packNormals(const MeshAttrib& attrib, float* const vbuf, uint* const vcount, const std::vector<objface>& faceData,
                         const float* const normalData) {
   for (int i = 0, len = faceData.size(); i < len; i++) {
-    const uint32_t index = faceData.at(i).norm - 1;
+    auto index = faceData.at(i).norm - 1;
     if (index < 0) break;
     memcpy(&vbuf[attrib.offset + attrib.stride * i], &normalData[index * 3], 3 * sizeof(float));
     *vcount += 3;
   }
 }
 
-void uinta::packUVs(const MeshAttrib& attrib, float* const vbuf, uint32_t* const vcount, const std::vector<objface>& faceData,
+void uinta::packUVs(const MeshAttrib& attrib, float* const vbuf, uint* const vcount, const std::vector<objface>& faceData,
                     const float* const uvData) {
   for (int i = 0, len = faceData.size(); i < len; i++) {
-    const uint32_t index = faceData.at(i).uv - 1;
+    auto index = faceData.at(i).uv - 1;
     if (index < 0) break;
     memcpy(&vbuf[attrib.offset + attrib.stride * i], &uvData[index * 3], 3 * sizeof(float));
     *vcount += 3;
   }
 }
 
-void uinta::packVertices(const MeshAttrib& attrib, float* const vbuf, uint32_t* const vcount,
-                         const std::vector<objface>& faceData, const float* const vertexData) {
+void uinta::packVertices(const MeshAttrib& attrib, float* const vbuf, uint* const vcount, const std::vector<objface>& faceData,
+                         const float* const vertexData, bool hasColor) {
   for (int i = 0, len = faceData.size(); i < len; i++) {
-    const uint32_t index = faceData.at(i).vert - 1;
+    auto index = faceData.at(i).vert - 1;
     if (index < 0) break;
-    memcpy(&vbuf[attrib.offset + attrib.stride * i], &vertexData[index * 3], 3 * sizeof(float));
+    memcpy(&vbuf[attrib.offset + attrib.stride * i], &vertexData[index * (hasColor ? 6 : 3)], 3 * sizeof(float));
     *vcount += 3;
   }
 }
 
-int uinta::findOrInsertFaceData(const objface& face, std::vector<objface>& faceData, const uint32_t max) {
+int uinta::findOrInsertFaceData(const objface& face, std::vector<objface>& faceData, const uint max) {
   for (int i = 0; i < max; i++) {
     if (faceData[i] == face) return i;
     if (faceData[i] == objface()) {
@@ -219,10 +232,9 @@ void uinta::parseFile(const std::string& objBuffer, std::vector<std::string>& ve
   }
 }
 
-void uinta::extractLineFloats(const std::vector<std::string>& lines, float* const buffer, const uint32_t size,
-                              const char delimiter) {
+void uinta::extractLineFloats(const std::vector<std::string>& lines, float* const buffer, const uint size, const char delimiter) {
   for (int i = 0, len = lines.size(); i < len; i++) {
-    std::string tmp = std::string(lines.at(i));
+    auto tmp = std::string(lines.at(i));
     for (int j = 0; j < size; j++) {
       buffer[i * size + j] = std::stof(tmp.substr(0, tmp.find(delimiter)));
       tmp.erase(0, tmp.find(delimiter) + 1);
