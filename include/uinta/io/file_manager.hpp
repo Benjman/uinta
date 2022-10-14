@@ -23,7 +23,7 @@ class FileManager {
   const bool isBuffered(const file_t* const handle) const;
 
   const void* getData(const file_t* const handle) const;
-  const char* getDataChars(const file_t* const handle) const;
+  std::string getDataString(const file_t* const handle) const;
   const std::string& getPath(const file_t* const handle) const;
   const file_size_t getSize(const file_t* const handle) const;
   const FileType getType(const file_t* const handle) const;

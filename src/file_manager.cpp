@@ -92,8 +92,8 @@ const void* FileManager::getData(const file_t* const handle) const {
   return links.at(getId(handle)).ptr;
 }
 
-const char* FileManager::getDataChars(const file_t* const handle) const {
-  return (char*)getData(handle);
+std::string FileManager::getDataString(const file_t* const handle) const {
+  return {(char*)getData(handle), getSize(handle)};
 }
 
 const std::string& FileManager::getPath(const file_t* const handle) const {

@@ -47,7 +47,7 @@ struct ModelRunner final : GlfwRunner {
     GLuint ibuf[KILOBYTES(100)];
     uint ioff = 0;
     uint vcount = 0;
-    loadObj(fileManager.getDataChars(file), vbuf, &vcount, ibuf, &icount, &ioff,
+    loadObj(fileManager.getDataString(file), vbuf, &vcount, ibuf, &icount, &ioff,
             {
                 {MeshAttribType_Position, {6, 0}},
                 {MeshAttribType_Normal, {6, 3}},
@@ -62,7 +62,7 @@ struct ModelRunner final : GlfwRunner {
     auto vert = fileManager.registerFile("model.vs");
     auto frag = fileManager.registerFile("model.fs");
     fileManager.loadFile({vert, frag});
-    const std::vector<std::string> sources({fileManager.getDataChars(vert), fileManager.getDataChars(frag)});
+    const std::vector<std::string> sources({fileManager.getDataString(vert), fileManager.getDataString(frag)});
     shader = createShaderProgram(sources, {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"u_model", "u_mvp"}, {&u_model, &u_mvp});
     fileManager.releaseFile({vert, frag});
   }

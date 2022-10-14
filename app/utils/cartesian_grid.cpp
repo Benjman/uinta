@@ -17,7 +17,7 @@ void initShader(CartesianGrid& grid, FileManager& fm) {
   auto fs = fm.registerFile("shader/cartesianGrid.fs");
   fm.loadFile({vs, fs});
 
-  std::vector<std::string> sources = {fm.getDataChars(vs), fm.getDataChars(fs)};
+  std::vector<std::string> sources = {fm.getDataString(vs), fm.getDataString(fs)};
   std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
   grid.shader = createShaderProgram(sources, stages, {"u_mvp"}, {&grid.u_mvp});
   fm.releaseFile({vs, fs});
