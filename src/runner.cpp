@@ -5,10 +5,11 @@
 
 #include <spdlog/spdlog.h>
 
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/trigonometric.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner.hpp>
-
-#include "./runner/display.cpp"
 
 namespace uinta {
 void setSpdlogLevel();
@@ -30,7 +31,9 @@ bool Runner::init() {
   spdlog::stopwatch sw;
   fileManager.init();
   fileManager.loadAll();
-  if (!internalInit() || !doInit()) return false;
+  if (!internalInit()) return false;
+  grid.init(fileManager);
+  if (!doInit()) return false;
   startTime = getRuntime();
   SPDLOG_INFO("Completed initialization for '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
@@ -84,6 +87,9 @@ void Runner::render() {
 
   internalPostRender();
   doPostRender(state);
+
+  auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
+  grid.render(proj * getViewMatrix(camera));
 
   swapBuffers();
 }

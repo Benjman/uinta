@@ -5,9 +5,6 @@
 namespace uinta {
 
 struct ModelRunner final : GlfwRunner {
-  TargetCamera cam;
-  CartesianGrid grid;
-
   Vao vao{{
       {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0},
       {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 3 * sizeof(GLfloat)},
@@ -21,24 +18,16 @@ struct ModelRunner final : GlfwRunner {
   uint u_mvp;
 
   ModelRunner() : GlfwRunner("hello models", 1920, 1080) {
-    force(cam.angle, 315);
-    force(cam.pitch, 45);
-    force(cam.dist, 10);
   }
 
   bool doInit() override {
     glEnable(GL_DEPTH_TEST);
     setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    grid.init(fileManager);
     initObj();
     initShader();
 
     return true;
-  }
-
-  void doTick(const RunnerState& state) override {
-    update(cam, state);
   }
 
   void initObj() {
@@ -71,6 +60,7 @@ struct ModelRunner final : GlfwRunner {
   }
 
   void doRender(const RunnerState& state) override {
+    glEnable(GL_DEPTH_TEST);
     clearBuffer();
     glUseProgram(shader);
     bind(vao);
@@ -81,12 +71,8 @@ struct ModelRunner final : GlfwRunner {
     // model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
     model = glm::rotate(model, glm::radians(90.f), {1, 0, 0});
     glUniformMatrix4fv(u_model, 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(proj * getViewMatrix(cam) * model));
+    glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(proj * getViewMatrix(camera) * model));
     glDrawElements(GL_TRIANGLES, icount, GL_UNSIGNED_INT, 0);
-
-    grid.render(proj * getViewMatrix(cam));
-
-    imgui::view::camera(cam);
   }
 };
 

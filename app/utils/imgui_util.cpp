@@ -1,11 +1,9 @@
 #ifndef IMGUI_API_DISABLED
 
-// clang-format off
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-// clang-format on
-
 #include "./imgui_util.hpp"
+
+#include <uinta/camera.hpp>
+#include <uinta/gl/api.hpp>
 
 #define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 #define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
@@ -13,8 +11,6 @@
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
-
-#include <uinta/camera.hpp>
 
 // FIXME there has to be a better way to point to library source files
 #include "../../lib/imgui/backends/imgui_impl_glfw.cpp"

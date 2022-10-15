@@ -33,7 +33,9 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/model.cpp
   ./src/quadtree.cpp
   ./src/runner.cpp
+  ./src/runner/display.cpp
   ./src/shader.cpp
+  ./src/utils/cartesian_grid.cpp
 
   )
 

@@ -78,6 +78,8 @@ void GlfwRunner::internalRender() {
 }
 
 void GlfwRunner::internalPostRender() {
+  glDisable(GL_DEPTH_TEST);
+  imgui::view::camera(camera);
   imgui::postRender(window);
 }
 

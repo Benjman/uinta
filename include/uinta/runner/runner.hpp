@@ -10,6 +10,7 @@
 #include <uinta/logging.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_state.hpp>
+#include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
 
@@ -19,6 +20,7 @@ class Runner {
  public:
   Display display;
   FileManager fileManager;
+  CartesianGrid grid;
   RunnerState state;
   TargetCamera camera;
 
@@ -48,7 +50,7 @@ class Runner {
   void handleWindowSizeChanged(const int width, const int height);
 
  protected:
-  GLbitfield clearMask = GL_COLOR_BUFFER_BIT;
+  GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
 
   virtual bool shouldExit() = 0;

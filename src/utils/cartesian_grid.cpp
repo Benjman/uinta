@@ -1,9 +1,8 @@
-#include "./cartesian_grid.hpp"
-
 #include <glm/gtc/type_ptr.hpp>
 #include <uinta/io/file_manager.hpp>
 #include <uinta/mesh.hpp>
 #include <uinta/shader.hpp>
+#include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
 
@@ -24,7 +23,7 @@ void initShader(CartesianGrid& grid, FileManager& fm) {
 }
 
 void initGrid(CartesianGrid& grid) {
-  float buffer[600];
+  float buffer[660];
   float lineSize = 0.005;
 
   auto colorX = glm::vec3(155, 34, 38) / 255.0f;
@@ -33,7 +32,7 @@ void initGrid(CartesianGrid& grid) {
 
   // TODO draw origins last so the primary lines aren't overlapping
   for (int isVert = 0; isVert <= 1; isVert++) {
-    for (int i = -4; i <= 5; i++) {
+    for (int i = -5; i <= 5; i++) {
       // clang-format off
       auto v0 = isVert ? glm::vec2(-lineSize + i,  5) : glm::vec2(-5,  lineSize + i);
       auto v1 = isVert ? glm::vec2(-lineSize + i, -5) : glm::vec2(-5, -lineSize + i);
@@ -64,13 +63,14 @@ void initGrid(CartesianGrid& grid) {
 }
 
 void CartesianGrid::render(const glm::mat4& projView) {
+  glEnable(GL_DEPTH_TEST);
   glUseProgram(shader);
   bind(vao);
 
   // TODO billboard quads http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards
   // TODO draw range based on view frustum https://stackoverflow.com/questions/12836967
-  for (int z = -1; z <= 1; z++) {
-    for (int x = -1; x <= 1; x++) {
+  for (int z = -5; z <= 5; z++) {
+    for (int x = -5; x <= 5; x++) {
       glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(projView * glm::translate(glm::mat4(1), {x * 10, 0, z * 10})));
       glDrawArrays(GL_TRIANGLES, 0, vcount);
     }
