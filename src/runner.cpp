@@ -14,6 +14,12 @@ Runner::Runner(const std::string& title, uint width, uint height) noexcept : dis
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
   state.display = Display(title, width, height);
+
+  if (isCameraEnabled(flags)) {
+    force(camera.angle, 45);
+    force(camera.pitch, 45);
+    force(camera.dist, 5);
+  }
 }
 
 bool Runner::init() {
@@ -154,6 +160,7 @@ void Runner::doPreTick(const RunnerState& state) {
 }
 
 void Runner::doTick(const RunnerState& state) {
+  if (isCameraEnabled(flags)) update(camera, state);
 }
 
 void Runner::doPostTick(const RunnerState& state) {

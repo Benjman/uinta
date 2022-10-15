@@ -4,6 +4,7 @@
 #include <uinta/gl.h>
 
 #include <glm/vec3.hpp>
+#include <uinta/camera/target_camera.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/runner/display.hpp>
@@ -19,8 +20,10 @@ class Runner {
   Display display;
   FileManager fileManager;
   RunnerState state;
+  TargetCamera camera;
+
   float startTime;
-  flags_t flags;
+  flags_t flags = RUNNER_FLAG_CAMERA;
 
   Runner(const std::string& title, uint width, uint height) noexcept;
 

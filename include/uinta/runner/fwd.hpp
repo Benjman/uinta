@@ -9,6 +9,8 @@ struct Display;
 struct RunnerState;
 class Runner;
 
+inline bool isCameraEnabled(flags_t flags);
+
 }  // namespace uinta
 
 #endif  // UINTA_RUNNER_FWD_HPP
