@@ -44,7 +44,7 @@ glm::mat4 uinta::getViewMatrix(const TargetCamera& cam) {
 
 void uinta::processInput(TargetCamera& cam, const RunnerState& state) {
   float scale = 1;
-  if (isKeyDown(state.input, KEY_LEFT_CONTROL)) scale = 10;
+  if (isKeyDown(state.input, KEY_LEFT_CONTROL)) scale = 5;
   if (isKeyDown(state.input, KEY_LEFT_ALT)) scale = 0.1;
 
   if (isKeyDown(state.input, FORWARD)) {
@@ -63,12 +63,12 @@ void uinta::processInput(TargetCamera& cam, const RunnerState& state) {
     auto translate = getRight(cam.angle) * WORLD_HORIZONTAL;
     cam.target += translate * TRANSLATE_SPEED * state.delta * scale;
   }
-  if (isKeyDown(state.input, ANGLE_LEFT)) cam.angle -= ANGLE_SPEED * state.delta * scale;
-  if (isKeyDown(state.input, ANGLE_RIGHT)) cam.angle += ANGLE_SPEED * state.delta * scale;
+  if (isKeyDown(state.input, ANGLE_LEFT)) cam.angle += ANGLE_SPEED * state.delta * scale;
+  if (isKeyDown(state.input, ANGLE_RIGHT)) cam.angle -= ANGLE_SPEED * state.delta * scale;
   if (isKeyDown(state.input, PITCH_UP)) cam.pitch += PITCH_SPEED * state.delta * scale;
   if (isKeyDown(state.input, PITCH_DOWN)) cam.pitch -= PITCH_SPEED * state.delta * scale;
-  if (isKeyDown(state.input, DIST_UP)) cam.dist += DIST_SPEED * state.delta * scale;
-  if (isKeyDown(state.input, DIST_DOWN)) cam.dist -= DIST_SPEED * state.delta * scale;
+  if (isKeyDown(state.input, DIST_UP)) cam.dist -= DIST_SPEED * state.delta * scale;
+  if (isKeyDown(state.input, DIST_DOWN)) cam.dist += DIST_SPEED * state.delta * scale;
 }
 
 void uinta::updatePosition(TargetCamera& cam) {

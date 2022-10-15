@@ -3,6 +3,8 @@
 
 #include <uinta/runner.hpp>
 
+#include "./imgui_util.hpp"
+
 namespace uinta {
 
 class Camera;
@@ -34,6 +36,7 @@ class GlfwRunner : public Runner {
   }
 
   virtual void doRender(const RunnerState& state) override {
+    imgui::view::camera(camera);
   }
 
   virtual void doPostRender(const RunnerState& state) override {

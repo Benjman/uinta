@@ -5,6 +5,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include <uinta/runner/display.hpp>
 #include <uinta/runner/runner.hpp>
 
 #include "./runner/display.cpp"
@@ -19,6 +20,10 @@ Runner::Runner(const std::string& title, uint32_t width, uint32_t height) noexce
   SPDLOG_INFO("Runner started for '{}'.", title);
   state.display = Display(title, width, height);
   setSpdlogLevel();
+
+  force(camera.angle, 45);
+  force(camera.pitch, 45);
+  force(camera.dist, 5);
 }
 
 bool Runner::init() {
@@ -57,15 +62,19 @@ void Runner::tick(float runtime) {
   state.delta = runtime - state.runtime;
   state.runtime = runtime;
   state.tick++;
+
   // SPDLOG_TRACE("tick: {}, delta: {}, runtime: {}", state.tick, state.delta, state.runtime);
   doPreTick(state);
   doTick(state);
   doPostTick(state);
+
+  update(camera, state);
+
   reset(state.input);
 }
 
 void Runner::render() {
-  // clearBuffer();
+  clearBuffer();
 
   internalPreRender();
   doPreRender(state);

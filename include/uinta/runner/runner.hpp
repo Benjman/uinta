@@ -5,6 +5,7 @@
 
 #include <glm/vec3.hpp>
 #include <string>
+#include <uinta/camera/target_camera.hpp>
 #include <uinta/io.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/runner/display.hpp>
@@ -19,6 +20,8 @@ class Runner {
   Display display;
   FileManager fileManager;
   RunnerState state;
+  TargetCamera camera;
+
   float startTime;
 
   Runner(const std::string& title, uint32_t width, uint32_t height) noexcept;
@@ -54,29 +57,22 @@ class Runner {
   virtual void swapBuffers() = 0;
 
   // clang-format off
+  virtual bool internalInit() { return true; }
   virtual bool doInit() { return true; }
-
   virtual void internalPreTick() {}
+  virtual void doPreTick(const RunnerState& state) {}
   virtual void internalTick() {}
   virtual void internalPostTick() {}
-
   virtual void internalPreRender() {}
   virtual void internalRender() {}
   virtual void internalPostRender() {}
-
-  virtual void doPreTick(const RunnerState& state) {}
   virtual void doTick(const RunnerState& state) {}
   virtual void doPostTick(const RunnerState& state) {}
-
   virtual void doPreRender(const RunnerState& state) {}
   virtual void doRender(const RunnerState& state) {}
   virtual void doPostRender(const RunnerState& state) {}
-
   virtual void doShutdown() {}
-
   virtual void doHandleWindowSizeChanged(const int width, const int height) {}
-
-  virtual bool internalInit() { return true; }
   virtual void internalShutdown() {}
   // clang-format on
 };
