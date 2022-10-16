@@ -8,7 +8,7 @@
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/input.hpp>
 #include <uinta/math/smooth_vec3.hpp>
-#include <uinta/runner.hpp>
+#include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
 
