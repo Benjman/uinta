@@ -10,6 +10,7 @@
 #include <glm/trigonometric.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner.hpp>
+#include <uinta/runner/runner_flags.hpp>
 
 namespace uinta {
 void setSpdlogLevel();

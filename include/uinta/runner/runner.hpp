@@ -6,6 +6,7 @@
 #include <glm/vec3.hpp>
 #include <string>
 #include <uinta/camera/target_camera.hpp>
+#include <uinta/flags.hpp>
 #include <uinta/io.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/runner/display.hpp>
@@ -77,6 +78,7 @@ class Runner {
   virtual void doHandleWindowSizeChanged(const int width, const int height) {}
   virtual void internalShutdown() {}
   // clang-format on
+  void setGridEnabled(bool enabled);
 };
 
 }  // namespace uinta
