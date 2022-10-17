@@ -7,6 +7,7 @@
 #include <uinta/file_manager.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/runner/display.hpp>
+#include <uinta/runner/runner_flags.hpp>
 #include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
@@ -19,6 +20,7 @@ class Runner {
   FileManager fileManager;
   RunnerState state;
   float startTime;
+  flags_t flags;
 
   Runner(const std::string& title, uint width, uint height) noexcept;
 
