@@ -37,32 +37,15 @@ class Runner {
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
 
-  virtual bool internalInit() {
-    return true;
-  }
-  virtual void internalPreTick() {
-  }
   virtual bool doInit();
   virtual void doPreTick(const RunnerState& state);
   virtual void doTick(const RunnerState& state);
   virtual void doPostTick(const RunnerState& state);
-  virtual void internalTick() {
-  }
-  virtual void internalPostTick() {
-  }
-  virtual void internalPreRender() {
-  }
-  virtual void internalRender() {
-  }
-  virtual void internalPostRender() {
-  }
   virtual void doPreRender(const RunnerState& state);
   virtual void doRender(const RunnerState& state);
   virtual void doPostRender(const RunnerState& state);
   virtual void doShutdown();
   virtual void doHandleWindowSizeChanged(const int width, const int height);
-  virtual void internalShutdown() {
-  }
 
   virtual bool shouldExit() = 0;
   virtual double getRuntime() = 0;

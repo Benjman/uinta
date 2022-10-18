@@ -28,7 +28,6 @@ bool Runner::init() {
   spdlog::stopwatch sw;
   fileManager.init();
   fileManager.loadAll();
-  if (!internalInit()) return false;
   if (!doInit()) return false;
   if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
   startTime = getRuntime();
@@ -78,13 +77,8 @@ void Runner::tick(float runtime) {
 void Runner::render() {
   clearBuffer();
 
-  internalPreRender();
   doPreRender(state);
-
-  internalRender();
   doRender(state);
-
-  internalPostRender();
   doPostRender(state);
 
   swapBuffers();
@@ -97,7 +91,6 @@ void Runner::clearBuffer() {
 
 void Runner::shutdown() {
   SPDLOG_INFO("Shutdown requested for '{}'.", display.title);
-  internalShutdown();
   doShutdown();
 }
 

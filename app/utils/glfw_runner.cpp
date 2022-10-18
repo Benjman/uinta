@@ -14,12 +14,6 @@ GlfwRunner::~GlfwRunner() {
   glfwTerminate();
 }
 
-bool GlfwRunner::internalInit() {
-  if (!createGLFWWindow(this)) return false;
-  registerCallbacks(this);
-  return true;
-}
-
 void registerCallbacks(GlfwRunner* runner) {
   glfwSetKeyCallback(runner->window, [](auto* window, int key, int scancode, int action, int mods) {
     SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
@@ -70,21 +64,14 @@ void GlfwRunner::swapBuffers() {
   glfwSwapBuffers(window);
 }
 
-void GlfwRunner::internalPreRender() {
-}
-void GlfwRunner::internalRender() {
-}
-void GlfwRunner::internalPostRender() {
-}
-void GlfwRunner::internalShutdown() {
-}
-
 bool GlfwRunner::shouldExit() {
   return glfwWindowShouldClose(window);
 }
 
 bool GlfwRunner::doInit() {
-  return true;
+  if (!createGLFWWindow(this)) return false;
+  registerCallbacks(this);
+  return Runner::doInit();
 }
 
 void GlfwRunner::doPreTick(const RunnerState& state) {

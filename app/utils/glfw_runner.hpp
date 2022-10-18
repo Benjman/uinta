@@ -28,12 +28,6 @@ class GlfwRunner : public Runner {
   virtual void doPostRender(const RunnerState& state) override;
   virtual void doShutdown() override;
 
-  bool internalInit() override;
-  void internalPreRender() override;
-  void internalRender() override;
-  void internalPostRender() override;
-  void internalShutdown() override;
-
   void swapBuffers() override;
   bool shouldExit() override;
   double getRuntime() override;
