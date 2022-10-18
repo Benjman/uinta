@@ -24,7 +24,6 @@ class Runner {
   RunnerState state;
   TargetCamera camera;
 
-  float startTime;
   flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID;
 
   Runner(const std::string& title, uint width, uint height) noexcept;
@@ -63,7 +62,7 @@ class Runner {
   void tick(float dt);
   void render();
   void shutdown();
-  bool shouldRenderFrame();
+  bool shouldRenderFrame(float dt);
 };
 
 }  // namespace uinta

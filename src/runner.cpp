@@ -36,7 +36,6 @@ bool Runner::init() {
   fileManager.loadAll();
   if (!doInit()) return false;
   if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
-  startTime = getRuntime();
   SPDLOG_INFO("Completed initialization for '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
 }
@@ -47,11 +46,14 @@ int Runner::run() {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;
     }
+    auto lastTick = getRuntime();
     while (!shouldExit()) {
-      pollInput();
       do {
-        tick(getRuntime());
-      } while (!shouldRenderFrame());
+        tick(state.delta = getRuntime() - lastTick);
+        lastTick += state.delta;
+        reset(state.input);
+      } while (!shouldRenderFrame(state.delta));
+      pollInput();
       render();
     }
     shutdown();
@@ -67,17 +69,14 @@ int Runner::run() {
   }
 }
 
-void Runner::tick(float runtime) {
-  runtime -= startTime;
-  state.delta = runtime - state.runtime;
-  state.runtime = runtime;
+void Runner::tick(float dt) {
+  state.delta = dt;
+  state.runtime += dt;
   state.tick++;
 
-  // SPDLOG_TRACE("tick: {}, delta: {}, runtime: {}", state.tick, state.delta, state.runtime);
   doPreTick(state);
   doTick(state);
   doPostTick(state);
-  reset(state.input);
 }
 
 void Runner::render() {
@@ -96,7 +95,7 @@ void Runner::shutdown() {
   doShutdown();
 }
 
-bool Runner::shouldRenderFrame() {
+bool Runner::shouldRenderFrame(float dt) {
   // TODO Runner should have a `targetFps`; this method returns true when `runtime - lastFrame >= targetFps`
   //
   // See https://github.com/Benjman/renderer/blob/main/src/core/src/runner.cpp#L46
