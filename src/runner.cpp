@@ -15,6 +15,7 @@ namespace uinta {
 
 const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
+void clearBuffer(const glm::vec3& color, GLbitfield mask);
 void setSpdlogLevel();
 
 }  // namespace uinta
@@ -42,7 +43,6 @@ bool Runner::init() {
   fileManager.loadAll();
   if (!doInit()) return false;
   grid.init(fileManager);
-  startTime = getRuntime();
   SPDLOG_INFO("Completed initialization for '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
 }
@@ -53,11 +53,14 @@ int Runner::run() {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;
     }
+    auto lastTick = getRuntime();
     while (!shouldExit()) {
-      pollInput();
       do {
-        tick(getRuntime());
-      } while (!shouldRenderFrame());
+        tick(state.delta = getRuntime() - lastTick);
+        lastTick += state.delta;
+      } while (!shouldRenderFrame(state.delta));
+      reset(state.input);
+      pollInput();
       render();
     }
     shutdown();
@@ -68,13 +71,11 @@ int Runner::run() {
   }
 }
 
-void Runner::tick(float runtime) {
-  runtime -= startTime;
-  state.delta = runtime - state.runtime;
-  state.runtime = runtime;
+void Runner::tick(float dt) {
+  state.delta = dt;
+  state.runtime += dt;
   state.tick++;
 
-  // SPDLOG_TRACE("tick: {}, delta: {}, runtime: {}", state.tick, state.delta, state.runtime);
   doPreTick(state);
   doTick(state);
   doPostTick(state);
@@ -85,8 +86,6 @@ void Runner::tick(float runtime) {
 }
 
 void Runner::render() {
-  clearBuffer();
-
   doPreRender(state);
   doRender(state);
   doPostRender(state);
@@ -97,11 +96,12 @@ void Runner::render() {
   }
 
   swapBuffers();
+  clearBuffer(background_color, clearMask);
 }
 
-void Runner::clearBuffer() {
-  glClearColor(background_color.r, background_color.g, background_color.b, 1.0);
-  glClear(clearMask);
+inline void uinta::clearBuffer(const glm::vec3& color, GLbitfield mask) {
+  glClearColor(color.r, color.g, color.b, 1.0);
+  glClear(mask);
 }
 
 void Runner::shutdown() {
@@ -109,7 +109,7 @@ void Runner::shutdown() {
   doShutdown();
 }
 
-bool Runner::shouldRenderFrame() {
+bool Runner::shouldRenderFrame(float dt) {
   // TODO Runner should have a `targetFps`; this method returns true when `runtime - lastFrame >= targetFps`
   //
   // See https://github.com/Benjman/renderer/blob/main/src/core/src/runner.cpp#L46
@@ -154,7 +154,7 @@ void Runner::handleWindowSizeChanged(const int width, const int height) {
   doHandleWindowSizeChanged(width, height);
 }
 
-void uinta::setSpdlogLevel() {
+void setSpdlogLevel() {
 #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
   spdlog::set_level(spdlog::level::trace);
   SPDLOG_INFO("Logging level set to trace.");
@@ -216,4 +216,41 @@ void Runner::doShutdown() {
 }
 
 void Runner::doHandleWindowSizeChanged(const int width, const int height) {
+}
+
+void uinta::setSpdlogLevel() {
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
+  spdlog::set_level(spdlog::level::trace);
+  SPDLOG_INFO("Logging level set to trace.");
+#endif
+
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+  spdlog::set_level(spdlog::level::debug);
+  SPDLOG_INFO("Logging level set to debug.");
+#endif
+
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
+  spdlog::set_level(spdlog::level::info);
+  SPDLOG_INFO("Logging level set to info.");
+#endif
+
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_WARN
+  spdlog::set_level(spdlog::level::warn);
+  SPDLOG_INFO("Logging level set to warn.");
+#endif
+
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_ERROR
+  spdlog::set_level(spdlog::level::err);
+  SPDLOG_INFO("Logging level set to error.");
+#endif
+
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_CRITICAL
+  spdlog::set_level(spdlog::level::critical);
+  SPDLOG_INFO("Logging level set to critical.");
+#endif
+
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_OFF
+  spdlog::set_level(spdlog::level::off);
+  SPDLOG_INFO("Logging level set to off.");
+#endif
 }

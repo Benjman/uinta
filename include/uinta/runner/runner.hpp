@@ -26,26 +26,24 @@ class Runner {
   RunnerState state;
   TargetCamera camera;
 
-  GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 background_color;
-  float startTime;
+  GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   flags_t flags;
 
   virtual bool doInit() = 0;
-  virtual bool shouldExit() = 0;
   virtual double getRuntime() = 0;
-  virtual void doHandleWindowSizeChanged(const int width, const int height) = 0;
-  virtual void doPostRender(const RunnerState& state) = 0;
+  virtual void pollInput() = 0;
+  virtual void doPreTick(const RunnerState& state) = 0;
+  virtual void doTick(const RunnerState& state) = 0;
   virtual void doPostTick(const RunnerState& state) = 0;
   virtual void doPreRender(const RunnerState& state) = 0;
-  virtual void doPreTick(const RunnerState& state) = 0;
   virtual void doRender(const RunnerState& state) = 0;
-  virtual void doShutdown() = 0;
-  virtual void doTick(const RunnerState& state) = 0;
-  virtual void pollInput() = 0;
+  virtual void doPostRender(const RunnerState& state) = 0;
+  virtual void doHandleWindowSizeChanged(const int width, const int height) = 0;
   virtual void swapBuffers() = 0;
+  virtual bool shouldExit() = 0;
+  virtual void doShutdown() = 0;
 
-  void clearBuffer();
   void handleCursorPositionChanged(const double xpos, const double ypos);
   void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
   void handleMouseButtonInput(const int button, const int action, const int mods);
@@ -56,7 +54,7 @@ class Runner {
   void setBackground(const glm::vec3& background);
   void setClearMask(const GLbitfield mask);
   void setGridEnabled(bool enabled);
-  bool shouldRenderFrame();
+  bool shouldRenderFrame(float dt);
   void shutdown();
   void tick(float dt);
 };
