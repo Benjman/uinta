@@ -6,6 +6,7 @@
 #include "./glfw_runner.hpp"
 
 #include <uinta/gl/api.hpp>
+#include <uinta/input/utils.hpp>
 
 namespace uinta {
 
@@ -71,35 +72,46 @@ bool GlfwRunner::shouldExit() {
 bool GlfwRunner::doInit() {
   if (!createGLFWWindow(this)) return false;
   registerCallbacks(this);
+  ui.onInit(*this);
   return Runner::doInit();
 }
 
 void GlfwRunner::doPreTick(const RunnerState& state) {
   Runner::doPreTick(state);
+  ui.onPreTick(*this);
 }
 
 void GlfwRunner::doTick(const RunnerState& state) {
   Runner::doTick(state);
+  ui.onTick(*this);
 }
 
 void GlfwRunner::doPostTick(const RunnerState& state) {
   Runner::doPostTick(state);
+  ui.onPostTick(*this);
 }
 
 void GlfwRunner::doPreRender(const RunnerState& state) {
   Runner::doPreRender(state);
+  ui.onPreRender(*this);
 }
 
 void GlfwRunner::doRender(const RunnerState& state) {
   Runner::doRender(state);
+  ui.onRender(*this);
 }
 
 void GlfwRunner::doPostRender(const RunnerState& state) {
   Runner::doPostRender(state);
+  if (auto uiFlags = ui.updateAndRender(*this)) {
+    if (isFlagSet(GLFW_RUNNER_UI_INPUT_HANDLED, uiFlags)) reset(input);
+  }
+  ui.onPostRender(*this);
 }
 
 void GlfwRunner::doShutdown() {
   Runner::doShutdown();
+  ui.onShutdown(*this);
 }
 
 bool createGLFWWindow(GlfwRunner* runner) {
