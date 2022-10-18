@@ -3,17 +3,20 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
-#include <spdlog/spdlog.h>
-
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/trigonometric.hpp>
+#include <uinta/logging.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/runner/runner_flags.hpp>
 
 namespace uinta {
+
+const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
+
 void setSpdlogLevel();
+
 }  // namespace uinta
 
 using namespace uinta;
@@ -22,19 +25,23 @@ Runner::Runner(const std::string& title, uint32_t width, uint32_t height) noexce
   SPDLOG_INFO("Runner started for '{}'.", title);
   state.display = Display(title, width, height);
   setSpdlogLevel();
+  setBackground(DEFAULT_CLEAR_COLOR);
+  setGridEnabled(true);
+  setFlag(RUNNER_FLAG_CAMERA, true, flags);
 
-  force(camera.angle, 45);
-  force(camera.pitch, 45);
-  force(camera.dist, 5);
+  if (isCameraEnabled(flags)) {
+    force(camera.angle, 45);
+    force(camera.pitch, 45);
+    force(camera.dist, 5);
+  }
 }
 
 bool Runner::init() {
-  spdlog::stopwatch sw;
+  spdlog::stopwatch sw{};
   fileManager.init();
   fileManager.loadAll();
-  if (!internalInit()) return false;
-  grid.init(fileManager);
   if (!doInit()) return false;
+  grid.init(fileManager);
   startTime = getRuntime();
   SPDLOG_INFO("Completed initialization for '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
@@ -72,7 +79,7 @@ void Runner::tick(float runtime) {
   doTick(state);
   doPostTick(state);
 
-  update(camera, state);
+  if (isCameraEnabled(flags)) update(camera, state);
 
   reset(state.input);
 }
@@ -80,17 +87,14 @@ void Runner::tick(float runtime) {
 void Runner::render() {
   clearBuffer();
 
-  internalPreRender();
   doPreRender(state);
-
-  internalRender();
   doRender(state);
-
-  internalPostRender();
   doPostRender(state);
 
-  auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
-  grid.render(proj * getViewMatrix(camera));
+  if (isGridEnabled(flags)) {
+    auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
+    grid.render(proj * getViewMatrix(camera));
+  }
 
   swapBuffers();
 }
@@ -102,7 +106,6 @@ void Runner::clearBuffer() {
 
 void Runner::shutdown() {
   SPDLOG_INFO("Shutdown requested for '{}'.", display.title);
-  internalShutdown();
   doShutdown();
 }
 
@@ -117,8 +120,8 @@ void Runner::setClearMask(const GLbitfield mask) {
   clearMask = mask;
 }
 
-void Runner::setBackground(const glm::vec3& background) {
-  background_color = background;
+void Runner::setBackground(const glm::vec3& color) {
+  background_color = color;
 }
 
 void Runner::handleCursorPositionChanged(const double xpos, const double ypos) {
@@ -188,6 +191,29 @@ void uinta::setSpdlogLevel() {
 #endif
 }
 
+void Runner::setGridEnabled(bool enabled) {
+  setFlag(RUNNER_FLAG_GRID, enabled, flags);
+}
+
 Runner::~Runner() {
   SPDLOG_INFO("Tearing down '{}'.", display.title);
+}
+
+bool Runner::doInit() {
+  return true;
+}
+
+void Runner::doPreRender(const RunnerState& state) {
+}
+
+void Runner::doRender(const RunnerState& state) {
+}
+
+void Runner::doPostRender(const RunnerState& state) {
+}
+
+void Runner::doShutdown() {
+}
+
+void Runner::doHandleWindowSizeChanged(const int width, const int height) {
 }

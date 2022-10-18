@@ -21,12 +21,9 @@ struct ModelRunner final : GlfwRunner {
   }
 
   bool doInit() override {
-    glEnable(GL_DEPTH_TEST);
-    setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    GlfwRunner::doInit();
     initObj();
     initShader();
-
     return true;
   }
 
@@ -60,6 +57,7 @@ struct ModelRunner final : GlfwRunner {
   }
 
   void doRender(const RunnerState& state) override {
+    GlfwRunner::doRender(state);
     glEnable(GL_DEPTH_TEST);
     clearBuffer();
     glUseProgram(shader);
