@@ -1,6 +1,8 @@
 function (app name)
-  add_executable(${name} ./${name}/main.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/utils/utils.cpp
+  add_executable(${name} ${CMAKE_CURRENT_LIST_DIR}/${name}/main.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_input.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_runner.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/utils/imgui_util.cpp
     )
 
   if (IS_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${name}/res)
@@ -15,7 +17,7 @@ function (app name)
 endfunction()
 
 app(camera)
-app(model)
+# app(model)
 # app(ray_picking)
 # app(post_processing)
 
