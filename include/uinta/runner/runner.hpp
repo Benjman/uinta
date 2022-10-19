@@ -31,7 +31,7 @@ class Runner {
   flags_t flags;
 
   virtual bool doInit() = 0;
-  virtual double getRuntime() = 0;
+  virtual double getRuntime() const = 0;
   virtual void pollInput() = 0;
   virtual void doPreTick(const RunnerState& state) = 0;
   virtual void doTick(const RunnerState& state) = 0;
