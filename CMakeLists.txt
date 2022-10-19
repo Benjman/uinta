@@ -36,6 +36,7 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/runner/display.cpp
   ./src/shader.cpp
   ./src/utils/cartesian_grid.cpp
+  ./src/utils/running_avg.cpp
 
   )
 

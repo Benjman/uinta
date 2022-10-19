@@ -1,4 +1,4 @@
-#include <uinta/math/running_avg.hpp>
+#include <uinta/utils/running_avg.hpp>
 
 #include <algorithm>
 
