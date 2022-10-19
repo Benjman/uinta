@@ -1,11 +1,9 @@
-#include "./glfw_runner.hpp"
-
 // clang-format off
 #include <uinta/logging.hpp>
 #include <spdlog/stopwatch.h>
 // clang-format on
 
-#include "./imgui_util.hpp"
+#include "./glfw_runner.hpp"
 
 namespace uinta {
 void registerCallbacks(GlfwRunner*);
@@ -17,50 +15,13 @@ GlfwRunner::~GlfwRunner() {
 }
 
 bool GlfwRunner::doInit() {
+  Runner::doInit();
   if (!createGLFWWindow(this)) {
     return false;
   }
   registerCallbacks(this);
-  imgui::init(window);
+  ui.init(*this);
   return true;
-}
-
-inline void registerCallbacks(GlfwRunner* runner) {
-  glfwSetKeyCallback(runner->window, [](auto* window, int key, int scancode, int action, int mods) {
-    SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
-    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(r->window, true);
-    r->handleKeyInput(key, scancode, action, mods);
-  });
-
-  glfwSetCursorPosCallback(runner->window, [](auto* window, double xpos, double ypos) {
-    SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypox);
-    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    r->handleCursorPositionChanged(xpos, ypos);
-  });
-
-  glfwSetMouseButtonCallback(runner->window, [](auto* window, int button, int action, int mods) {
-    SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
-    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    r->handleMouseButtonInput(button, action, mods);
-  });
-
-  glfwSetScrollCallback(runner->window, [](auto* window, double xoffset, double yoffset) {
-    SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
-    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    r->handleScrollInput(xoffset, yoffset);
-  });
-
-  glfwSetWindowSizeCallback(runner->window, [](auto* window, int width, int height) {
-    SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
-    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    r->handleWindowSizeChanged(width, height);
-  });
-
-  glfwSetWindowPosCallback(runner->window, [](auto* window, int xpos, int ypos) {
-    SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
-    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
-  });
 }
 
 void GlfwRunner::pollInput() {
@@ -77,6 +38,51 @@ void GlfwRunner::swapBuffers() {
 
 bool GlfwRunner::shouldExit() {
   return glfwWindowShouldClose(window);
+}
+
+void GlfwRunner::doPreTick(const RunnerState& state) {
+  ui.onPreTick(*this);
+  Runner::doPreTick(state);
+}
+
+void GlfwRunner::doTick(const RunnerState& state) {
+  ui.onTick(*this);
+  Runner::doTick(state);
+}
+
+void GlfwRunner::doPostTick(const RunnerState& state) {
+  ui.onPostTick(*this);
+  Runner::doPostTick(state);
+}
+
+void GlfwRunner::doPreRender(const RunnerState& state) {
+  ui.onPreRender(*this);
+  Runner::doPreRender(state);
+}
+
+void GlfwRunner::doRender(const RunnerState& state) {
+  ui.onRender(*this);
+  Runner::doRender(state);
+  auto uiResult = ui.updateAndRender(*this);
+  if (uiResult.flags) {
+    if (isFlagSet(uiResult.flags, GlfwRunnerUiResult::SHOW_GRID_FLAG)) setGridEnabled(!isFlagSet(flags, RUNNER_FLAG_GRID));
+    if (isFlagSet(uiResult.flags, GlfwRunnerUiResult::INPUT_HANDLED)) {
+      // TODO how do we get the engine to ignore input from here?
+    }
+  }
+}
+
+void GlfwRunner::doPostRender(const RunnerState& state) {
+  ui.onPostRender(*this);
+  Runner::doPostRender(state);
+}
+
+void GlfwRunner::doShutdown() {
+  ui.onShutdown(*this);
+}
+
+void GlfwRunner::doHandleWindowSizeChanged(const int width, const int height) {
+  Runner::doHandleWindowSizeChanged(width, height);
 }
 
 bool createGLFWWindow(GlfwRunner* runner) {
@@ -120,34 +126,42 @@ bool createGLFWWindow(GlfwRunner* runner) {
   return true;
 }
 
-void GlfwRunner::doPreTick(const RunnerState& state) {
-}
+inline void registerCallbacks(GlfwRunner* runner) {
+  glfwSetKeyCallback(runner->window, [](auto* window, int key, int scancode, int action, int mods) {
+    SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
+    auto* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner->window, true);
+    runner->handleKeyInput(key, scancode, action, mods);
+  });
 
-void GlfwRunner::doTick(const RunnerState& state) {
-}
+  glfwSetCursorPosCallback(runner->window, [](auto* window, double xpos, double ypos) {
+    SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypox);
+    auto* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    runner->handleCursorPositionChanged(xpos, ypos);
+  });
 
-void GlfwRunner::doPostTick(const RunnerState& state) {
-}
+  glfwSetMouseButtonCallback(runner->window, [](auto* window, int button, int action, int mods) {
+    SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
+    auto* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    runner->handleMouseButtonInput(button, action, mods);
+  });
 
-void GlfwRunner::doPreRender(const RunnerState& state) {
-  imgui::preRender(window);
-}
+  glfwSetScrollCallback(runner->window, [](auto* window, double xoffset, double yoffset) {
+    SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
+    auto* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    runner->handleScrollInput(xoffset, yoffset);
+  });
 
-void GlfwRunner::doRender(const RunnerState& state) {
-  imgui::render(window);
-}
+  glfwSetWindowSizeCallback(runner->window, [](auto* window, int width, int height) {
+    SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
+    auto* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    runner->handleWindowSizeChanged(width, height);
+  });
 
-void GlfwRunner::doPostRender(const RunnerState& state) {
-  glDisable(GL_DEPTH_TEST);
-  imgui::view::camera(camera);
-  imgui::postRender(window);
-}
-
-void GlfwRunner::doShutdown() {
-  uinta::imgui::shutdown(window);
-}
-
-void GlfwRunner::doHandleWindowSizeChanged(const int width, const int height) {
+  glfwSetWindowPosCallback(runner->window, [](auto* window, int xpos, int ypos) {
+    SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
+    auto* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
+  });
 }
 
 }  // namespace uinta

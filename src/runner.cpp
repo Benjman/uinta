@@ -13,14 +13,11 @@
 
 namespace uinta {
 
+void clearBuffer(const glm::vec3& color, GLbitfield mask);
+
 const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
-void clearBuffer(const glm::vec3& color, GLbitfield mask);
 void setSpdlogLevel();
-
-}  // namespace uinta
-
-using namespace uinta;
 
 Runner::Runner(const std::string& title, uint32_t width, uint32_t height) noexcept : display(title, width, height) {
   SPDLOG_INFO("Runner started for '{}'.", title);
@@ -79,27 +76,15 @@ void Runner::tick(float dt) {
   doPreTick(state);
   doTick(state);
   doPostTick(state);
-
-  if (isCameraEnabled(flags)) update(camera, state);
-
-  reset(state.input);
 }
 
 void Runner::render() {
   doPreRender(state);
   doRender(state);
   doPostRender(state);
-
-  if (isGridEnabled(flags)) {
-    auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
-    grid.render(proj * getViewMatrix(camera));
-  }
-
-  swapBuffers();
-  clearBuffer(background_color, clearMask);
 }
 
-inline void uinta::clearBuffer(const glm::vec3& color, GLbitfield mask) {
+inline void clearBuffer(const glm::vec3& color, GLbitfield mask) {
   glClearColor(color.r, color.g, color.b, 1.0);
   glClear(mask);
 }
@@ -204,12 +189,18 @@ bool Runner::doInit() {
 }
 
 void Runner::doPreRender(const RunnerState& state) {
+  clearBuffer(background_color, clearMask);
 }
 
 void Runner::doRender(const RunnerState& state) {
+  if (isGridEnabled(flags)) {
+    auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
+    grid.render(proj * getViewMatrix(camera));
+  }
 }
 
 void Runner::doPostRender(const RunnerState& state) {
+  swapBuffers();
 }
 
 void Runner::doShutdown() {
@@ -218,39 +209,14 @@ void Runner::doShutdown() {
 void Runner::doHandleWindowSizeChanged(const int width, const int height) {
 }
 
-void uinta::setSpdlogLevel() {
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
-  spdlog::set_level(spdlog::level::trace);
-  SPDLOG_INFO("Logging level set to trace.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
-  spdlog::set_level(spdlog::level::debug);
-  SPDLOG_INFO("Logging level set to debug.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
-  spdlog::set_level(spdlog::level::info);
-  SPDLOG_INFO("Logging level set to info.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_WARN
-  spdlog::set_level(spdlog::level::warn);
-  SPDLOG_INFO("Logging level set to warn.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_ERROR
-  spdlog::set_level(spdlog::level::err);
-  SPDLOG_INFO("Logging level set to error.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_CRITICAL
-  spdlog::set_level(spdlog::level::critical);
-  SPDLOG_INFO("Logging level set to critical.");
-#endif
-
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_OFF
-  spdlog::set_level(spdlog::level::off);
-  SPDLOG_INFO("Logging level set to off.");
-#endif
+void Runner::doPreTick(const RunnerState& state) {
 }
+
+void Runner::doTick(const RunnerState& state) {
+  if (isCameraEnabled(flags)) update(camera, state);
+}
+
+void Runner::doPostTick(const RunnerState& state) {
+}
+
+}  // namespace uinta

@@ -17,6 +17,5 @@
 
 // #include "./debug_controller.hpp"
 #include "./glfw_runner.hpp"
-#include "./imgui_util.hpp"
 
 #endif  // UINTA_APP_UTILS_HPP

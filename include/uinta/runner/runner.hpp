@@ -13,13 +13,6 @@ namespace uinta {
 
 class Runner {
  public:
-  Runner(const std::string& title, uint32_t width, uint32_t height) noexcept;
-
-  ~Runner();
-
-  int run();
-
- protected:
   CartesianGrid grid;
   Display display;
   FileManager fileManager;
@@ -30,19 +23,28 @@ class Runner {
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   flags_t flags;
 
-  virtual bool doInit() = 0;
+  Runner(const std::string& title, uint32_t width, uint32_t height) noexcept;
+
+  ~Runner();
+
+  int run();
+
   virtual double getRuntime() const = 0;
   virtual void pollInput() = 0;
-  virtual void doPreTick(const RunnerState& state) = 0;
-  virtual void doTick(const RunnerState& state) = 0;
-  virtual void doPostTick(const RunnerState& state) = 0;
-  virtual void doPreRender(const RunnerState& state) = 0;
-  virtual void doRender(const RunnerState& state) = 0;
-  virtual void doPostRender(const RunnerState& state) = 0;
-  virtual void doHandleWindowSizeChanged(const int width, const int height) = 0;
   virtual void swapBuffers() = 0;
   virtual bool shouldExit() = 0;
-  virtual void doShutdown() = 0;
+  virtual void doHandleWindowSizeChanged(const int width, const int height);
+
+  /** life cycle **/
+  virtual bool doInit();
+  virtual void doPreTick(const RunnerState& state);
+  virtual void doTick(const RunnerState& state);
+  virtual void doPostTick(const RunnerState& state);
+  virtual void doPreRender(const RunnerState& state);
+  virtual void doRender(const RunnerState& state);
+  virtual void doPostRender(const RunnerState& state);
+  virtual void doShutdown();
+  /** life cycle end **/
 
   void handleCursorPositionChanged(const double xpos, const double ypos);
   void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
