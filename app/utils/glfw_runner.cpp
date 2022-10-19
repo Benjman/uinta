@@ -56,7 +56,7 @@ void GlfwRunner::pollInput() {
   glfwPollEvents();
 }
 
-double GlfwRunner::getRuntime() {
+double GlfwRunner::getRuntime() const {
   return glfwGetTime();
 }
 

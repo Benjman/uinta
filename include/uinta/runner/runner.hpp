@@ -47,7 +47,7 @@ class Runner {
   virtual void doHandleWindowSizeChanged(const int width, const int height);
 
   virtual bool shouldExit() = 0;
-  virtual double getRuntime() = 0;
+  virtual double getRuntime() const = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;
 

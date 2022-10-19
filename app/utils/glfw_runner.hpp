@@ -30,7 +30,7 @@ class GlfwRunner : public Runner {
 
   void swapBuffers() override;
   bool shouldExit() override;
-  double getRuntime() override;
+  double getRuntime() const override;
   void pollInput() override;
 };
 
