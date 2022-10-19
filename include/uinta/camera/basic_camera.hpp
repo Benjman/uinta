@@ -1,7 +1,7 @@
 #ifndef UINTA_CAMERA_BASIC_CAMERA_HPP
 #define UINTA_CAMERA_BASIC_CAMERA_HPP
 
-#include <uinta/math/direction.hpp>
+#include <glm/vec3.hpp>
 
 namespace uinta {
 

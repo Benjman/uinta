@@ -25,7 +25,6 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/file_manager.cpp
   ./src/font.cpp
   ./src/gl.cpp
-  ./src/math.cpp
   ./src/memory/memory_link.cpp
   ./src/mesh.cpp
   ./src/metrics.cpp
@@ -35,6 +34,7 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/runner/display.cpp
   ./src/shader.cpp
   ./src/utils/cartesian_grid.cpp
+  ./src/utils/direction.cpp
   ./src/utils/running_avg.cpp
 
   )

@@ -1,7 +1,7 @@
 #include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/vec3.hpp>
-#include <uinta/math/direction.hpp>
+#include <uinta/utils/direction.hpp>
 
 namespace uinta {
 

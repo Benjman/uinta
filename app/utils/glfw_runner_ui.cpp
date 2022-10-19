@@ -1,6 +1,7 @@
 #include <uinta/camera.hpp>
 #include <uinta/gl/api.hpp>
 #include <uinta/logging.hpp>
+#include <uinta/utils/direction.hpp>
 #include <uinta/utils/running_avg.hpp>
 
 #include "./glfw_runner.hpp"

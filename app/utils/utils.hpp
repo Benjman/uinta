@@ -7,7 +7,6 @@
 #include <uinta/cfg.hpp>
 #include <uinta/io.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/math/direction.hpp>
 #include <uinta/math/map.hpp>
 #include <uinta/math/smooth_float.hpp>
 #include <uinta/math/smooth_vec3.hpp>
