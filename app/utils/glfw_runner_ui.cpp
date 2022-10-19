@@ -104,6 +104,11 @@ inline bool camera(const TargetCamera& camera) {
   ImGui::Text("Angle:         wr");
   ImGui::Text("Pitch:         qa");
   ImGui::Text("Dist:          cv");
+  ImGui::Separator();
+  ImGui::Text("Mouse input:");
+  ImGui::Text("Translation:    LMB");
+  ImGui::Text("Angle & pitch:  MMB");
+  ImGui::Text("Dist:           Scroll");
   ImGui::EndChild();
 
   ImGui::SameLine();

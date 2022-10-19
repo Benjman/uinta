@@ -1,7 +1,7 @@
 #ifndef UINTA_TARGET_CAMERA_HPP
 #define UINTA_TARGET_CAMERA_HPP
 
-#include <glm/mat4x4.hpp>
+#include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/math/smooth_float.hpp>
 #include <uinta/math/smooth_vec3.hpp>
