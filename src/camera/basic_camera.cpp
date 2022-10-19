@@ -1,5 +1,6 @@
 #include <glm/geometric.hpp>
 #include <uinta/camera/basic_camera.hpp>
+#include <uinta/utils/direction.hpp>
 
 uinta::BasicCamera::BasicCamera() {
   position = WORLD_UP;

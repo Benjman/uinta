@@ -1,6 +1,7 @@
 #include <uinta/gl/api.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/math/utils.hpp>
+#include <uinta/utils/direction.hpp>
 
 #include "./glfw_runner.hpp"
 

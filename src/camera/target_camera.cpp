@@ -1,10 +1,10 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/input.hpp>
-#include <uinta/math/direction.hpp>
 #include <uinta/math/map.hpp>
 #include <uinta/math/utils.hpp>
 #include <uinta/runner/runner_state.hpp>
+#include <uinta/utils/direction.hpp>
 
 namespace uinta {
 

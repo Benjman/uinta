@@ -28,7 +28,6 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/gl/vbo.cpp
   ./src/gl/vertex_attrib.cpp
   ./src/logging.cpp
-  ./src/math.cpp
   ./src/math/running_avg.cpp
   ./src/memory/memory_link.cpp
   ./src/mesh.cpp
@@ -39,6 +38,7 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/runner/display.cpp
   ./src/shader.cpp
   ./src/utils/cartesian_grid.cpp
+  ./src/utils/direction.cpp
 
   )
 
