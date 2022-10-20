@@ -1,4 +1,3 @@
-#include <uinta/camera.hpp>
 #include <uinta/gl/api.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/utils/direction.hpp>
@@ -91,8 +90,9 @@ GlfwRunnerUiResult GlfwRunnerUi::updateAndRender(const GlfwRunner& runner) {
 }
 
 inline bool camera(const TargetCamera& camera) {
-  if (!ImGui::CollapsingHeader("Camera")) return false;
   bool hasInput = false;
+#ifndef IMGUI_API_DISABLED
+  if (!ImGui::CollapsingHeader("Camera")) return false;
   auto forward = getForward(camera.pitch, camera.angle);
   auto right = getRight(camera.angle);
   auto up = getUp(forward, right);
@@ -110,9 +110,7 @@ inline bool camera(const TargetCamera& camera) {
   ImGui::Text("Angle & pitch:  MMB");
   ImGui::Text("Dist:           Scroll");
   ImGui::EndChild();
-
   ImGui::SameLine();
-
   ImGui::BeginChild("ChildR", ImVec2(0, 260));
   if (ImGui::DragScalar("Dist", ImGuiDataType_Float, (void*)&camera.dist.target, 0.1f, 0, &threeSixty, "%+.2f")) hasInput = true;
   if (ImGui::DragScalar("Pitch", ImGuiDataType_Float, (void*)&camera.pitch.target, 0.1f, 0, &threeSixty, "%+.2f"))
@@ -125,23 +123,8 @@ inline bool camera(const TargetCamera& camera) {
   ImGui::Text("Right        %+.2f %+.2f %+.2f", right.x, right.y, right.z);
   ImGui::Text("Up           %+.2f %+.2f %+.2f", up.x, up.y, up.z);
   ImGui::EndChild();
+#endif  // IMGUI_API_DISABLED
   return hasInput;
-}
-
-inline void camera(const Camera& camera, const GlfwRunnerUiResult& result) {
-  ImGui::Begin("Camera");
-  ImGui::SetWindowSize(ImVec2(275, 200));
-  ImGui::Text("Translation:   wasd or right-mouse");
-  ImGui::Text("Rotation:      cv or middle-mouse");
-  ImGui::Text("Distance:      y-scroll");
-  ImGui::NewLine();
-  ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
-  ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x.current, camera.target.y.current, camera.target.z.current);
-
-  ImGui::Text("Dist         %+.2f°", camera.dist.current);
-  ImGui::Text("Pitch        %+.2f°", camera.pitch);
-  ImGui::Text("Yaw          %+.2f", camera.yaw);
-  ImGui::End();
 }
 
 inline void GlfwRunnerUi::settings(const GlfwRunner& runner, GlfwRunnerUiResult& result) {

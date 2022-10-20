@@ -3,7 +3,6 @@
 
 #include <uinta/gl.h>
 
-#include <uinta/camera.hpp>
 #include <uinta/cfg.hpp>
 #include <uinta/io.hpp>
 #include <uinta/logging.hpp>
