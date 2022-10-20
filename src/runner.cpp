@@ -53,7 +53,11 @@ int Runner::run() {
         reset(input);
       } while (!shouldRenderFrame(state.delta));
       pollInput();
-      render();
+      if (isRenderingEnabled(flags)) {
+        swapBuffers();
+        clearBuffer(background_color, clearMask);
+        render();
+      }
     }
     shutdown();
     return EXIT_SUCCESS;
@@ -136,7 +140,6 @@ bool Runner::doInit() {
 }
 
 void Runner::doPreRender(const RunnerState& state) {
-  clearBuffer(background_color, clearMask);
 }
 
 void Runner::doRender(const RunnerState& state) {
@@ -147,7 +150,6 @@ void Runner::doRender(const RunnerState& state) {
 }
 
 void Runner::doPostRender(const RunnerState& state) {
-  swapBuffers();
 }
 
 void Runner::doShutdown() {

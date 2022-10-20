@@ -26,7 +26,7 @@ class Runner {
   RunnerState state;
   TargetCamera camera;
 
-  flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID;
+  flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
 
   Runner(const std::string& title, uint width, uint height) noexcept;
 

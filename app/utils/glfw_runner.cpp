@@ -66,7 +66,7 @@ void GlfwRunner::swapBuffers() {
 }
 
 bool GlfwRunner::shouldExit() {
-  return glfwWindowShouldClose(window);
+  return window && glfwWindowShouldClose(window);
 }
 
 bool GlfwRunner::doInit() {
