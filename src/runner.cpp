@@ -14,6 +14,7 @@
 namespace uinta {
 
 void clearBuffer(const glm::vec3& color, GLbitfield mask);
+void resetInput(InputState& input, flags_t& flags);
 
 const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
@@ -55,8 +56,8 @@ int Runner::run() {
       do {
         tick(state.delta = getRuntime() - lastTick);
         lastTick += state.delta;
+        resetInput(state.input, flags);
       } while (!shouldRenderFrame(state.delta));
-      reset(state.input);
       pollInput();
       render();
     }
@@ -213,6 +214,10 @@ void Runner::doTick(RunnerState& state) {
 }
 
 void Runner::doPostTick(RunnerState& state) {
+}
+
+inline void resetInput(InputState& input, flags_t& flags) {
+  reset(input);
 }
 
 }  // namespace uinta

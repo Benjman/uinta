@@ -5,11 +5,9 @@
 
 namespace uinta {
 
-bool isCameraEnabled(flags_t flags);
-bool isGridEnabled(flags_t flags);
-
 const flag_t RUNNER_FLAG_GRID = 0x1;
 const flag_t RUNNER_FLAG_CAMERA = 0x2;
+const flag_t RUNNER_FLAG_RENDERING = 0x4;
 
 inline bool isCameraEnabled(flags_t flags) {
   return isFlagSet(RUNNER_FLAG_CAMERA, flags);
