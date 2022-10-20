@@ -17,6 +17,10 @@ inline bool isGridEnabled(flags_t flags) {
   return isFlagSet(RUNNER_FLAG_GRID, flags);
 }
 
+inline bool isRenderingEnabled(flags_t flags) {
+  return isFlagSet(flags, RUNNER_FLAG_RENDERING);
+}
+
 }  // namespace uinta
 
 #endif  // UINTA_RUNNER_FLAGS_HPP

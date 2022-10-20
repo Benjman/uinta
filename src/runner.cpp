@@ -25,8 +25,6 @@ Runner::Runner(const std::string& title, uint32_t width, uint32_t height) noexce
   state.display = Display(title, width, height);
   setSpdlogLevel();
   setBackground(DEFAULT_CLEAR_COLOR);
-  setGridEnabled(true);
-  setFlag(RUNNER_FLAG_CAMERA, true, flags);
 
   if (isCameraEnabled(flags)) {
     force(camera.angle, 45);
@@ -59,7 +57,7 @@ int Runner::run() {
         resetInput(state.input, flags);
       } while (!shouldRenderFrame(state.delta));
       pollInput();
-      render();
+      if (isRenderingEnabled(flags)) render();
     }
     shutdown();
     return EXIT_SUCCESS;

@@ -21,14 +21,14 @@ class Runner {
 
   glm::vec3 background_color;
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-  flags_t flags;
+  flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
 
   Runner(const std::string& title, uint32_t width, uint32_t height) noexcept;
-
   ~Runner();
 
   int run();
 
+ protected:
   virtual double getRuntime() const = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;
