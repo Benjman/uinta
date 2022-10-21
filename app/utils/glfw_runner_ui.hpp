@@ -38,9 +38,9 @@ class GlfwRunnerUi {
 
   GlfwRunnerUi() = default;
 
-  void init(const GlfwRunner& runner);
   GlfwRunnerUiResult updateAndRender(const GlfwRunner& runner);
 
+  void onInit(const GlfwRunner& runner);
   void onPreTick(const GlfwRunner& runner);
   void onTick(const GlfwRunner& runner);
   void onPostTick(const GlfwRunner& runner);

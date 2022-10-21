@@ -12,7 +12,20 @@
 namespace uinta {
 
 void camera(const Camera& camera);
+
+// TODO Below should return an `InputEvent` to describe the input that was handled.
+// Returns a `bool` representing whether it has handled an input event
 bool camera(const TargetCamera& camera);
+
+void GlfwRunnerUi::onInit(const GlfwRunner& runner) {
+#ifndef IMGUI_API_DISABLED
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGui::StyleColorsDark();
+  ImGui_ImplGlfw_InitForOpenGL(runner.window, true);
+  ImGui_ImplOpenGL3_Init("#version 330 core");
+#endif  // IMGUI_API_DISABLED
+}
 
 void GlfwRunnerUi::onPreTick(const GlfwRunner& runner) {
   tickTime_micros = runner.getRuntime();
@@ -23,16 +36,6 @@ void GlfwRunnerUi::onTick(const GlfwRunner& runner) {
 
 void GlfwRunnerUi::onPostTick(const GlfwRunner& runner) {
   tickTime_micros = (runner.getRuntime() - tickTime_micros) * 1000000;
-}
-
-void GlfwRunnerUi::init(const GlfwRunner& runner) {
-#ifndef IMGUI_API_DISABLED
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGui::StyleColorsDark();
-  ImGui_ImplGlfw_InitForOpenGL(runner.window, true);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
-#endif  // IMGUI_API_DISABLED
 }
 
 void GlfwRunnerUi::onPreRender(const GlfwRunner& runner) {

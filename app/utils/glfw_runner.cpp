@@ -16,11 +16,9 @@ GlfwRunner::~GlfwRunner() {
 
 bool GlfwRunner::doInit() {
   Runner::doInit();
-  if (!createGLFWWindow(this)) {
-    return false;
-  }
+  if (!createGLFWWindow(this)) return false;
   registerCallbacks(this);
-  ui.init(*this);
+  ui.onInit(*this);
   return true;
 }
 
