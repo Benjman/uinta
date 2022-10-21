@@ -3,6 +3,7 @@ function (app name)
     ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_input.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_runner.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_runner_ui.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/utils/imgui.cpp
     )
 
   if (IS_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${name}/res)

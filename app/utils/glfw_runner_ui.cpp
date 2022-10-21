@@ -4,25 +4,7 @@
 #include <uinta/utils/direction.hpp>
 
 #include "./glfw_runner.hpp"
-
-#ifndef IMGUI_API_DISABLED
-
-#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
-#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
-#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#include <imgui.h>
-#include <imgui/backends/imgui_impl_glfw.h>
-#include <imgui/backends/imgui_impl_opengl3.h>
-
-// FIXME there has to be a better way to point to library source files
-#include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
-#include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
-#include "../../lib/imgui/imgui.cpp"
-#include "../../lib/imgui/imgui_draw.cpp"
-#include "../../lib/imgui/imgui_tables.cpp"
-#include "../../lib/imgui/imgui_widgets.cpp"
-
-#endif  // IMGUI_API_DISABLED
+#include "./imgui.hpp"
 
 namespace uinta {
 
@@ -36,7 +18,7 @@ void GlfwRunnerUi::onInit(GlfwRunner& runner) {
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
   ImGui_ImplGlfw_InitForOpenGL(runner.window, true);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
+  ImGui_ImplOpenGL3_Init(UINTA_IMGUI_GLSL_VERSION);
 #endif  // IMGUI_API_DISABLED
 }
 
