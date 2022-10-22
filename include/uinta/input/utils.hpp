@@ -1,16 +1,61 @@
+#ifndef UINTA_INPUT_UTILS_HPP
+#define UINTA_INPUT_UTILS_HPP
+
 #include <algorithm>
 #include <uinta/input/fwd.hpp>
 #include <uinta/input/state.hpp>
 
 namespace uinta {
+inline void keyPressed(InputState& input, const input_key_t key, const int flags);
+inline void keyReleased(InputState& input, const input_key_t key, const int flags);
+inline void keyRepeated(InputState& input, const input_key_t key, const int flags);
 
-inline bool hasAnyInput(const InputState& input) {
-  return isAnyKeyDown(input) || isAnyMouseBonttonDown(input) || isMouseScrolled(input) || isMouseMoved(input);
-}
+inline void mouseButtonPressed(InputState& input, const input_key_t key, const int flags);
+inline void mouseButtonReleased(InputState& input, const input_key_t key, const int flags);
+inline void mouseMoved(InputState& input, const double xpos, const double ypos);
+inline void mouseScrolled(InputState& input, const double dx, const double dy);
 
-inline bool isAltDown(const InputState& input) {
-  return isAnyKeyDown(input) && input.io_flags & MOD_ALT;
-}
+inline bool isAnyKeyDown(const InputState& input);
+inline bool isAnyKeyPressed(const InputState& input);
+inline bool isAnyKeyReleased(const InputState& input);
+inline bool isAnyKeyRepeated(const InputState& input);
+inline bool isAnyMouseDown(const InputState& input);
+inline bool isAnyMouseMove(const InputState& input);
+inline bool isAnyMousePressed(const InputState& input);
+inline bool isAnyMouseReleased(const InputState& input);
+
+inline bool isAltDown(const InputState& input);
+inline bool isCtrlDown(const InputState& input);
+inline bool isKeyDown(const InputState& input, input_key_t key);
+inline bool isKeyPressed(const InputState& input, input_key_t key);
+inline bool isKeyReleased(const InputState& input, input_key_t key);
+inline bool isKeyRepeated(const InputState& input, input_key_t key);
+inline bool isMouseButtonDown(const InputState& input, mouse_button_t button);
+inline bool isMouseButtonPressed(const InputState& input, mouse_button_t button);
+inline bool isMouseButtonReleased(const InputState& input, mouse_button_t button);
+inline bool isMouseReleased(const InputState& input, mouse_button_t button);
+
+inline bool isMouseMoved(const InputState& input);
+inline bool isMouseScroll(const InputState& input);
+inline bool isMouseScrolled(const InputState& input);
+inline bool isShiftDown(const InputState& input);
+
+void reset(InputState& input);
+
+// clang-format off
+
+inline bool isAnyKeyDown(const InputState& input) { return isFlagSet(input::HAS_KEY_DOWN, input.flags); }
+inline bool isAnyKeyPressed(const InputState& input) { return isFlagSet(input::HAS_KEY_PRESSED, input.flags); }
+inline bool isAnyKeyReleased(const InputState& input) { return isFlagSet(input::HAS_KEY_RELEASED, input.flags); }
+inline bool isAnyKeyRepeated(const InputState& input) { return isFlagSet(input::HAS_KEY_REPEATED, input.flags); }
+inline bool isAnyMouseBottonDown(const InputState& input) { return isFlagSet(input::HAS_MOUSE_DOWN, input.flags); }
+inline bool isAnyMouseDown(const InputState& input) { return isFlagSet(input::HAS_MOUSE_DOWN, input.flags); }
+inline bool isAnyMouseMove(const InputState& input) { return isFlagSet(input::HAS_MOUSE_MOVE, input.flags); }
+inline bool isAnyMousePressed(const InputState& input) { return isFlagSet(input::HAS_MOUSE_PRESSED, input.flags); }
+inline bool isAnyMouseReleased(const InputState& input) { return isFlagSet(input::HAS_MOUSE_RELEASED, input.flags); }
+inline bool isAltDown(const InputState& input) { return isAnyKeyDown(input) && input.io_flags & MOD_ALT; }
+
+// clang-format on
 
 inline bool isCtrlDown(const InputState& input) {
   return isAnyKeyDown(input) && input.io_flags & MOD_CONTROL;
@@ -21,7 +66,7 @@ inline bool isKeyDown(const InputState& input, input_key_t key) {
 }
 
 inline bool isKeyPressed(const InputState& input, input_key_t key) {
-  return isFlagSet(input::HAS_KEY_PRESSED, input.flags) &&
+  return isAnyKeyPressed(input) &&
          std::find(input.keys_pressed.begin(), input.keys_pressed.end(), key) != input.keys_pressed.end();
 }
 
@@ -33,13 +78,17 @@ inline bool isKeyRepeated(const InputState& input, input_key_t key) {
   return std::find(input.keys_repeated.begin(), input.keys_repeated.end(), key) != input.keys_repeated.end();
 }
 
+inline bool isMouseReleased(const InputState& input, mouse_button_t button) {
+  return !isAnyMouseDown(input) &&
+         std::find(input.mouse_released.begin(), input.mouse_released.end(), button) != input.mouse_released.end();
+}
+
 inline bool isMouseButtonDown(const InputState& input, mouse_button_t button) {
-  return isFlagSet(input::HAS_MOUSE_DOWN, input.flags) &&
-         std::find(input.mouse_down.begin(), input.mouse_down.end(), button) != input.mouse_down.end();
+  return isAnyMouseDown(input) && std::find(input.mouse_down.begin(), input.mouse_down.end(), button) != input.mouse_down.end();
 }
 
 inline bool isMouseButtonPressed(const InputState& input, mouse_button_t button) {
-  return isFlagSet(input::HAS_MOUSE_DOWN, input.flags) &&
+  return isAnyMouseDown(input) &&
          std::find(input.mouse_pressed.begin(), input.mouse_pressed.end(), button) != input.mouse_pressed.end();
 }
 
@@ -48,8 +97,12 @@ inline bool isMouseButtonReleased(const InputState& input, mouse_button_t button
          std::find(input.mouse_released.begin(), input.mouse_released.end(), button) != input.mouse_released.end();
 }
 
-inline bool isMouseScrolled(const InputState& input) {
+inline bool isMouseScroll(const InputState& input) {
   return isFlagSet(input::HAS_MOUSE_SCROLL, input.flags);
+}
+
+inline bool isMouseScrolled(const InputState& input) {
+  return isMouseScroll(input);
 }
 
 inline bool isMouseMoved(const InputState& input) {
@@ -57,7 +110,7 @@ inline bool isMouseMoved(const InputState& input) {
 }
 
 inline bool isShiftDown(const InputState& input) {
-  return isFlagSet(input::HAS_KEY_DOWN, input.flags) && input.io_flags & MOD_SHIFT;
+  return isAnyKeyDown(input) && input.io_flags & MOD_SHIFT;
 }
 
 inline void keyPressed(InputState& input, const input_key_t key, const int flags) {
@@ -142,3 +195,5 @@ inline void reset(InputState& input) {
 }
 
 }  // namespace uinta
+
+#endif  // UINTA_INPUT_UTILS_HPP

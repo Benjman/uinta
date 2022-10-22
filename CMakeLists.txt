@@ -25,7 +25,6 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/file_manager.cpp
   ./src/font.cpp
   ./src/gl.cpp
-  ./src/input.cpp
   ./src/math.cpp
   ./src/memory/memory_link.cpp
   ./src/mesh.cpp

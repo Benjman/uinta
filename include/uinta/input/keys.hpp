@@ -1,12 +1,9 @@
 #ifndef UINTA_INPUT_KEYS_HPP
 #define UINTA_INPUT_KEYS_HPP
 
-#include <cstdint>
+#include <uinta/input/fwd.hpp>
 
 namespace uinta {
-
-using input_key_t = int32_t;
-using mouse_button_t = int32_t;
 
 const input_key_t KEY_UNKNOWN = -1;
 const input_key_t ACTION_UNKNOWN = -1;
@@ -155,6 +152,7 @@ extern mouse_button_t MOUSE_BUTTON_LEFT;
 extern mouse_button_t MOUSE_BUTTON_RIGHT;
 extern mouse_button_t MOUSE_BUTTON_MIDDLE;
 
+// TODO move these to the utilities header
 const char* const getKeyStr(input_key_t key) noexcept;
 const char* const getActionStr(input_key_t action) noexcept;
 const char* const getModsStr(input_key_t mods) noexcept;

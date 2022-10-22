@@ -110,15 +110,11 @@ void Runner::setBackground(const glm::vec3& color) {
 }
 
 void Runner::handleCursorPositionChanged(const double xpos, const double ypos) {
-  state.input.cursordx = xpos - state.input.cursorx;
-  state.input.cursordy = ypos - state.input.cursory;
-  state.input.cursorx = xpos;
-  state.input.cursory = ypos;
+  mouseMoved(state.input, xpos, ypos);
 }
 
 void Runner::handleScrollInput(const double xoffset, const double yoffset) {
-  state.input.scrolldx = xoffset;
-  state.input.scrolldy = yoffset;
+  mouseScrolled(state.input, xoffset, yoffset);
 }
 
 void Runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
@@ -130,7 +126,7 @@ void Runner::handleKeyInput(const input_key_t key, const int scancode, const int
 void Runner::handleMouseButtonInput(const int button, const int action, const int mods) {
   if (action == ACTION_PRESS) mouseButtonPressed(state.input, button, mods);
   if (action == ACTION_RELEASE) mouseButtonReleased(state.input, button, mods);
-  state.input.flags = mods;
+  state.input.io_flags = mods;
 }
 
 void Runner::handleWindowSizeChanged(const int width, const int height) {

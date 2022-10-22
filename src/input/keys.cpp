@@ -131,7 +131,7 @@ const char* const uinta::getActionStr(input_key_t action) noexcept {
   return "ACTION UNKNOWN";
 }
 
-const char* const uinta::getModsStr(int mods) noexcept {
+const char* const uinta::getModsStr(input_key_t mods) noexcept {
   // TODO implement mods string
   if (mods == 0) return "";
   return "NOT IMPLEMENTED";
