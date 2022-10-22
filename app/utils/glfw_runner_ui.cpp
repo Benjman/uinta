@@ -9,6 +9,7 @@
 namespace uinta {
 
 void camera(const TargetCamera& camera);
+void inputUi(const InputState& input, const Display& display);
 void settings(Runner& runner);
 
 void GlfwRunnerUi::onInit(GlfwRunner& runner) {
@@ -63,6 +64,7 @@ flags_t GlfwRunnerUi::updateAndRender(GlfwRunner& runner) {
   ImGui::Begin(std::string(runner.display.title).c_str());
   ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
   camera(runner.camera);
+  inputUi(runner.input, runner.display);
   settings(runner);
   ImGui::End();
   ImGui::Render();
@@ -112,6 +114,73 @@ inline void settings(Runner& runner) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::CollapsingHeader("Settings")) {
     ImGui::CheckboxFlags("Show grid", &runner.flags, RUNNER_FLAG_GRID);
+  }
+#endif  // IMGUI_API_DISABLED
+}
+
+inline void inputUi(const InputState& input, const Display& display) {
+#ifndef IMGUI_API_DISABLED
+  if (!ImGui::CollapsingHeader("Input")) return;
+
+  ImGui::Text("flags      %7i", input.flags);
+  ImGui::Text("pos   (%4.0f, %4.0f)", input.cursorx, input.cursory);
+  ImGui::Text("view  (%0.2f, %0.2f)", input.cursorx / (float)display.width, input.cursory / (float)display.height);
+  // ImGui::Text("ndc  (%0.2f, %0.2f)", );  // TODO
+  // ImGui::Text("view  (%0.2f, %0.2f)", ); // TODO
+  // ImGui::Text("world (%0.2f, %0.2f)", ); // TODO
+
+  ImGui::Separator();
+
+  if (ImGui::TreeNode("Signals")) {
+    ImGui::BeginTable("mouseUi", 2);
+    ImGui::BeginDisabled(true);
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    ImGui::RadioButton("key_down", isFlagSet(input::HAS_KEY_DOWN, input.flags));
+    ImGui::SameLine();
+    ImGui::Text("(%lu)", input.keys_down.size());
+    ImGui::TableSetColumnIndex(1);
+    ImGui::RadioButton("mouse_down", isFlagSet(input::HAS_MOUSE_DOWN, input.flags));
+    ImGui::SameLine();
+    ImGui::Text("(%lu)", input.mouse_down.size());
+
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    ImGui::RadioButton("key_pressed", isFlagSet(input::HAS_KEY_PRESSED, input.flags));
+    ImGui::SameLine();
+    ImGui::Text("(%lu)", input.keys_pressed.size());
+    ImGui::TableSetColumnIndex(1);
+    ImGui::RadioButton("mouse_pressed", isFlagSet(input::HAS_MOUSE_PRESSED, input.flags));
+    ImGui::SameLine();
+    ImGui::Text("(%lu)", input.mouse_pressed.size());
+
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    ImGui::RadioButton("key_repeated", isFlagSet(input::HAS_KEY_REPEATED, input.flags));
+    ImGui::SameLine();
+    ImGui::Text("(%lu)", input.keys_repeated.size());
+    ImGui::TableSetColumnIndex(1);
+    ImGui::RadioButton("mouse_released", isFlagSet(input::HAS_MOUSE_RELEASED, input.flags));
+    ImGui::SameLine();
+    ImGui::Text("(%lu)", input.mouse_released.size());
+
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    ImGui::RadioButton("key_released", isFlagSet(input::HAS_KEY_RELEASED, input.flags));
+    ImGui::SameLine();
+    ImGui::Text("(%lu)", input.keys_released.size());
+    ImGui::TableSetColumnIndex(1);
+    ImGui::RadioButton("mouse_scroll", isFlagSet(input::HAS_MOUSE_SCROLL, input.flags));
+
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(1);
+    ImGui::RadioButton("mouse_move", isFlagSet(input::HAS_MOUSE_MOVE, input.flags));
+
+    ImGui::EndDisabled();
+    ImGui::EndTable();
+
+    ImGui::TreePop();
+    ImGui::Separator();
   }
 #endif  // IMGUI_API_DISABLED
 }
