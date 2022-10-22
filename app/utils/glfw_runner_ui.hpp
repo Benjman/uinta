@@ -35,6 +35,7 @@ class GlfwRunnerUi {
  public:
   float renderTime_micros;
   float tickTime_micros;
+  bool cb_showGrid = true;
 
   GlfwRunnerUi() = default;
 
@@ -48,11 +49,6 @@ class GlfwRunnerUi {
   void onRender(const GlfwRunner& runner);
   void onPostRender(const GlfwRunner& runner);
   void onShutdown(const GlfwRunner& runner);
-
- private:
-  bool cb_showGrid = true;
-
-  void settings(const GlfwRunner& runner, GlfwRunnerUiResult& result);
 };
 
 }  // namespace uinta
