@@ -188,18 +188,18 @@ bool Runner::doInit() {
   return true;
 }
 
-void Runner::doPreRender(const RunnerState& state) {
+void Runner::doPreRender(RunnerState& state) {
   clearBuffer(background_color, clearMask);
 }
 
-void Runner::doRender(const RunnerState& state) {
+void Runner::doRender(RunnerState& state) {
   if (isGridEnabled(flags)) {
     auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
     grid.render(proj * getViewMatrix(camera));
   }
 }
 
-void Runner::doPostRender(const RunnerState& state) {
+void Runner::doPostRender(RunnerState& state) {
   swapBuffers();
 }
 
@@ -209,14 +209,14 @@ void Runner::doShutdown() {
 void Runner::doHandleWindowSizeChanged(const int width, const int height) {
 }
 
-void Runner::doPreTick(const RunnerState& state) {
+void Runner::doPreTick(RunnerState& state) {
 }
 
-void Runner::doTick(const RunnerState& state) {
+void Runner::doTick(RunnerState& state) {
   if (isCameraEnabled(flags)) update(camera, state);
 }
 
-void Runner::doPostTick(const RunnerState& state) {
+void Runner::doPostTick(RunnerState& state) {
 }
 
 }  // namespace uinta

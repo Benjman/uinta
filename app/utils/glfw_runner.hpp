@@ -23,12 +23,12 @@ class GlfwRunner : public Runner {
   ~GlfwRunner();
 
   virtual bool doInit() override;
-  virtual void doPostRender(const RunnerState& state) override;
-  virtual void doTick(const RunnerState& state) override;
-  virtual void doPreTick(const RunnerState& state) override;
-  virtual void doPostTick(const RunnerState& state) override;
-  virtual void doPreRender(const RunnerState& state) override;
-  virtual void doRender(const RunnerState& state) override;
+  virtual void doPostRender(RunnerState& state) override;
+  virtual void doTick(RunnerState& state) override;
+  virtual void doPreTick(RunnerState& state) override;
+  virtual void doPostTick(RunnerState& state) override;
+  virtual void doPreRender(RunnerState& state) override;
+  virtual void doRender(RunnerState& state) override;
   virtual void doShutdown() override;
 
   virtual void doHandleWindowSizeChanged(const int width, const int height) override;

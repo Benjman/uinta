@@ -40,27 +40,27 @@ bool GlfwRunner::shouldExit() {
   return glfwWindowShouldClose(window);
 }
 
-void GlfwRunner::doPreTick(const RunnerState& state) {
+void GlfwRunner::doPreTick(RunnerState& state) {
   ui.onPreTick(*this);
   Runner::doPreTick(state);
 }
 
-void GlfwRunner::doTick(const RunnerState& state) {
+void GlfwRunner::doTick(RunnerState& state) {
   ui.onTick(*this);
   Runner::doTick(state);
 }
 
-void GlfwRunner::doPostTick(const RunnerState& state) {
+void GlfwRunner::doPostTick(RunnerState& state) {
   ui.onPostTick(*this);
   Runner::doPostTick(state);
 }
 
-void GlfwRunner::doPreRender(const RunnerState& state) {
+void GlfwRunner::doPreRender(RunnerState& state) {
   ui.onPreRender(*this);
   Runner::doPreRender(state);
 }
 
-void GlfwRunner::doRender(const RunnerState& state) {
+void GlfwRunner::doRender(RunnerState& state) {
   ui.onRender(*this);
   Runner::doRender(state);
   auto uiResult = ui.updateAndRender(*this);
@@ -72,7 +72,7 @@ void GlfwRunner::doRender(const RunnerState& state) {
   }
 }
 
-void GlfwRunner::doPostRender(const RunnerState& state) {
+void GlfwRunner::doPostRender(RunnerState& state) {
   ui.onPostRender(*this);
   Runner::doPostRender(state);
 }

@@ -37,12 +37,12 @@ class Runner {
 
   /** life cycle **/
   virtual bool doInit();
-  virtual void doPreTick(const RunnerState& state);
-  virtual void doTick(const RunnerState& state);
-  virtual void doPostTick(const RunnerState& state);
-  virtual void doPreRender(const RunnerState& state);
-  virtual void doRender(const RunnerState& state);
-  virtual void doPostRender(const RunnerState& state);
+  virtual void doPreTick(RunnerState& state);
+  virtual void doTick(RunnerState& state);
+  virtual void doPostTick(RunnerState& state);
+  virtual void doPreRender(RunnerState& state);
+  virtual void doRender(RunnerState& state);
+  virtual void doPostRender(RunnerState& state);
   virtual void doShutdown();
   /** life cycle end **/
 
