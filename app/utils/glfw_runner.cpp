@@ -5,6 +5,8 @@
 
 #include "./glfw_runner.hpp"
 
+#include <uinta/input/utils.hpp>
+
 namespace uinta {
 void registerCallbacks(GlfwRunner*);
 bool createGLFWWindow(GlfwRunner*);
@@ -64,9 +66,7 @@ void GlfwRunner::doRender(RunnerState& state) {
   auto uiResult = ui.updateAndRender(*this);
   if (uiResult.flags) {
     if (isFlagSet(uiResult.flags, GlfwRunnerUiResult::SHOW_GRID_FLAG)) setGridEnabled(!isFlagSet(flags, RUNNER_FLAG_GRID));
-    if (isFlagSet(uiResult.flags, GlfwRunnerUiResult::INPUT_HANDLED)) {
-      // TODO how do we get the engine to ignore input from here?
-    }
+    if (isFlagSet(uiResult.flags, GlfwRunnerUiResult::INPUT_HANDLED)) reset(state.input);
   }
 }
 
