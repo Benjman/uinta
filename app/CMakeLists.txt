@@ -14,4 +14,6 @@ function (app name)
   message(STATUS "Added app '${name}'")
 endfunction()
 
+app(demo)
+
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)
