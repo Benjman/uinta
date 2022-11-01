@@ -3,6 +3,7 @@
 
 #include <string>
 #include <uinta/cfg.hpp>
+#include <uinta/flags.hpp>
 #include <uinta/memory/memory_link.hpp>
 #include <uinta/utils/macros.hpp>
 #include <vector>
@@ -21,7 +22,7 @@ class FileManager {
 
   ~FileManager();
 
-  void init(const std::string& searchPaths = UINTA_FILE_SEARCH_PATHS, const char delim = UINTA_FILE_SEARCH_PATHS_DELIM);
+  bool init(const std::string& searchPaths = UINTA_FILE_SEARCH_PATHS, const char delim = UINTA_FILE_SEARCH_PATHS_DELIM);
 
   const file_t* const registerFile(const std::string& relativePath);
 
@@ -49,6 +50,8 @@ class FileManager {
   size_t storageSize;
   void* storage = nullptr;
 
+  flags_t flags = 0;
+
   void reserveSpace(const file_t* const handle);
   void parseFileSearchPaths(const std::string& searchPaths, const char delim);
   std::string findPath(const std::string& path);
@@ -62,6 +65,8 @@ class FileManager {
   void setIsActive(const file_t* const handle, const bool isActive);
   void setIsBuffered(const file_t* const handle, const bool isLoaded);
   void setPath(const file_t* const handle, const std::string& path);
+
+  bool isInitialized() const;
 };
 
 }  // namespace uinta

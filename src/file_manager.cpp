@@ -10,14 +10,12 @@ inline const file_t UINTA_FILE_ID_MASK = 0xFFFF;
 inline const file_t UINTA_FILE_IS_BUFFERED_MASK = 0x70000;
 inline const file_t UINTA_FILE_IS_ACTIVE_MASK = 0x80000;
 
+inline const flag_t FILEMANAGER_INITIALIZED = 1 << 0;
+
 inline std::string sanitizePath(const std::string& searchPath, const std::string& path) {
   // TODO ensure searchPath, or path aren't double slashing "//", or that a slash isn't missing between the two
   return searchPath + path;
 }
-
-}  // namespace uinta
-
-using namespace uinta;
 
 FileManager::FileManager(const size_t storageSize) : storageSize(storageSize), storage(malloc(storageSize)) {
 }
@@ -33,8 +31,12 @@ FileManager::~FileManager() {
   storageSize = 0;
 }
 
-void FileManager::init(const std::string& searchPaths, const char delim) {
+bool FileManager::init(const std::string& searchPaths, const char delim) {
+  if (isFlagSet(FILEMANAGER_INITIALIZED, flags)) SPDLOG_WARN("Too many calls to FileManager::init()!");
   parseFileSearchPaths(searchPaths, delim);
+  setFlag(FILEMANAGER_INITIALIZED, true, flags);
+  loadAll();
+  return true;
 }
 
 const file_t* const FileManager::registerFile(const std::string& relativePath) {
@@ -74,6 +76,7 @@ void FileManager::releaseFile(const std::vector<const file_t*>& handles) {
 }
 
 const bool FileManager::isActive(const file_t* const handle) const {
+  if (!isInitialized()) return false;
   if (handle == nullptr || getId(handle) > handles.size()) {
     SPDLOG_WARN("Invalid handle {}!", *handle);
   }
@@ -82,7 +85,9 @@ const bool FileManager::isActive(const file_t* const handle) const {
 }
 
 const bool FileManager::isBuffered(const file_t* const handle) const {
-  return isActive(handle) && *handle & UINTA_FILE_IS_BUFFERED_MASK;
+  if (!isActive(handle)) return false;
+  if (!(isActive(handle) && *handle & UINTA_FILE_IS_BUFFERED_MASK)) return false;
+  return true;
 }
 
 const void* FileManager::getData(const file_t* const handle) const {
@@ -107,6 +112,7 @@ const file_size_t FileManager::getSize(const file_t* const handle) const {
 }
 
 const file_t FileManager::getId(const file_t* const handle) const {
+  if (!isInitialized()) return -1;
   return *handle & UINTA_FILE_ID_MASK;
 }
 
@@ -273,3 +279,13 @@ std::string FileManager::findPath(const std::string& path) {
   }
   return "";
 }
+
+bool FileManager::isInitialized() const {
+  if (!isFlagSet(FILEMANAGER_INITIALIZED, flags)) {
+    SPDLOG_WARN("FileManager has not been initialized!");
+    return false;
+  }
+  return true;
+}
+
+}  // namespace uinta
