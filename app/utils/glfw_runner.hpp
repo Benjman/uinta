@@ -33,6 +33,7 @@ class GlfwRunner : public Runner {
   virtual void doShutdown() override;
 
   void swapBuffers() override;
+  bool createOpenGLContext() override;
   bool shouldExit() override;
   double getRuntime() const override;
   void pollInput() override;

@@ -65,6 +65,14 @@ void GlfwRunner::swapBuffers() {
   glfwSwapBuffers(window);
 }
 
+bool GlfwRunner::createOpenGLContext() {
+  if (!createGLFWWindow(this)) {
+    SPDLOG_ERROR("Failed to create OpenGL context!");
+    return false;
+  }
+  return true;
+}
+
 bool GlfwRunner::shouldExit() {
   return window && glfwWindowShouldClose(window);
 }

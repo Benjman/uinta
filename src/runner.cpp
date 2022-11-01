@@ -41,6 +41,7 @@ bool Runner::init() {
 
 int Runner::run() {
   try {
+    if (isRenderingEnabled(flags) && !createOpenGLContext()) return false;
     if (!init()) {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;

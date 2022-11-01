@@ -48,6 +48,7 @@ class Runner {
   virtual void doShutdown();
   virtual void doHandleWindowSizeChanged(const int width, const int height);
 
+  virtual bool createOpenGLContext() = 0;
   virtual bool shouldExit() = 0;
   virtual double getRuntime() const = 0;
   virtual void pollInput() = 0;
