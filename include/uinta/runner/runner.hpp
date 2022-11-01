@@ -62,7 +62,7 @@ class Runner {
 
  private:
   bool init();
-  void tick(float dt);
+  void tick();
   void render();
   void shutdown();
   bool shouldRenderFrame(float dt);

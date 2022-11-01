@@ -49,7 +49,10 @@ int Runner::run() {
     auto lastTick = getRuntime();
     while (!shouldExit()) {
       do {
-        tick(state.delta = getRuntime() - lastTick);
+        state.delta = getRuntime() - lastTick;
+        state.runtime += state.delta;
+        state.tick++;
+        tick();
         lastTick += state.delta;
         reset(input);
       } while (!shouldRenderFrame(state.delta));
@@ -73,11 +76,7 @@ int Runner::run() {
   }
 }
 
-void Runner::tick(float dt) {
-  state.delta = dt;
-  state.runtime += dt;
-  state.tick++;
-
+void Runner::tick() {
   doPreTick(state);
   doTick(state);
   doPostTick(state);
