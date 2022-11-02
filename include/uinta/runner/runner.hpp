@@ -61,7 +61,6 @@ class Runner {
   void handleWindowSizeChanged(const int width, const int height);
 
  private:
-  bool init();
   void tick();
   void render();
   void shutdown();

@@ -21,28 +21,12 @@ using namespace uinta;
 Runner::Runner(const std::string& title, uint width, uint height) noexcept : display(title, width, height) {
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
-
-  if (isCameraEnabled(flags)) {
-    force(camera.angle, 45);
-    force(camera.pitch, 45);
-    force(camera.dist, 5);
-  }
-}
-
-bool Runner::init() {
-  spdlog::stopwatch sw;
-  fileManager.init();
-  fileManager.loadAll();
-  if (!doInit()) return false;
-  if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
-  SPDLOG_INFO("Completed initialization for '{}' in {} seconds.", display.title, sw.elapsed().count());
-  return true;
 }
 
 int Runner::run() {
   try {
     if (isRenderingEnabled(flags) && !createOpenGLContext()) return false;
-    if (!init()) {
+    if (!doInit()) {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;
     }
@@ -74,6 +58,19 @@ int Runner::run() {
     std::cerr << "Runner::run() caught: " << ex.what() << "\n";
     throw ex;
   }
+}
+
+bool Runner::doInit() {
+  spdlog::stopwatch sw{};
+  if (!fileManager.init()) return false;
+  if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
+  SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
+  if (isCameraEnabled(flags)) {
+    force(camera.angle, 45);
+    force(camera.pitch, 45);
+    force(camera.dist, 5);
+  }
+  return true;
 }
 
 void Runner::tick() {
@@ -133,10 +130,6 @@ void Runner::handleWindowSizeChanged(const int width, const int height) {
 
 Runner::~Runner() {
   SPDLOG_INFO("Tearing down '{}'.", display.title);
-}
-
-bool Runner::doInit() {
-  return true;
 }
 
 void Runner::doPreRender(const RunnerState& state) {
