@@ -10,7 +10,7 @@ struct MemoryLink {
   void* ptr;
   MemoryLink *back, *forward;
 
-  MemoryLink(void* ptr = nullptr, size_t size = 0);
+  explicit MemoryLink(void* ptr = nullptr, size_t size = 0);
 
   MemoryLink(const MemoryLink& other);
 

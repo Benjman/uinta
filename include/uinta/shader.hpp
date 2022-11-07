@@ -8,10 +8,10 @@
 
 namespace uinta {
 
-GLuint createShaderProgram(const std::vector<std::string> &sources, const std::vector<GLenum> &stages,
-                           const std::vector<std::string> &uniformNames  = std::vector<std::string>(),
-                           const std::vector<GLuint *> &uniformLocations = std::vector<GLuint *>());
+GLuint createShaderProgram(const std::vector<std::string>& sources, const std::vector<GLenum>& stages,
+                           const std::vector<std::string>& uniformNames = std::vector<std::string>(),
+                           const std::vector<GLuint*>& uniformLocations = std::vector<GLuint*>());
 
-} // namespace uinta
+}  // namespace uinta
 
-#endif // UINTA_SHADER_H
+#endif  // UINTA_SHADER_H

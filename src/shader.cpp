@@ -3,8 +3,8 @@
 
 #include <cstdio>
 #include <uinta/logging.hpp>
-#include <uinta/macros.hpp>
 #include <uinta/shader.hpp>
+#include <uinta/utils/macros.hpp>
 
 namespace uinta {
 

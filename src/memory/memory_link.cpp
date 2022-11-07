@@ -1,8 +1,10 @@
-#include <uinta/io/file_manager.hpp>
+#include <uinta/memory/memory_link.hpp>
 
 using namespace uinta;
 
-MemoryLink::MemoryLink(const MemoryLink& other) { *this = other; }
+MemoryLink::MemoryLink(const MemoryLink& other) {
+  *this = other;
+}
 
 MemoryLink::MemoryLink(void* ptr, size_t size) : ptr(ptr), size(size) {
   back = nullptr;

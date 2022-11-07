@@ -4,9 +4,7 @@
 #include <uinta/gl.h>
 
 #include <glm/vec3.hpp>
-#include <string>
-#include <uinta/io.hpp>
-#include <uinta/logging.hpp>
+#include <uinta/file_manager.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_state.hpp>
 
@@ -26,16 +24,41 @@ class Runner {
 
   int run();
 
-  bool init();
-  void tick(float dt);
-  void render();
-  void clearBuffer();
-  void shutdown();
+ protected:
+  GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+  glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
 
-  bool shouldRenderFrame();
+  virtual bool internalInit() {
+    return true;
+  }
+  virtual void internalPreTick() {
+  }
+  virtual bool doInit();
+  virtual void doPreTick(const RunnerState& state);
+  virtual void doTick(const RunnerState& state);
+  virtual void doPostTick(const RunnerState& state);
+  virtual void internalTick() {
+  }
+  virtual void internalPostTick() {
+  }
+  virtual void internalPreRender() {
+  }
+  virtual void internalRender() {
+  }
+  virtual void internalPostRender() {
+  }
+  virtual void doPreRender(const RunnerState& state);
+  virtual void doRender(const RunnerState& state);
+  virtual void doPostRender(const RunnerState& state);
+  virtual void doShutdown();
+  virtual void doHandleWindowSizeChanged(const int width, const int height);
+  virtual void internalShutdown() {
+  }
 
-  void setClearMask(const GLbitfield mask);
-  void setBackground(const glm::vec3& background);
+  virtual bool shouldExit() = 0;
+  virtual double getRuntime() = 0;
+  virtual void pollInput() = 0;
+  virtual void swapBuffers() = 0;
 
   void handleCursorPositionChanged(const double xpos, const double ypos);
   void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
@@ -43,41 +66,13 @@ class Runner {
   void handleScrollInput(const double xoffset, const double yoffset);
   void handleWindowSizeChanged(const int width, const int height);
 
- protected:
-  GLbitfield clearMask = GL_COLOR_BUFFER_BIT;
-  glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
-
-  virtual bool shouldExit() = 0;
-  virtual double getRuntime() = 0;
-  virtual void pollInput() = 0;
-  virtual void swapBuffers() = 0;
-
-  // clang-format off
-  virtual bool doInit() { return true; }
-
-  virtual void internalPreTick() {}
-  virtual void internalTick() {}
-  virtual void internalPostTick() {}
-
-  virtual void internalPreRender() {}
-  virtual void internalRender() {}
-  virtual void internalPostRender() {}
-
-  virtual void doPreTick(const RunnerState& state) {}
-  virtual void doTick(const RunnerState& state) {}
-  virtual void doPostTick(const RunnerState& state) {}
-
-  virtual void doPreRender(const RunnerState& state) {}
-  virtual void doRender(const RunnerState& state) {}
-  virtual void doPostRender(const RunnerState& state) {}
-
-  virtual void doShutdown() {}
-
-  virtual void doHandleWindowSizeChanged(const int width, const int height) {}
-
-  virtual bool internalInit() { return true; }
-  virtual void internalShutdown() {}
-  // clang-format on
+ private:
+  void clearBuffer();
+  bool init();
+  void tick(float dt);
+  void render();
+  void shutdown();
+  bool shouldRenderFrame();
 };
 
 }  // namespace uinta

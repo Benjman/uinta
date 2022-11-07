@@ -1,7 +1,7 @@
 #ifndef UINTA_GL_ERRORS_HPP
 #define UINTA_GL_ERRORS_HPP
 
-#define UINTA_glGetError(m)
+#define UINTA_glGetError(m) (void)0
 
 #ifdef UINTA_DEBUG
 

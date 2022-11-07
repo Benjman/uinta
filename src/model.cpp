@@ -187,14 +187,15 @@ Reads an obj format file provided by parameter `objBuffer` line-by-line and extr
 void uinta::parseFile(const std::string& objBuffer, std::vector<std::string>& vertexLines, std::vector<std::string>& uvLines,
                       std::vector<std::string>& normalLines, std::vector<std::string>& faceLines) {
   std::string line;
-  std::string flag;
-  std::string data;
 
   // back and forward are cursors between new-lines.
   std::string::size_type back = 0;
-  std::string::size_type forward = std::string::npos;
+  std::string::size_type forward;
 
   while ((forward = objBuffer.find('\n', back)) != std::string::npos) {
+    std::string flag;
+    std::string data;
+
     line = objBuffer.substr(back, forward - back);
     back = forward + 1;
 

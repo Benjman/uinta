@@ -11,21 +11,12 @@ inline const glm::vec3 WORLD_FORWARD = glm::vec3(0.0, 0.0, -1.0);
 
 struct BasicCamera {
   glm::vec3 position;
-  float pitch;
-  float yaw;
-  float nearPlane = 0.1;
-  float farPlane = 15.0;
+  float pitch = 0.0;
+  float yaw = 0.0;
 
-  BasicCamera() : BasicCamera(glm::vec3(0.0), 0.0, 0.0) {}
-
-  BasicCamera(glm::vec3 position, float pitch, float yaw) : position(position), pitch(pitch), yaw(yaw) {}
-
-  BasicCamera& operator=(const BasicCamera& other) {
-    position = glm::vec3(other.position);
-    pitch = other.pitch;
-    yaw = other.yaw;
-    return *this;
-  }
+  BasicCamera();
+  BasicCamera(glm::vec3 position, float pitch, float yaw);
+  BasicCamera& operator=(const BasicCamera& other);
 };
 
 }  // namespace uinta

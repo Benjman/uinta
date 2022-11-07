@@ -3,9 +3,9 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
+#include <iostream>
+#include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
-
-#include "./runner/display.cpp"
 
 namespace uinta {
 void setSpdlogLevel();
@@ -44,7 +44,12 @@ int Runner::run() {
     shutdown();
     return EXIT_SUCCESS;
   } catch (const std::exception& ex) {
-    SPDLOG_ERROR("Window '{}' encountered an error: {}", display.title, ex.what());
+    try {
+      shutdown();
+    } catch (const std::exception& shutdownEx) {
+      std::cerr << "Runner::shutdown() caught: " << shutdownEx.what() << "\n";
+    }
+    std::cerr << "Runner::run() caught: " << ex.what() << "\n";
     throw ex;
   }
 }
@@ -53,7 +58,8 @@ void Runner::tick(float runtime) {
   state.delta = runtime - state.runtime;
   state.runtime = runtime;
   state.tick++;
-  SPDLOG_TRACE("tick: {}, delta: {}, runtime: {}", state.tick, state.delta, state.runtime);
+
+  // SPDLOG_TRACE("tick: {}, delta: {}, runtime: {}", state.tick, state.delta, state.runtime);
   doPreTick(state);
   doTick(state);
   doPostTick(state);
@@ -61,7 +67,7 @@ void Runner::tick(float runtime) {
 }
 
 void Runner::render() {
-  // clearBuffer();
+  clearBuffer();
 
   internalPreRender();
   doPreRender(state);
@@ -91,14 +97,6 @@ bool Runner::shouldRenderFrame() {
   //
   // See https://github.com/Benjman/renderer/blob/main/src/core/src/runner.cpp#L46
   return true;
-}
-
-void Runner::setClearMask(const GLbitfield mask) {
-  clearMask = mask;
-}
-
-void Runner::setBackground(const glm::vec3& background) {
-  background_color = background;
 }
 
 void Runner::handleCursorPositionChanged(const double xpos, const double ypos) {
@@ -170,4 +168,35 @@ void uinta::setSpdlogLevel() {
 
 Runner::~Runner() {
   SPDLOG_INFO("Tearing down '{}'.", display.title);
+}
+
+bool Runner::doInit() {
+  return true;
+}
+
+void Runner::doPreRender(const RunnerState& state) {
+}
+
+void Runner::doRender(const RunnerState& state) {
+}
+
+void Runner::doPostRender(const RunnerState& state) {
+}
+
+void Runner::doShutdown() {
+}
+
+void Runner::doHandleWindowSizeChanged(const int width, const int height) {
+  display.width = width;
+  display.height = height;
+  display.aspectRatio = (float)width / (float)height;
+}
+
+void Runner::doPreTick(const RunnerState& state) {
+}
+
+void Runner::doTick(const RunnerState& state) {
+}
+
+void Runner::doPostTick(const RunnerState& state) {
 }

@@ -1,8 +1,9 @@
-#include "./glfw_runner.hpp"
-
+// clang-format off
+#include <uinta/logging.hpp>
 #include <spdlog/stopwatch.h>
+// clang-format on
 
-#include "./imgui_util.hpp"
+#include "./glfw_runner.hpp"
 
 using namespace uinta;
 
@@ -15,7 +16,6 @@ bool GlfwRunner::internalInit() {
   createGLFWWindow(*this);
   if (window == NULL) return false;
   register_callbacks();
-  imgui::init(window);
   return true;
 }
 
@@ -70,19 +70,12 @@ void GlfwRunner::swapBuffers() {
 }
 
 void GlfwRunner::internalPreRender() {
-  imgui::preRender(window);
 }
-
 void GlfwRunner::internalRender() {
-  imgui::render(window);
 }
-
 void GlfwRunner::internalPostRender() {
-  imgui::postRender(window);
 }
-
 void GlfwRunner::internalShutdown() {
-  uinta::imgui::shutdown(window);
 }
 
 bool GlfwRunner::shouldExit() {

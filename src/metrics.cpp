@@ -1,6 +1,3 @@
-#include <uinta/metrics.hpp>
-#include <uinta/logging.hpp>
-
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
@@ -8,14 +5,16 @@
 #include <cstdio>
 #include <cstring>
 #include <stdexcept>
+#include <uinta/logging.hpp>
+#include <uinta/metrics.hpp>
 
 using namespace uinta;
 
 constexpr unsigned int METRICS_STRIDE = sizeof(float);
-constexpr metric_t METRICS_INVALID    = -1;
+constexpr metric_t METRICS_INVALID = -1;
 
-#define METRICS_VALIDATE_STRIDE(type)                                                                                            \
-  if (METRICS_STRIDE != sizeof(type))                                                                                            \
+#define METRICS_VALIDATE_STRIDE(type) \
+  if (METRICS_STRIDE != sizeof(type)) \
   throw std::runtime_error(std::string("[ERROR] metrics_controller.cpp - unexpected return from sizeof(") + #type + ")")
 
 MetricsController::MetricsController() {
@@ -28,9 +27,11 @@ MetricsController::MetricsController() {
   memset(assignments, 0, METRICS_MAX_STORAGE * METRICS_STRIDE);
 }
 
-MetricsController::~MetricsController() { free(storage); }
+MetricsController::~MetricsController() {
+  free(storage);
+}
 
-metric_t MetricsController::init_metric(const unsigned int type, const char *const name) noexcept {
+metric_t MetricsController::init_metric(const unsigned int type, const char* const name) noexcept {
   for (int i = 0; i < METRICS_MAX_STORAGE; i++) {
     if (!assignments[i]) {
       metric_type[i] = type;
@@ -44,18 +45,18 @@ metric_t MetricsController::init_metric(const unsigned int type, const char *con
 }
 
 void MetricsController::set(const metric_t handle, const float v) noexcept {
-  auto *position = (float *)storage + handle * METRICS_STRIDE;
-  *position      = v;
+  auto* position = static_cast<float*>(storage) + handle * METRICS_STRIDE;
+  *position = v;
 }
 
 void MetricsController::set(const metric_t handle, const int v) noexcept {
-  auto *position = (int *)storage + handle * METRICS_STRIDE;
-  *position      = v;
+  auto* position = static_cast<int*>(storage) + handle * METRICS_STRIDE;
+  *position = v;
 }
 
 void MetricsController::set(const metric_t handle, const unsigned int v) noexcept {
-  auto *position = (unsigned int *)storage + handle * METRICS_STRIDE;
-  *position      = v;
+  auto* position = static_cast<unsigned int*>(storage) + handle * METRICS_STRIDE;
+  *position = v;
 }
 
 float MetricsController::getf(const metric_t handle) noexcept {
@@ -63,7 +64,7 @@ float MetricsController::getf(const metric_t handle) noexcept {
     SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
     return 0.0f;
   }
-  auto *position = (float *)storage + handle * METRICS_STRIDE;
+  auto* position = static_cast<float*>(storage) + handle * METRICS_STRIDE;
   return *position;
 }
 
@@ -72,7 +73,7 @@ int MetricsController::geti(const metric_t handle) noexcept {
     SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
     return 0;
   }
-  auto *position = (int *)storage + handle * METRICS_STRIDE;
+  auto* position = static_cast<int*>(storage) + handle * METRICS_STRIDE;
   return *position;
 }
 
@@ -81,6 +82,6 @@ unsigned int MetricsController::getui(const metric_t handle) noexcept {
     SPDLOG_ERROR("metrics_controller.getf() received an invalid handle");
     return 0u;
   }
-  auto *position = (unsigned int *)storage + handle * METRICS_STRIDE;
+  auto* position = static_cast<unsigned int*>(storage) + handle * METRICS_STRIDE;
   return *position;
 }

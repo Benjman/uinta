@@ -1,16 +1,14 @@
-#include <algorithm>
-#include <cstdlib>
-#include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <iterator>
-#include <stdexcept>
-#include <uinta/cfg.hpp>
-#include <uinta/io/file_manager.hpp>
+#include <uinta/file_manager.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/memory/memory_link.hpp>
 
 namespace uinta {
+
+inline const file_t UINTA_FILE_ID_MASK = 0xFFFF;
+inline const file_t UINTA_FILE_IS_BUFFERED_MASK = 0x70000;
+inline const file_t UINTA_FILE_IS_ACTIVE_MASK = 0x80000;
 
 inline std::string sanitizePath(const std::string& searchPath, const std::string& path) {
   // TODO ensure searchPath, or path aren't double slashing "//", or that a slash isn't missing between the two
@@ -35,18 +33,21 @@ FileManager::~FileManager() {
   storageSize = 0;
 }
 
-void FileManager::init(const std::string searchPaths, const char delim) {
+void FileManager::init(const std::string& searchPaths, const char delim) {
   parseFileSearchPaths(searchPaths, delim);
 }
 
-const file_t* const FileManager::registerFile(const std::string& relativePath, const FileType type) {
+const file_t* const FileManager::registerFile(const std::string& relativePath) {
+  if (handles.size() >= UINTA_FILE_ID_MASK) {
+    SPDLOG_CRITICAL("Attempt made to exceed maximum handle size of {}", UINTA_FILE_ID_MASK);
+    return nullptr;
+  }
   auto* handle = handles.emplace_back(new file_t(handles.size()));
   handlePaths.emplace_back(relativePath);
   links.emplace_back(MemoryLink());
 
   releaseFile(handle, true);
   setIsActive(handle, true);
-  setType(handle, type);
 
   SPDLOG_DEBUG("Registered file '{}'.", relativePath);
   return handle;
@@ -96,10 +97,6 @@ const file_size_t FileManager::getSize(const file_t* const handle) const {
   return links.at(getId(handle)).size;
 }
 
-const FileType FileManager::getType(const file_t* const handle) const {
-  return (FileType)(*handle & UINTA_FILE_TYPE_MASK);
-}
-
 const file_t FileManager::getId(const file_t* const handle) const {
   return *handle & UINTA_FILE_ID_MASK;
 }
@@ -125,7 +122,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
     }
   }
   if (firstReservedLink) {
-    auto headSpace = (char*)firstReservedLink->ptr - (char*)storage;
+    auto headSpace = static_cast<const char*>(firstReservedLink->ptr) - static_cast<const char*>(storage);
     if (headSpace > size) {
       firstReservedLink->back = &link;
       link.forward = firstReservedLink;
@@ -140,17 +137,19 @@ void FileManager::reserveSpace(const file_t* const handle) {
   for (auto& neighbor : links) {
     if (!neighbor.ptr) continue;  // link isn't actively in storage
     if (neighbor.forward) {       // check for orphaned space
-      auto freeSpace = (char*)neighbor.forward->ptr - (char*)neighbor.ptr - neighbor.size - 1;
+      auto freeSpace =
+          static_cast<const char*>(neighbor.forward->ptr) - static_cast<const char*>(neighbor.ptr) - neighbor.size - 1;
       if (freeSpace < size) continue;  // not enough space, move on
     } else {                           // handle tail of the buffer
-      auto freeSpace = (char*)storage + storageSize - (char*)neighbor.ptr - neighbor.size - 1;
+      auto freeSpace =
+          static_cast<const char*>(storage) + storageSize - static_cast<const char*>(neighbor.ptr) - neighbor.size - 1;
       if (freeSpace < size) {  // no space at tail
         SPDLOG_WARN("Insufficient space when attempting to allocate memory for file '{}'!", getPath(handle));
         hasSpace = false;
         continue;  // not enough space at tail
       }
     }
-    link.ptr = (char*)neighbor.ptr + neighbor.size + 1;
+    link.ptr = static_cast<char*>(neighbor.ptr) + neighbor.size + 1;
     link.size = size;
     link.back = &neighbor;
     link.forward = neighbor.forward;
@@ -210,25 +209,8 @@ void FileManager::loadHandle(const file_t* const handle) {
 }
 
 void FileManager::loadHandleData(const file_t* const handle) {
-  switch (getType(handle)) {
-    case FileType::Binary:
-      loadFileBinary(handle);
-      break;
-
-    case FileType::Text:
-      loadFileText(handle);
-      break;
-
-    default: {
-      SPDLOG_WARN("Type not found for file_t value {}.", *handle);
-      return;
-    }
-  }
+  loadFileText(handle);
   setIsBuffered(handle, true);
-}
-
-void FileManager::loadFileBinary(const file_t* const handle) {
-  // TODO
 }
 
 void FileManager::loadFileText(const file_t* const handle) {
@@ -249,11 +231,11 @@ void FileManager::setIsActive(const file_t* const handle, const bool isActive) {
   if (isActive) *h |= UINTA_FILE_IS_ACTIVE_MASK;
 }
 
-void FileManager::setIsBuffered(const file_t* const handle, const bool isLoaded) {
+void FileManager::setIsBuffered(const file_t* const handle, const bool isBuffered) {
   if (!isActive(handle)) return;
   auto* h = handles.at(getId(handle));
   *h &= ~UINTA_FILE_IS_BUFFERED_MASK;
-  if (isLoaded) *h |= UINTA_FILE_IS_BUFFERED_MASK;
+  if (isBuffered) *h |= UINTA_FILE_IS_BUFFERED_MASK;
 }
 
 void FileManager::setPath(const file_t* const handle, const std::string& path) {
@@ -261,16 +243,9 @@ void FileManager::setPath(const file_t* const handle, const std::string& path) {
   handlePaths.at(getId(handle)) = std::string(path);
 }
 
-void FileManager::setType(const file_t* const handle, const FileType type) {
-  if (!isActive(handle)) return;
-  auto* h = handles.at(getId(handle));
-  *h &= ~UINTA_FILE_TYPE_MASK;
-  *h |= type;
-}
-
 std::string FileManager::findPath(const std::string& path) {
   if (std::ifstream(path)) return path;
-  for (auto& searchPath : fileSearchPaths) {
+  for (const auto& searchPath : fileSearchPaths) {
     std::string absPath = sanitizePath(searchPath, path);
     if (std::ifstream(absPath)) return absPath;
   }

@@ -21,17 +21,18 @@ set(UINTA_RES_PATHS       ${CMAKE_SOURCE_DIR}/res)
 
 set(UINTA_SRCS ${UINTA_SRCS}
 
-  ./src/camera.cpp
   ./src/file_manager.cpp
   ./src/font.cpp
   ./src/input.cpp
   ./src/math.cpp
+  ./src/math/running_avg.cpp
   ./src/memory/memory_link.cpp
   ./src/mesh.cpp
   ./src/metrics.cpp
   ./src/model.cpp
   ./src/quadtree.cpp
   ./src/runner.cpp
+  ./src/runner/display.cpp
   ./src/shader.cpp
 
   )

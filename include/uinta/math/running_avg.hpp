@@ -3,12 +3,12 @@
 
 namespace uinta {
 struct RunningAvg final {
-public:
+ public:
   unsigned int count;
 
-  RunningAvg(const unsigned int) noexcept;
-  RunningAvg(const RunningAvg &) noexcept;
-  RunningAvg &operator=(const RunningAvg &) noexcept;
+  explicit RunningAvg(const unsigned int) noexcept;
+  RunningAvg(const RunningAvg&) noexcept;
+  RunningAvg& operator=(const RunningAvg&) noexcept;
 
   void operator+=(const float) noexcept;
 
@@ -18,12 +18,12 @@ public:
 
   float avg() noexcept;
 
-private:
-  float *buffer;
+ private:
+  float* buffer;
   float mavg;
   bool dirty;
   unsigned int position;
 };
-}
+}  // namespace uinta
 
-#endif // UINTA_MATH_RUNNING_AVG_HPP
+#endif  // UINTA_MATH_RUNNING_AVG_HPP
