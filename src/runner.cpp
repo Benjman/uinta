@@ -45,7 +45,7 @@ int Runner::run() {
       pollInput();
       if (isRenderingEnabled(flags)) {
         swapBuffers();
-        clearBuffer(background_color, clearMask);
+        clearBuffer(clearColor, clearMask);
         render(state);
       }
     }

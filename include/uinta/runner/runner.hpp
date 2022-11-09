@@ -14,8 +14,6 @@
 
 namespace uinta {
 
-inline const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
-
 class Runner {
  public:
   CartesianGrid grid;
@@ -34,7 +32,7 @@ class Runner {
 
  protected:
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-  glm::vec3 background_color = DEFAULT_CLEAR_COLOR;
+  glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
 
   virtual bool doInit();
   virtual void doPreTick(const RunnerState& state);
