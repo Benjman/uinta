@@ -127,7 +127,8 @@ void Runner::handleMouseButtonInput(const int button, const int action, const in
 void Runner::handleWindowSizeChanged(const int width, const int height) {
   display.width = width;
   display.height = height;
-  doHandleWindowSizeChanged(width, height);
+  display.aspectRatio = (float)width / (float)height;
+  onWindowSizeChanged();
 }
 
 Runner::~Runner() {
@@ -150,10 +151,7 @@ void Runner::doPostRender(const RunnerState& state) {
 void Runner::doShutdown() {
 }
 
-void Runner::doHandleWindowSizeChanged(const int width, const int height) {
-  display.width = width;
-  display.height = height;
-  display.aspectRatio = (float)width / (float)height;
+void Runner::onWindowSizeChanged() {
 }
 
 void Runner::doPreTick(const RunnerState& state) {

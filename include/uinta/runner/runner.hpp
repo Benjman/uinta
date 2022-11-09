@@ -42,7 +42,7 @@ class Runner {
   virtual void doRender(const RunnerState& state);
   virtual void doPostRender(const RunnerState& state);
   virtual void doShutdown();
-  virtual void doHandleWindowSizeChanged(const int width, const int height);
+  virtual void onWindowSizeChanged();
 
   virtual bool createOpenGLContext() = 0;
   virtual bool shouldExit() = 0;
