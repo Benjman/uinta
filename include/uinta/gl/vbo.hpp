@@ -18,12 +18,12 @@ struct Vbo {
   Vbo& operator=(const Vbo& rhs);
 };
 
-void bind(const Vbo& vbo);
-void destroy(Vbo& vbo);
+void bindVbo(const Vbo& vbo);
+void destroyVbo(Vbo& vbo);
 void initVbo(Vbo& vbo);
-void resize(Vbo& vbo, GLsizeiptr size);
-void unbind(const Vbo& vao);
-bool upload(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset = 0);
+void resizeVbo(Vbo& vbo, GLsizeiptr size);
+void unbindVbo(const Vbo& vao);
+bool uploadVbo(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset = 0);
 
 }  // namespace uinta
 

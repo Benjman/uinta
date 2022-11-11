@@ -18,14 +18,14 @@ struct Vao {
   Vao& operator=(const Vao& rhs);
 };
 
-void bind(const Vao& vao);
-void destroy(Vao& vao);
+void bindVao(const Vao& vao);
+void destroyVao(Vao& vao);
 void disableVertexAttribs(Vao& vao);
 void enableVertexAttribs(Vao& vao);
 void indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size, GLsizeiptr offset = 0);
 void initVao(Vao& vao);
 void initVertexAttribs(Vao& vao);
-void unbind(const Vao& unused);
+void unbindVao(const Vao& unused);
 
 }  // namespace uinta
 

@@ -69,7 +69,7 @@ bool initGrid(CartesianGrid& grid) {
   }
 
   initVao(grid.vao);
-  upload(grid.vbo, buffer, grid.vcount * 6 * sizeof(float));
+  uploadVbo(grid.vbo, buffer, grid.vcount * 6 * sizeof(float));
   initVertexAttribs(grid.vao);
 
   return grid.vao.id != GL_ZERO || grid.vbo.id != GL_ZERO;
@@ -78,7 +78,7 @@ bool initGrid(CartesianGrid& grid) {
 void CartesianGrid::render(const glm::mat4& projView) {
   glEnable(GL_DEPTH_TEST);
   glUseProgram(shader);
-  bind(vao);
+  bindVao(vao);
 
   // TODO billboard quads http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards
   // TODO draw range based on view frustum https://stackoverflow.com/questions/12836967

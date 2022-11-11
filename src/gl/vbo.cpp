@@ -23,12 +23,12 @@ uinta::Vbo& uinta::Vbo::operator=(const Vbo& rhs) {
   return *this;
 }
 
-void uinta::bind(const Vbo& vbo) {
+void uinta::bindVbo(const Vbo& vbo) {
   glBindBuffer(vbo.target, vbo.id);
   UINTA_glGetError(glBindBuffer);
 }
 
-void uinta::destroy(Vbo& vbo) {
+void uinta::destroyVbo(Vbo& vbo) {
   if (vbo.id == GL_ZERO) {
     return;
   }
@@ -43,12 +43,12 @@ void uinta::initVbo(Vbo& vbo) {
   uploadVbo(vbo, nullptr, 0);
 }
 
-void uinta::resize(Vbo& vbo, GLsizeiptr size) {
+void uinta::resizeVbo(Vbo& vbo, GLsizeiptr size) {
   if (vbo.id == GL_ZERO) {
     initVbo(vbo);
   }
   if (vbo.size == 0) {
-    bind(vbo);
+    bindVbo(vbo);
     glBufferData(vbo.target, size, nullptr, vbo.usage);
     UINTA_glGetError(glBufferData);
     SPDLOG_DEBUG("Allocated {} for {} {}.", formatMemory(size), getGlEnumName(vbo.target), vbo.id);
@@ -77,21 +77,21 @@ void uinta::resize(Vbo& vbo, GLsizeiptr size) {
   vbo.max = size;
 }
 
-void uinta::unbind(const Vbo& vao) {
+void uinta::unbindVbo(const Vbo& vao) {
   glBindBuffer(vao.target, 0);
   UINTA_glGetError(glBindBuffer);
 }
 
-bool uinta::upload(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset) {
+bool uinta::uploadVbo(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset) {
   bool resized = false;
   if (vbo.id == GL_ZERO) {
     initVbo(vbo);
   }
   if (vbo.max < offset + size) {
-    resize(vbo, offset + size);
+    resizeVbo(vbo, offset + size);
     resized = true;
   }
-  bind(vbo);
+  bindVbo(vbo);
   glBufferSubData(vbo.target, offset, size, data);
   UINTA_glGetError(glBufferSubData);
   if (offset + size > vbo.size) {
