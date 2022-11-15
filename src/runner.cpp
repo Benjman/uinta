@@ -3,7 +3,6 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
-#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/mat4x4.hpp>
 #include <iostream>
 #include <uinta/input.hpp>
@@ -128,10 +127,7 @@ void Runner::doPreRender(const RunnerState& state) {
 }
 
 void Runner::doRender(const RunnerState& state) {
-  if (isGridEnabled(flags)) {
-    auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
-    grid.render(proj * getViewMatrix(camera));
-  }
+  if (isGridEnabled(flags)) grid.render(getPerspectiveMatrix(camera, display) * getViewMatrix(camera));
 }
 
 void Runner::doPostRender(const RunnerState& state) {

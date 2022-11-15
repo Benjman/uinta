@@ -1,8 +1,10 @@
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/input.hpp>
 #include <uinta/math/map.hpp>
 #include <uinta/math/utils.hpp>
+#include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/utils/direction.hpp>
 
@@ -31,6 +33,27 @@ glm::mat4 uinta::getViewMatrix(const TargetCamera& cam) {
   result = glm::rotate(result, glm::radians(cam.angle.current), WORLD_UP);
   result = glm::translate(result, -cam.position);
   return result;
+}
+
+glm::mat4 uinta::getPerspectiveMatrix(const TargetCamera& cam, const Display& display) {
+  glm::mat4 result;
+  getPerspectiveMatrix(&result, cam, display);
+  return result;
+}
+
+void uinta::getPerspectiveMatrix(glm::mat4* const ref, const TargetCamera& cam, const Display& display) {
+  *ref = glm::perspective(cam.config.fov, display.aspectRatio, cam.config.nearPlane, cam.config.farPlane);
+}
+
+glm::mat4 uinta::getOrthographicMatrix(const TargetCamera& cam) {
+  glm::mat4 result;
+  getOrthographicMatrix(&result, cam);
+  return result;
+}
+
+void uinta::getOrthographicMatrix(glm::mat4* const ref, const TargetCamera& cam) {
+  float size = 5;
+  *ref = glm::orthoLH(-size, size, -size, size, cam.config.nearPlane, cam.config.farPlane);
 }
 
 void uinta::processInput(TargetCamera& cam, const RunnerState& state, const InputState& input) {
