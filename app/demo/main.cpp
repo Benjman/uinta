@@ -4,12 +4,12 @@ namespace uinta {
 
 class DemoRunner : public GlfwRunner {
  public:
-  DemoRunner() : GlfwRunner("Demo", 1920, 1080) {
+  DemoRunner(const int argc, const char** argv) : GlfwRunner("Demo", 1920, 1080, argc, argv) {
   }
 };
 
 }  // namespace uinta
 
 int main(const int argc, const char** argv) {
-  return uinta::DemoRunner().run();
+  return uinta::DemoRunner(argc, argv).run();
 }

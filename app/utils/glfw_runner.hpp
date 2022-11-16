@@ -17,7 +17,8 @@ class GlfwRunner : public Runner {
   GLFWwindow* window = nullptr;
   GlfwRunnerUi ui;
 
-  GlfwRunner(const std::string& title, unsigned int width, unsigned int height) noexcept : Runner(title, width, height) {
+  GlfwRunner(const std::string& title, uint32_t width, uint32_t height, int argc = 0, const char** argv = nullptr) noexcept
+      : Runner(title, width, height, argc, argv) {
   }
 
   ~GlfwRunner();
