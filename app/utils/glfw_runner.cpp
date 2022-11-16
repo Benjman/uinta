@@ -111,10 +111,8 @@ void GlfwRunner::doRender(const RunnerState& state) {
 
 void GlfwRunner::doPostRender(const RunnerState& state) {
   Runner::doPostRender(state);
-  if (auto uiFlags = ui.updateAndRender(*this)) {
-    if (isFlagSet(GLFW_RUNNER_UI_INPUT_HANDLED, uiFlags)) reset(input);
-  }
   ui.onPostRender(*this);
+  if (isFlagSet(GLFW_RUNNER_UI_INPUT_HANDLED, ui.flags)) reset(input);
 }
 
 void GlfwRunner::doShutdown() {

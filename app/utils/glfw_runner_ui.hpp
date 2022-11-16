@@ -13,9 +13,8 @@ class GlfwRunnerUi {
  public:
   float renderTime_micros;
   float tickTime_micros;
+  bool showingWindow = false;
   flags_t flags;
-
-  flags_t updateAndRender(GlfwRunner& runner);
 
   void onInit(GlfwRunner& runner);
   void onPreTick(GlfwRunner& runner);

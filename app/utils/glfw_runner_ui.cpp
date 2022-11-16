@@ -1,3 +1,6 @@
+#include "glfw_runner_ui.hpp"
+
+#include <glm/glm.hpp>
 #include <uinta/gl/api.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/math/utils.hpp>
@@ -8,8 +11,20 @@
 
 namespace uinta {
 
-void camera(const TargetCamera& camera);
-void inputUi(const InputState& input, const Display& display);
+const struct {
+  float min = -INFINITY;
+  float zero = 0;
+  float one_tenth = 0.1;
+  float twenty = 20;
+  float max = INFINITY;
+} limits;
+
+inline void camera(TargetCamera& camera);
+inline void cameraClippingPlanes(TargetCamera& camera);
+inline void cameraHotkeys(TargetCamera& camera);
+inline void cameraTransform(TargetCamera& camera);
+
+void inputUi(Runner& runner);
 void settings(Runner& runner);
 
 void GlfwRunnerUi::onInit(GlfwRunner& runner) {
@@ -36,13 +51,33 @@ void GlfwRunnerUi::onPostTick(GlfwRunner& runner) {
 
 void GlfwRunnerUi::onPreRender(GlfwRunner& runner) {
   renderTime_micros = runner.getRuntime();
+#ifndef IMGUI_API_DISABLED
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
+  showingWindow = ImGui::Begin(runner.display.title.data());
+#endif  // IMGUI_API_DISABLED
 }
 
 void GlfwRunnerUi::onRender(GlfwRunner& runner) {
+#ifndef IMGUI_API_DISABLED
+  if (showingWindow) {
+    auto& io = ImGui::GetIO();
+    ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    camera(runner.camera);
+    inputUi(runner);
+    settings(runner);
+  }
+#endif  // IMGUI_API_DISABLED
 }
 
 void GlfwRunnerUi::onPostRender(GlfwRunner& runner) {
   renderTime_micros = (runner.getRuntime() - renderTime_micros) * 1000000;
+#ifndef IMGUI_API_DISABLED
+  ImGui::End();
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif  // IMGUI_API_DISABLED
 }
 
 void GlfwRunnerUi::onShutdown(GlfwRunner& runner) {
@@ -54,59 +89,15 @@ void GlfwRunnerUi::onShutdown(GlfwRunner& runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-flags_t GlfwRunnerUi::updateAndRender(GlfwRunner& runner) {
-  flags_t flags = 0;
+inline void camera(TargetCamera& camera) {
 #ifndef IMGUI_API_DISABLED
-  auto& io = ImGui::GetIO();
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
-  ImGui::NewFrame();
-  ImGui::Begin(std::string(runner.display.title).c_str());
-  ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-  camera(runner.camera);
-  inputUi(runner.input, runner.display);
-  settings(runner);
-  ImGui::End();
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  if (io.WantCaptureKeyboard || io.WantCaptureMouse) setFlag(GLFW_RUNNER_UI_INPUT_HANDLED, true, flags);
-#endif  // IMGUI_API_DISABLED
-  return flags;
-}
-
-inline void camera(const TargetCamera& camera) {
-#ifndef IMGUI_API_DISABLED
-  if (!ImGui::CollapsingHeader("Camera")) return;
-  auto forward = getForward(camera.pitch, camera.angle);
-  auto right = getRight(camera.angle);
-  auto up = getUp(forward, right);
-  auto threeSixty = 360.f;
-
-  ImGui::BeginChild("ChildL", {ImGui::GetContentRegionAvail().x * 0.5f, 260}, false);
-  ImGui::Text("Keyboard");
-  ImGui::Text("Translation:   edsf");
-  ImGui::Text("Angle:         wr");
-  ImGui::Text("Pitch:         qa");
-  ImGui::Text("Dist:          cv");
-  ImGui::Separator();
-  ImGui::Text("Mouse");
-  ImGui::Text("Translation:    LMB");
-  ImGui::Text("Angle & pitch:  RMB");
-  ImGui::Text("Dist:           Scroll");
-  ImGui::EndChild();
-
-  ImGui::SameLine();
-
-  ImGui::BeginChild("ChildR", {0, 260});
-  ImGui::DragScalar("Dist", ImGuiDataType_Float, (void*)&camera.dist.target, 0.1f, 0, &threeSixty, "%+.2f");
-  ImGui::DragScalar("Pitch", ImGuiDataType_Float, (void*)&camera.pitch.target, 0.1f, 0, &threeSixty, "%+.2f");
-  ImGui::DragScalar("Angle", ImGuiDataType_Float, (void*)&camera.angle.target, 0.1f, 0, &threeSixty, "%+.2f");
-  ImGui::Text("Position     %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
-  ImGui::Text("Target       %+.2f %+.2f %+.2f", camera.target.x.target, camera.target.y.target, camera.target.z.target);
-  ImGui::Text("Forward      %+.2f %+.2f %+.2f", forward.x, forward.y, forward.z);
-  ImGui::Text("Right        %+.2f %+.2f %+.2f", right.x, right.y, right.z);
-  ImGui::Text("Up           %+.2f %+.2f %+.2f", up.x, up.y, up.z);
-  ImGui::EndChild();
+  if (ImGui::CollapsingHeader("Camera")) {
+    ImGui::PushItemWidth(200);
+    cameraClippingPlanes(camera);
+    cameraHotkeys(camera);
+    cameraTransform(camera);
+    ImGui::PopItemWidth();
+  }
 #endif  // IMGUI_API_DISABLED
 }
 
@@ -118,66 +109,153 @@ inline void settings(Runner& runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-inline void inputUi(const InputState& input, const Display& display) {
+inline void inputUi(Runner& runner) {
 #ifndef IMGUI_API_DISABLED
   if (!ImGui::CollapsingHeader("Input")) return;
 
-  ImGui::Text("flags      %7i", input.flags);
-  ImGui::Text("pos   (%4.0f, %4.0f)", input.cursorx, input.cursory);
-  ImGui::Text("view  (%0.2f, %0.2f)", input.cursorx / (float)display.width, input.cursory / (float)display.height);
-  // ImGui::Text("ndc  (%0.2f, %0.2f)", );  // TODO
-  // ImGui::Text("view  (%0.2f, %0.2f)", ); // TODO
-  // ImGui::Text("world (%0.2f, %0.2f)", ); // TODO
+  if (ImGui::TreeNode("Cursor info")) {
+    auto view = getViewMatrix(runner.camera);
+    auto proj = getPerspectiveMatrix(runner.camera, runner.display);
 
-  ImGui::Separator();
+    glm::vec2 cursor = {runner.input.cursorx, runner.input.cursory};
+    glm::vec2 viewport = {runner.display.width, runner.display.height};
+    glm::vec3 ndc = {(2 * cursor.x) / viewport.x - 1, 1 - (2 * cursor.y) / viewport.y, 1};
+    auto worldRay = getWorldRay(cursor, viewport, view, proj);
+    auto worldPoint = getPlaneInterceptPoint(glm::vec3(0), WORLD_UP, runner.camera.position, worldRay);
+
+    ImGui::Text("Screen          (%5.0f, %5.0f)", runner.input.cursorx, runner.input.cursory);
+    ImGui::Text("Device coord    (%5.2f, %5.2f, %5.2f)", ndc.x, ndc.y, ndc.z);
+    ImGui::Text("World ray       (%5.2f, %5.2f, %5.2f)", worldRay.x, worldRay.y, worldRay.z);
+    ImGui::Text("y=0 intersect   (%5.2f, %5.2f, %5.2f)", worldPoint.x, worldPoint.y, worldPoint.z);
+
+    ImGui::TreePop();
+    ImGui::Separator();
+  }
 
   if (ImGui::TreeNode("Signals")) {
+    ImGui::PushItemWidth(400);
     ImGui::BeginTable("mouseUi", 2);
     ImGui::BeginDisabled(true);
     ImGui::TableNextRow();
     ImGui::TableSetColumnIndex(0);
-    ImGui::RadioButton("key_down", isFlagSet(input::HAS_KEY_DOWN, input.flags));
+    ImGui::RadioButton("key_down", isFlagSet(input::HAS_KEY_DOWN, runner.input.flags));
     ImGui::SameLine();
-    ImGui::Text("(%lu)", input.keys_down.size());
+    ImGui::Text("(%lu)", runner.input.keys_down.size());
     ImGui::TableSetColumnIndex(1);
-    ImGui::RadioButton("mouse_down", isFlagSet(input::HAS_MOUSE_DOWN, input.flags));
+    ImGui::RadioButton("mouse_down", isFlagSet(input::HAS_MOUSE_DOWN, runner.input.flags));
     ImGui::SameLine();
-    ImGui::Text("(%lu)", input.mouse_down.size());
+    ImGui::Text("(%lu)", runner.input.mouse_down.size());
 
     ImGui::TableNextRow();
     ImGui::TableSetColumnIndex(0);
-    ImGui::RadioButton("key_pressed", isFlagSet(input::HAS_KEY_PRESSED, input.flags));
+    ImGui::RadioButton("key_pressed", isFlagSet(input::HAS_KEY_PRESSED, runner.input.flags));
     ImGui::SameLine();
-    ImGui::Text("(%lu)", input.keys_pressed.size());
+    ImGui::Text("(%lu)", runner.input.keys_pressed.size());
     ImGui::TableSetColumnIndex(1);
-    ImGui::RadioButton("mouse_pressed", isFlagSet(input::HAS_MOUSE_PRESSED, input.flags));
+    ImGui::RadioButton("mouse_pressed", isFlagSet(input::HAS_MOUSE_PRESSED, runner.input.flags));
     ImGui::SameLine();
-    ImGui::Text("(%lu)", input.mouse_pressed.size());
+    ImGui::Text("(%lu)", runner.input.mouse_pressed.size());
 
     ImGui::TableNextRow();
     ImGui::TableSetColumnIndex(0);
-    ImGui::RadioButton("key_repeated", isFlagSet(input::HAS_KEY_REPEATED, input.flags));
+    ImGui::RadioButton("key_repeated", isFlagSet(input::HAS_KEY_REPEATED, runner.input.flags));
     ImGui::SameLine();
-    ImGui::Text("(%lu)", input.keys_repeated.size());
+    ImGui::Text("(%lu)", runner.input.keys_repeated.size());
     ImGui::TableSetColumnIndex(1);
-    ImGui::RadioButton("mouse_released", isFlagSet(input::HAS_MOUSE_RELEASED, input.flags));
+    ImGui::RadioButton("mouse_released", isFlagSet(input::HAS_MOUSE_RELEASED, runner.input.flags));
     ImGui::SameLine();
-    ImGui::Text("(%lu)", input.mouse_released.size());
+    ImGui::Text("(%lu)", runner.input.mouse_released.size());
 
     ImGui::TableNextRow();
     ImGui::TableSetColumnIndex(0);
-    ImGui::RadioButton("key_released", isFlagSet(input::HAS_KEY_RELEASED, input.flags));
+    ImGui::RadioButton("key_released", isFlagSet(input::HAS_KEY_RELEASED, runner.input.flags));
     ImGui::SameLine();
-    ImGui::Text("(%lu)", input.keys_released.size());
+    ImGui::Text("(%lu)", runner.input.keys_released.size());
     ImGui::TableSetColumnIndex(1);
-    ImGui::RadioButton("mouse_scroll", isFlagSet(input::HAS_MOUSE_SCROLL, input.flags));
+    ImGui::RadioButton("mouse_scroll", isFlagSet(input::HAS_MOUSE_SCROLL, runner.input.flags));
 
     ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    ImGui::Checkbox("GLFW::WantCaptureKeyboard", &ImGui::GetIO().WantCaptureKeyboard);
     ImGui::TableSetColumnIndex(1);
-    ImGui::RadioButton("mouse_move", isFlagSet(input::HAS_MOUSE_MOVE, input.flags));
+    ImGui::RadioButton("mouse_move", isFlagSet(input::HAS_MOUSE_MOVE, runner.input.flags));
+
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    ImGui::Checkbox("GLFW::WantCaptureMouse", &ImGui::GetIO().WantCaptureMouse);
 
     ImGui::EndDisabled();
     ImGui::EndTable();
+
+    ImGui::PopItemWidth();
+    ImGui::TreePop();
+    ImGui::Separator();
+  }
+#endif  // IMGUI_API_DISABLED
+}
+
+#ifndef IMGUI_API_DISABLED
+inline void cameraClippingPlanes(TargetCamera& camera) {
+  if (ImGui::TreeNode("Clipping planes")) {
+    float cameraClippingValues[] = {camera.config.nearPlane, camera.config.farPlane};
+    ImGui::Text("Defines the boundaries of the near and far rendering planes.");
+    ImGui::DragFloat2("Clipping planes", cameraClippingValues, 0.05, camera.config.farPlane, camera.config.nearPlane, "%+.1f",
+                      ImGuiSliderFlags_AlwaysClamp);
+    camera.config.nearPlane = cameraClippingValues[0];
+    camera.config.farPlane = cameraClippingValues[1];
+    ImGui::TreePop();
+    ImGui::Separator();
+  }
+#endif  // IMGUI_API_DISABLED
+}
+
+inline void cameraHotkeys(TargetCamera& camera) {
+#ifndef IMGUI_API_DISABLED
+  if (ImGui::TreeNode("Hotkeys")) {
+    ImGui::Text("Translation:   edsf or LMB");
+    ImGui::Text("Angle:         wr or RMB");
+    ImGui::Text("Pitch:         qa or RMB");
+    ImGui::Text("Dist:          cv or Scroll");
+
+    ImGui::Separator();
+    ImGui::Text("TODO Customizable hotkeys");  // TODO
+
+    ImGui::TreePop();
+    ImGui::Separator();
+  }
+#endif  // IMGUI_API_DISABLED
+}
+
+inline void cameraTransform(TargetCamera& camera) {
+#ifndef IMGUI_API_DISABLED
+  if (ImGui::TreeNode("Transform")) {
+    if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, (void*)&camera.angle.agility, 0.1f, &limits.min,
+                          &limits.max, "%+.2f")) {
+      camera.dist.agility = camera.angle.agility;
+      camera.pitch.agility = camera.angle.agility;
+      camera.target.x.agility = camera.angle.agility;
+      camera.target.y.agility = camera.angle.agility;
+      camera.target.z.agility = camera.angle.agility;
+    }
+
+    ImGui::DragScalar("Dist", ImGuiDataType_Float, (void*)&camera.dist.target, 0.1f, &limits.one_tenth, &limits.twenty, "%+.2f");
+    ImGui::SameLine();
+    ImGui::CheckboxFlags("Limit dist", (uint*)&camera.config.flags, CAMERA_DIST_LIMIT);
+
+    ImGui::DragScalar("Pitch", ImGuiDataType_Float, (void*)&camera.pitch.target, 0.1f, &limits.min, &limits.max, "%+.2f");
+    ImGui::SameLine();
+    ImGui::CheckboxFlags("Limit pitch", (uint*)&camera.config.flags, CAMERA_PITCH_LIMIT);
+
+    ImGui::DragScalar("Angle", ImGuiDataType_Float, (void*)&camera.angle.target, 0.1f, &limits.min, &limits.max, "%+.2f");
+
+    auto forward = getForward(camera.pitch, camera.angle);
+    auto right = getRight(camera.angle);
+    auto up = getUp(forward, right);
+    ImGui::Text("Position      %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
+    ImGui::Text("Target        %+.2f %+.2f %+.2f", camera.target.x.target, camera.target.y.target, camera.target.z.target);
+    ImGui::Text("Forward       %+.2f %+.2f %+.2f", forward.x, forward.y, forward.z);
+    ImGui::Text("Right         %+.2f %+.2f %+.2f", right.x, right.y, right.z);
+    ImGui::Text("Up            %+.2f %+.2f %+.2f", up.x, up.y, up.z);
 
     ImGui::TreePop();
     ImGui::Separator();
