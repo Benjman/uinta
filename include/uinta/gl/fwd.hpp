@@ -5,6 +5,7 @@
 
 namespace uinta {
 
+struct Fbo;
 struct Vao;
 struct Vbo;
 struct VertexAttrib;
