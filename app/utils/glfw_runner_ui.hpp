@@ -1,12 +1,10 @@
 #ifndef UINTA_GLFW_RUNNER_UI_HPP
 #define UINTA_GLFW_RUNNER_UI_HPP
 
-#include <uinta/flags.hpp>
+#include <uinta/fwd.hpp>
 
 namespace uinta {
 
-class Camera;
-class TargetCamera;
 class GlfwRunner;
 
 static const flag_t GLFW_RUNNER_UI_INPUT_HANDLED = 1 << 0;

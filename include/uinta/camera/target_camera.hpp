@@ -4,12 +4,11 @@
 #include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/camera/camera_config.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/math/smooth_float.hpp>
 #include <uinta/math/smooth_vec3.hpp>
 
 namespace uinta {
-
-class RunnerState;
 
 // disclaimer about euler angles and gimbal locking ...
 struct TargetCamera {

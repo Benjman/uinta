@@ -1,11 +1,10 @@
 #ifndef UINTA_MESH_HPP
 #define UINTA_MESH_HPP
 
+#include <uinta/fwd.hpp>
 #include <unordered_map>
 
 namespace uinta {
-
-struct Quad;
 
 extern void generateMesh(const Quad* qt, float* vertexBuffer, unsigned int* indexBuffer, unsigned int* vertexCount,
                          unsigned int* indexCount, unsigned int* indexOffset, const unsigned int width,

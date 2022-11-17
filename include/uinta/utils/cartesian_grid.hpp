@@ -2,14 +2,11 @@
 #define UINTA_UTILS_CARTESIAN_GRID_HPP
 
 #include <glm/fwd.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
 
 namespace uinta {
-
-class FileManager;
-struct Display;
-struct RunnerState;
 
 class CartesianGrid {
   friend bool initShader(CartesianGrid&, FileManager&);

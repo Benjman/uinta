@@ -1,7 +1,7 @@
 #ifndef UINTA_INPUT_KEYS_HPP
 #define UINTA_INPUT_KEYS_HPP
 
-#include <uinta/input/fwd.hpp>
+#include <uinta/fwd.hpp>
 
 namespace uinta {
 

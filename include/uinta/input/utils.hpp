@@ -2,7 +2,7 @@
 #define UINTA_INPUT_UTILS_HPP
 
 #include <algorithm>
-#include <uinta/input/fwd.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/input/state.hpp>
 
 namespace uinta {
