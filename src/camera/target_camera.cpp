@@ -10,6 +10,10 @@ namespace uinta {
 
 void processInput(TargetCamera&, const RunnerState&, const InputState&);
 void updatePosition(TargetCamera&);
+inline float getAngleDelta(const InputState& input, const CameraConfig& config);
+inline float getDistDelta(const InputState& input, const CameraConfig& config);
+inline float getPitchDelta(const InputState& input, const CameraConfig& config);
+inline glm::vec3 getTranslationDelta(const InputState& input, const TargetCamera& cam);
 
 }  // namespace uinta
 
@@ -33,54 +37,22 @@ void uinta::processInput(TargetCamera& cam, const RunnerState& state, const Inpu
   float scale = 1;
   if (isKeyDown(input, KEY_LEFT_CONTROL)) scale = 5;
   if (isKeyDown(input, KEY_LEFT_ALT)) scale = 0.1;
-
-  glm::vec3 translate(0);
-  if (isKeyDown(input, cam.config.translateForward))
-    translate += glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.translateSpeedKeyboard;
-  if (isKeyDown(input, cam.config.translateBackward))
-    translate += -glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.translateSpeedKeyboard;
-  if (isKeyDown(input, cam.config.translateLeft))
-    translate += -glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.translateSpeedKeyboard;
-  if (isKeyDown(input, cam.config.translateRight))
-    translate += glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.translateSpeedKeyboard;
-  if (isMouseButtonDown(input, cam.config.translateMouse) && (input.cursordx || input.cursordy))
-    translate += -(glm::normalize(WORLD_HORIZONTAL * getRight(cam.angle)) * input.cursordx -
-                   glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * input.cursordy) *
-                 cam.config.translateSpeedMouse;
-
-  float angleDelta = 0;
-  if (isKeyDown(input, cam.config.angleLeft)) angleDelta += cam.config.angleSpeedKeyboard;
-  if (isKeyDown(input, cam.config.angleRight)) angleDelta += -cam.config.angleSpeedKeyboard;
-  if (isMouseButtonDown(input, cam.config.angleMouse) && input.cursordx)
-    angleDelta += input.cursordx * cam.config.angleSpeedMouse;
-
-  float distDelta = 0;
-  if (isKeyDown(input, cam.config.distUp)) distDelta += -cam.config.distSpeedKeyboard;
-  if (isKeyDown(input, cam.config.distDown)) distDelta += cam.config.distSpeedKeyboard;
-  // TODO move speed should be proportional to distance. Closer moves slower, farther moves faster.
-  if (isMouseScrolled(input)) distDelta += input.scrolldy * -cam.config.distSpeedMouse;
-
-  float pitchDelta = 0;
-  if (isKeyDown(input, cam.config.pitchUp)) pitchDelta += cam.config.pitchSpeedKeyboard;
-  if (isKeyDown(input, cam.config.pitchDown)) pitchDelta += -cam.config.pitchSpeedKeyboard;
-  if (isMouseButtonDown(input, cam.config.pitchMouse) && input.cursordy)
-    pitchDelta += input.cursordy * cam.config.pitchSpeedMouse;
-
-  cam.angle += angleDelta * state.delta * scale;
-  cam.dist += distDelta * state.delta * scale;
-  cam.pitch += pitchDelta * state.delta * scale;
-  cam.target += translate * state.delta * scale;
-
+  cam.angle += getAngleDelta(input, cam.config) * state.delta * scale;
+  cam.dist += getDistDelta(input, cam.config) * state.delta * scale;
+  cam.pitch += getPitchDelta(input, cam.config) * state.delta * scale;
   if (isFlagSet(CAMERA_DIST_LIMIT, cam.config.flags)) cam.dist = clamp(cam.dist.target, cam.config.distMin, cam.config.distMax);
   if (isFlagSet(CAMERA_PITCH_LIMIT, cam.config.flags))
     cam.pitch = clamp(cam.pitch.target, cam.config.pitchMin, cam.config.pitchMax);
+  cam.target += getTranslationDelta(input, cam) * state.delta * scale;
 }
 
 void uinta::updatePosition(TargetCamera& cam) {
-  auto ca = cos(glm::radians(cam.angle.current));
-  auto cp = cos(glm::radians(cam.pitch.current));
-  auto sa = sin(glm::radians(cam.angle.current));
-  auto sp = sin(glm::radians(cam.pitch.current));
+  auto ar = glm::radians(cam.angle.current);
+  auto pr = glm::radians(cam.pitch.current);
+  auto ca = cos(ar);
+  auto cp = cos(pr);
+  auto sa = sin(ar);
+  auto sp = sin(pr);
   cam.position = {
       -sa * cp,
       sp,
@@ -88,4 +60,46 @@ void uinta::updatePosition(TargetCamera& cam) {
   };
   cam.position *= cam.dist;
   cam.position += glm::vec3(cam.target) + cam.vertOffset * WORLD_UP;
+}
+
+inline float uinta::getAngleDelta(const InputState& input, const CameraConfig& config) {
+  float delta = 0;
+  if (isKeyDown(input, config.angleLeft)) delta += config.angleSpeedKeyboard;
+  if (isKeyDown(input, config.angleRight)) delta += -config.angleSpeedKeyboard;
+  if (isMouseButtonDown(input, config.angleMouse) && input.cursordx) delta += input.cursordx * config.angleSpeedMouse;
+  return delta;
+}
+
+inline float uinta::getDistDelta(const InputState& input, const CameraConfig& config) {
+  // TODO translation speed should be proportional to distance. Closer moves slower, farther moves faster.
+  float delta = 0;
+  if (isKeyDown(input, config.distUp)) delta += -config.distSpeedKeyboard;
+  if (isKeyDown(input, config.distDown)) delta += config.distSpeedKeyboard;
+  if (isMouseScrolled(input)) delta += input.scrolldy * -config.distSpeedMouse;
+  return delta;
+}
+
+inline float uinta::getPitchDelta(const InputState& input, const CameraConfig& config) {
+  float delta = 0;
+  if (isKeyDown(input, config.pitchUp)) delta += config.pitchSpeedKeyboard;
+  if (isKeyDown(input, config.pitchDown)) delta += -config.pitchSpeedKeyboard;
+  if (isMouseButtonDown(input, config.pitchMouse) && input.cursordy) delta += input.cursordy * config.pitchSpeedMouse;
+  return delta;
+}
+
+inline glm::vec3 uinta::getTranslationDelta(const InputState& input, const TargetCamera& cam) {
+  glm::vec3 delta(0);
+  if (isKeyDown(input, cam.config.translateForward))
+    delta += glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.translateSpeedKeyboard;
+  if (isKeyDown(input, cam.config.translateBackward))
+    delta += -glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.translateSpeedKeyboard;
+  if (isKeyDown(input, cam.config.translateLeft))
+    delta += -glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.translateSpeedKeyboard;
+  if (isKeyDown(input, cam.config.translateRight))
+    delta += glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.translateSpeedKeyboard;
+  if (isMouseButtonDown(input, cam.config.translateMouse) && (input.cursordx || input.cursordy))
+    delta += -(glm::normalize(WORLD_HORIZONTAL * getRight(cam.angle)) * input.cursordx -
+               glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * input.cursordy) *
+             cam.config.translateSpeedMouse;
+  return delta;
 }
