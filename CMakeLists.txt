@@ -16,10 +16,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(UINTA_GENERATED_PATH  ${CMAKE_BINARY_DIR}/generated)
 set(UINTA_INCLUDES        ${UINTA_INCLUDES} ${UINTA_GENERATED_PATH})
-set(UINTA_LIB_PATH        ${CMAKE_BINARY_DIR}/lib)
-set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
+set(UINTA_LIBS_DIR        ${CMAKE_SOURCE_DIR}/lib)
+set(UINTA_RES_PATHS       ${CMAKE_SOURCE_DIR}/res)
 
-set(UINTA_SRCS ${UINTA_SRCS} 
+set(UINTA_SRCS ${UINTA_SRCS}
 
   ./src/camera.cpp
   ./src/file_manager.cpp
@@ -37,24 +37,24 @@ set(UINTA_SRCS ${UINTA_SRCS}
   )
 
 # dependencies
-set(UINTA_SRCS     ${UINTA_SRCS}     "${CMAKE_SOURCE_DIR}/lib/glad/src/glad.c")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${CMAKE_SOURCE_DIR}/lib/glad/include")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${CMAKE_SOURCE_DIR}/lib/glm")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${CMAKE_SOURCE_DIR}/lib/imgui")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${CMAKE_SOURCE_DIR}/lib") # needed for stb library FIXME
+set(UINTA_SRCS     ${UINTA_SRCS}     "${UINTA_LIBS_DIR}/glad/src/glad.c")
+set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/glad/include")
+set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/glm")
+set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/imgui")
+set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}") # FIXME: needed for stb library. This should be more specific.
 
-add_subdirectory(./lib/entt)
+add_subdirectory(${UINTA_LIBS_DIR}/entt)
 set(UINTA_LIBS ${UINTA_LIBS} EnTT::EnTT)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW lib only")
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "GLFW lib only")
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "GLFW lib only")
 set(GLFW_INSTALL OFF CACHE BOOL "GLFW lib only")
-add_subdirectory(./lib/glfw)
+add_subdirectory(${UINTA_LIBS_DIR}/glfw)
 set(UINTA_LIBS ${UINTA_LIBS} glfw)
 
 set(SPDLOG_BUILD_SHARED TRUE)
-add_subdirectory(./lib/spdlog)
+add_subdirectory(${UINTA_LIBS_DIR}/spdlog)
 set(UINTA_LIBS ${UINTA_LIBS} spdlog)
 
 add_library(uinta STATIC ${UINTA_SRCS})
@@ -67,10 +67,8 @@ add_subdirectory(app)
 # testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true`
 if (UINTA_TEST)
   message(STATUS "Including tests")
-
   set(INSTALL_GTEST ON CACHE BOOL "Createe googletest binaries.")
-  add_subdirectory(./lib/googletest)
-
+  add_subdirectory(${UINTA_LIBS_DIR}/googletest)
   add_subdirectory(test)
 endif()
 
