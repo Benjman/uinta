@@ -1,6 +1,7 @@
 #include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/gl/vbo.hpp>
+#include <uinta/utils/formatters.hpp>
 
 uinta::Vbo::Vbo(GLenum target, GLenum usage) : Vbo(GL_ZERO, target, usage, 0) {
 }
@@ -50,7 +51,7 @@ void uinta::resize(Vbo& vbo, GLsizeiptr size) {
     bind(vbo);
     glBufferData(vbo.target, size, nullptr, vbo.usage);
     UINTA_glGetError(glBufferData);
-    SPDLOG_DEBUG("Allocated {} bytes for {} {}.", size, getGlEnumName(vbo.target), vbo.id);
+    SPDLOG_DEBUG("Allocated {} for {} {}.", formatMemory(size), getGlEnumName(vbo.target), vbo.id);
   } else {
     GLuint newId;
     glGenBuffers(1, &newId);
@@ -59,7 +60,7 @@ void uinta::resize(Vbo& vbo, GLsizeiptr size) {
     UINTA_glGetError(glBindBuffer);
     glBufferData(vbo.target, size, nullptr, vbo.usage);
     UINTA_glGetError(glBufferData);
-    SPDLOG_DEBUG("Resized {} from {} to {} bytes.", getGlEnumName(vbo.target), vbo.size, size);
+    SPDLOG_DEBUG("Resized {} from {} to {}.", getGlEnumName(vbo.target), formatMemory(vbo.size), formatMemory(size));
     if (vbo.size) {
       glBindBuffer(GL_COPY_WRITE_BUFFER, newId);
       UINTA_glGetError(glBindBuffer);
@@ -67,7 +68,7 @@ void uinta::resize(Vbo& vbo, GLsizeiptr size) {
       UINTA_glGetError(glBindBuffer);
       glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, vbo.size);
       UINTA_glGetError(glCopyBufferSubData);
-      SPDLOG_DEBUG("Copied {} bytes for {} from {} to {}.", vbo.size, getGlEnumName(vbo.target), vbo.id, newId);
+      SPDLOG_DEBUG("Copied {} for {} from {} to {}.", formatMemory(vbo.size), getGlEnumName(vbo.target), vbo.id, newId);
     }
     glDeleteBuffers(1, &vbo.id);
     UINTA_glGetError(glDeleteBuffers);

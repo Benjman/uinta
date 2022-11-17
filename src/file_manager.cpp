@@ -3,6 +3,7 @@
 #include <uinta/file_manager.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/memory/memory_link.hpp>
+#include <uinta/utils/formatters.hpp>
 
 namespace uinta {
 
@@ -143,7 +144,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
       link.forward = firstReservedLink;
       link.ptr = storage;
       link.size = size;
-      SPDLOG_DEBUG("Reserved {} bytes for '{}'.", getSize(handle), getPath(handle));
+      SPDLOG_DEBUG("Reserved {} for '{}'.", formatMemory(getSize(handle)), getPath(handle));
       return;
     }
   }
@@ -170,7 +171,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
     link.forward = neighbor.forward;
     if (link.forward) link.forward->back = &link;
     neighbor.forward = &link;
-    SPDLOG_DEBUG("Reserved {} bytes for file '{}'.", getSize(handle), getPath(handle));
+    SPDLOG_DEBUG("Reserved {} for file '{}'.", formatMemory(getSize(handle)), getPath(handle));
     return;
   }
 
@@ -178,7 +179,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
     // we're the first element in storage:
     link.ptr = storage;
     link.size = size;
-    SPDLOG_DEBUG("Reserved {} bytes for file '{}'.", getSize(handle), getPath(handle));
+    SPDLOG_DEBUG("Reserved {} for file '{}'.", formatMemory(getSize(handle)), getPath(handle));
   }
 }
 
