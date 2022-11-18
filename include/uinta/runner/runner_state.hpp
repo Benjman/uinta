@@ -4,6 +4,8 @@
 #include <uinta/input.hpp>
 #include <uinta/runner/display.hpp>
 
+#include <uinta/runner/fwd.hpp>
+
 namespace uinta {
 
 struct RunnerState final {
