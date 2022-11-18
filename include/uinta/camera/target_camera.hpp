@@ -1,6 +1,7 @@
 #ifndef UINTA_TARGET_CAMERA_HPP
 #define UINTA_TARGET_CAMERA_HPP
 
+#include <cmath>
 #include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/camera/camera_config.hpp>
@@ -41,6 +42,16 @@ struct TargetCamera {
 void update(TargetCamera&, const RunnerState&, const InputState&);
 glm::mat4 getViewMatrix(const TargetCamera&);
 glm::mat4 getPerspectiveMatrix(const TargetCamera&, const Display&);
+inline float calculateTranslationFactor(const TargetCamera&);
+
+inline float calculateTranslationFactor(const TargetCamera& cam) {
+  auto result = cam.dist.current;
+  result = std::abs(result);
+  result = 1.3 * std::sqrt(result);
+  result *= cam.config.translationSpeedDistFactor;
+  result = std::max(cam.config.translationSpeedDistFactorMin, result);
+  return result;
+}
 
 }  // namespace uinta
 

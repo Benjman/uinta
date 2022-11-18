@@ -18,6 +18,8 @@ struct CameraConfig {
 
   float translateSpeedKeyboard = 4;
   float translateSpeedMouse = 0.5;
+  float translationSpeedDistFactor = .45;  // Scales translation speed as a factor proportional to distance
+  float translationSpeedDistFactorMin = .15;
   input_key_t translateBackward = KEY_D;
   input_key_t translateForward = KEY_E;
   input_key_t translateLeft = KEY_S;

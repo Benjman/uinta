@@ -248,6 +248,12 @@ inline void cameraTransform(TargetCamera& camera) {
 
     ImGui::DragScalar("Angle", ImGuiDataType_Float, (void*)&camera.angle.target, 0.1f, &limits.min, &limits.max, "%+.2f");
 
+    ImGui::DragScalar("Speed factor", ImGuiDataType_Float, (void*)&camera.config.translationSpeedDistFactor, 0.005f, &limits.zero,
+                      &limits.max, "%+.2f");
+    ImGui::DragScalar("Speed factor min", ImGuiDataType_Float, (void*)&camera.config.translationSpeedDistFactorMin, 0.005f,
+                      &limits.zero, &limits.max, "%+.2f");
+    ImGui::Text("Speed scalar  %+.2f", calculateTranslationFactor(camera));
+
     auto forward = getForward(camera.pitch, camera.angle);
     auto right = getRight(camera.angle);
     auto up = getUp(forward, right);

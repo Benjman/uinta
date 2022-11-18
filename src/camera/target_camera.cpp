@@ -29,10 +29,10 @@ void uinta::update(TargetCamera& cam, const RunnerState& state, const InputState
 }
 
 glm::mat4 uinta::getViewMatrix(const TargetCamera& cam) {
-  auto result = glm::rotate(glm::mat4(1), glm::radians(cam.pitch.current), WORLD_RIGHT);
-  result = glm::rotate(result, glm::radians(cam.angle.current), WORLD_UP);
-  result = glm::translate(result, -cam.position);
-  return result;
+  auto delta = glm::rotate(glm::mat4(1), glm::radians(cam.pitch.current), WORLD_RIGHT);
+  delta = glm::rotate(delta, glm::radians(cam.angle.current), WORLD_UP);
+  delta = glm::translate(delta, -cam.position);
+  return delta;
 }
 
 glm::mat4 uinta::getPerspectiveMatrix(const TargetCamera& cam, const Display& display) {
@@ -94,12 +94,11 @@ inline float uinta::getAngleDelta(const InputState& input, const CameraConfig& c
 }
 
 inline float uinta::getDistDelta(const InputState& input, const CameraConfig& config) {
-  // TODO translation speed should be proportional to distance. Closer moves slower, farther moves faster.
-  float delta = 0;
-  if (isKeyDown(input, config.distUp)) delta += -config.distSpeedKeyboard;
-  if (isKeyDown(input, config.distDown)) delta += config.distSpeedKeyboard;
-  if (isMouseScrolled(input)) delta += input.scrolldy * -config.distSpeedMouse;
-  return delta;
+  float result = 0;
+  if (isKeyDown(input, config.distUp)) result += -config.distSpeedKeyboard;
+  if (isKeyDown(input, config.distDown)) result += config.distSpeedKeyboard;
+  if (isMouseScrolled(input)) result += input.scrolldy * -config.distSpeedMouse;
+  return result;
 }
 
 inline float uinta::getPitchDelta(const InputState& input, const CameraConfig& config) {
@@ -124,5 +123,5 @@ inline glm::vec3 uinta::getTranslationDelta(const InputState& input, const Targe
     delta += -(glm::normalize(WORLD_HORIZONTAL * getRight(cam.angle)) * input.cursordx -
                glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * input.cursordy) *
              cam.config.translateSpeedMouse;
-  return delta;
+  return delta * calculateTranslationFactor(cam);
 }
