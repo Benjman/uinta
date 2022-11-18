@@ -18,15 +18,6 @@ struct Vao {
   Vao& operator=(const Vao& rhs);
 };
 
-void bindVao(const Vao& vao);
-void destroyVao(Vao& vao);
-void disableVertexAttribs(Vao& vao);
-void enableVertexAttribs(Vao& vao);
-void indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size, GLsizeiptr offset = 0);
-void initVao(Vao& vao);
-void initVertexAttribs(Vao& vao);
-void unbindVao(const Vao& unused);
-
 }  // namespace uinta
 
 #endif  // UINTA_VAO_HPP

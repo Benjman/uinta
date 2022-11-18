@@ -18,13 +18,6 @@ struct Vbo {
   Vbo& operator=(const Vbo& rhs);
 };
 
-void bindVbo(const Vbo& vbo);
-void destroyVbo(Vbo& vbo);
-void initVbo(Vbo& vbo);
-void resizeVbo(Vbo& vbo, GLsizeiptr size);
-void unbindVbo(const Vbo& vao);
-bool uploadVbo(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset = 0);
-
 }  // namespace uinta
 
 #endif  // UINTA_VBO_HPP

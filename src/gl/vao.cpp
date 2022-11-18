@@ -1,3 +1,4 @@
+#include <uinta/gl/fwd.hpp>
 #include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
@@ -53,7 +54,7 @@ void uinta::enableVertexAttribs(Vao& vao) {
   }
 }
 
-void uinta::indexBuffer(Vao& vao, const GLuint* const data, GLsizeiptr size, GLsizeiptr offset) {
+void uinta::indexBuffer(Vao& vao, const uint* const data, uint size, uint offset) {
   if (vao.id == GL_ZERO) {
     initVao(vao);
   }

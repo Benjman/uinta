@@ -43,7 +43,7 @@ void uinta::initVbo(Vbo& vbo) {
   uploadVbo(vbo, nullptr, 0);
 }
 
-void uinta::resizeVbo(Vbo& vbo, GLsizeiptr size) {
+void uinta::resizeVbo(Vbo& vbo, uint size) {
   if (vbo.id == GL_ZERO) {
     initVbo(vbo);
   }
@@ -82,7 +82,7 @@ void uinta::unbindVbo(const Vbo& vao) {
   UINTA_glGetError(glBindBuffer);
 }
 
-bool uinta::uploadVbo(Vbo& vbo, const void* const data, GLsizeiptr size, GLsizeiptr offset) {
+bool uinta::uploadVbo(Vbo& vbo, const void* const data, uint size, uint offset) {
   bool resized = false;
   if (vbo.id == GL_ZERO) {
     initVbo(vbo);

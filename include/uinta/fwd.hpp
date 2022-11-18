@@ -4,6 +4,7 @@
 #include <uinta/utils/types.h>
 
 #include <uinta/flags.hpp>
+#include <uinta/gl/fwd.hpp>
 #include <uinta/input/fwd.hpp>
 #include <uinta/math/fwd.hpp>
 #include <uinta/runner/fwd.hpp>
@@ -19,9 +20,6 @@ struct Quad;
 struct RunningAvg;
 struct StaticCamera;
 struct TargetCamera;
-struct Vao;
-struct Vbo;
-struct VertexAttrib;
 
 class CartesianGrid;
 class FileManager;
