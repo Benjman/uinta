@@ -1,11 +1,9 @@
 #ifndef UINTA_MATH_MAP_HPP
 #define UINTA_MATH_MAP_HPP
 
-namespace uinta {
+#include <uinta/math/fwd.hpp>
 
-inline float map0to1Range(const float value, const float min, const float max);
-inline float map0to1RangeClamped(const float value, const float min, const float max);
-inline float clamp(float value, float min, float max);
+namespace uinta {
 
 inline float map0to1Range(const float value, const float min, const float max) {
   return (value - min) / (max - min);

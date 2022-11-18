@@ -3,20 +3,9 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/trigonometric.hpp>
+#include <uinta/math/fwd.hpp>
 
 namespace uinta {
-
-inline glm::vec3 getForward(float pitch, float yaw);
-inline float getPlaneInterceptDist(const glm::vec3& planePos, const glm::vec3& planeNormal, const glm::vec3& rayPos,
-                                   const glm::vec3& rayDirection);
-inline glm::vec3 getPlaneInterceptPoint(const glm::vec3& planePos, const glm::vec3& planeNormal, const glm::vec3& rayPos,
-                                        const glm::vec3& rayDirection);
-inline glm::vec3 getPointOnRay(const glm::vec3& position, const glm::vec3& direction, float dist);
-inline glm::vec3 getRight(float yaw);
-inline glm::vec3 getUp(float pitch, float yaw);
-inline glm::vec3 getUp(const glm::vec3& forward, const glm::vec3& up);
-inline glm::vec3 getWorldRay(const glm::vec2& cursorPos, const glm::vec2& viewportSize, const glm::mat4& view,
-                             const glm::mat4& proj);
 
 inline glm::vec3 getForward(float pitch, float yaw) {
   auto pitchRad = glm::radians(pitch);

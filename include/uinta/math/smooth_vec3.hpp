@@ -2,6 +2,7 @@
 #define UINTA_MATH_SMOOTH_VEC3_HPP
 
 #include <glm/vec3.hpp>
+#include <uinta/math/fwd.hpp>
 #include <uinta/math/smooth_float.hpp>
 
 namespace uinta {
@@ -43,24 +44,20 @@ struct SmoothVec3 {
   }
 };
 
-void update(SmoothVec3&, float);
-void force(uinta::SmoothVec3&);
-void force(uinta::SmoothVec3&, const glm::vec3&);
-
-inline void update(uinta::SmoothVec3& v, float dt) {
-  update(v.x, dt);
-  update(v.y, dt);
-  update(v.z, dt);
-}
-
-inline void forceSmoothVec3(uinta::SmoothVec3& v) {
+inline void force(SmoothVec3& v) {
   force(v, {v.x.target, v.y.target, v.z.target});
 }
 
-inline void forceSmoothVec3(uinta::SmoothVec3& v, const glm::vec3& value) {
+inline void force(SmoothVec3& v, const glm::vec3& value) {
   force(v.x, value.x);
   force(v.y, value.y);
   force(v.z, value.z);
+}
+
+inline void update(SmoothVec3& v, float dt) {
+  update(v.x, dt);
+  update(v.y, dt);
+  update(v.z, dt);
 }
 
 }  // namespace uinta

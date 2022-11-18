@@ -1,6 +1,8 @@
 #ifndef UINTA_MATH_SMOOTH_FLOAT_HPP
 #define UINTA_MATH_SMOOTH_FLOAT_HPP
 
+#include <uinta/math/fwd.hpp>
+
 namespace uinta {
 
 struct SmoothFloat final {
@@ -41,10 +43,6 @@ struct SmoothFloat final {
     return current;
   }
 };
-
-inline void force(SmoothFloat&);
-inline void force(SmoothFloat&, float value);
-inline void update(SmoothFloat&, float dt);
 
 inline void force(SmoothFloat& v) {
   force(v, v.target);

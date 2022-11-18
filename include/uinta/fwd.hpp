@@ -5,6 +5,7 @@
 
 #include <uinta/flags.hpp>
 #include <uinta/input/fwd.hpp>
+#include <uinta/math/fwd.hpp>
 #include <uinta/utils/macros.hpp>
 
 namespace uinta {
@@ -17,8 +18,6 @@ struct MetricsController;
 struct Quad;
 struct RunnerState;
 struct RunningAvg;
-struct SmoothFloat;
-struct SmoothVec3;
 struct StaticCamera;
 struct TargetCamera;
 struct Vao;
