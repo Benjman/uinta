@@ -19,5 +19,6 @@ function (app name)
 endfunction()
 
 app(demo)
+app(post_processing)
 
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)
