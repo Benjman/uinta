@@ -1,6 +1,7 @@
 #include <uinta/glfw_utils/imgui.h>
 
 #include <glm/glm.hpp>
+#include <uinta/camera/utils.hpp>
 #include <uinta/gl/api.hpp>
 #include <uinta/glfw_utils/glfw_runner.hpp>
 #include <uinta/glfw_utils/glfw_runner_ui.hpp>

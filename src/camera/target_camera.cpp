@@ -1,6 +1,8 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <uinta/camera/fwd.hpp>
 #include <uinta/camera/target_camera.hpp>
+#include <uinta/camera/utils.hpp>
 #include <uinta/input.hpp>
 #include <uinta/math/map.hpp>
 #include <uinta/math/utils.hpp>
