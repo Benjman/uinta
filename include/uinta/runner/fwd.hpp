@@ -10,6 +10,7 @@ struct RunnerState;
 class Runner;
 
 inline bool isCameraEnabled(flags_t flags);
+inline bool isGridEnabled(flags_t flags);
 
 }  // namespace uinta
 

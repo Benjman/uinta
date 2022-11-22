@@ -3,6 +3,8 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/mat4x4.hpp>
 #include <iostream>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
@@ -26,7 +28,9 @@ bool Runner::init() {
   spdlog::stopwatch sw;
   fileManager.init();
   fileManager.loadAll();
-  if (!internalInit() || !doInit()) return false;
+  if (!internalInit()) return false;
+  if (!doInit()) return false;
+  if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
   startTime = getRuntime();
   SPDLOG_INFO("Completed initialization for '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
@@ -142,6 +146,10 @@ void Runner::doPreRender(const RunnerState& state) {
 }
 
 void Runner::doRender(const RunnerState& state) {
+  if (isGridEnabled(flags)) {
+    auto proj = glm::perspective(glm::radians(45.f), display.aspectRatio, 0.1f, 100.0f);
+    grid.render(proj * getViewMatrix(camera));
+  }
 }
 
 void Runner::doPostRender(const RunnerState& state) {

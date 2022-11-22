@@ -10,6 +10,7 @@
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_flags.hpp>
 #include <uinta/runner/runner_state.hpp>
+#include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
 
@@ -17,13 +18,14 @@ inline const glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.2f, 0.3f, 0.3f);
 
 class Runner {
  public:
+  CartesianGrid grid;
   Display display;
   FileManager fileManager;
   RunnerState state;
   TargetCamera camera;
 
   float startTime;
-  flags_t flags = RUNNER_FLAG_CAMERA;
+  flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID;
 
   Runner(const std::string& title, uint width, uint height) noexcept;
 
