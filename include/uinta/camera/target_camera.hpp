@@ -39,7 +39,7 @@ struct TargetCamera {
   }
 };
 
-void update(TargetCamera&, const RunnerState&);
+void update(TargetCamera&, const RunnerState&, const InputState&);
 glm::mat4 getViewMatrix(const TargetCamera&);
 
 }  // namespace uinta
