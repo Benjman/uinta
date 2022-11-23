@@ -7,6 +7,7 @@
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/fwd.hpp>
+#include <uinta/input/state.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_flags.hpp>
 #include <uinta/runner/runner_state.hpp>
@@ -21,6 +22,7 @@ class Runner {
   CartesianGrid grid;
   Display display;
   FileManager fileManager;
+  InputState input;
   RunnerState state;
   TargetCamera camera;
 

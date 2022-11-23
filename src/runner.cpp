@@ -21,7 +21,6 @@ using namespace uinta;
 Runner::Runner(const std::string& title, uint width, uint height) noexcept : display(title, width, height) {
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
-  state.display = Display(title, width, height);
 
   if (isCameraEnabled(flags)) {
     force(camera.angle, 45);
@@ -51,7 +50,7 @@ int Runner::run() {
       do {
         tick(state.delta = getRuntime() - lastTick);
         lastTick += state.delta;
-        reset(state.input);
+        reset(input);
       } while (!shouldRenderFrame(state.delta));
       pollInput();
       render();
@@ -103,28 +102,28 @@ bool Runner::shouldRenderFrame(float dt) {
 }
 
 void Runner::handleCursorPositionChanged(const double xpos, const double ypos) {
-  mouseMoved(state.input, xpos, ypos);
+  mouseMoved(input, xpos, ypos);
 }
 
 void Runner::handleScrollInput(const double xoffset, const double yoffset) {
-  mouseScrolled(state.input, xoffset, yoffset);
+  mouseScrolled(input, xoffset, yoffset);
 }
 
 void Runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
-  if (action == ACTION_PRESS) keyPressed(state.input, key, mods);
-  if (action == ACTION_RELEASE) keyReleased(state.input, key, mods);
-  if (action == ACTION_REPEAT) keyRepeated(state.input, key, mods);
+  if (action == ACTION_PRESS) keyPressed(input, key, mods);
+  if (action == ACTION_RELEASE) keyReleased(input, key, mods);
+  if (action == ACTION_REPEAT) keyRepeated(input, key, mods);
 }
 
 void Runner::handleMouseButtonInput(const int button, const int action, const int mods) {
-  if (action == ACTION_PRESS) mouseButtonPressed(state.input, button, mods);
-  if (action == ACTION_RELEASE) mouseButtonReleased(state.input, button, mods);
-  state.input.platform_flags = mods;
+  if (action == ACTION_PRESS) mouseButtonPressed(input, button, mods);
+  if (action == ACTION_RELEASE) mouseButtonReleased(input, button, mods);
+  input.platform_flags = mods;
 }
 
 void Runner::handleWindowSizeChanged(const int width, const int height) {
-  state.display.width = width;
-  state.display.height = height;
+  display.width = width;
+  display.height = height;
   doHandleWindowSizeChanged(width, height);
 }
 
@@ -164,7 +163,7 @@ void Runner::doPreTick(const RunnerState& state) {
 }
 
 void Runner::doTick(const RunnerState& state) {
-  if (isCameraEnabled(flags)) update(camera, state, state.input);
+  if (isCameraEnabled(flags)) update(camera, state, input);
 }
 
 void Runner::doPostTick(const RunnerState& state) {
