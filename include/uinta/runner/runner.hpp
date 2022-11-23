@@ -10,7 +10,6 @@
 #include <uinta/input/state.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_flags.hpp>
-#include <uinta/runner/runner_state.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
@@ -23,7 +22,6 @@ class Runner {
   Display display;
   FileManager fileManager;
   InputState input;
-  RunnerState state;
   TargetCamera camera;
 
   flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
@@ -61,8 +59,8 @@ class Runner {
   void handleWindowSizeChanged(const int width, const int height);
 
  private:
-  void tick();
-  void render();
+  void tick(const RunnerState& state);
+  void render(const RunnerState& state);
   void shutdown();
   bool shouldRenderFrame(float dt);
 };

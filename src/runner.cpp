@@ -9,6 +9,7 @@
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
+#include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
 
@@ -30,13 +31,14 @@ int Runner::run() {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;
     }
+    RunnerState state;
     auto lastTick = getRuntime();
     while (!shouldExit()) {
       do {
         state.delta = getRuntime() - lastTick;
         state.runtime += state.delta;
         state.tick++;
-        tick();
+        tick(state);
         lastTick += state.delta;
         reset(input);
       } while (!shouldRenderFrame(state.delta));
@@ -44,7 +46,7 @@ int Runner::run() {
       if (isRenderingEnabled(flags)) {
         swapBuffers();
         clearBuffer(background_color, clearMask);
-        render();
+        render(state);
       }
     }
     shutdown();
@@ -73,13 +75,13 @@ bool Runner::doInit() {
   return true;
 }
 
-void Runner::tick() {
+void Runner::tick(const RunnerState& state) {
   doPreTick(state);
   doTick(state);
   doPostTick(state);
 }
 
-void Runner::render() {
+void Runner::render(const RunnerState& state) {
   doPreRender(state);
   doRender(state);
   doPostRender(state);
