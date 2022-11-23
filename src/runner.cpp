@@ -13,11 +13,8 @@
 
 namespace uinta {
 
-void clearBuffer(const glm::vec3& color, GLbitfield mask);
-
-}  // namespace uinta
-
-using namespace uinta;
+inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
+inline void advanceState(RunnerState& state, double runtime, double& lastRuntime);
 
 Runner::Runner(const std::string& title, uint width, uint height) noexcept : display(title, width, height) {
   initSpdlog();
@@ -32,14 +29,11 @@ int Runner::run() {
       return EXIT_FAILURE;
     }
     RunnerState state;
-    auto lastTick = getRuntime();
+    auto lastRuntime = getRuntime();
     while (!shouldExit()) {
       do {
-        state.delta = getRuntime() - lastTick;
-        state.runtime += state.delta;
-        state.tick++;
+        advanceState(state, getRuntime(), lastRuntime);
         tick(state);
-        lastTick += state.delta;
         reset(input);
       } while (!shouldRenderFrame(state.delta));
       pollInput();
@@ -85,11 +79,6 @@ void Runner::render(const RunnerState& state) {
   doPreRender(state);
   doRender(state);
   doPostRender(state);
-}
-
-inline void uinta::clearBuffer(const glm::vec3& color, GLbitfield mask) {
-  glClearColor(color.r, color.g, color.b, 1.0);
-  glClear(mask);
 }
 
 void Runner::shutdown() {
@@ -163,3 +152,17 @@ void Runner::doTick(const RunnerState& state) {
 
 void Runner::doPostTick(const RunnerState& state) {
 }
+
+inline void clearBuffer(const glm::vec3& color, GLbitfield mask) {
+  glClearColor(color.r, color.g, color.b, 1.0);
+  glClear(mask);
+}
+
+inline void advanceState(RunnerState& state, double runtime, double& lastRuntime) {
+  state.tick++;
+  state.runtime = runtime;
+  state.delta = runtime - lastRuntime;
+  lastRuntime = runtime;
+}
+
+}  // namespace uinta
