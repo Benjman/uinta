@@ -10,6 +10,12 @@
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
 
+namespace uinta {
+
+void clearBuffer(const glm::vec3& color, GLbitfield mask);
+
+}  // namespace uinta
+
 using namespace uinta;
 
 Runner::Runner(const std::string& title, uint width, uint height) noexcept : display(title, width, height) {
@@ -75,18 +81,14 @@ void Runner::tick(float runtime) {
 }
 
 void Runner::render() {
-  clearBuffer();
-
   doPreRender(state);
   doRender(state);
   doPostRender(state);
-
-  swapBuffers();
 }
 
-void Runner::clearBuffer() {
-  glClearColor(background_color.r, background_color.g, background_color.b, 1.0);
-  glClear(clearMask);
+inline void uinta::clearBuffer(const glm::vec3& color, GLbitfield mask) {
+  glClearColor(color.r, color.g, color.b, 1.0);
+  glClear(mask);
 }
 
 void Runner::shutdown() {
@@ -136,6 +138,7 @@ bool Runner::doInit() {
 }
 
 void Runner::doPreRender(const RunnerState& state) {
+  clearBuffer(background_color, clearMask);
 }
 
 void Runner::doRender(const RunnerState& state) {
@@ -146,6 +149,7 @@ void Runner::doRender(const RunnerState& state) {
 }
 
 void Runner::doPostRender(const RunnerState& state) {
+  swapBuffers();
 }
 
 void Runner::doShutdown() {
