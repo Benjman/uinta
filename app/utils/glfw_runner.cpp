@@ -5,7 +5,9 @@
 
 #include "./glfw_runner.hpp"
 
-using namespace uinta;
+#include <uinta/gl/api.hpp>
+
+namespace uinta {
 
 GlfwRunner::~GlfwRunner() {
   if (window) glfwDestroyWindow(window);
@@ -13,47 +15,46 @@ GlfwRunner::~GlfwRunner() {
 }
 
 bool GlfwRunner::internalInit() {
-  createGLFWWindow(*this);
-  if (window == NULL) return false;
-  register_callbacks();
+  if (!createGLFWWindow(this)) return false;
+  registerCallbacks(this);
   return true;
 }
 
-void GlfwRunner::register_callbacks() {
-  glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+void registerCallbacks(GlfwRunner* runner) {
+  glfwSetKeyCallback(runner->window, [](auto* window, int key, int scancode, int action, int mods) {
     SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
-    GlfwRunner* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner->window, true);
-    runner->handleKeyInput(key, scancode, action, mods);
+    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(r->window, true);
+    r->handleKeyInput(key, scancode, action, mods);
   });
 
-  glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
+  glfwSetCursorPosCallback(runner->window, [](auto* window, double xpos, double ypos) {
     SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypox);
-    GlfwRunner* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    runner->handleCursorPositionChanged(xpos, ypos);
+    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    r->handleCursorPositionChanged(xpos, ypos);
   });
 
-  glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+  glfwSetMouseButtonCallback(runner->window, [](auto* window, int button, int action, int mods) {
     SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
-    GlfwRunner* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    runner->handleMouseButtonInput(button, action, mods);
+    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    r->handleMouseButtonInput(button, action, mods);
   });
 
-  glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
+  glfwSetScrollCallback(runner->window, [](auto* window, double xoffset, double yoffset) {
     SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
-    GlfwRunner* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    runner->handleScrollInput(xoffset, yoffset);
+    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    r->handleScrollInput(xoffset, yoffset);
   });
 
-  glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height) {
+  glfwSetWindowSizeCallback(runner->window, [](auto* window, int width, int height) {
     SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
-    GlfwRunner* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
-    runner->handleWindowSizeChanged(width, height);
+    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    r->handleWindowSizeChanged(width, height);
   });
 
-  glfwSetWindowPosCallback(window, [](GLFWwindow* window, int xpos, int ypos) {
+  glfwSetWindowPosCallback(runner->window, [](auto* window, int xpos, int ypos) {
     SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
-    GlfwRunner* runner = (GlfwRunner*)glfwGetWindowUserPointer(window);
+    auto* r = (GlfwRunner*)glfwGetWindowUserPointer(window);
   });
 }
 
@@ -82,7 +83,39 @@ bool GlfwRunner::shouldExit() {
   return glfwWindowShouldClose(window);
 }
 
-void uinta::createGLFWWindow(GlfwRunner& runner) {
+bool GlfwRunner::doInit() {
+  return true;
+}
+
+void GlfwRunner::doPreTick(const RunnerState& state) {
+  Runner::doPreTick(state);
+}
+
+void GlfwRunner::doTick(const RunnerState& state) {
+  Runner::doTick(state);
+}
+
+void GlfwRunner::doPostTick(const RunnerState& state) {
+  Runner::doPostTick(state);
+}
+
+void GlfwRunner::doPreRender(const RunnerState& state) {
+  Runner::doPreRender(state);
+}
+
+void GlfwRunner::doRender(const RunnerState& state) {
+  Runner::doRender(state);
+}
+
+void GlfwRunner::doPostRender(const RunnerState& state) {
+  Runner::doPostRender(state);
+}
+
+void GlfwRunner::doShutdown() {
+  Runner::doShutdown();
+}
+
+bool createGLFWWindow(GlfwRunner* runner) {
   spdlog::stopwatch sw;
 
   int version_major = 3;
@@ -90,22 +123,36 @@ void uinta::createGLFWWindow(GlfwRunner& runner) {
 
   SPDLOG_INFO("Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
 
-  if (!glfwInit()) return SPDLOG_ERROR("Failed to initialize GLFW!");
+  if (!glfwInit()) {
+    SPDLOG_ERROR("Failed to initialize GLFW!");
+    return false;
+  }
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, version_major);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-  runner.window = glfwCreateWindow(runner.display.width, runner.display.height, runner.display.title.c_str(), NULL, NULL);
-  if (!runner.window) return SPDLOG_ERROR("Failed to create GLFW window!");
-  SPDLOG_INFO("Created window {}x{} (aspect ratio {}).", runner.display.width, runner.display.height, runner.display.aspectRatio);
+  runner->window = glfwCreateWindow(runner->display.width, runner->display.height, runner->display.title.c_str(), NULL, NULL);
+  if (!runner->window) {
+    SPDLOG_ERROR("Failed to create GLFW window!");
+    return false;
+  }
 
-  glfwSetWindowUserPointer(runner.window, &runner);
-  glfwMakeContextCurrent(runner.window);
+  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", runner->display.title, runner->display.width,
+              runner->display.height, runner->display.aspectRatio);
+
+  glfwSetWindowUserPointer(runner->window, runner);
+  glfwMakeContextCurrent(runner->window);
 
   SPDLOG_INFO("Loading GLAD...");
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return SPDLOG_ERROR("Failed to load GLAD!");
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    SPDLOG_ERROR("Failed to load GLAD!");
+    return false;
+  }
 
   SPDLOG_INFO("GLFW initialization completed in {} seconds.", sw.elapsed().count());
+  return true;
 }
+
+}  // namespace uinta
