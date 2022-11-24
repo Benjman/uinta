@@ -5,6 +5,7 @@
 
 #include <glm/vec3.hpp>
 #include <uinta/file_manager.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_state.hpp>
 
@@ -19,7 +20,7 @@ class Runner {
   RunnerState state;
   float startTime;
 
-  Runner(const std::string& title, uint32_t width, uint32_t height) noexcept;
+  Runner(const std::string& title, uint width, uint height) noexcept;
 
   ~Runner();
 

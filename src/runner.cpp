@@ -10,7 +10,7 @@
 
 using namespace uinta;
 
-Runner::Runner(const std::string& title, uint32_t width, uint32_t height) noexcept : display(title, width, height) {
+Runner::Runner(const std::string& title, uint width, uint height) noexcept : display(title, width, height) {
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
   state.display = Display(title, width, height);
