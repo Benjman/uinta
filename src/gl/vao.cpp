@@ -1,4 +1,4 @@
-#include <uinta/gl/errors.hpp>
+#include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
 

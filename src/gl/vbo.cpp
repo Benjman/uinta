@@ -1,5 +1,5 @@
-#include <uinta/gl/errors.hpp>
-#include <uinta/gl/type_utils.hpp>
+#include <uinta/gl/utils/errors.hpp>
+#include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/gl/vbo.hpp>
 
 uinta::Vbo::Vbo(GLenum target, GLenum usage) : Vbo(GL_ZERO, target, usage, 0) {
