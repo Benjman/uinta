@@ -1,11 +1,12 @@
 #ifndef UINTA_IO_FILE_MANAGER_HPP
 #define UINTA_IO_FILE_MANAGER_HPP
 
+#include <uinta/utils/flags.h>
+#include <uinta/utils/macros.h>
+
 #include <string>
 #include <uinta/cfg.hpp>
-#include <uinta/flags.hpp>
 #include <uinta/memory/memory_link.hpp>
-#include <uinta/utils/macros.hpp>
 #include <vector>
 
 namespace uinta {

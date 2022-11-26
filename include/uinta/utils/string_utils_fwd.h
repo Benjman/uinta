@@ -1,5 +1,5 @@
-#ifndef UINTA_STRING_UTILS_FWD_HPP
-#define UINTA_STRING_UTILS_FWD_HPP
+#ifndef UINTA_STRING_UTILS_FWD_H
+#define UINTA_STRING_UTILS_FWD_H
 
 namespace uinta {
 
@@ -9,4 +9,4 @@ inline bool containsKey(const char* const key, const char** const keys);
 
 }  // namespace uinta
 
-#endif  // UINTA_STRING_UTILS_FWD_HPP
+#endif  // UINTA_STRING_UTILS_FWD_H

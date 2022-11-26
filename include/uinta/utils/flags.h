@@ -1,5 +1,5 @@
-#ifndef UINTA_FLAGS_HPP
-#define UINTA_FLAGS_HPP
+#ifndef UINTA_FLAGS_H
+#define UINTA_FLAGS_H
 
 // TODO these should be in <uinta/fwd.hpp>
 using flag_t = unsigned int;
@@ -14,4 +14,4 @@ inline void setFlag(const flag_t mask, const bool state, flags_t& flags) {
   if (state) flags |= mask;
 }
 
-#endif  // UINTA_RUNNER_FLAGS_HPP
+#endif  // UINTA_RUNNER_FLAGS_H

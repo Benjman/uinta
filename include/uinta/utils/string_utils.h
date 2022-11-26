@@ -1,8 +1,9 @@
-#ifndef UINTA_STRING_UTILS_HPP
-#define UINTA_STRING_UTILS_HPP
+#ifndef UINTA_STRING_UTILS_H
+#define UINTA_STRING_UTILS_H
+
+#include <uinta/utils/string_utils_fwd.h>
 
 #include <cstring>
-#include <uinta/utils/string_utils_fwd.hpp>
 
 #ifdef UINTA_DEBUG
 #include <uinta/logging.hpp>
@@ -22,4 +23,4 @@ inline bool containsKey(const char* const key, const char** const keys) {
 
 }  // namespace uinta
 
-#endif  // UINTA_STRING_UTILS_HPP
+#endif  // UINTA_STRING_UTILS_H

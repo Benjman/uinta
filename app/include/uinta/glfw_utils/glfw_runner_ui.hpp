@@ -7,7 +7,8 @@ namespace uinta {
 
 class GlfwRunner;
 
-static const flag_t GLFW_RUNNER_UI_INPUT_HANDLED = 1 << 0;
+static const flag_t INPUT_HANDLED_MOUSE = 1 << 0;
+static const flag_t INPUT_HANDLED_KEYBOARD = 1 << 1;
 
 class GlfwRunnerUi {
  public:

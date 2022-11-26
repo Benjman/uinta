@@ -1,9 +1,9 @@
 function (app name)
   add_executable(${name} ${CMAKE_CURRENT_LIST_DIR}/${name}/main.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_input.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_runner.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/utils/glfw_runner_ui.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/utils/imgui.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw_utils/glfw_input.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw_utils/glfw_runner.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw_utils/glfw_runner_ui.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw_utils/imgui.cpp
     )
 
   if (IS_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${name}/res)
@@ -11,6 +11,7 @@ function (app name)
     message(STATUS "Added '${CMAKE_CURRENT_LIST_DIR}/${name}/res' to UINTA_RES_PATHS")
   endif()
 
+  target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
   target_include_directories(${name} PRIVATE ${GL_INCLUDES})
   target_link_libraries(${name} PRIVATE uinta)
 

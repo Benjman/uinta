@@ -1,10 +1,8 @@
 #ifndef UINTA_GLFW_RUNNER_HPP
 #define UINTA_GLFW_RUNNER_HPP
 
-#include <string>
+#include <uinta/glfw_utils/glfw_runner_ui.hpp>
 #include <uinta/runner.hpp>
-
-#include "./glfw_runner_ui.hpp"
 
 namespace uinta {
 

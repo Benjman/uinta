@@ -1,4 +1,4 @@
-#include "../utils/glfw_runner.hpp"
+#include <uinta/glfw_utils/glfw_runner.hpp>
 
 namespace uinta {
 

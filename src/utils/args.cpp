@@ -1,6 +1,7 @@
+#include <uinta/utils/string_utils.h>
+
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
-#include <uinta/utils/string_utils.hpp>
 
 namespace uinta {
 

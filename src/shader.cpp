@@ -1,10 +1,9 @@
-#include <glad/glad.h>
 #include <uinta/gl.h>
+#include <uinta/utils/macros.h>
 
 #include <cstdio>
 #include <uinta/logging.hpp>
 #include <uinta/shader.hpp>
-#include <uinta/utils/macros.hpp>
 
 namespace uinta {
 

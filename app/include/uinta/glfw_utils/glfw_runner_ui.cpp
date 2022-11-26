@@ -1,13 +1,11 @@
-#include "glfw_runner_ui.hpp"
+#include <uinta/glfw_utils/imgui.h>
 
 #include <glm/glm.hpp>
 #include <uinta/gl/api.hpp>
-#include <uinta/logging.hpp>
+#include <uinta/glfw_utils/glfw_runner.hpp>
+#include <uinta/glfw_utils/glfw_runner_ui.hpp>
 #include <uinta/math/utils.hpp>
 #include <uinta/utils/direction.hpp>
-
-#include "./glfw_runner.hpp"
-#include "./imgui.hpp"
 
 namespace uinta {
 
@@ -61,13 +59,15 @@ void GlfwRunnerUi::onPreRender(GlfwRunner& runner) {
 
 void GlfwRunnerUi::onRender(GlfwRunner& runner) {
 #ifndef IMGUI_API_DISABLED
+  auto& io = ImGui::GetIO();
   if (showingWindow) {
-    auto& io = ImGui::GetIO();
     ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
     camera(runner.camera);
     inputUi(runner);
     settings(runner);
   }
+  if (io.WantCaptureKeyboard) setFlag(INPUT_HANDLED_KEYBOARD, true, flags);
+  if (io.WantCaptureMouse) setFlag(INPUT_HANDLED_MOUSE, true, flags);
 #endif  // IMGUI_API_DISABLED
 }
 
