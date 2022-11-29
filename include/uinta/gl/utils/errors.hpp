@@ -5,6 +5,11 @@
 
 #ifdef UINTA_DEBUG
 
+#include <uinta/gl/utils/flags.h>
+
+#include <stdexcept>
+#include <string>
+#include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/logging.hpp>
 
 #define UINTA_glGetError_CASE(method, error)                                                                                   \
@@ -30,6 +35,11 @@
         default:                                                              \
           SPDLOG_WARN("{} generated unknown error code {}.", #method, error); \
           break;                                                              \
+      }                                                                       \
+      if (UINTA_GL_FLAGS & UINTA_GL_EXIT_ON_ERROR) {                          \
+        std::string message = #method;                                        \
+        message += " error: " + getGlEnumName(error);                         \
+        throw std::runtime_error(message);                                    \
       }                                                                       \
     }                                                                         \
   }
