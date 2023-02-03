@@ -157,15 +157,7 @@ inline void mouseScrolled(InputState& input, const double dx, const double dy) {
   setFlag(input::HAS_MOUSE_SCROLL, true, input.flags);
 }
 
-inline void reset(InputState& input) {
-  if (isFlagSet(input::HAS_KEY_PRESSED, input.flags)) {
-    setFlag(input::HAS_KEY_PRESSED, false, input.flags);
-    input.keys_pressed.clear();
-  }
-  if (isFlagSet(input::HAS_KEY_RELEASED, input.flags)) {
-    setFlag(input::HAS_KEY_RELEASED, false, input.flags);
-    input.keys_released.clear();
-  }
+inline void resetMouse(InputState& input) {
   if (isFlagSet(input::HAS_MOUSE_PRESSED, input.flags)) {
     setFlag(input::HAS_MOUSE_PRESSED, false, input.flags);
     input.mouse_pressed.clear();
@@ -182,6 +174,22 @@ inline void reset(InputState& input) {
   input.cursordy = 0;
   input.scrolldx = 0;
   input.scrolldy = 0;
+}
+
+inline void reset(InputState& input) {
+  resetKeyboard(input);
+  resetMouse(input);
+}
+
+inline void resetKeyboard(InputState& input) {
+  if (isFlagSet(input::HAS_KEY_PRESSED, input.flags)) {
+    setFlag(input::HAS_KEY_PRESSED, false, input.flags);
+    input.keys_pressed.clear();
+  }
+  if (isFlagSet(input::HAS_KEY_RELEASED, input.flags)) {
+    setFlag(input::HAS_KEY_RELEASED, false, input.flags);
+    input.keys_released.clear();
+  }
 }
 
 inline const char* const getKeyStr(input_key_t key) noexcept {

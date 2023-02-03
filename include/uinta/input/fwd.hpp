@@ -45,6 +45,8 @@ inline void mouseMoved(InputState& input, const double xpos, const double ypos);
 inline void mouseScrolled(InputState& input, const double dx, const double dy);
 
 inline void reset(InputState& input);
+inline void resetKeyboard(InputState& input);
+inline void resetMouse(InputState& input);
 
 inline const char* const getKeyStr(input_key_t key) noexcept;
 inline const char* const getActionStr(input_key_t action) noexcept;
