@@ -1,22 +1,10 @@
-#ifndef UINTA_MODEL_HPP
-#define UINTA_MODEL_HPP
+#ifndef UINTA_OBJ_HPP
+#define UINTA_OBJ_HPP
 
 #include <string>
 #include <uinta/mesh.hpp>
 
 namespace uinta {
-
-enum Models {
-  Model_Cube,
-  Model_Cone_LowPoly,
-  Model_Cylinder_LowPoly,
-  Model_Plane,
-  Model_Pyramid,
-  Model_Suzanne,
-  Model_Tri,
-};
-
-const char* const getObjPath(const Models);
 
 // USAGE
 //
@@ -37,4 +25,4 @@ void loadObj(const std::string& buffer, float* const vbuf, uint32_t* const vcoun
 
 }  // namespace uinta
 
-#endif  // UINTA_MODEL_HPP
+#endif  // UINTA_OBJ_HPP

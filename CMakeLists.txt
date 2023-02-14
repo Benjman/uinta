@@ -32,7 +32,7 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/memory/memory_link.cpp
   ./src/mesh.cpp
   ./src/metrics.cpp
-  ./src/model.cpp
+  ./src/parsers/obj.cpp
   ./src/quadtree.cpp
   ./src/runner.cpp
   ./src/runner/display.cpp

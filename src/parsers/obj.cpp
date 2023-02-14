@@ -1,30 +1,9 @@
 #include <glm/vec3.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/model.hpp>
+#include <uinta/parsers/obj.hpp>
 #include <vector>
 
 using namespace uinta;
-
-const char* const uinta::getObjPath(const Models model) {
-  switch (model) {
-    case Model_Cube:
-      return "model/cube.obj";
-    case Model_Cone_LowPoly:
-      return "model/cone_lowpoly.obj";
-    case Model_Cylinder_LowPoly:
-      return "model/cylinder_lowPoly.obj";
-    case Model_Plane:
-      return "model/plane.obj";
-    case Model_Pyramid:
-      return "model/pyramid.obj";
-    case Model_Suzanne:
-      return "model/suzanne.obj";
-    case Model_Tri:
-      return "model/tri.obj";
-    default:
-      throw std::runtime_error("Object path not defined for model\n");
-  }
-}
 
 /***********************************/
 /** Internal loading of obj files **/
