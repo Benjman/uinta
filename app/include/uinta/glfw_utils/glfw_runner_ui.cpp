@@ -105,7 +105,13 @@ inline void camera(TargetCamera& camera) {
 inline void settings(Runner& runner) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::CollapsingHeader("Settings")) {
-    ImGui::CheckboxFlags("Show grid", &runner.flags, RUNNER_FLAG_GRID);
+    if (ImGui::TreeNode("Grid")) {
+      ImGui::CheckboxFlags("Show grid", &runner.flags, RUNNER_FLAG_GRID);
+      ImGui::DragFloat("Line width", &runner.grid.lineWidth, 0.5, 0.5, 15.0, "%0.1f", ImGuiSliderFlags_AlwaysClamp);
+
+      ImGui::TreePop();
+      ImGui::Separator();
+    }
   }
 #endif  // IMGUI_API_DISABLED
 }

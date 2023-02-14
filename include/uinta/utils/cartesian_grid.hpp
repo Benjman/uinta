@@ -11,6 +11,7 @@ namespace uinta {
 class CartesianGrid {
   friend bool initShader(CartesianGrid&, FileManager&);
   friend bool initGrid(CartesianGrid&);
+  friend void settings(Runner&);
 
  public:
   bool init(FileManager& fileManager);
@@ -25,6 +26,7 @@ class CartesianGrid {
   GLuint shader;
   GLuint u_mvp;
   int vcount = 0;
+  float lineWidth = 1;
 };
 
 }  // namespace uinta
