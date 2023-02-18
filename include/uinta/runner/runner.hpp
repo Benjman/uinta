@@ -31,6 +31,12 @@ class Runner {
 
   int run();
 
+  void handleCursorPositionChanged(const double xpos, const double ypos);
+  void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
+  void handleMouseButtonInput(const int button, const int action, const int mods);
+  void handleScrollInput(const double xoffset, const double yoffset);
+  void handleWindowSizeChanged(const int width, const int height);
+
  protected:
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
@@ -50,12 +56,6 @@ class Runner {
   virtual double getRuntime() const = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;
-
-  void handleCursorPositionChanged(const double xpos, const double ypos);
-  void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
-  void handleMouseButtonInput(const int button, const int action, const int mods);
-  void handleScrollInput(const double xoffset, const double yoffset);
-  void handleWindowSizeChanged(const int width, const int height);
 
  private:
   void tick(const RunnerState& state);
