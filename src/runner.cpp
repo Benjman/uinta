@@ -16,8 +16,7 @@ namespace uinta {
 inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
 inline void advanceState(RunnerState& state, double runtime, double& lastRuntime);
 
-Runner::Runner(const std::string& title, uint width, uint height, int argc, const char** argv) noexcept
-    : display(title, width, height) {
+Runner::Runner(const std::string& title, int argc, const char** argv) noexcept : display(title) {
   processArgs(this, argc, argv);
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);

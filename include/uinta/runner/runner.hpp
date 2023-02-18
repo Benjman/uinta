@@ -25,7 +25,7 @@ class Runner {
 
   flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
 
-  Runner(const std::string& title, uint width, uint height, int argc = 0, const char** argv = nullptr) noexcept;
+  Runner(const std::string& title, int argc = 0, const char** argv = nullptr) noexcept;
 
   ~Runner();
 

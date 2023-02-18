@@ -12,10 +12,10 @@ struct Display {
   uint32_t height = 1080;
   float aspectRatio;
 
-  Display() : Display("", 0, 0) {
+  Display() : Display("") {
   }
 
-  Display(const std::string& title, const uint32_t width, const uint32_t height) noexcept;
+  explicit Display(const std::string& title) noexcept;
 };
 
 }  // namespace uinta
