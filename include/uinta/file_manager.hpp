@@ -14,9 +14,6 @@ namespace uinta {
 // TODO file_t should really be std::shared_ptr<uint>
 // TODO all the file_t* should instead be a std::shared_ptr<uint>
 
-using file_t = uint;
-using file_size_t = uint;
-
 class FileManager {
  public:
   explicit FileManager(const size_t storageSize = MEGABYTES(10));
