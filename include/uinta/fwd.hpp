@@ -12,14 +12,14 @@
 
 namespace uinta {
 
-struct BasicCamera;
+using file_t = uint;
+using file_size_t = uint;
+
 struct MemoryLink;
 struct MeshAttrib;
 struct MetricsController;
 struct Quad;
 struct RunningAvg;
-struct StaticCamera;
-struct TargetCamera;
 
 class CartesianGrid;
 class FileManager;
