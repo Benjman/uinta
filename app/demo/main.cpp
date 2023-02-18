@@ -4,7 +4,26 @@ namespace uinta {
 
 class DemoRunner : public GlfwRunner {
  public:
-  DemoRunner(const int argc, const char** argv) : GlfwRunner("Demo", 1920, 1080, argc, argv) {
+  entt::entity cube;
+
+  DemoRunner(const int argc, const char** argv) : GlfwRunner("Demo", argc, argv) {
+  }
+
+  bool doInit() override {
+    if (!GlfwRunner::doInit()) return false;
+
+    cube = scene.addEntity({
+        "models/cube.obj",
+        {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}},
+    });
+
+    return true;
+  }
+
+  void doRender(const RunnerState& state) override {
+    GlfwRunner::doRender(state);
+    scene.startRender(this, state);
+    scene.render(cube, registry);
   }
 };
 

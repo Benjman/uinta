@@ -8,9 +8,11 @@
 #include <uinta/file_manager.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/input/state.hpp>
+#include <uinta/model_manager.hpp>
 #include <uinta/runner/args.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_flags.hpp>
+#include <uinta/runner/scene.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
@@ -22,6 +24,8 @@ class Runner {
   FileManager fileManager;
   InputState input;
   TargetCamera camera;
+  Scene scene;
+  ModelManager modelManager;
 
   flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
 

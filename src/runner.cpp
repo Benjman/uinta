@@ -60,6 +60,7 @@ int Runner::run() {
 bool Runner::doInit() {
   spdlog::stopwatch sw{};
   if (!fileManager.init()) return false;
+  if (!scene.init(this)) return false;
   if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
   SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
   if (isCameraEnabled(flags)) {
