@@ -68,6 +68,7 @@ void uinta::indexBuffer(Vao& vao, const uint* const data, uint size, uint offset
 }
 
 void uinta::initVao(Vao& vao) {
+  if (vao.id) return;
   glGenVertexArrays(1, &vao.id);
   UINTA_glGetError(glGenVertexArrays);
   SPDLOG_DEBUG("Initialized VAO {}.", vao.id);
