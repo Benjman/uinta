@@ -7,6 +7,7 @@
 #include <iostream>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
+#include <uinta/runner/args.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/runner/runner_state.hpp>
 
@@ -14,8 +15,6 @@ namespace uinta {
 
 inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
 inline void advanceState(RunnerState& state, double runtime, double& lastRuntime);
-
-void processArgs(Runner* runner, int argc, const char** argv);
 
 Runner::Runner(const std::string& title, uint width, uint height, int argc, const char** argv) noexcept
     : display(title, width, height) {

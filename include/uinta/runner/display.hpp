@@ -8,8 +8,8 @@ namespace uinta {
 
 struct Display {
   std::string title;
-  uint32_t width;
-  uint32_t height;
+  uint32_t width = 1920;
+  uint32_t height = 1080;
   float aspectRatio;
 
   Display() : Display("", 0, 0) {

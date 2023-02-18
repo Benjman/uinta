@@ -8,6 +8,7 @@
 #include <uinta/file_manager.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/input/state.hpp>
+#include <uinta/runner/args.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_flags.hpp>
 #include <uinta/utils/cartesian_grid.hpp>

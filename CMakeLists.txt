@@ -37,9 +37,9 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/parsers/obj.cpp
   ./src/quadtree.cpp
   ./src/runner.cpp
+  ./src/runner/args.cpp
   ./src/runner/display.cpp
   ./src/shader.cpp
-  ./src/utils/args.cpp
   ./src/utils/cartesian_grid.cpp
   ./src/utils/direction.cpp
 

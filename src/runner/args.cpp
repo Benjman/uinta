@@ -1,7 +1,10 @@
 #include <uinta/utils/string_utils.h>
 
+#include <string>
 #include <uinta/logging.hpp>
+#include <uinta/runner/args.hpp>
 #include <uinta/runner/runner.hpp>
+#include <vector>
 
 namespace uinta {
 
@@ -28,11 +31,15 @@ std::vector<RunnerArg> extractArgs(int argc, const char** argv);
 
 bool processArg_noGrid(Runner* runner, const RunnerArg& arg);
 bool processArg_noRendering(Runner* runner, const RunnerArg& arg);
+bool processArg_width(Runner* runner, const RunnerArg& arg);
+bool processArg_height(Runner* runner, const RunnerArg& arg);
 
 void processArgs(Runner* runner, int argc, const char** argv) {
   for (auto& arg : extractArgs(argc, argv)) {
     if (processArg_noGrid(runner, arg)) continue;
     if (processArg_noRendering(runner, arg)) continue;
+    if (processArg_height(runner, arg)) continue;
+    if (processArg_width(runner, arg)) continue;
     SPDLOG_WARN("Unhandled argument: '{}'", arg.key);
   }
 }
@@ -76,6 +83,30 @@ bool processArg_noRendering(Runner* runner, const RunnerArg& arg) {
   setFlag(RUNNER_FLAG_RENDERING, false, runner->flags);
   expectNoValue(arg);
   SPDLOG_INFO("Rendering disabled via argument '{}'.", arg.key);
+  return true;
+}
+
+bool processArg_height(Runner* runner, const RunnerArg& arg) {
+  const char* keys[] = {
+      "--height",
+      "-h",
+      nullptr,
+  };
+  if (!containsKey(arg.key.c_str(), keys)) return false;
+  runner->handleWindowSizeChanged(runner->display.width, std::stof(arg.value));
+  SPDLOG_INFO("`{}`: Height set to: {}", arg.key, arg.value);
+  return true;
+}
+
+bool processArg_width(Runner* runner, const RunnerArg& arg) {
+  const char* keys[] = {
+      "--width",
+      "-w",
+      nullptr,
+  };
+  if (!containsKey(arg.key.c_str(), keys)) return false;
+  runner->handleWindowSizeChanged(std::stof(arg.value), runner->display.height);
+  SPDLOG_INFO("`{}`: Width set to: {}", arg.key, arg.value);
   return true;
 }
 
