@@ -9,6 +9,7 @@
 #include <uinta/logging.hpp>
 #endif
 
+// TODO remove namespacing in this file
 namespace uinta {
 
 inline bool containsKey(const char* const key, const char** const keys) {
