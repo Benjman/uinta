@@ -11,6 +11,7 @@ namespace uinta {
 
 using file_t = uint;
 using file_size_t = uint;
+using model_t = uint16;
 
 struct MemoryLink;
 struct MeshAttrib;
@@ -20,6 +21,7 @@ struct RunningAvg;
 
 class CartesianGrid;
 class FileManager;
+class ModelManager;
 
 }  // namespace uinta
 
