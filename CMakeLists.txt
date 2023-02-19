@@ -43,6 +43,7 @@ set(UINTA_SRCS ${UINTA_SRCS}
   ./src/shader.cpp
   ./src/utils/cartesian_grid.cpp
   ./src/utils/direction.cpp
+  ./src/utils/generators.cpp
 
   )
 
