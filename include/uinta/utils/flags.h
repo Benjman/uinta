@@ -1,9 +1,7 @@
 #ifndef UINTA_FLAGS_H
 #define UINTA_FLAGS_H
 
-// TODO these should be in <uinta/fwd.hpp>
-using flag_t = unsigned int;
-using flags_t = unsigned int;
+#include <uinta/utils/types.h>
 
 inline bool isFlagSet(const flag_t mask, const flags_t flags) {
   return flags & mask;
