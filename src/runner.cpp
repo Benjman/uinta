@@ -68,6 +68,8 @@ bool Runner::doInit() {
     force(camera.pitch, 45);
     force(camera.dist, 5);
   }
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
   return true;
 }
 
