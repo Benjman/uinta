@@ -12,7 +12,7 @@ uinta::VertexAttrib::VertexAttrib(GLuint index, GLint size, GLenum type, GLboole
 }
 
 uinta::VertexAttrib::VertexAttrib(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, size_t offset)
-    : VertexAttrib(index, size, type, normalized, stride, (const void*)offset) {
+    : VertexAttrib(index, size, type, normalized, stride, reinterpret_cast<const void*>(offset)) {
 }
 
 uinta::VertexAttrib::VertexAttrib(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
