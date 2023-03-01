@@ -229,8 +229,8 @@ inline void cameraHotkeys(TargetCamera& camera) {
 inline void cameraTransform(TargetCamera& camera) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::TreeNode("Transform")) {
-    if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, (void*)&camera.angle.agility, 0.1f, &limits.min,
-                          &limits.max, "%+.2f")) {
+    if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.angle.agility), 0.1f,
+                          &limits.min, &limits.max, "%+.2f")) {
       camera.dist.agility = camera.angle.agility;
       camera.pitch.agility = camera.angle.agility;
       camera.target.x.agility = camera.angle.agility;
@@ -238,20 +238,24 @@ inline void cameraTransform(TargetCamera& camera) {
       camera.target.z.agility = camera.angle.agility;
     }
 
-    ImGui::DragScalar("Dist", ImGuiDataType_Float, (void*)&camera.dist.target, 0.1f, &limits.one_tenth, &limits.twenty, "%+.2f");
+    ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.dist.target), 0.1f, &limits.one_tenth,
+                      &limits.twenty, "%+.2f");
     ImGui::SameLine();
     ImGui::CheckboxFlags("Limit dist", (uint*)&camera.config.flags, CAMERA_DIST_LIMIT);
 
-    ImGui::DragScalar("Pitch", ImGuiDataType_Float, (void*)&camera.pitch.target, 0.1f, &limits.min, &limits.max, "%+.2f");
+    ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.pitch.target), 0.1f, &limits.min, &limits.max,
+                      "%+.2f");
     ImGui::SameLine();
     ImGui::CheckboxFlags("Limit pitch", (uint*)&camera.config.flags, CAMERA_PITCH_LIMIT);
 
-    ImGui::DragScalar("Angle", ImGuiDataType_Float, (void*)&camera.angle.target, 0.1f, &limits.min, &limits.max, "%+.2f");
+    ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.angle.target), 0.1f, &limits.min, &limits.max,
+                      "%+.2f");
 
-    ImGui::DragScalar("Speed factor", ImGuiDataType_Float, (void*)&camera.config.translationSpeedDistFactor, 0.005f, &limits.zero,
-                      &limits.max, "%+.2f");
-    ImGui::DragScalar("Speed factor min", ImGuiDataType_Float, (void*)&camera.config.translationSpeedDistFactorMin, 0.005f,
-                      &limits.zero, &limits.max, "%+.2f");
+    ImGui::DragScalar("Speed factor", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.config.translationSpeedDistFactor),
+                      0.005f, &limits.zero, &limits.max, "%+.2f");
+    ImGui::DragScalar("Speed factor min", ImGuiDataType_Float,
+                      reinterpret_cast<void*>(&camera.config.translationSpeedDistFactorMin), 0.005f, &limits.zero, &limits.max,
+                      "%+.2f");
     ImGui::Text("Speed scalar  %+.2f", calculateTranslationFactor(camera));
 
     auto forward = getForward(camera.pitch, camera.angle);
