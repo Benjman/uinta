@@ -3,6 +3,7 @@
 
 #include <uinta/gl.h>
 
+#include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/file_manager.hpp>
@@ -26,6 +27,7 @@ class Runner {
   TargetCamera camera;
   Scene scene;
   ModelManager modelManager;
+  entt::registry registry;
 
   flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
 
