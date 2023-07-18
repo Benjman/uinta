@@ -34,6 +34,7 @@ void GlfwRunnerUi::onInit(GlfwRunner& runner) {
   ImGui::StyleColorsDark();
   ImGui_ImplGlfw_InitForOpenGL(runner.window, true);
   ImGui_ImplOpenGL3_Init(UINTA_IMGUI_GLSL_VERSION);
+  ImPlot::CreateContext();
 #endif  // IMGUI_API_DISABLED
 }
 
@@ -86,6 +87,7 @@ void GlfwRunnerUi::onShutdown(GlfwRunner& runner) {
   if (!ImGui::GetCurrentContext()) return;
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
+  ImPlot::DestroyContext();
   ImGui::DestroyContext();
 #endif  // IMGUI_API_DISABLED
 }
