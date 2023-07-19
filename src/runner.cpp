@@ -62,7 +62,6 @@ bool Runner::doInit() {
   if (!fileManager.init()) return false;
   if (!scene.init(this)) return false;
   if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
-  SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
   if (isCameraEnabled(flags)) {
     force(camera.angle, 45);
     force(camera.pitch, 45);
@@ -70,6 +69,7 @@ bool Runner::doInit() {
   }
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
+  SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
 }
 
