@@ -20,17 +20,11 @@ bool GlfwRunner::doInit() {
   return true;
 }
 
-void GlfwRunner::pollInput() {
-  glfwPollEvents();
-}
+void GlfwRunner::pollInput() { glfwPollEvents(); }
 
-double GlfwRunner::getRuntime() const {
-  return glfwGetTime();
-}
+double GlfwRunner::getRuntime() const { return glfwGetTime(); }
 
-void GlfwRunner::swapBuffers() {
-  glfwSwapBuffers(window);
-}
+void GlfwRunner::swapBuffers() { glfwSwapBuffers(window); }
 
 bool GlfwRunner::createOpenGLContext() {
   if (!createGLFWWindow(this)) {
@@ -40,9 +34,7 @@ bool GlfwRunner::createOpenGLContext() {
   return true;
 }
 
-bool GlfwRunner::shouldExit() {
-  return window && glfwWindowShouldClose(window);
-}
+bool GlfwRunner::shouldExit() { return window && glfwWindowShouldClose(window); }
 
 void GlfwRunner::doPreTick(const RunnerState& state) {
   Runner::doPreTick(state);

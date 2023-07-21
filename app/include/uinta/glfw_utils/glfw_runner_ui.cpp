@@ -18,15 +18,15 @@ const struct {
   float max = INFINITY;
 } limits;
 
-inline void camera(TargetCamera& camera);
-inline void cameraClippingPlanes(TargetCamera& camera);
-inline void cameraHotkeys(TargetCamera& camera);
-inline void cameraTransform(TargetCamera& camera);
+inline void camera(TargetCamera &camera);
+inline void cameraClippingPlanes(TargetCamera &camera);
+inline void cameraHotkeys(TargetCamera &camera);
+inline void cameraTransform(TargetCamera &camera);
 
-void inputUi(Runner& runner);
-void settings(Runner& runner);
+void inputUi(Runner &runner);
+void settings(Runner &runner);
 
-void GlfwRunnerUi::onInit(GlfwRunner& runner) {
+void GlfwRunnerUi::onInit(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::GetCurrentContext()) return;
   IMGUI_CHECKVERSION();
@@ -61,7 +61,7 @@ void GlfwRunnerUi::onPreRender(GlfwRunner& runner) {
 
 void GlfwRunnerUi::onRender(GlfwRunner& runner) {
 #ifndef IMGUI_API_DISABLED
-  auto& io = ImGui::GetIO();
+  auto &io = ImGui::GetIO();
   if (showingWindow) {
     ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
     camera(runner.camera);
@@ -82,7 +82,7 @@ void GlfwRunnerUi::onPostRender(GlfwRunner& runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-void GlfwRunnerUi::onShutdown(GlfwRunner& runner) {
+void GlfwRunnerUi::onShutdown(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
   if (!ImGui::GetCurrentContext()) return;
   ImGui_ImplOpenGL3_Shutdown();
@@ -92,7 +92,7 @@ void GlfwRunnerUi::onShutdown(GlfwRunner& runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-inline void camera(TargetCamera& camera) {
+inline void camera(TargetCamera &camera) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::CollapsingHeader("Camera")) {
     ImGui::PushItemWidth(200);
@@ -104,7 +104,7 @@ inline void camera(TargetCamera& camera) {
 #endif  // IMGUI_API_DISABLED
 }
 
-inline void settings(Runner& runner) {
+inline void settings(Runner &runner) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::CollapsingHeader("Settings")) {
     if (ImGui::TreeNode("Grid")) {
@@ -118,7 +118,7 @@ inline void settings(Runner& runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-inline void inputUi(Runner& runner) {
+inline void inputUi(Runner &runner) {
 #ifndef IMGUI_API_DISABLED
   if (!ImGui::CollapsingHeader("Input")) return;
 
@@ -204,7 +204,7 @@ inline void inputUi(Runner& runner) {
 }
 
 #ifndef IMGUI_API_DISABLED
-inline void cameraClippingPlanes(TargetCamera& camera) {
+inline void cameraClippingPlanes(TargetCamera &camera) {
   if (ImGui::TreeNode("Clipping planes")) {
     float cameraClippingValues[] = {camera.config.nearPlane, camera.config.farPlane};
     ImGui::Text("Defines the boundaries of the near and far rendering planes.");
@@ -218,7 +218,7 @@ inline void cameraClippingPlanes(TargetCamera& camera) {
 #endif  // IMGUI_API_DISABLED
 }
 
-inline void cameraHotkeys(TargetCamera& camera) {
+inline void cameraHotkeys(TargetCamera &camera) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::TreeNode("Hotkeys")) {
     ImGui::Text("Translation:   edsf or LMB");
@@ -235,10 +235,10 @@ inline void cameraHotkeys(TargetCamera& camera) {
 #endif  // IMGUI_API_DISABLED
 }
 
-inline void cameraTransform(TargetCamera& camera) {
+inline void cameraTransform(TargetCamera &camera) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::TreeNode("Transform")) {
-    if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.angle.agility), 0.1f,
+    if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.angle.agility), 0.1f,
                           &limits.min, &limits.max, "%+.2f")) {
       camera.dist.agility = camera.angle.agility;
       camera.pitch.agility = camera.angle.agility;
@@ -247,23 +247,23 @@ inline void cameraTransform(TargetCamera& camera) {
       camera.target.z.agility = camera.angle.agility;
     }
 
-    ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.dist.target), 0.1f, &limits.one_tenth,
+    ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.dist.target), 0.1f, &limits.one_tenth,
                       &limits.twenty, "%+.2f");
     ImGui::SameLine();
-    ImGui::CheckboxFlags("Limit dist", (uint*)&camera.config.flags, CAMERA_DIST_LIMIT);
+    ImGui::CheckboxFlags("Limit dist", (uint *)&camera.config.flags, CAMERA_DIST_LIMIT);
 
-    ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.pitch.target), 0.1f, &limits.min, &limits.max,
-                      "%+.2f");
+    ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.pitch.target), 0.1f, &limits.min,
+                      &limits.max, "%+.2f");
     ImGui::SameLine();
-    ImGui::CheckboxFlags("Limit pitch", (uint*)&camera.config.flags, CAMERA_PITCH_LIMIT);
+    ImGui::CheckboxFlags("Limit pitch", (uint *)&camera.config.flags, CAMERA_PITCH_LIMIT);
 
-    ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.angle.target), 0.1f, &limits.min, &limits.max,
-                      "%+.2f");
+    ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.angle.target), 0.1f, &limits.min,
+                      &limits.max, "%+.2f");
 
-    ImGui::DragScalar("Speed factor", ImGuiDataType_Float, reinterpret_cast<void*>(&camera.config.translationSpeedDistFactor),
+    ImGui::DragScalar("Speed factor", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.config.translationSpeedDistFactor),
                       0.005f, &limits.zero, &limits.max, "%+.2f");
     ImGui::DragScalar("Speed factor min", ImGuiDataType_Float,
-                      reinterpret_cast<void*>(&camera.config.translationSpeedDistFactorMin), 0.005f, &limits.zero, &limits.max,
+                      reinterpret_cast<void *>(&camera.config.translationSpeedDistFactorMin), 0.005f, &limits.zero, &limits.max,
                       "%+.2f");
     ImGui::Text("Speed scalar  %+.2f", calculateTranslationFactor(camera));
 
