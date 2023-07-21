@@ -18,12 +18,12 @@ class GlfwRunnerUi {
   flags_t flags;
 
   void onInit(GlfwRunner& runner);
-  void onPreTick(GlfwRunner& runner);
-  void onTick(GlfwRunner& runner);
-  void onPostTick(GlfwRunner& runner);
-  void onPreRender(GlfwRunner& runner);
-  void onRender(GlfwRunner& runner);
-  void onPostRender(GlfwRunner& runner);
+  void onPreTick(GlfwRunner& runner, const RunnerState& state);
+  void onTick(GlfwRunner& runner, const RunnerState& state);
+  void onPostTick(GlfwRunner& runner, const RunnerState& state);
+  void onPreRender(GlfwRunner& runner, const RunnerState& state);
+  void onRender(GlfwRunner& runner, const RunnerState& state);
+  void onPostRender(GlfwRunner& runner, const RunnerState& state);
   void onShutdown(GlfwRunner& runner);
 };
 

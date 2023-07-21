@@ -38,32 +38,32 @@ bool GlfwRunner::shouldExit() { return window && glfwWindowShouldClose(window); 
 
 void GlfwRunner::doPreTick(const RunnerState& state) {
   Runner::doPreTick(state);
-  ui.onPreTick(*this);
+  ui.onPreTick(*this, state);
 }
 
 void GlfwRunner::doTick(const RunnerState& state) {
   Runner::doTick(state);
-  ui.onTick(*this);
+  ui.onTick(*this, state);
 }
 
 void GlfwRunner::doPostTick(const RunnerState& state) {
   Runner::doPostTick(state);
-  ui.onPostTick(*this);
+  ui.onPostTick(*this, state);
 }
 
 void GlfwRunner::doPreRender(const RunnerState& state) {
   Runner::doPreRender(state);
-  ui.onPreRender(*this);
+  ui.onPreRender(*this, state);
 }
 
 void GlfwRunner::doRender(const RunnerState& state) {
   Runner::doRender(state);
-  ui.onRender(*this);
+  ui.onRender(*this, state);
 }
 
 void GlfwRunner::doPostRender(const RunnerState& state) {
   Runner::doPostRender(state);
-  ui.onPostRender(*this);
+  ui.onPostRender(*this, state);
   flags_t flags = ui.flags;
   if (isFlagSet(INPUT_HANDLED_KEYBOARD, flags)) resetKeyboard(input);
   if (isFlagSet(INPUT_HANDLED_MOUSE, flags)) resetMouse(input);

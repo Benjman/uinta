@@ -38,18 +38,15 @@ void GlfwRunnerUi::onInit(GlfwRunner &runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-void GlfwRunnerUi::onPreTick(GlfwRunner& runner) {
-  tickTime_micros = runner.getRuntime();
-}
+void GlfwRunnerUi::onPreTick(GlfwRunner &runner, const RunnerState &state) { tickTime_micros = runner.getRuntime(); }
 
-void GlfwRunnerUi::onTick(GlfwRunner& runner) {
-}
+void GlfwRunnerUi::onTick(GlfwRunner &runner, const RunnerState &state) {}
 
-void GlfwRunnerUi::onPostTick(GlfwRunner& runner) {
+void GlfwRunnerUi::onPostTick(GlfwRunner &runner, const RunnerState &state) {
   tickTime_micros = (runner.getRuntime() - tickTime_micros) * 1000000;
 }
 
-void GlfwRunnerUi::onPreRender(GlfwRunner& runner) {
+void GlfwRunnerUi::onPreRender(GlfwRunner &runner, const RunnerState &state) {
   renderTime_micros = runner.getRuntime();
 #ifndef IMGUI_API_DISABLED
   ImGui_ImplOpenGL3_NewFrame();
@@ -59,7 +56,7 @@ void GlfwRunnerUi::onPreRender(GlfwRunner& runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-void GlfwRunnerUi::onRender(GlfwRunner& runner) {
+void GlfwRunnerUi::onRender(GlfwRunner &runner, const RunnerState &state) {
 #ifndef IMGUI_API_DISABLED
   auto &io = ImGui::GetIO();
   if (showingWindow) {
@@ -73,7 +70,7 @@ void GlfwRunnerUi::onRender(GlfwRunner& runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-void GlfwRunnerUi::onPostRender(GlfwRunner& runner) {
+void GlfwRunnerUi::onPostRender(GlfwRunner &runner, const RunnerState &state) {
   renderTime_micros = (runner.getRuntime() - renderTime_micros) * 1000000;
 #ifndef IMGUI_API_DISABLED
   ImGui::End();
