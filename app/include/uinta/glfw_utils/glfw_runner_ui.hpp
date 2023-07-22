@@ -2,6 +2,7 @@
 #define UINTA_GLFW_RUNNER_UI_HPP
 
 #include <uinta/fwd.hpp>
+#include <uinta/memory/circular_buffer.hpp>
 
 namespace uinta {
 
@@ -16,6 +17,8 @@ class GlfwRunnerUi {
   float tickTime_micros;
   bool showingWindow = false;
   flags_t flags;
+
+  CircularBuffer<100> deltaBuffer;
 
   void onInit(GlfwRunner& runner);
   void onPreTick(GlfwRunner& runner, const RunnerState& state);
