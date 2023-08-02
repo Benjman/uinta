@@ -14,7 +14,7 @@ struct CameraConfig {
   float fov = 45;
 
   float nearPlane = 0.07;
-  float farPlane = 50;
+  float farPlane = 200;
 
   float translateSpeedKeyboard = 4;
   float translateSpeedMouse = 0.5;
