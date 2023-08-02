@@ -32,6 +32,7 @@ set(UINTA_SRCS
   ./src/gl/vbo.cpp
   ./src/gl/vertex_attrib.cpp
   ./src/logging.cpp
+  ./src/math/hexagon.cpp
   ./src/math/perlin.cpp
   ./src/math/running_avg.cpp
   ./src/memory/memory_link.cpp

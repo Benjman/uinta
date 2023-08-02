@@ -19,6 +19,7 @@ function (app name)
 endfunction()
 
 app(demo)
+app(hexagons)
 app(perlin)
 app(post_processing)
 

@@ -40,7 +40,7 @@ class HexagonsRunner : public GlfwRunner {
       for (auto w = 0; w < gridWidth; ++w) {
         auto center = glm::vec2(w * spacing.x, h * spacing.y) + gridCenter;
         if (h % 2) center.x += spacing.x * 0.5;
-        const auto points = hex_points(hexSize, center);
+        const auto points = hex_points(center, hexSize);
         const auto colors = std::vector<glm::vec3>(1) = {glm::vec3(0.21, 0.38, 0.21) + 0.03f * static_cast<f32>(rand() % 4)};
         auto* vtxPtr = &vtxBuffer[VerticesPerHex * (w + h * gridWidth) * elePerHex];
         auto* idxPtr = &idxBuffer[IndicesPerHex * (w + h * gridWidth)];
