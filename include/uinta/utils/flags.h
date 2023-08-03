@@ -7,7 +7,7 @@ using flag_t = uint;
 using flags_t = uint;
 
 inline bool isFlagSet(const flag_t mask, const flags_t flags) {
-  return flags & mask;
+  return (flags & mask) != 0;
 }
 
 inline void setFlag(const flag_t mask, const bool state, flags_t& flags) {
