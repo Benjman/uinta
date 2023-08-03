@@ -14,8 +14,6 @@ using int64 = long;
 
 using file_size_t = uint;
 using file_t = uint;
-using flag_t = unsigned int;
-using flags_t = unsigned int;
 using model_t = uint16;
 
 #endif  // UINTA_TYPES_H

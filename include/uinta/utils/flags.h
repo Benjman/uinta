@@ -3,6 +3,9 @@
 
 #include <uinta/utils/types.h>
 
+using flag_t = uint;
+using flags_t = uint;
+
 inline bool isFlagSet(const flag_t mask, const flags_t flags) {
   return flags & mask;
 }
