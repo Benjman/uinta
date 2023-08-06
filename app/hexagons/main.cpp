@@ -16,43 +16,33 @@ class HexagonsRunner : public GlfwRunner {
   HexagonsRunner(const i32 argc, const char** argv) : GlfwRunner("Hexagons", argc, argv) {
     setFlag(TargetCamera::CAMERA_DIST_LIMIT, false, scene.camera.flags);
     setFlag(Runner::GRID_ENABLED, false, flags);
-    scene.camera.dist = 30;
+    scene.camera.dist = 45;
     scene.camera.pitch = 90;
   }
 
   bool doInit() override {
     if (!GlfwRunner::doInit()) return false;
 
-    constexpr auto elePerHex = 9;
-    constexpr auto gridWidth = 22;
-    constexpr auto gridHeight = 15;
-    f32 vtxBuffer[VerticesPerHex * gridWidth * gridHeight * elePerHex];
-    u32 idxBuffer[IndicesPerHex * gridWidth * gridHeight];
-    u32 idxOffset = 0;
+    constexpr auto gridRadius = 15;
+    constexpr auto hexSize = 1.0;
+    constexpr auto gridCenter = glm::ivec3(0);
+    const auto points = radial_hexagons(gridCenter, gridRadius, hexSize);
 
-    constexpr auto gridCenter = glm::vec2(0);
-    constexpr auto hexSize = 1u;
-    const auto spacing = hex_spacing(hexSize);
     srand(time(nullptr));  // rand() seed
-    force(scene.camera.target = {spacing.x * gridWidth * 0.5, 0, spacing.y * gridHeight * 0.5});
+    auto colors = std::vector<glm::vec3>(points.size() / VerticesPerHex);
+    for (size_t i = 0; i < colors.size(); ++i) colors.at(i) = glm::vec3(0.21, 0.38, 0.21) + 0.03f * static_cast<f32>(rand() % 4);
 
-    for (auto h = 0; h < gridHeight; ++h) {
-      for (auto w = 0; w < gridWidth; ++w) {
-        auto center = glm::vec2(w * spacing.x, h * spacing.y) + gridCenter;
-        if (h % 2) center.x += spacing.x * 0.5;
-        const auto points = hex_points(center, hexSize);
-        const auto colors = std::vector<glm::vec3>(1) = {glm::vec3(0.21, 0.38, 0.21) + 0.03f * static_cast<f32>(rand() % 4)};
-        auto* vtxPtr = &vtxBuffer[VerticesPerHex * (w + h * gridWidth) * elePerHex];
-        auto* idxPtr = &idxBuffer[IndicesPerHex * (w + h * gridWidth)];
-        hexagon_pack(std::vector<glm::vec3>(points.begin(), points.end()), colors, vtxPtr, idxPtr, idxOffset);
-      }
-    }
+    const auto hexCount = hexagon_count(gridRadius);
+    f32 vtxBuffer[VerticesPerHex * hexCount * 9];
+    u32 idxBuffer[IndicesPerHex * hexCount];
+    auto idxOffset = 0u;
+    hexagon_pack(points, colors, vtxBuffer, idxBuffer, idxOffset);
 
     initVao(vao);
     uploadVbo(vbo, vtxBuffer, sizeof(vtxBuffer));
     initVertexAttribs(vao);
     indexBuffer(vao, idxBuffer, sizeof(idxBuffer));
-    indexCount = IndicesPerHex * gridWidth * gridHeight;
+    indexCount = IndicesPerHex * hexCount;
 
     return true;
   }

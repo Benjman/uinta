@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <glm/gtc/constants.hpp>
 #include <glm/trigonometric.hpp>
@@ -73,6 +74,107 @@ void hexagon_pack(const std::vector<glm::vec3>& points, const std::vector<glm::v
     for (size_t j = 0; j < IndicesPerHex; ++j) idxBuffer[j + i * IndicesPerHex] = indices.at(j) + idxOffset;
     idxOffset += VerticesPerHex;
   }
+}
+
+std::vector<glm::vec3> radial_hexagons(const glm::vec3& origin, u32 rings, f32 radius) {
+  const auto spacing = hex_spacing(radius);
+
+  // Generate a collection of cube-based coordinates for the range specified
+  const auto spiral = cube_spiral(origin, rings);
+
+  u32 index = 0;
+  auto points = std::vector<glm::vec3>(hexagon_count(rings) * VerticesPerHex);
+  for (const auto& hex : spiral) {
+    // Convert from cube coordinates to axial coordinates
+    auto offset = cube_to_axial(hex) * spacing;
+
+    // Staggering
+    if (hex.z % 2) offset.x += spacing.x * 0.5;
+
+    // Generate points for the hexagon
+    const auto hexPoints = hex_points(offset, radius);
+
+    // Move the hexagon points into the main collection
+    std::copy(hexPoints.begin(), hexPoints.end(), points.begin() + index);
+
+    // Offset the index
+    index += VerticesPerHex;
+  };
+
+  return points;
+}
+
+glm::ivec3 cube_neighbor(glm::ivec3& cube, hex_direction direction) {
+  return cube + cube_directions[static_cast<i32>(direction)];
+}
+
+u32 hexagon_count(u32 rings) {
+  return 1 + 3 * rings * (rings + 1);
+}
+
+std::vector<glm::ivec3> cube_ring(const glm::ivec3& origin, u32 radius) {
+  auto result = std::vector<glm::ivec3>(6 * radius);
+  auto hex = origin + cube_directions[static_cast<i32>(hex_direction::SouthWest)] * static_cast<i32>(radius);
+  for (u32 i = 0; i < 6; ++i) {
+    std::generate_n(result.begin() + i * radius, radius, [&hex, i]() {
+      auto current_hex = hex;
+      hex = cube_neighbor(hex, static_cast<hex_direction>(i));
+      return current_hex;
+    });
+  }
+  return result;
+}
+
+std::vector<glm::ivec3> cube_spiral(const glm::ivec3& origin, u32 radius) {
+  auto result = std::vector<glm::ivec3>(hexagon_count(radius));
+  for (u32 r = 1, count = 0; r <= static_cast<u32>(radius); ++r) {
+    const auto ring = cube_ring(origin, r);
+    std::copy(ring.begin(), ring.end(), result.begin() + count);
+    count += ring.size();
+  }
+  return result;
+}
+
+glm::ivec3 axial_to_cube(const glm::vec2& hex) {
+  const auto q = static_cast<i32>(hex.x);
+  const auto r = static_cast<i32>(hex.y);
+  const auto s = -q - r;
+  return {q, r, s};
+}
+
+glm::vec2 cube_to_axial(const glm::ivec3& cube) {
+  const auto col = cube.x + (cube.z - (cube.z & 1)) / 2;
+  const auto row = cube.z;
+  return {col, row};
+}
+
+glm::ivec2 world_to_axial(const glm::vec2& pos, const glm::vec2& origin, f32 size) {
+  // TODO: This isn't exactly correct. See https://www.redblobgames.com/grids/hexagons/#hex-to-pixel
+
+  // normalize the coordinates to the grid origin
+  const auto xNorm = pos.x - origin.x;
+  const auto yNorm = pos.y - origin.y;
+
+  // convert to fractional axial coordinates
+  const auto qFractional = (M_SQRT3 / 3 * xNorm - 1.0 / 3 * yNorm) / size;
+  const auto rFractional = (2.0 / 3 * yNorm) / size;
+
+  // round to the nearest axial coordinates
+  const auto q = std::round(qFractional);
+  const auto r = std::round(rFractional);
+  const auto s = -q - r;
+
+  // use cube coordinates to handle rounding errors
+  const auto qDiff = std::abs(q - qFractional);
+  const auto rDiff = std::abs(r - rFractional);
+  const auto sDiff = std::abs(s + qFractional + rFractional);
+
+  if (qDiff > rDiff && qDiff > sDiff)
+    return {-r - s, r};
+  else if (rDiff > sDiff)
+    return {q, -q - s};
+  else
+    return {q, r};
 }
 
 }  // namespace uinta
