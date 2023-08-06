@@ -15,6 +15,7 @@ namespace uinta {
 
 inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
 inline void advanceState(RunnerState& state, double runtime, double& lastRuntime);
+static spdlog::stopwatch sw;
 
 Runner::Runner(const std::string& title, int argc, const char** argv) noexcept : display(title) {
   processArgs(this, argc, argv);
@@ -29,6 +30,7 @@ int Runner::run() {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;
     }
+    SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
     RunnerState state;
     auto lastRuntime = getRuntime();
     while (!shouldExit()) {
@@ -58,7 +60,6 @@ int Runner::run() {
 }
 
 bool Runner::doInit() {
-  spdlog::stopwatch sw{};
   if (!fileManager.init()) return false;
   if (!scene.init(this)) return false;
   if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
@@ -69,7 +70,6 @@ bool Runner::doInit() {
   }
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-  SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
   return true;
 }
 
