@@ -2,7 +2,7 @@
 ## Cloning
 This repo uses git submodules, so it must be cloned with --recursive:
 ```sh
-git clone --recursive git@github.com:Benjman/uinta.git
+git clone --recurse-submodules --shallow-submodules git@github.com:Benjman/uinta.git
 ```
 ## Build project
 ```sh
