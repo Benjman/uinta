@@ -63,11 +63,6 @@ bool Runner::doInit() {
   if (!fileManager.init()) return false;
   if (!scene.init(this)) return false;
   if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
-  if (isCameraEnabled(flags)) {
-    force(camera.angle, 45);
-    force(camera.pitch, 45);
-    force(camera.dist, 5);
-  }
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   return true;
