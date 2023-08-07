@@ -120,7 +120,7 @@ void Runner::handleMouseButtonInput(const int button, const int action, const in
 void Runner::handleWindowSizeChanged(const int width, const int height) {
   display.width = width;
   display.height = height;
-  display.aspectRatio = (float)width / (float)height;
+  display.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
   onWindowSizeChanged();
 }
 
