@@ -21,3 +21,6 @@
 [submodule "lib/stb"]
 	path = lib/stb
 	url = https://github.com/nothings/stb.git
+[submodule "lib/PerlinNoise"]
+	path = lib/PerlinNoise
+	url = https://github.com/Reputeless/PerlinNoise.git
