@@ -8,14 +8,14 @@ namespace uinta {
 
 struct Display {
   std::string title;
-  uint32_t width = 1920;
-  uint32_t height = 1080;
+  uint width;
+  uint height;
   float aspectRatio;
 
   Display() : Display("") {
   }
 
-  explicit Display(const std::string& title) noexcept;
+  explicit Display(const std::string& title, uint width = 1920, uint height = 1080) noexcept;
 };
 
 }  // namespace uinta
