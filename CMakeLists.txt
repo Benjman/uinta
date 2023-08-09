@@ -48,12 +48,12 @@ set(UINTA_SRCS ${UINTA_SRCS}
   )
 
 # dependencies
-set(UINTA_SRCS     ${UINTA_SRCS}     "${UINTA_LIBS_DIR}/glad/src/glad.c")
+set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}")
 set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/glad/include")
+set(UINTA_SRCS     ${UINTA_SRCS}     "${UINTA_LIBS_DIR}/glad/src/glad.c")
 set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/glm")
 set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/imgui")
 set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/implot")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}") # FIXME: needed for stb library. This should be more specific.
 
 add_subdirectory(${UINTA_LIBS_DIR}/entt)
 set(UINTA_LIBS ${UINTA_LIBS} EnTT::EnTT)
