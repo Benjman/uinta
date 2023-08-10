@@ -1,10 +1,14 @@
 #include <algorithm>
 #include <array>
+#include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtx/normal.hpp>
 #include <glm/trigonometric.hpp>
 #include <stdexcept>
+#include <uinta/logging.hpp>
 #include <uinta/math/fwd.hpp>
 #include <uinta/math/hexagon.hpp>
+#include <uinta/math/interpolation.hpp>
 #include <uinta/utils/direction.hpp>
 
 namespace uinta {
@@ -28,13 +32,17 @@ glm::vec2 hex_spacing(f32 radius) {
   return {glm::root_three<f32>() * radius, 3.0 / 2.0 * radius};
 }
 
-void hexagon_pack(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& colors, f32* const vtxBuffer,
-                  u32* const idxBuffer, u32& idxOffset) {
+void hexagon_pack(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& normals,
+                  const std::vector<glm::vec3>& colors, f32* const vtxBuffer, u32* const idxBuffer, u32& idxOffset) {
   // Offsets describing position in the buffer to pack each part
   static constexpr size_t PointOffset = 0;
   static constexpr size_t NormalOffset = 3;
   static constexpr size_t ColorOffset = 6;
   static constexpr size_t OffsetSize = PointOffset + NormalOffset + ColorOffset;
+
+  if (points.size() != normals.size())
+    throw std::range_error("Mismatch between number of points (" + std::to_string(points.size()) + ") and number of normals (" +
+                           std::to_string(normals.size()) + ").");
 
   if (!colors.size()) throw std::range_error("At least one color is required!");
 
@@ -52,9 +60,9 @@ void hexagon_pack(const std::vector<glm::vec3>& points, const std::vector<glm::v
   // Pack surface normals into the buffer
   for (size_t i = 0; i < dataSize; ++i) {
     index = i * OffsetSize;
-    vtxBuffer[index + NormalOffset] = -WORLD_UP.x;
-    vtxBuffer[index + NormalOffset + 1] = -WORLD_UP.y;
-    vtxBuffer[index + NormalOffset + 2] = -WORLD_UP.z;
+    vtxBuffer[index + NormalOffset] = normals[i].x;
+    vtxBuffer[index + NormalOffset + 1] = normals[i].y;
+    vtxBuffer[index + NormalOffset + 2] = normals[i].z;
   }
 
   // Pack colors into the buffer
@@ -175,6 +183,45 @@ glm::ivec2 world_to_axial(const glm::vec2& pos, const glm::vec2& origin, f32 siz
     return {q, -q - s};
   else
     return {q, r};
+}
+
+std::vector<glm::vec3> hex_normals(const std::vector<glm::vec3>& points) {
+  static constexpr size_t CenterIndex = 0;
+
+  std::vector<glm::vec3> normals(points.size());
+
+  if (points.size() % VerticesPerHex) throw std::invalid_argument("Points vector size must be a multiple of VerticesPerHex!");
+
+  for (size_t i = 0; i < points.size(); i += VerticesPerHex) {
+    const auto& center = points[i];
+    auto& centerNormal = normals[i];
+    centerNormal = glm::vec3(0);
+
+    for (u32 j = 1; j < VerticesPerHex; ++j) {
+      auto v1Index = i + j;
+      auto v2Index = i + (j % 6) + 1;
+
+      // Move to the next point if we land on the center index;
+      if (v1Index == CenterIndex) v1Index++;
+      if (v2Index == CenterIndex) v2Index++;
+
+      const auto normal = glm::triangleNormal(points[v1Index], points[v2Index], center);
+
+      normals[j + i] = normal;
+      centerNormal += normal;
+    }
+
+    centerNormal = glm::normalize(centerNormal);
+  }
+  return normals;
+}
+
+void hex_set_heights(std::vector<glm::vec3>& points, const Buffer2d<f32>& heightMap, f32 scale) {
+  for (auto& point : points) {
+    const glm::vec2 coord = {point.x + static_cast<f32>(heightMap.size.x) / 2.0f,
+                             point.z + static_cast<f32>(heightMap.size.y) / 2.0f};
+    point.y = bilinear(&heightMap, heightMap.size, coord) * scale;
+  }
 }
 
 }  // namespace uinta

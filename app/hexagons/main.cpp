@@ -1,5 +1,6 @@
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/math/hexagon.hpp>
+#include <uinta/math/perlin.hpp>
 
 namespace uinta {
 
@@ -15,34 +16,53 @@ class HexagonsRunner : public GlfwRunner {
 
   HexagonsRunner(const i32 argc, const char** argv) : GlfwRunner("Hexagons", argc, argv) {
     setFlag(TargetCamera::CAMERA_DIST_LIMIT, false, scene.camera.flags);
-    setFlag(Runner::GRID_ENABLED, false, flags);
-    scene.camera.dist = 45;
-    scene.camera.pitch = 90;
+    scene.camera.dist = 56;
+    scene.camera.pitch = 8;
+    scene.camera.angle = 12;
+    scene.updateDiffuseLight({{0.5, -1, 0}});
   }
 
   bool doInit() override {
     if (!GlfwRunner::doInit()) return false;
 
-    constexpr auto gridRadius = 15;
-    constexpr auto hexSize = 1.0;
-    constexpr auto gridCenter = glm::ivec3(0);
-    const auto points = radial_hexagons(gridCenter, gridRadius, hexSize);
+    constexpr auto hexRadius = 1.0;
 
-    srand(time(nullptr));  // rand() seed
-    auto colors = std::vector<glm::vec3>(points.size() / VerticesPerHex);
-    for (size_t i = 0; i < colors.size(); ++i) colors.at(i) = glm::vec3(0.21, 0.38, 0.21) + 0.03f * static_cast<f32>(rand() % 4);
+    /// Construct and fill height map
+    constexpr auto gridRings = 20;
+    const auto spacing = hex_spacing(hexRadius);
+    const auto heightMapSize = glm::ivec2(std::ceil((gridRings + 1) * spacing.x * (gridRings + 1) * spacing.y));
+    auto heightMap = Buffer2d(heightMapSize);
+    perlinNoise(heightMap, siv::PerlinNoise(), 40, 1);
 
-    const auto hexCount = hexagon_count(gridRadius);
-    f32 vtxBuffer[VerticesPerHex * hexCount * 9];
-    u32 idxBuffer[IndicesPerHex * hexCount];
-    auto idxOffset = 0u;
-    hexagon_pack(points, colors, vtxBuffer, idxBuffer, idxOffset);
+    /// Generate vertex points for a radial hexagon grid:
+    constexpr auto centerPoint = glm::ivec3(0);
+    auto points = radial_hexagons(centerPoint, gridRings, hexRadius);
 
+    /// Set height values for the vertex points based on the height map:
+    constexpr auto yScale = 15;
+    hex_set_heights(points, heightMap, yScale);
+
+    /// Set camera to a pleasant vertical offset:
+    scene.camera.vertOffset = yScale * 0.5;
+
+    /// Add some fun colors:
+    srand(time(nullptr));  /// rand() seed
+    auto colors = std::vector<glm::vec3>(hexagon_count(gridRings));
+    for (auto& color : colors) color = glm::vec3(0.21, 0.38, 0.21) + 0.015f * static_cast<float>(rand() % 4);
+
+    /// Prepare GPU-bound buffers:
+    constexpr auto elementsPerVertex = 9;
+    f32 vtxBuffer[hexagon_count(gridRings) * VerticesPerHex * elementsPerVertex];
+    u32 idxBuffer[hexagon_count(gridRings) * IndicesPerHex];
+    u32 idxOffset = 0;
+    hexagon_pack(points, hex_normals(points), colors, vtxBuffer, idxBuffer, idxOffset);
+
+    // Upload buffers to GPU:
     initVao(vao);
     uploadVbo(vbo, vtxBuffer, sizeof(vtxBuffer));
     initVertexAttribs(vao);
     indexBuffer(vao, idxBuffer, sizeof(idxBuffer));
-    indexCount = IndicesPerHex * hexCount;
+    indexCount = IndicesPerHex * points.size();
 
     return true;
   }

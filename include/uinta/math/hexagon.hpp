@@ -56,6 +56,8 @@ std::array<glm::vec3, VerticesPerHex> hex_points(const glm::vec2& origin, f32 ra
  * @brief Packs vertex and index buffers with related data for uploading to the GPU.
  *
  * @param points Collection of points to pack into the vertex buffer. Number of points must match number of surface normals.
+ * @param normals Collection of surface normals to pack into the vertex buffer. Number of surface normals must match number of
+ * points.
  * @param colors Colors for each hexagon. A modulus function is used, so the count of these doesn't matter, as long as there is at
  * least one.
  * @param vtxBuffer The buffer used for vertex data.
@@ -70,7 +72,7 @@ std::array<glm::vec3, VerticesPerHex> hex_points(const glm::vec2& origin, f32 ra
  *   f32 vtxBuffer[VerticesPerHex * 9 * hexagons.size()];
  *   u32 idxBuffer[IndicesPerHex * hexagons.size()];
  *   u32 idxOffset = 0;
- *   hexagon_pack(points, colors, vtxBuffer, idxBuffer, idxOffset);
+ *   hexagon_pack(points, normals, colors, vtxBuffer, idxBuffer, idxOffset);
  *   initVao(vao);
  *   uploadVbo(vbo, vtxBuffer, sizeof(vtxBuffer));
  *   initVertexAttribs(vao);
@@ -78,8 +80,27 @@ std::array<glm::vec3, VerticesPerHex> hex_points(const glm::vec2& origin, f32 ra
  *   indexCount = IndicesPerHex * points.size() / VerticesPerHex;
  * @endcode
  */
-void hexagon_pack(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& colors, f32* const vtxBuffer,
-                  u32* const idxBuffer, u32& idxOffset);
+void hexagon_pack(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& normals,
+                  const std::vector<glm::vec3>& colors, f32* const vtxBuffer, u32* const idxBuffer, u32& idxOffset);
+
+/**
+ * @brief Generates a collection of surface normals, one per point. Note: Points should have Y-axis data for this to produce
+ * anything useful.
+ *
+ * @param points Collection of points to generate surface normals for.
+ * @return Collection of surface normals related to the provided points.
+ */
+std::vector<glm::vec3> hex_normals(const std::vector<glm::vec3>& points);
+
+/**
+ * @brief Given a height map, this will update the provided collection of points to reflect the height value provided in the
+ * `heightMap`.
+ *
+ * @param points The collection of points to update height values for.
+ * @param heightMap The buffer to sample for height map data.
+ * @param scale The scale to transform the height data to.
+ */
+void hex_set_heights(std::vector<glm::vec3>& points, const Buffer2d<f32>& heightMap, f32 scale);
 
 /**
  * @brief Generates a collection of points representing a radial grid of hexagons.
