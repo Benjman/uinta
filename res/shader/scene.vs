@@ -9,7 +9,7 @@ uniform mat4 u_view;
 uniform mat4 u_proj;
 uniform float u_time;
 
-out vec3 pass_normal;
+flat out vec3 pass_normal;
 out vec3 pass_color;
 
 void main() {
