@@ -5,7 +5,7 @@ in vec3 pass_color;
 
 out vec4 out_color;
 
-uniform vec3 u_lightDir = normalize(vec3(-2, 3, 1));
+uniform vec3 u_lightDir;
 uniform vec3 u_lightColor = vec3(1);
 
 void main() {

@@ -49,7 +49,7 @@ class Scene {
   Vbo vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   SceneShader shader;
 
-  Light diffuseLighting;
+  Light diffuseLightDir;
 
   Scene();
 

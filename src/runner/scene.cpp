@@ -14,7 +14,7 @@ namespace uinta {
 
 inline glm::mat4 getTransform(glm::mat4 baseTransform, const entt::entity entity, const entt::registry& registry);
 
-Scene::Scene() : diffuseLighting({glm::normalize(glm::vec3(-2, 3, 1))}) {
+Scene::Scene() : diffuseLightDir({glm::normalize(glm::vec3(2, -3, -1))}) {
 }
 
 bool Scene::init(Runner* runner) {
@@ -76,7 +76,7 @@ void SceneShader::start(const Runner* runner, const RunnerState& state) const {
   glUseProgram(id);
   glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(runner->camera)));
   glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(runner->camera, runner->display)));
-  glUniform3fv(u_lightDir, 1, glm::value_ptr(runner->scene.diffuseLighting.direction));
+  glUniform3fv(u_lightDir, 1, glm::value_ptr(runner->scene.diffuseLightDir.direction));
   glUniform1f(u_time, state.runtime);
 }
 
