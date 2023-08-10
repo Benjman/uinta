@@ -112,7 +112,6 @@ class PostProcessingRunner final : public GlfwRunner {
 
     glUseProgram(colorShader.shaderId);
     bindVao(cubeVao);
-    glEnable(GL_DEPTH_TEST);
 
     auto view = getViewMatrix(camera);
     auto proj = getPerspectiveMatrix(camera, display);

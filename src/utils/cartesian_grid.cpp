@@ -68,7 +68,6 @@ bool initGrid(CartesianGrid& grid) {
 }
 
 void CartesianGrid::render(const glm::mat4& projView) {
-  glEnable(GL_DEPTH_TEST);
   glUseProgram(shader);
   bindVao(vao);
   i32 currentLineWidth;

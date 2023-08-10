@@ -65,6 +65,7 @@ bool Runner::doInit() {
   if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
   // App might have overridden display size, so we do this to recalculate aspect ratio
   display = Display(display.title, display.width, display.height);
+  glEnable(GL_DEPTH_TEST);
   return true;
 }
 
