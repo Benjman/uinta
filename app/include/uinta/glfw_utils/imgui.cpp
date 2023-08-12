@@ -2,7 +2,7 @@
 #include <uinta/gl.h>
 #include <uinta/glfw_utils/imgui.h>
 
-// FIXME there has to be a better way to point to library source files
+// FIXME: These should really be linked through a static library. Amend this line_blame commit when done.
 #include "../../lib/imgui/backends/imgui_impl_glfw.cpp"
 #include "../../lib/imgui/backends/imgui_impl_opengl3.cpp"
 #include "../../lib/imgui/imgui.cpp"
