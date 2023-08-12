@@ -13,7 +13,7 @@ class FileManager;
 class CartesianGrid {
   friend bool initShader(CartesianGrid&, FileManager&);
   friend bool initGrid(CartesianGrid&);
-  friend void settings(Runner&);
+  friend void settingsGrid(Runner&);
 
  public:
   bool init(FileManager& fileManager);

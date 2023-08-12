@@ -1,7 +1,6 @@
 #ifndef UINTA_GLFW_RUNNER_HPP
 #define UINTA_GLFW_RUNNER_HPP
 
-#include <uinta/glfw_utils/glfw_runner_ui.hpp>
 #include <uinta/runner.hpp>
 
 namespace uinta {
@@ -9,13 +8,11 @@ namespace uinta {
 class GlfwRunner : public Runner {
   friend void registerCallbacks(GlfwRunner*);
   friend bool createGLFWWindow(GlfwRunner*);
-  friend GlfwRunnerUi;
 
  public:
   GLFWwindow* window = nullptr;
-  GlfwRunnerUi ui;
 
-  explicit GlfwRunner(const std::string& title, int argc = 0, const char** argv = nullptr) noexcept : Runner(title, argc, argv) {
+  explicit GlfwRunner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept : Runner(title, argc, argv) {
   }
 
   ~GlfwRunner();
@@ -33,7 +30,7 @@ class GlfwRunner : public Runner {
   void swapBuffers() override;
   bool createOpenGLContext() override;
   bool shouldExit() override;
-  double getRuntime() const override;
+  f64 getRuntime() const override;
   void pollInput() override;
 };
 

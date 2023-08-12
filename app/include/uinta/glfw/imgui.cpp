@@ -1,6 +1,14 @@
 #ifndef IMGUI_API_DISABLED
+
+#define IS_UINTA_DEBUG UINTA_DEBUG
+#undef UINTA_DEBUG
+
 #include <uinta/gl.h>
-#include <uinta/glfw_utils/imgui.h>
+#include <uinta/glfw/imgui.h>
+
+#ifdef IS_UINTA_DEBUG
+#define UINTA_DEBUG 1
+#endif
 
 // FIXME: These should really be linked through a static library. Amend this line_blame commit when done.
 #include "../../lib/imgui/backends/imgui_impl_glfw.cpp"

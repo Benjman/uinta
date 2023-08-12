@@ -4,7 +4,7 @@
 // clang-format on
 
 #include <cstdio>
-#include <uinta/glfw_utils/glfw_runner.hpp>
+#include <uinta/glfw/glfw_runner.hpp>
 
 namespace uinta {
 

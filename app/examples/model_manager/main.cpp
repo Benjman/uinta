@@ -1,4 +1,4 @@
-#include <uinta/glfw_utils/glfw_runner.hpp>
+#include <uinta/glfw/glfw_runner.hpp>
 
 // clang-format off
 #include <uinta/model_manager.hpp>

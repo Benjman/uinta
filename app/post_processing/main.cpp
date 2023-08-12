@@ -1,10 +1,10 @@
 #include <stb/stb_image.h>
 #include <uinta/gl.h>
-#include <uinta/glfw_utils/imgui.h>
+#include <uinta/glfw/imgui.h>
 
 #include <glm/ext/matrix_transform.hpp>
 #include <uinta/gl/fbo.hpp>
-#include <uinta/glfw_utils/glfw_runner.hpp>
+#include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/mesh.hpp>
 #include <uinta/parsers/obj.hpp>
 #include <uinta/shader.hpp>
