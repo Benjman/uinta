@@ -71,13 +71,16 @@ void CartesianGrid::render(const glm::mat4& projView) {
   glEnable(GL_DEPTH_TEST);
   glUseProgram(shader);
   bindVao(vao);
-  glLineWidth(lineWidth);
+  int currentLineWidth;
+  glGetIntegerv(GL_LINE_WIDTH, &currentLineWidth);
+  if (lineWidth != currentLineWidth) glLineWidth(lineWidth);
   for (int z = -5; z <= 5; z++) {
     for (int x = -5; x <= 5; x++) {
       glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(projView * glm::translate(glm::mat4(1), {x * 10, 0, z * 10})));
       glDrawArrays(GL_LINES, 0, vcount);
     }
   }
+  if (lineWidth != currentLineWidth) glLineWidth(currentLineWidth);
 }
 
 }  // namespace uinta
