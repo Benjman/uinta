@@ -7,6 +7,7 @@
 #include <uinta/glfw_utils/glfw_runner_ui.hpp>
 #include <uinta/math/utils.hpp>
 #include <uinta/utils/direction.hpp>
+#include <unordered_map>
 
 namespace uinta {
 
@@ -24,7 +25,9 @@ inline void cameraHotkeys(TargetCamera &camera);
 inline void cameraTransform(TargetCamera &camera);
 
 void inputUi(Runner &runner);
+
 void settings(Runner &runner);
+void settingsPolygonMode();
 
 void GlfwRunnerUi::onInit(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
@@ -38,9 +41,12 @@ void GlfwRunnerUi::onInit(GlfwRunner &runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-void GlfwRunnerUi::onPreTick(GlfwRunner &runner, const RunnerState &state) { tickTime_micros = runner.getRuntime(); }
+void GlfwRunnerUi::onPreTick(GlfwRunner &runner, const RunnerState &state) {
+  tickTime_micros = runner.getRuntime();
+}
 
-void GlfwRunnerUi::onTick(GlfwRunner &runner, const RunnerState &state) {}
+void GlfwRunnerUi::onTick(GlfwRunner &runner, const RunnerState &state) {
+}
 
 void GlfwRunnerUi::onPostTick(GlfwRunner &runner, const RunnerState &state) {
   tickTime_micros = (runner.getRuntime() - tickTime_micros) * 1000000;
@@ -111,6 +117,38 @@ inline void settings(Runner &runner) {
       ImGui::TreePop();
       ImGui::Separator();
     }
+    settingsPolygonMode();
+  }
+#endif  // IMGUI_API_DISABLED
+}
+
+void settingsPolygonMode() {
+#ifndef IMGUI_API_DISABLED
+  static const GLenum polygonModesEnums[] = {GL_LINE, GL_FILL, GL_POINT};
+  static const char *polygonModesStr[] = {"GL_LINE", "GL_FILL", "GL_POINT"};
+  static auto polygonModeSelected = 1;
+  static auto polygonModeSize = 1.0f;
+  ImGui::PushItemWidth(100);
+  if (ImGui::BeginCombo("Polygon mode", polygonModesStr[polygonModeSelected])) {
+    for (uint n = 0; n < IM_ARRAYSIZE(polygonModesStr); ++n) {
+      auto isSelected = polygonModeSelected == n;
+      if (ImGui::Selectable(polygonModesStr[n], isSelected)) {
+        polygonModeSelected = n;
+        glPolygonMode(GL_FRONT_AND_BACK, polygonModesEnums[n]);
+      }
+      if (isSelected) ImGui::SetItemDefaultFocus();
+    }
+    ImGui::EndCombo();
+  }
+  if (polygonModeSelected != 1) {
+    auto label = std::string(polygonModesStr[polygonModeSelected]) + " size";
+    if (ImGui::DragFloat(label.c_str(), &polygonModeSize, 0.15, 0.5, 15.0, "%0.1f", ImGuiSliderFlags_AlwaysClamp)) {
+      if (polygonModeSelected == 0)
+        glLineWidth(polygonModeSize);
+      else
+        glPointSize(polygonModeSize);
+    }
+    ImGui::PopItemWidth();
   }
 #endif  // IMGUI_API_DISABLED
 }
