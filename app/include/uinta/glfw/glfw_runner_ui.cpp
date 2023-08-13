@@ -5,10 +5,12 @@
 #include <uinta/glfw/ui/camera.cpp>
 #include <uinta/glfw/ui/input.cpp>
 #include <uinta/glfw/ui/settings.cpp>
+#include <uinta/glfw/ui/timing_controller.cpp>
 
 namespace uinta {
 
 static bool showingWindow = false;
+static TimingController renderTiming;
 
 void ui::onInit(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
@@ -32,6 +34,7 @@ void ui::onPostTick(GlfwRunner &runner, const RunnerState &state) {
 
 void ui::onPreRender(GlfwRunner &runner, const RunnerState &state) {
 #ifndef IMGUI_API_DISABLED
+  renderTiming.start();
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
@@ -44,6 +47,7 @@ void ui::onRender(GlfwRunner &runner, const RunnerState &state) {
   auto &io = ImGui::GetIO();
   if (showingWindow) {
     ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    renderTiming.render("Render ms");
     camera(runner.camera);
     inputUi(runner);
     settings(runner);
@@ -58,6 +62,7 @@ void ui::onPostRender(GlfwRunner &runner, const RunnerState &state) {
   ImGui::End();
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  renderTiming.stop();
 #endif  // IMGUI_API_DISABLED
 }
 
