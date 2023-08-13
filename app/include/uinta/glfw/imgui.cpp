@@ -17,6 +17,4 @@
 #include "../../lib/imgui/imgui_draw.cpp"
 #include "../../lib/imgui/imgui_tables.cpp"
 #include "../../lib/imgui/imgui_widgets.cpp"
-#include "../../lib/implot/implot.cpp"
-#include "../../lib/implot/implot_items.cpp"
 #endif  // IMGUI_API_DISABLED
