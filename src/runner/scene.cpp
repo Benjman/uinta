@@ -14,7 +14,7 @@ namespace uinta {
 
 inline glm::mat4 getTransform(glm::mat4 baseTransform, const entt::entity entity, const entt::registry& registry);
 
-Scene::Scene() : diffuseLightDir({glm::normalize(glm::vec3(2, -3, -1))}) {
+Scene::Scene() : diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
 }
 
 bool Scene::init(Runner* runner) {
@@ -49,6 +49,10 @@ void Scene::addModel(const model_t model) {
 
 void Scene::startRender(const Runner* runner, const RunnerState& state) {
   shader.start(runner, state);
+  if (isFlagSet(DIFFUSE_LIGHT_DIRTY, flags)) {
+    shader.updateDiffuseLight(diffuseLight);
+    setFlag(DIFFUSE_LIGHT_DIRTY, false, flags);
+  }
   bindVao(vao);
 }
 
@@ -57,6 +61,15 @@ void Scene::render(const entt::entity entity, const entt::registry& registry) {
   glUniformMatrix4fv(shader.u_model, 1, false, glm::value_ptr(getTransform(glm::mat4(1), entity, registry)));
   auto& model = registry.get<Model>(entity);
   glDrawElements(GL_TRIANGLES, model.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0));
+}
+
+const Light& Scene::getDiffuseLight() const {
+  return diffuseLight;
+}
+
+void Scene::updateDiffuseLight(const Light& light) {
+  diffuseLight = light;
+  setFlag(DIFFUSE_LIGHT_DIRTY, true, flags);
 }
 
 bool SceneShader::init(FileManager& fileManager) {
@@ -76,8 +89,12 @@ void SceneShader::start(const Runner* runner, const RunnerState& state) const {
   glUseProgram(id);
   glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(runner->camera)));
   glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(runner->camera, runner->display)));
-  glUniform3fv(u_lightDir, 1, glm::value_ptr(runner->scene.diffuseLightDir.direction));
   glUniform1f(u_time, state.runtime);
+}
+
+void SceneShader::updateDiffuseLight(const Light& light) const {
+  glUniform3fv(u_lightDir, 1, glm::value_ptr(light.direction));
+  // TODO: Color and position
 }
 
 inline glm::mat4 getTransform(glm::mat4 baseTransform, const entt::entity entity, const entt::registry& registry) {
@@ -88,6 +105,21 @@ inline glm::mat4 getTransform(glm::mat4 baseTransform, const entt::entity entity
   if (transform.rotation.y) mvp = glm::rotate(mvp, transform.rotation.y, glm::vec3(0, 1, 0));
   if (transform.rotation.z) mvp = glm::rotate(mvp, transform.rotation.z, glm::vec3(0, 0, 1));
   return mvp;
+}
+
+Light::Light(const glm::vec3& direction, const glm::vec3& pos, const glm::vec3& color) noexcept
+    : direction(direction), pos(pos), color(color) {
+}
+
+Light::Light(const Light& other) noexcept {
+  *this = other;
+}
+
+Light& Light::operator=(const Light& other) noexcept {
+  this->direction = glm::normalize(other.direction);
+  this->pos = other.pos;
+  this->color = glm::normalize(other.color);
+  return *this;
 }
 
 }  // namespace uinta
