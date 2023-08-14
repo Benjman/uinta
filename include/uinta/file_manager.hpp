@@ -9,8 +9,10 @@
 
 namespace uinta {
 
-// TODO file_t should really be std::shared_ptr<uint>
-// TODO all the file_t* should instead be a std::shared_ptr<uint>
+using file_size_t = u32;
+using file_t = u32;
+
+// TODO file_t, and associated pointers, should really be smart pointers
 
 class FileManager {
  public:
