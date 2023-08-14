@@ -6,14 +6,14 @@
 namespace uinta {
 
 struct Fbo {
-  uint id = 0;
+  GLuint id = 0;
 
-  uint renderTexture = 0;
-  uint depthBuffer;
-  uint height = 0;
-  uint width = 0;
+  GLuint renderTexture = 0;
+  GLuint depthBuffer;
+  GLuint height = 0;
+  GLuint width = 0;
 
-  Fbo(uint width = 0, uint height = 0) : width(width), height(height) {
+  Fbo(GLuint width = 0, GLuint height = 0) : width(width), height(height) {
   }
 };
 
