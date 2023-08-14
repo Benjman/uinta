@@ -8,6 +8,7 @@
 #include <uinta/gl/api.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
+#include <uinta/model_manager.hpp>
 
 namespace uinta {
 

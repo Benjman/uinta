@@ -1,12 +1,13 @@
 #ifndef UINTA_MODEL_MANAGER_HPP
 #define UINTA_MODEL_MANAGER_HPP
 
-#include <string>
 #include <uinta/file_manager.hpp>
 #include <uinta/mesh.hpp>
 #include <vector>
 
 namespace uinta {
+
+using model_t = u16;
 
 struct Model {
   model_t id;  // TODO move to flags
