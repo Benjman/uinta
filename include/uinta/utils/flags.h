@@ -3,8 +3,10 @@
 
 #include <uinta/types.h>
 
-using flag_t = uint;
-using flags_t = uint;
+namespace uinta {
+
+using flag_t = u32;
+using flags_t = u32;
 
 inline bool isFlagSet(const flag_t mask, const flags_t flags) {
   return (flags & mask) != 0;
@@ -14,5 +16,7 @@ inline void setFlag(const flag_t mask, const bool state, flags_t& flags) {
   flags &= ~mask;
   if (state) flags |= mask;
 }
+
+}  // namespace uinta
 
 #endif  // UINTA_RUNNER_FLAGS_H
