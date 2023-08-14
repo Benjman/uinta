@@ -1,7 +1,7 @@
 #ifndef UINTA_CIRCULAR_BUFFER_HPP
 #define UINTA_CIRCULAR_BUFFER_HPP
 
-#include <uinta/utils/types.h>
+#include <uinta/types.h>
 
 #include <array>
 #include <stdexcept>

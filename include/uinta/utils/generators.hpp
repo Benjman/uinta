@@ -1,7 +1,7 @@
 #ifndef UINTA_GENERATORS_HPP
 #define UINTA_GENERATORS_HPP
 
-#include <uinta/utils/types.h>
+#include <uinta/types.h>
 
 namespace uinta {
 

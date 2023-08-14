@@ -1,7 +1,7 @@
 #ifndef UINTA_FLAGS_H
 #define UINTA_FLAGS_H
 
-#include <uinta/utils/types.h>
+#include <uinta/types.h>
 
 using flag_t = uint;
 using flags_t = uint;

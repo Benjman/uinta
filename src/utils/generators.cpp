@@ -1,5 +1,5 @@
 #include <spdlog/spdlog.h>
-#include <uinta/utils/types.h>
+#include <uinta/types.h>
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/vec3.hpp>

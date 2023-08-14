@@ -1,7 +1,7 @@
 #ifndef UINTA_RUNNER_RUNNER_STATE_HPP
 #define UINTA_RUNNER_RUNNER_STATE_HPP
 
-#include <uinta/utils/types.h>
+#include <uinta/types.h>
 
 #include <uinta/runner/fwd.hpp>
 

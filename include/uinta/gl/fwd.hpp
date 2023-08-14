@@ -1,7 +1,7 @@
 #ifndef UINTA_GL_FWD_HPP
 #define UINTA_GL_FWD_HPP
 
-#include <uinta/utils/types.h>
+#include <uinta/types.h>
 
 namespace uinta {
 
