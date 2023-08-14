@@ -4,6 +4,7 @@
 #include <uinta/glfw/glfw_runner_ui.hpp>
 #include <uinta/glfw/ui/camera.cpp>
 #include <uinta/glfw/ui/input.cpp>
+#include <uinta/glfw/ui/scene.cpp>
 #include <uinta/glfw/ui/settings.cpp>
 #include <uinta/glfw/ui/timing_controller.cpp>
 
@@ -54,6 +55,7 @@ void ui::onRender(GlfwRunner &runner, const RunnerState &state) {
     renderTiming.render("Render ms");
     camera(runner.camera);
     inputUi(runner);
+    scene(runner);
     settings(runner);
   }
   if (io.WantCaptureKeyboard) setFlag(INPUT_HANDLED_KEYBOARD, true, flags);
