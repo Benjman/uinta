@@ -1,5 +1,5 @@
-#ifndef UINTA_GL_API_HPP
-#define UINTA_GL_API_HPP
+#ifndef UINTA_GL_API_H
+#define UINTA_GL_API_H
 
 #ifdef __ANDROID__
 #include <GL/gl.h>
@@ -14,4 +14,4 @@
 // clang-format on
 #endif
 
-#endif  // UINTA_GL_API_HPP
+#endif  // UINTA_GL_API_H

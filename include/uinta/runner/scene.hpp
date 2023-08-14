@@ -1,11 +1,12 @@
 #ifndef UINTA_SCENE_HPP
 #define UINTA_SCENE_HPP
 
+#include <uinta/gl/api.h>
+
 #include <entt/fwd.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/components.hpp>
 #include <uinta/fwd.hpp>
-#include <uinta/gl/api.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
 #include <uinta/model_manager.hpp>

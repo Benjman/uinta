@@ -1,4 +1,5 @@
-#include <uinta/gl/api.hpp>
+#include <uinta/gl/api.h>
+
 #include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/gl/vao.hpp>

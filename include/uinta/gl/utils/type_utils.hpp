@@ -1,8 +1,9 @@
 #ifndef UINTA_GL_TYPE_UTILS_HPP
 #define UINTA_GL_TYPE_UTILS_HPP
 
+#include <uinta/gl/api.h>
+
 #include <string>
-#include <uinta/gl/api.hpp>
 
 namespace uinta {
 const std::string getGlEnumName(const GLenum e);

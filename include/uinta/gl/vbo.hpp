@@ -1,7 +1,7 @@
 #ifndef UINTA_VBO_HPP
 #define UINTA_VBO_HPP
 
-#include <uinta/gl/api.hpp>
+#include <uinta/gl/api.h>
 
 namespace uinta {
 

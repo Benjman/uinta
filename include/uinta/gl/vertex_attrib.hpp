@@ -1,7 +1,7 @@
 #ifndef UINTA_VERTEX_ATTRIB_HPP
 #define UINTA_VERTEX_ATTRIB_HPP
 
-#include <uinta/gl/api.hpp>
+#include <uinta/gl/api.h>
 
 namespace uinta {
 

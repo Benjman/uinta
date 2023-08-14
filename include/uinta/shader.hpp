@@ -1,8 +1,9 @@
 #ifndef UINTA_SHADER_H
 #define UINTA_SHADER_H
 
+#include <uinta/gl/api.h>
+
 #include <string>
-#include <uinta/gl/api.hpp>
 #include <vector>
 
 namespace uinta {

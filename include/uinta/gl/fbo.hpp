@@ -1,8 +1,7 @@
 #ifndef UINTA_FBO_HPP
 #define UINTA_FBO_HPP
 
-#include <uinta/fwd.hpp>
-#include <unordered_set>
+#include <uinta/gl/api.h>
 
 namespace uinta {
 

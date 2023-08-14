@@ -1,7 +1,8 @@
 #ifndef UINTA_GLFW_INPUT_CPP
 #define UINTA_GLFW_INPUT_CPP
 
-#include <uinta/gl/api.hpp>
+#include <uinta/gl/api.h>
+
 #include <uinta/input.hpp>
 
 namespace uinta {

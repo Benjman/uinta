@@ -1,7 +1,8 @@
 #ifndef UINTA_VAO_HPP
 #define UINTA_VAO_HPP
 
-#include <uinta/gl/api.hpp>
+#include <uinta/gl/api.h>
+
 #include <uinta/gl/vbo.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
 #include <vector>
