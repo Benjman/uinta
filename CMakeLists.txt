@@ -17,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(UINTA_GENERATED_PATH  ${CMAKE_BINARY_DIR}/generated)
 set(UINTA_INCLUDES        ${UINTA_INCLUDES} ${UINTA_GENERATED_PATH})
 set(UINTA_LIBS_DIR        ${CMAKE_SOURCE_DIR}/lib)
-set(UINTA_RES_PATHS       ${CMAKE_SOURCE_DIR}/res)
+set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
 
 set(UINTA_SRCS ${UINTA_SRCS}
 
@@ -74,7 +74,6 @@ add_library(uinta STATIC ${UINTA_SRCS})
 include_directories(./include ${UINTA_INCLUDES})
 target_link_libraries(uinta PUBLIC ${UINTA_LIBS})
 
-set(UINTA_RES_PATHS ${CMAKE_CURRENT_LIST_DIR}/res)
 add_subdirectory(app)
 
 # testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true`
