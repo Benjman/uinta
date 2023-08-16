@@ -8,8 +8,6 @@
 
 using namespace uinta;
 
-static u32 maxCount = 0;
-
 void validateQuad(const Quad& quad) {
   // validate bounds are whole numbers
   if (ceilf(quad.topLeftBounds.x) != quad.topLeftBounds.x) throw std::runtime_error("quad.topLeftBounds.x must be an integer.");
