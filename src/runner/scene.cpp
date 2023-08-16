@@ -53,7 +53,7 @@ void Scene::startRender(const Runner* runner, const RunnerState& state) {
 }
 
 void Scene::render(const entt::entity entity, const entt::registry& registry) {
-  auto& transform = registry.get<Transform>(entity);
+  // TODO: Generate transformation matrix: auto& transform = registry.get<Transform>(entity);
   glUniformMatrix4fv(shader.u_model, 1, false, glm::value_ptr(getTransform(glm::mat4(1), entity, registry)));
   auto& model = registry.get<Model>(entity);
   glDrawElements(GL_TRIANGLES, model.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0));
