@@ -37,8 +37,9 @@ void uinta::disableVertexAttribs(Vao& vao) {
   if (vao.id == GL_ZERO) {
     return;
   }
+  bindVao(vao);
   for (const auto& attrib : vao.attribs) {
-    glDisableVertexAttribArray(vao.id);
+    glDisableVertexAttribArray(attrib.index);
     UINTA_glGetError(glDisableVertexAttribArray);
   }
 }
@@ -49,7 +50,7 @@ void uinta::enableVertexAttribs(Vao& vao) {
   }
   bindVao(vao);
   for (const auto& attrib : vao.attribs) {
-    glEnableVertexAttribArray(vao.id);
+    glEnableVertexAttribArray(attrib.index);
     UINTA_glGetError(glEnableVertexAttribArray);
   }
 }
