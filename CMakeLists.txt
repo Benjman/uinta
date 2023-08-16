@@ -19,7 +19,7 @@ set(UINTA_INCLUDES        ${UINTA_INCLUDES} ${UINTA_GENERATED_PATH})
 set(UINTA_LIBS_DIR        ${CMAKE_SOURCE_DIR}/lib)
 set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
 
-set(UINTA_SRCS ${UINTA_SRCS}
+set(UINTA_SRCS
 
   ./src/camera/target_camera.cpp
   ./src/file_manager.cpp
