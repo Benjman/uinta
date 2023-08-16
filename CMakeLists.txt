@@ -68,7 +68,8 @@ set(SPDLOG_BUILD_SHARED TRUE)
 add_subdirectory(${UINTA_LIBS_DIR}/spdlog)
 list(APPEND UINTA_LIBS spdlog)
 
-add_library(uinta STATIC ${UINTA_SRCS})
+add_library(uinta STATIC)
+target_sources(uinta PRIVATE ${UINTA_SRCS})
 target_include_directories(uinta PUBLIC ./include ${UINTA_INCLUDES})
 target_link_libraries(uinta PUBLIC ${UINTA_LIBS})
 
