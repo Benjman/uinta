@@ -48,25 +48,25 @@ set(UINTA_SRCS
   )
 
 # dependencies
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/glad/include")
-set(UINTA_SRCS     ${UINTA_SRCS}     "${UINTA_LIBS_DIR}/glad/src/glad.c")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/glm")
-set(UINTA_INCLUDES ${UINTA_INCLUDES} "${UINTA_LIBS_DIR}/imgui")
+list(APPEND UINTA_INCLUDES "${UINTA_LIBS_DIR}")
+list(APPEND UINTA_INCLUDES "${UINTA_LIBS_DIR}/glad/include")
+list(APPEND UINTA_SRCS     "${UINTA_LIBS_DIR}/glad/src/glad.c")
+list(APPEND UINTA_INCLUDES "${UINTA_LIBS_DIR}/glm")
+list(APPEND UINTA_INCLUDES "${UINTA_LIBS_DIR}/imgui")
 
 add_subdirectory(${UINTA_LIBS_DIR}/entt)
-set(UINTA_LIBS ${UINTA_LIBS} EnTT::EnTT)
+list(APPEND UINTA_LIBS EnTT::EnTT)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW lib only")
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "GLFW lib only")
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "GLFW lib only")
 set(GLFW_INSTALL OFF CACHE BOOL "GLFW lib only")
 add_subdirectory(${UINTA_LIBS_DIR}/glfw)
-set(UINTA_LIBS ${UINTA_LIBS} glfw)
+list(APPEND UINTA_LIBS glfw)
 
 set(SPDLOG_BUILD_SHARED TRUE)
 add_subdirectory(${UINTA_LIBS_DIR}/spdlog)
-set(UINTA_LIBS ${UINTA_LIBS} spdlog)
+list(APPEND UINTA_LIBS spdlog)
 
 add_library(uinta STATIC ${UINTA_SRCS})
 include_directories(./include ${UINTA_INCLUDES})
