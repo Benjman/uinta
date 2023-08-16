@@ -149,9 +149,10 @@ void uinta::packVertices(const MeshAttrib& attrib, f32* const vbuf, u32* const v
 }
 
 i32 uinta::findOrInsertFaceData(const objface& face, std::vector<objface>& faceData, const u32 max) {
+  static const objface EMPTY_FACE = {};
   for (u32 i = 0; i < max; i++) {
     if (faceData[i] == face) return i;
-    if (faceData[i] == objface()) {
+    if (faceData[i] == EMPTY_FACE) {
       faceData[i].vert = face.vert;
       faceData[i].uv = face.uv;
       faceData[i].norm = face.norm;
