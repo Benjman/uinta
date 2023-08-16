@@ -13,7 +13,7 @@ struct Fbo {
   GLuint height = 0;
   GLuint width = 0;
 
-  Fbo(GLuint width = 0, GLuint height = 0) : width(width), height(height) {
+  Fbo(GLuint width = 0, GLuint height = 0) : height(height), width(width) {
   }
 };
 
