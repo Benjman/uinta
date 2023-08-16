@@ -14,16 +14,16 @@
 namespace uinta {
 
 inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
-inline void advanceState(RunnerState& state, double runtime, double& lastRuntime);
+inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime);
 static spdlog::stopwatch sw;
 
-Runner::Runner(const std::string& title, int argc, const char** argv) noexcept : display(title) {
+Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : display(title) {
   processArgs(this, argc, argv);
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
 }
 
-int Runner::run() {
+i32 Runner::run() {
   try {
     if (isRenderingEnabled(flags) && !createOpenGLContext()) return false;
     if (!doInit()) {
@@ -85,37 +85,37 @@ void Runner::shutdown() {
   doShutdown();
 }
 
-bool Runner::shouldRenderFrame(float dt) {
+bool Runner::shouldRenderFrame(f32 dt) {
   // TODO Runner should have a `targetFps`; this method returns true when `runtime - lastFrame >= targetFps`
   //
   // See https://github.com/Benjman/renderer/blob/main/src/core/src/runner.cpp#L46
   return true;
 }
 
-void Runner::handleCursorPositionChanged(const double xpos, const double ypos) {
+void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) {
   mouseMoved(input, xpos, ypos);
 }
 
-void Runner::handleScrollInput(const double xoffset, const double yoffset) {
+void Runner::handleScrollInput(const f64 xoffset, const f64 yoffset) {
   mouseScrolled(input, xoffset, yoffset);
 }
 
-void Runner::handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods) {
+void Runner::handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods) {
   if (action == ACTION_PRESS) keyPressed(input, key, mods);
   if (action == ACTION_RELEASE) keyReleased(input, key, mods);
   if (action == ACTION_REPEAT) keyRepeated(input, key, mods);
 }
 
-void Runner::handleMouseButtonInput(const int button, const int action, const int mods) {
+void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i32 mods) {
   if (action == ACTION_PRESS) mouseButtonPressed(input, button, mods);
   if (action == ACTION_RELEASE) mouseButtonReleased(input, button, mods);
   input.platform_flags = mods;
 }
 
-void Runner::handleWindowSizeChanged(const int width, const int height) {
+void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
   display.width = width;
   display.height = height;
-  display.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+  display.aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
   onWindowSizeChanged();
 }
 
@@ -154,7 +154,7 @@ inline void clearBuffer(const glm::vec3& color, GLbitfield mask) {
   glClear(mask);
 }
 
-inline void advanceState(RunnerState& state, double runtime, double& lastRuntime) {
+inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime) {
   state.tick++;
   state.runtime = runtime;
   state.delta = runtime - lastRuntime;

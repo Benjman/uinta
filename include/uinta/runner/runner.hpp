@@ -29,17 +29,17 @@ class Runner {
 
   flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
 
-  Runner(const std::string& title, int argc = 0, const char** argv = nullptr) noexcept;
+  Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept;
 
   ~Runner();
 
-  int run();
+  i32 run();
 
-  void handleCursorPositionChanged(const double xpos, const double ypos);
-  void handleKeyInput(const input_key_t key, const int scancode, const int action, const int mods);
-  void handleMouseButtonInput(const int button, const int action, const int mods);
-  void handleScrollInput(const double xoffset, const double yoffset);
-  void handleWindowSizeChanged(const int width, const int height);
+  void handleCursorPositionChanged(const f64 xpos, const f64 ypos);
+  void handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods);
+  void handleMouseButtonInput(const i32 button, const u32 action, const i32 mods);
+  void handleScrollInput(const f64 xoffset, const f64 yoffset);
+  void handleWindowSizeChanged(const i32 width, const i32 height);
 
  protected:
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
@@ -57,7 +57,7 @@ class Runner {
 
   virtual bool createOpenGLContext() = 0;
   virtual bool shouldExit() = 0;
-  virtual double getRuntime() const = 0;
+  virtual f64 getRuntime() const = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;
 
@@ -65,7 +65,7 @@ class Runner {
   void tick(const RunnerState& state);
   void render(const RunnerState& state);
   void shutdown();
-  bool shouldRenderFrame(float dt);
+  bool shouldRenderFrame(f32 dt);
 };
 
 }  // namespace uinta
