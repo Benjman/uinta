@@ -103,7 +103,7 @@ inline bool isShiftDown(const InputState& input) {
   return isAnyKeyDown(input) && input.platform_flags & MOD_SHIFT;
 }
 
-inline void keyPressed(InputState& input, const input_key_t key, const int flags) {
+inline void keyPressed(InputState& input, const input_key_t key, const i32 flags) {
   input.platform_flags = flags;
   input.keys_pressed.insert(key);
   input.keys_down.insert(key);
@@ -111,7 +111,7 @@ inline void keyPressed(InputState& input, const input_key_t key, const int flags
   setFlag(input::HAS_KEY_DOWN, true, input.flags);
 }
 
-inline void keyReleased(InputState& input, const input_key_t key, const int flags) {
+inline void keyReleased(InputState& input, const input_key_t key, const i32 flags) {
   input.platform_flags = flags;
   input.keys_released.insert(key);
   input.keys_down.erase(key);
@@ -121,13 +121,13 @@ inline void keyReleased(InputState& input, const input_key_t key, const int flag
   setFlag(input::HAS_KEY_REPEATED, input.keys_repeated.size() > 0, input.flags);
 }
 
-inline void keyRepeated(InputState& input, const input_key_t key, const int flags) {
+inline void keyRepeated(InputState& input, const input_key_t key, const i32 flags) {
   input.platform_flags = flags;
   input.keys_repeated.insert(key);
   setFlag(input::HAS_KEY_REPEATED, true, input.flags);
 }
 
-inline void mouseButtonPressed(InputState& input, const input_key_t key, const int flags) {
+inline void mouseButtonPressed(InputState& input, const input_key_t key, const i32 flags) {
   input.platform_flags = flags;
   input.mouse_pressed.insert(key);
   input.mouse_down.insert(key);
@@ -135,7 +135,7 @@ inline void mouseButtonPressed(InputState& input, const input_key_t key, const i
   setFlag(input::HAS_MOUSE_DOWN, true, input.flags);
 }
 
-inline void mouseButtonReleased(InputState& input, const input_key_t key, const int flags) {
+inline void mouseButtonReleased(InputState& input, const input_key_t key, const i32 flags) {
   input.platform_flags = flags;
   input.mouse_released.insert(key);
   input.mouse_down.erase(key);
@@ -143,7 +143,7 @@ inline void mouseButtonReleased(InputState& input, const input_key_t key, const 
   setFlag(input::HAS_MOUSE_DOWN, input.mouse_down.size() > 0, input.flags);
 }
 
-inline void mouseMoved(InputState& input, const double xpos, const double ypos) {
+inline void mouseMoved(InputState& input, const f64 xpos, const f64 ypos) {
   input.cursordx = xpos - input.cursorx;
   input.cursordy = ypos - input.cursory;
   input.cursorx = xpos;
@@ -151,7 +151,7 @@ inline void mouseMoved(InputState& input, const double xpos, const double ypos) 
   setFlag(input::HAS_MOUSE_MOVE, true, input.flags);
 }
 
-inline void mouseScrolled(InputState& input, const double dx, const double dy) {
+inline void mouseScrolled(InputState& input, const f64 dx, const f64 dy) {
   input.scrolldx = dx;
   input.scrolldy = dy;
   setFlag(input::HAS_MOUSE_SCROLL, true, input.flags);

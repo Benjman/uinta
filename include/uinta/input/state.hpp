@@ -7,11 +7,11 @@
 namespace uinta {
 
 struct InputState final {
-  int platform_flags = 0;
+  i32 platform_flags = 0;
   flags_t flags = 0;
-  float cursorx, cursory;
-  float cursordx, cursordy;
-  float scrolldx, scrolldy;
+  f32 cursorx, cursory;
+  f32 cursordx, cursordy;
+  f32 scrolldx, scrolldy;
   std::unordered_set<input_key_t> keys_down;
   std::unordered_set<input_key_t> keys_pressed;
   std::unordered_set<input_key_t> keys_released;

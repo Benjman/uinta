@@ -5,8 +5,8 @@
 
 namespace uinta {
 
-using input_key_t = unsigned int;
-using mouse_button_t = unsigned int;
+using input_key_t = u32;
+using mouse_button_t = u32;
 
 struct InputState;
 
@@ -35,14 +35,14 @@ inline bool isMouseScroll(const InputState& input);
 inline bool isMouseScrolled(const InputState& input);
 inline bool isShiftDown(const InputState& input);
 
-inline void keyPressed(InputState& input, const input_key_t key, const int flags);
-inline void keyReleased(InputState& input, const input_key_t key, const int flags);
-inline void keyRepeated(InputState& input, const input_key_t key, const int flags);
+inline void keyPressed(InputState& input, const input_key_t key, const i32 flags);
+inline void keyReleased(InputState& input, const input_key_t key, const i32 flags);
+inline void keyRepeated(InputState& input, const input_key_t key, const i32 flags);
 
-inline void mouseButtonPressed(InputState& input, const input_key_t key, const int flags);
-inline void mouseButtonReleased(InputState& input, const input_key_t key, const int flags);
-inline void mouseMoved(InputState& input, const double xpos, const double ypos);
-inline void mouseScrolled(InputState& input, const double dx, const double dy);
+inline void mouseButtonPressed(InputState& input, const input_key_t key, const i32 flags);
+inline void mouseButtonReleased(InputState& input, const input_key_t key, const i32 flags);
+inline void mouseMoved(InputState& input, const f64 xpos, const f64 ypos);
+inline void mouseScrolled(InputState& input, const f64 dx, const f64 dy);
 
 inline void reset(InputState& input);
 inline void resetKeyboard(InputState& input);
