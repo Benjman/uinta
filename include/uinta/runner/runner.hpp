@@ -11,7 +11,7 @@
 #include <uinta/runner/args.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_flags.hpp>
-#include <uinta/runner/scene.hpp>
+#include <uinta/scene/scene.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {

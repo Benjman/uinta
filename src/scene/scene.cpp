@@ -6,7 +6,7 @@
 #include <uinta/model_manager.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/runner/runner_state.hpp>
-#include <uinta/runner/scene.hpp>
+#include <uinta/scene/scene.hpp>
 #include <uinta/shader.hpp>
 #include <uinta/utils/direction.hpp>
 
