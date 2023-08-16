@@ -1,8 +1,6 @@
 #ifndef UINTA_RUNNER_RUNNER_HPP
 #define UINTA_RUNNER_RUNNER_HPP
 
-#include <uinta/gl.h>
-
 #include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/camera/target_camera.hpp>
