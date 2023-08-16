@@ -4,7 +4,7 @@ namespace uinta {
 
 class DemoRunner : public GlfwRunner {
  public:
-  entt::entity cube;
+  entt::entity entity;
 
   DemoRunner(const int argc, const char** argv) : GlfwRunner("Demo", argc, argv) {
   }
@@ -12,16 +12,19 @@ class DemoRunner : public GlfwRunner {
   bool doInit() override {
     if (!GlfwRunner::doInit()) return false;
 
-    cube = scene.addEntity({
-        "models/cube.obj",
-        {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}},
-    });
+    // Notice that there is an issue translating vertices from Blender into the engine where Blender's Y-plane is mapping to our
+    // Z-plane. Though not intentional, it seemingly works because if we exported from Blender to correctly map to our xyz
+    // coordinates, it would make modeling in Blender wonky because everything would be sideways-up.
+    entity = scene.addEntity({"models/xyz.obj"});
+    registry.get<Transform>(entity).scale *= 0.5;
 
     if (isCameraEnabled()) {
       force(camera.angle, 45);
       force(camera.pitch, 45);
-      force(camera.dist, 5);
+      force(camera.dist, 7);
     }
+
+    scene.updateDiffuseLight({{-1.5, 2, 1}});
 
     return true;
   }
@@ -29,7 +32,7 @@ class DemoRunner : public GlfwRunner {
   void doRender(const RunnerState& state) override {
     GlfwRunner::doRender(state);
     scene.startRender(this, state);
-    scene.render(cube, registry);
+    scene.render(entity, registry);
   }
 };
 
