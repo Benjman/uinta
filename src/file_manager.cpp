@@ -131,14 +131,14 @@ void FileManager::reserveSpace(const file_t* const handle) {
 
   // it's possible that the head of the buffer has been released; let's try to use it:
   MemoryLink* firstReservedLink = nullptr;
-  for (i32 i = 0; i < links.size(); i++) {
+  for (size_t i = 0; i < links.size(); i++) {
     if (!isBuffered(handles.at(i))) continue;
     if (!firstReservedLink || firstReservedLink->ptr > links.at(i).ptr) {
       firstReservedLink = &links.at(i);
     }
   }
   if (firstReservedLink) {
-    auto headSpace = static_cast<const char*>(firstReservedLink->ptr) - static_cast<const char*>(storage);
+    size_t headSpace = static_cast<const char*>(firstReservedLink->ptr) - static_cast<const char*>(storage);
     if (headSpace > size) {
       firstReservedLink->back = &link;
       link.forward = firstReservedLink;
