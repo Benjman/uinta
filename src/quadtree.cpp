@@ -1,5 +1,6 @@
 #include <math.h>    // for ceilf
 #include <memory.h>  // for memcpy
+#include <uinta/types.h>
 
 #include <glm/gtc/quaternion.hpp>
 #include <uinta/logging.hpp>
@@ -7,7 +8,7 @@
 
 using namespace uinta;
 
-static unsigned int maxCount = 0;
+static u32 maxCount = 0;
 
 void validateQuad(const Quad& quad) {
   // validate bounds are whole numbers
@@ -18,8 +19,8 @@ void validateQuad(const Quad& quad) {
   if (ceilf(quad.bottomRightBounds.y) != quad.bottomRightBounds.y)
     throw std::runtime_error("quad.bottomRightBounds.y must be an integer.");
 
-  int width = ceilf(quad.bottomRightBounds.x - quad.topLeftBounds.x);
-  int height = ceilf(quad.bottomRightBounds.y - quad.topLeftBounds.y);
+  u32 width = ceilf(quad.bottomRightBounds.x - quad.topLeftBounds.x);
+  u32 height = ceilf(quad.bottomRightBounds.y - quad.topLeftBounds.y);
 
   if (width < 0 || height < 0) throw std::runtime_error("bottomRightBounds must be aligned after the topRightBounds spatially.");
 
@@ -33,9 +34,10 @@ void validateQuad(const Quad& quad) {
   if ((quad.minCellSize & (quad.minCellSize - 1)) != 0) throw std::runtime_error("minimum cell size must be a power of 2");
 }
 
-Quad::Quad() : Quad(glm::vec2(0.0), glm::vec2(QUAD_MIN_CELL_SIZE)) {}
+Quad::Quad() : Quad(glm::vec2(0.0), glm::vec2(QUAD_MIN_CELL_SIZE)) {
+}
 
-Quad::Quad(const glm::vec2& topLeftBounds, const glm::vec2& bottomRightBounds, const unsigned int minCellSize)
+Quad::Quad(const glm::vec2& topLeftBounds, const glm::vec2& bottomRightBounds, const u32 minCellSize)
     : topLeftBounds(glm::vec2(topLeftBounds)), bottomRightBounds(glm::vec2(bottomRightBounds)), minCellSize(minCellSize) {
   parent = nullptr;
   topLeft = nullptr;
@@ -123,8 +125,8 @@ void Quad::insert(const entt::entity& entity, const glm::vec2& pos) noexcept {
     return;
   }
 
-  float x = (topLeftBounds.x + bottomRightBounds.x) / 2.0;
-  float y = (topLeftBounds.y + bottomRightBounds.y) / 2.0;
+  f32 x = (topLeftBounds.x + bottomRightBounds.x) / 2.0;
+  f32 y = (topLeftBounds.y + bottomRightBounds.y) / 2.0;
 
   // TODO quad pooling
   if (x >= pos.x) {
@@ -186,7 +188,7 @@ void Quad::addEntity(entt::entity entity) noexcept {
 }
 
 void Quad::removeEntity(entt::entity entity) noexcept {
-  for (unsigned char i = 0; i < entityCount; i++) {
+  for (uchar i = 0; i < entityCount; i++) {
     if (entityStore[i] == entity) {
       if (--entityCount > 0) {
         entityStore[i] = entityStore[entityCount];

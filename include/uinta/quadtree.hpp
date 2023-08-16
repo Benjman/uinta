@@ -1,6 +1,8 @@
 #ifndef UINTA_QUAD_TREE_H
 #define UINTA_QUAD_TREE_H
 
+#include <uinta/types.h>
+
 #include <entt/entity/fwd.hpp>
 #include <glm/vec2.hpp>
 
@@ -27,13 +29,13 @@ struct Quad final {
   glm::vec2 topLeftBounds;
   const glm::vec2 bottomRightBounds;
 
-  const unsigned int minCellSize;
-  unsigned char entityStoreSize;
-  unsigned char entityCount;
+  const u32 minCellSize;
+  uchar entityStoreSize;
+  uchar entityCount;
 
   Quad();
 
-  Quad(const glm::vec2& topLeftBounds, const glm::vec2& bottomRightBounds, const unsigned int minCellSize = QUAD_MIN_CELL_SIZE);
+  Quad(const glm::vec2& topLeftBounds, const glm::vec2& bottomRightBounds, const u32 minCellSize = QUAD_MIN_CELL_SIZE);
 
   ~Quad();
 
