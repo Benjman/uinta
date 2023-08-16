@@ -68,8 +68,8 @@ GLuint createShaderProgram(const std::vector<std::string>& sources, const std::v
     return id;
   }
 
-  for (auto i = 0; i < uniformNames.size(); i++) {
-    GLuint loc = glGetUniformLocation(id, uniformNames.at(i).c_str());
+  for (size_t i = 0; i < uniformNames.size(); i++) {
+    auto loc = glGetUniformLocation(id, uniformNames.at(i).c_str());
     UINTA_glGetError(glGetUniformLocation);
     if (loc == -1)
       SPDLOG_WARN("createShaderProgram - Uniform '{}' not found.", uniformNames.at(i));
