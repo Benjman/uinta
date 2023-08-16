@@ -1,37 +1,38 @@
 #ifndef UINTA_METRICS_HPP
 #define UINTA_METRICS_HPP
 
+#include <uinta/types.h>
+
 namespace uinta {
 
-using metric_t = int;
+using metric_t = i32;
 
-constexpr unsigned int METRIC_FLOAT = 0;
-constexpr unsigned int METRIC_INT   = 1;
-constexpr unsigned int METRIC_UINT  = 2;
+constexpr u32 METRIC_FLOAT = 0;
+constexpr u32 METRIC_INT = 1;
+constexpr u32 METRIC_UINT = 2;
 
-constexpr unsigned int METRICS_MAX_STORAGE = 100;
+constexpr u32 METRICS_MAX_STORAGE = 100;
 
 struct MetricsController final {
-
   void *storage = nullptr;
-  unsigned int metric_type[METRICS_MAX_STORAGE];
+  u32 metric_type[METRICS_MAX_STORAGE];
   const char *assignments[METRICS_MAX_STORAGE];
 
   MetricsController();
 
   ~MetricsController();
 
-  metric_t init_metric(const unsigned int type, const char *const name) noexcept;
+  metric_t init_metric(const u32 type, const char *const name) noexcept;
 
-  void set(const metric_t handle, const float v) noexcept;
-  void set(const metric_t handle, const int v) noexcept;
-  void set(const metric_t handle, const unsigned int v) noexcept;
+  void set(const metric_t handle, const f32 v) noexcept;
+  void set(const metric_t handle, const i32 v) noexcept;
+  void set(const metric_t handle, const u32 v) noexcept;
 
-  float getf(const metric_t handle) noexcept;
-  int geti(const metric_t handle) noexcept;
-  unsigned int getui(const metric_t handle) noexcept;
+  f32 getf(const metric_t handle) noexcept;
+  i32 geti(const metric_t handle) noexcept;
+  u32 getui(const metric_t handle) noexcept;
 };
 
-} // namespace uinta
+}  // namespace uinta
 
-#endif // UINTA_METRICS_HPP
+#endif  // UINTA_METRICS_HPP
