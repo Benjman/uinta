@@ -54,7 +54,8 @@ enum FontMeshAttribTypes {
 struct FontMeshAttrib final {
   const unsigned int stride;
   const unsigned int offset;
-  FontMeshAttrib(const unsigned int stride, const unsigned int offset) noexcept : stride(stride), offset(offset) {}
+  FontMeshAttrib(const unsigned int stride, const unsigned int offset) noexcept : stride(stride), offset(offset) {
+  }
 };
 
 enum FontType {
@@ -98,7 +99,9 @@ struct font_ctx final {
 
   font_ctx(const FontType, const float tex_width, const float tex_height) noexcept;
 
-  font_ctx(const font_ctx& other) noexcept { *this = other; }
+  font_ctx(const font_ctx& other) noexcept {
+    *this = other;
+  }
 
   font_ctx& operator=(const font_ctx& other) noexcept {
     type = other.type;
@@ -148,9 +151,12 @@ struct text final {
         pos_x(pos_x),
         pos_y(pos_y),
         max_width(max_width),
-        max_height(max_height) {}
+        max_height(max_height) {
+  }
 
-  text(const text& other) noexcept { *this = other; }
+  text(const text& other) noexcept {
+    *this = other;
+  }
 
   text& operator=(const text& other) noexcept {
     color_r = other.color_r;
@@ -200,9 +206,13 @@ struct word final {
   std::string value;
   float width;
 
-  word() { width = 0.0; }
+  word() {
+    width = 0.0;
+  }
 
-  word(const word& other) noexcept { *this = other; }
+  word(const word& other) noexcept {
+    *this = other;
+  }
 
   word& operator=(const word& other) noexcept {
     value = std::string(other.value);
@@ -216,11 +226,15 @@ struct line final {
   float width;
   float max_width;
 
-  line() noexcept : line(0.0) {}
+  line() noexcept : line(0.0) {
+  }
 
-  line(const float max_width) noexcept : width(0.0), max_width(max_width) {}
+  line(const float max_width) noexcept : width(0.0), max_width(max_width) {
+  }
 
-  line(const line& other) noexcept { *this = other; }
+  line(const line& other) noexcept {
+    *this = other;
+  }
 
   line& operator=(const line& other) noexcept {
     words = std::vector<word>(other.words);
@@ -317,7 +331,8 @@ const char* const font::getFontPath(const FontType type) {
 // #include <stb/stb_image_write.h>
 
 font::font_ctx::font_ctx(const FontType type, const float tex_width, const float tex_height) noexcept
-    : type(type), tex_width(tex_width), tex_height(tex_height) {}
+    : type(type), tex_width(tex_width), tex_height(tex_height) {
+}
 
 void font::getCharQuad(const char c, const font_ctx& ctx, stbtt_aligned_quad* quad) {
   float xpos = 0.0, ypos = 0.0;
