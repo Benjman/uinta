@@ -152,7 +152,7 @@ inline void registerCallbacks(GlfwRunner* runner) {
 
   glfwSetWindowPosCallback(runner->window, [](auto* window, int xpos, int ypos) {
     SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
-    auto* runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
+    glfwGetWindowUserPointer(window);
   });
 }
 
