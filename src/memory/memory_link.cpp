@@ -6,7 +6,7 @@ MemoryLink::MemoryLink(const MemoryLink& other) {
   *this = other;
 }
 
-MemoryLink::MemoryLink(void* ptr, size_t size) : ptr(ptr), size(size) {
+MemoryLink::MemoryLink(void* ptr, size_t size) : size(size), ptr(ptr) {
   back = nullptr;
   forward = nullptr;
 }
