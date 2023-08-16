@@ -363,9 +363,9 @@ unsigned int font::getRenderableCharCount(const std::string& value) noexcept {
 unsigned int font::getVertBufferSize(const std::string& value,
                                      const std::unordered_map<FontMeshAttribTypes, FontMeshAttrib>* attribs) noexcept {
   unsigned int bufsize = 0;
-  if (const auto* attrib = find_font_attrib(FontMeshAttrib_Position, attribs)) bufsize += 8;
-  if (const auto* attrib = find_font_attrib(FontMeshAttrib_UV, attribs)) bufsize += 8;
-  if (const auto* attrib = find_font_attrib(FontMeshAttrib_Color, attribs)) bufsize += 12;
+  if (find_font_attrib(FontMeshAttrib_Position, attribs)) bufsize += 8;
+  if (find_font_attrib(FontMeshAttrib_UV, attribs)) bufsize += 8;
+  if (find_font_attrib(FontMeshAttrib_Color, attribs)) bufsize += 12;
   const int count = getRenderableCharCount(value);
   return bufsize * count;
 }
