@@ -131,7 +131,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
 
   // it's possible that the head of the buffer has been released; let's try to use it:
   MemoryLink* firstReservedLink = nullptr;
-  for (int i = 0; i < links.size(); i++) {
+  for (i32 i = 0; i < links.size(); i++) {
     if (!isBuffered(handles.at(i))) continue;
     if (!firstReservedLink || firstReservedLink->ptr > links.at(i).ptr) {
       firstReservedLink = &links.at(i);
@@ -185,8 +185,8 @@ void FileManager::reserveSpace(const file_t* const handle) {
 
 void FileManager::parseFileSearchPaths(const std::string& searchPaths, const char delim) {
   std::string val;
-  int start = 0;
-  int end = 0;
+  i32 start = 0;
+  i32 end = 0;
   fileSearchPaths.clear();
   do {
     end = searchPaths.find(delim, start);
