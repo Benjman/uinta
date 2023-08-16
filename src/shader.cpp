@@ -41,7 +41,7 @@ GLuint createShaderProgram(const std::vector<std::string>& sources, const std::v
   GLuint id = glCreateProgram();
   UINTA_glGetError(glCreateProgram);
 
-  for (auto i = 0; i < stages.size(); i++) {
+  for (size_t i = 0; i < stages.size(); i++) {
     const GLuint stageId = glCreateShader(stages.at(i));
     UINTA_glGetError(glCreateShader);
     const GLchar* cstr = sources.at(i).c_str();
