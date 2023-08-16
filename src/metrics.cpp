@@ -1,8 +1,5 @@
 #include <spdlog/spdlog.h>
 
-#include <algorithm>
-#include <cassert>
-#include <cstdio>
 #include <cstring>
 #include <stdexcept>
 #include <uinta/logging.hpp>
