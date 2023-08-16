@@ -223,6 +223,6 @@ void Quad::clear() noexcept {
 }
 
 bool Quad::isActive() const noexcept {
-  return entityCount > 0 || topLeft && topLeft->isActive() || topRight && topRight->isActive() ||
-         bottomLeft && bottomLeft->isActive() || bottomRight && bottomRight->isActive();
+  return entityCount > 0 || (topLeft && topLeft->isActive()) || (topRight && topRight->isActive()) ||
+         (bottomLeft && bottomLeft->isActive()) || (bottomRight && bottomRight->isActive());
 }
