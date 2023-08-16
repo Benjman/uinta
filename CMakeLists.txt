@@ -78,7 +78,7 @@ add_subdirectory(app)
 # testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true`
 if (UINTA_TEST)
   message(STATUS "Including tests")
-  set(INSTALL_GTEST ON CACHE BOOL "Createe googletest binaries.")
+  set(INSTALL_GTEST ON CACHE BOOL "Create googletest binaries.")
   add_subdirectory(${UINTA_LIBS_DIR}/googletest)
   add_subdirectory(test)
 endif()
