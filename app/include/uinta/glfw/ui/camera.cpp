@@ -1,7 +1,7 @@
 #include <uinta/glfw/imgui.h>
 #include <uinta/glfw/ui/limits.h>
 
-#include <uinta/camera/utils.hpp>
+#include <uinta/camera/target_camera.hpp>
 #include <uinta/math/utils.hpp>
 
 namespace uinta {

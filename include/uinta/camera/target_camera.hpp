@@ -37,6 +37,15 @@ struct TargetCamera {
   }
 };
 
+inline f32 calculateTranslationFactor(const TargetCamera& cam) {
+  auto result = cam.dist.current;
+  result = std::abs(result);
+  result = 1.3 * std::sqrt(result);
+  result *= cam.config.translationSpeedDistFactor;
+  result = std::max(cam.config.translationSpeedDistFactorMin, result);
+  return result;
+}
+
 }  // namespace uinta
 
 #endif  // UINTA_TARGET_CAMERA_HPP
