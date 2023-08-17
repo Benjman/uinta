@@ -46,8 +46,8 @@ bool GlfwRunner::shouldExit() {
 }
 
 void GlfwRunner::doPreTick(const RunnerState& state) {
-  Runner::doPreTick(state);
   ui::onPreTick(*this, state);
+  Runner::doPreTick(state);
 }
 
 void GlfwRunner::doTick(const RunnerState& state) {
@@ -61,8 +61,8 @@ void GlfwRunner::doPostTick(const RunnerState& state) {
 }
 
 void GlfwRunner::doPreRender(const RunnerState& state) {
-  Runner::doPreRender(state);
   ui::onPreRender(*this, state);
+  Runner::doPreRender(state);
 }
 
 void GlfwRunner::doRender(const RunnerState& state) {
@@ -72,11 +72,11 @@ void GlfwRunner::doRender(const RunnerState& state) {
 
 void GlfwRunner::doPostRender(const RunnerState& state) {
   Runner::doPostRender(state);
-  ui::onPostRender(*this, state);
   if (isFlagSet(ui::INPUT_HANDLED_KEYBOARD, ui::flags)) resetKeyboard(input);
   if (isFlagSet(ui::INPUT_HANDLED_MOUSE, ui::flags)) resetMouse(input);
   ui::flags = 0;
   /* SPDLOG_CRITICAL(v); */
+  ui::onPostRender(*this, state);
 }
 
 void GlfwRunner::doShutdown() {
