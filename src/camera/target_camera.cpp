@@ -11,8 +11,8 @@
 
 namespace uinta {
 
-void processInput(TargetCamera&, const RunnerState&, const InputState&);
-void updatePosition(TargetCamera&);
+inline void processInput(TargetCamera&, const RunnerState&, const InputState&);
+inline void updatePosition(TargetCamera&);
 inline f32 getAngleDelta(const InputState& input, const CameraConfig& config);
 inline f32 getDistDelta(const InputState& input, const CameraConfig& config);
 inline f32 getPitchDelta(const InputState& input, const CameraConfig& config);
@@ -55,7 +55,7 @@ void getOrthographicMatrix(glm::mat4* const ref, const TargetCamera& cam) {
   *ref = glm::orthoLH(-size, size, -size, size, cam.config.nearPlane, cam.config.farPlane);
 }
 
-void processInput(TargetCamera& cam, const RunnerState& state, const InputState& input) {
+inline void processInput(TargetCamera& cam, const RunnerState& state, const InputState& input) {
   auto scale = 1.0f;
   if (isKeyDown(input, KEY_LEFT_CONTROL)) scale = 5;
   if (isKeyDown(input, KEY_LEFT_ALT)) scale = 0.1;
@@ -68,7 +68,7 @@ void processInput(TargetCamera& cam, const RunnerState& state, const InputState&
   cam.target += getTranslationDelta(input, cam) * state.delta * scale;
 }
 
-void updatePosition(TargetCamera& cam) {
+inline void updatePosition(TargetCamera& cam) {
   const auto ar = glm::radians(cam.angle.current);
   const auto pr = glm::radians(cam.pitch.current);
   const auto ca = cos(ar);
