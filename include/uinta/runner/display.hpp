@@ -8,9 +8,9 @@ namespace uinta {
 
 struct Display {
   std::string title;
-  uint width;
-  uint height;
-  float aspectRatio;
+  u32 width;
+  u32 height;
+  f32 aspectRatio;
 
   Display() : Display("") {
   }
@@ -19,7 +19,7 @@ struct Display {
     *this = other;
   }
 
-  explicit Display(const std::string& title, uint width = 1920, uint height = 1080) noexcept;
+  explicit Display(const std::string& title, u32 width = 1920, u32 height = 1080) noexcept;
 
   Display& operator=(const Display& other) {
     this->title = other.title;
