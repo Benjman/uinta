@@ -12,10 +12,10 @@ struct SmoothVec3 {
   SmoothFloat y;
   SmoothFloat z;
 
-  explicit SmoothVec3(float agility, float x = 0, float y = 0, float z = 0) : x({agility, x}), y({agility, y}), z({agility, z}) {
+  explicit SmoothVec3(f32 agility, f32 x = 0, f32 y = 0, f32 z = 0) : x({agility, x}), y({agility, y}), z({agility, z}) {
   }
 
-  SmoothVec3(float agility, const glm::vec3& v) : x({agility, v.x}), y({agility, v.y}), z({agility, v.z}) {
+  SmoothVec3(f32 agility, const glm::vec3& v) : x({agility, v.x}), y({agility, v.y}), z({agility, v.z}) {
   }
 
   inline SmoothVec3& operator+=(const glm::vec3& v) {
@@ -54,7 +54,7 @@ inline void force(SmoothVec3& v, const glm::vec3& value) {
   force(v.z, value.z);
 }
 
-inline void update(SmoothVec3& v, float dt) {
+inline void update(SmoothVec3& v, f32 dt) {
   update(v.x, dt);
   update(v.y, dt);
   update(v.z, dt);
