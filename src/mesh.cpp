@@ -12,9 +12,8 @@ std::string enumToStringMeshAttrib(MeshAttribType);
 
 using namespace uinta;
 
-extern void uinta::generateMesh(const Quad* qt, float* vertexBuffer, unsigned int* indexBuffer, unsigned int* vertexCount,
-                                unsigned int* indexCount, unsigned int* indexOffset, const unsigned int width,
-                                const unsigned int height) noexcept {
+extern void uinta::generateMesh(const Quad* qt, f32* vertexBuffer, u32* indexBuffer, u32* vertexCount, u32* indexCount,
+                                u32* indexOffset, const u32 width, const u32 height) noexcept {
   if (qt == nullptr) return;
 
   /*
@@ -86,7 +85,7 @@ extern void uinta::generateMesh(const Quad* qt, float* vertexBuffer, unsigned in
   *indexOffset += 8u;
 
   // adjust vertices to screen size, and opengl ndc
-  for (int i = 0; i < 24; i++) {
+  for (i32 i = 0; i < 24; i++) {
     if (i % 2 == 0) {
       vertexBuffer[i] /= width;
       vertexBuffer[i] = 2 * vertexBuffer[i] - 1;

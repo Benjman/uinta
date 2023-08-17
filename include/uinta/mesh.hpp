@@ -1,16 +1,16 @@
 #ifndef UINTA_MESH_HPP
 #define UINTA_MESH_HPP
 
-#include <uinta/fwd.hpp>
+#include <uinta/types.h>
+
 #include <unordered_map>
 
 namespace uinta {
 
 struct Quad;
 
-extern void generateMesh(const Quad* qt, float* vertexBuffer, unsigned int* indexBuffer, unsigned int* vertexCount,
-                         unsigned int* indexCount, unsigned int* indexOffset, const unsigned int width,
-                         const unsigned int height) noexcept;
+extern void generateMesh(const Quad* qt, f32* vertexBuffer, u32* indexBuffer, u32* vertexCount, u32* indexCount, u32* indexOffset,
+                         const u32 width, const u32 height) noexcept;
 
 enum MeshAttribType {
   MeshAttribType_Color = 0,
@@ -20,10 +20,10 @@ enum MeshAttribType {
 };
 
 struct MeshAttrib final {
-  unsigned int stride;
-  unsigned int offset;
+  u32 stride;
+  u32 offset;
 
-  MeshAttrib(const unsigned int stride, const unsigned int offset) noexcept : stride(stride), offset(offset) {
+  MeshAttrib(const u32 stride, const u32 offset) noexcept : stride(stride), offset(offset) {
   }
 
   MeshAttrib(const MeshAttrib& other) noexcept {
