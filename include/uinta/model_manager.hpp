@@ -10,9 +10,9 @@ namespace uinta {
 
 struct Model {
   model_t id;  // TODO move to flags
-  uint vertexCount;
-  uint indexCount;
-  uint indexOffset;
+  u32 vertexCount;
+  u32 indexCount;
+  u32 indexOffset;
 
   Model() : id(0), vertexCount(0), indexCount(0), indexOffset(0) {
   }
@@ -48,16 +48,16 @@ class ModelManager {
 
   Model getModel(const model_t handle) const;
   const file_t* getFile(const model_t handle) const;
-  const float* const getVertexBuffer(const model_t handle) const;
-  uint getVertexBufferSize(const model_t handle) const;
-  const uint* const getIndexBuffer(const model_t handle) const;
-  uint getIndexBufferSize(const model_t handle) const;
+  const f32* const getVertexBuffer(const model_t handle) const;
+  u32 getVertexBufferSize(const model_t handle) const;
+  const u32* const getIndexBuffer(const model_t handle) const;
+  u32 getIndexBufferSize(const model_t handle) const;
 
  private:
   std::vector<Model> models;
   std::vector<const file_t*> files;
-  std::vector<float*> vertexBuffers;
-  std::vector<uint*> indexBuffers;
+  std::vector<f32*> vertexBuffers;
+  std::vector<u32*> indexBuffers;
 };
 
 }  // namespace uinta
