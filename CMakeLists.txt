@@ -77,7 +77,7 @@ target_link_libraries(uinta PUBLIC ${UINTA_LIBS})
 
 add_subdirectory(app)
 
-# testing disabled unless cmake was run with an enabling flag: `cmake -DUINTA_TEST=true`
+# Enable testing by running cmake with the flag: `cmake -DUINTA_TEST=true`
 if (UINTA_TEST)
   message(STATUS "Including tests")
   set(INSTALL_GTEST ON CACHE BOOL "Create googletest binaries.")
