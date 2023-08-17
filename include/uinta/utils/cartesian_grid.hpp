@@ -27,8 +27,8 @@ class CartesianGrid {
   Vbo vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   GLuint shader;
   GLuint u_mvp;
-  int vcount = 0;
-  float lineWidth = 1;
+  i32 vcount = 0;
+  f32 lineWidth = 1;
 };
 
 }  // namespace uinta
