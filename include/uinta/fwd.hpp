@@ -10,18 +10,4 @@
 #include <uinta/math/fwd.hpp>
 #include <uinta/runner/fwd.hpp>
 
-namespace uinta {
-
-struct MemoryLink;
-struct MeshAttrib;
-struct MetricsController;
-struct Quad;
-struct RunningAvg;
-
-class CartesianGrid;
-class FileManager;
-class ModelManager;
-
-}  // namespace uinta
-
 #endif  // UINTA_FWD_HPP
