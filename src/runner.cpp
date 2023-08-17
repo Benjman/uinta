@@ -25,7 +25,7 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept :
 
 i32 Runner::run() {
   try {
-    if (isRenderingEnabled(flags) && !createOpenGLContext()) return false;
+    if (isRenderingEnabled() && !createOpenGLContext()) return false;
     if (!doInit()) {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;
@@ -40,7 +40,7 @@ i32 Runner::run() {
         reset(input);
       } while (!shouldRenderFrame(state.delta));
       pollInput();
-      if (isRenderingEnabled(flags)) {
+      if (isRenderingEnabled()) {
         swapBuffers();
         clearBuffer(clearColor, clearMask);
         render(state);
@@ -62,7 +62,7 @@ i32 Runner::run() {
 bool Runner::doInit() {
   if (!fileManager.init()) return false;
   if (!scene.init(this)) return false;
-  if (isGridEnabled(flags) && !grid.init(fileManager)) return false;
+  if (isGridEnabled() && !grid.init(fileManager)) return false;
   glEnable(GL_DEPTH_TEST);
   return true;
 }
@@ -127,7 +127,7 @@ void Runner::doPreRender(const RunnerState& state) {
 }
 
 void Runner::doRender(const RunnerState& state) {
-  if (isGridEnabled(flags)) grid.render(getPerspectiveMatrix(camera, display) * getViewMatrix(camera));
+  if (isGridEnabled()) grid.render(getPerspectiveMatrix(camera, display) * getViewMatrix(camera));
 }
 
 void Runner::doPostRender(const RunnerState& state) {
@@ -143,7 +143,7 @@ void Runner::doPreTick(const RunnerState& state) {
 }
 
 void Runner::doTick(const RunnerState& state) {
-  if (isCameraEnabled(flags)) update(camera, state, input);
+  if (isCameraEnabled()) update(camera, state, input);
 }
 
 void Runner::doPostTick(const RunnerState& state) {
