@@ -5,15 +5,15 @@
 
 namespace uinta {
 
-inline float map0to1Range(const float value, const float min, const float max) {
+inline f32 map0to1Range(const f32 value, const f32 min, const f32 max) {
   return (value - min) / (max - min);
 }
 
-inline float map0to1RangeClamped(const float value, const float min, const float max) {
+inline f32 map0to1RangeClamped(const f32 value, const f32 min, const f32 max) {
   return clamp(map0to1Range(value, min, max), 0.0, 1.0);
 }
 
-inline float clamp(float value, float min, float max) {
+inline f32 clamp(f32 value, f32 min, f32 max) {
   if (value >= min && value <= max) return value;
   return value < min ? min : max;
 }
