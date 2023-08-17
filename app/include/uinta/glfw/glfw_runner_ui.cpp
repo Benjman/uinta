@@ -11,6 +11,7 @@ namespace uinta {
 
 static bool showingWindow = false;
 static TimingController renderTiming;
+static TimingController tickTiming;
 
 void ui::onInit(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
@@ -24,12 +25,14 @@ void ui::onInit(GlfwRunner &runner) {
 }
 
 void ui::onPreTick(GlfwRunner &runner, const RunnerState &state) {
+  tickTiming.start();
 }
 
 void ui::onTick(GlfwRunner &runner, const RunnerState &state) {
 }
 
 void ui::onPostTick(GlfwRunner &runner, const RunnerState &state) {
+  tickTiming.stop();
 }
 
 void ui::onPreRender(GlfwRunner &runner, const RunnerState &state) {
@@ -47,6 +50,7 @@ void ui::onRender(GlfwRunner &runner, const RunnerState &state) {
   auto &io = ImGui::GetIO();
   if (showingWindow) {
     ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    tickTiming.render("Tick ms");
     renderTiming.render("Render ms");
     camera(runner.camera);
     inputUi(runner);
