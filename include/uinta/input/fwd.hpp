@@ -1,7 +1,7 @@
 #ifndef UINTA_INPUT_FWD_HPP
 #define UINTA_INPUT_FWD_HPP
 
-#include <uinta/utils/flags.h>
+#include <uinta/flags.h>
 
 namespace uinta {
 

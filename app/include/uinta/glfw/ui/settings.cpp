@@ -1,5 +1,5 @@
+#include <uinta/flags.h>
 #include <uinta/glfw/imgui.h>
-#include <uinta/utils/flags.h>
 
 #include <uinta/runner/runner.hpp>
 

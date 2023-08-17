@@ -5,7 +5,7 @@
 
 #ifdef UINTA_DEBUG
 
-#include <uinta/utils/flags.h>
+#include <uinta/flags.h>
 
 #include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/logging.hpp>
