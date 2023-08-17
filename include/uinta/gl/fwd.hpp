@@ -1,7 +1,7 @@
 #ifndef UINTA_GL_FWD_HPP
 #define UINTA_GL_FWD_HPP
 
-#include <uinta/gl/api.h>
+#include <uinta/types.h>
 
 namespace uinta {
 
@@ -14,7 +14,7 @@ void bindVao(const Vao& vao);
 void destroyVao(Vao& vao);
 void disableVertexAttribs(Vao& vao);
 void enableVertexAttribs(Vao& vao);
-void indexBuffer(Vao& vao, const GLuint* const data, GLuint size, GLuint offset = 0);
+void indexBuffer(Vao& vao, const u32* const data, u32 size, u32 offset = 0);
 void initVao(Vao& vao);
 void initVertexAttribs(Vao& vao);
 void unbindVao(const Vao& unused);
@@ -22,9 +22,9 @@ void unbindVao(const Vao& unused);
 void bindVbo(const Vbo& vbo);
 void destroyVbo(Vbo& vbo);
 void initVbo(Vbo& vbo);
-void resizeVbo(Vbo& vbo, GLuint size);
+void resizeVbo(Vbo& vbo, u32 size);
 void unbindVbo(const Vbo& vao);
-bool uploadVbo(Vbo& vbo, const void* const data, GLuint size, GLuint offset = 0);
+bool uploadVbo(Vbo& vbo, const void* const data, u32 size, u32 offset = 0);
 
 }  // namespace uinta
 
