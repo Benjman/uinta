@@ -5,12 +5,15 @@
 
 #ifdef UINTA_DEBUG
 
-#include <uinta/gl/utils/flags.h>
+#include <uinta/utils/flags.h>
 
-#include <stdexcept>
-#include <string>
 #include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/logging.hpp>
+
+namespace uinta {
+
+static constexpr flag_t UINTA_GL_EXIT_ON_ERROR = 1 << 0;
+static constexpr flags_t UINTA_GL_FLAGS = UINTA_GL_EXIT_ON_ERROR;
 
 #define UINTA_glGetError_CASE(method, error)                                                                                   \
   case error:                                                                                                                  \
@@ -43,6 +46,8 @@
       }                                                                       \
     }                                                                         \
   }
+
+}  // namespace uinta
 
 #endif  // UINTA_DEBUG
 
