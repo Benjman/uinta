@@ -2,29 +2,12 @@
 
 #include <string>
 #include <uinta/logging.hpp>
-#include <uinta/runner/args.hpp>
 #include <uinta/runner/runner.hpp>
 #include <vector>
 
 namespace uinta {
 
-struct RunnerArg {
-  std::string key = "";
-  std::string value = "";
-
-  explicit RunnerArg(const std::string& key) : key(key) {
-  }
-
-  RunnerArg(const RunnerArg& other) {
-    *this = other;
-  }
-
-  RunnerArg& operator=(const RunnerArg& rhs) {
-    key = rhs.key;
-    value = rhs.value;
-    return *this;
-  }
-};
+using RunnerArg = std::pair<std::string, std::string>;
 
 void expectNoValue(const RunnerArg& arg);
 std::vector<RunnerArg> extractArgs(i32 argc, const char** argv);
@@ -40,23 +23,24 @@ void processArgs(Runner* runner, i32 argc, const char** argv) {
     if (processArg_noRendering(runner, arg)) continue;
     if (processArg_height(runner, arg)) continue;
     if (processArg_width(runner, arg)) continue;
-    SPDLOG_WARN("Unhandled argument: '{}'", arg.key);
+    SPDLOG_WARN("Unhandled argument: '{}'", arg.first);
   }
 }
 
 std::vector<RunnerArg> extractArgs(i32 argc, const char** argv) {
   std::vector<RunnerArg> result;
-  RunnerArg* current = nullptr;
+  RunnerArg current;
   for (i32 i = 0; i < argc; i++) {
+    if (i % 2 == 0) current = {};
     if (argv[i][0] == '-') {
-      std::string key = argv[i];
-      current = &result.emplace_back(key);
-      if (auto eqPos = key.find('='); eqPos != std::string::npos) {
-        current->key = key.substr(0, eqPos);
-        current->value = key.substr(eqPos + 1, key.length());
+      current.first = argv[i];
+      if (auto eqPos = current.first.find('='); eqPos != std::string::npos) {
+        current.second = current.first.substr(eqPos + 1, current.first.length());
+        current.first = current.first.substr(0, eqPos);
       }
-    } else if (current) {
-      current->value += argv[i];
+      result.emplace_back(current);
+    } else {
+      current.second += argv[i];
     }
   }
   return result;
@@ -67,10 +51,10 @@ bool processArg_noGrid(Runner* runner, const RunnerArg& arg) {
       "--no-grid",
       nullptr,
   };
-  if (!containsKey(arg.key.c_str(), keys)) return false;
+  if (!containsKey(arg.first.c_str(), keys)) return false;
   setFlag(RUNNER_FLAG_GRID, false, runner->flags);
   expectNoValue(arg);
-  SPDLOG_INFO("Cartesian grid disabled via argument '{}'.", arg.key);
+  SPDLOG_INFO("Cartesian grid disabled via argument '{}'.", arg.first);
   return true;
 }
 
@@ -79,10 +63,10 @@ bool processArg_noRendering(Runner* runner, const RunnerArg& arg) {
       "--no-render",
       nullptr,
   };
-  if (!containsKey(arg.key.c_str(), keys)) return false;
+  if (!containsKey(arg.first.c_str(), keys)) return false;
   setFlag(RUNNER_FLAG_RENDERING, false, runner->flags);
   expectNoValue(arg);
-  SPDLOG_INFO("Rendering disabled via argument '{}'.", arg.key);
+  SPDLOG_INFO("Rendering disabled via argument '{}'.", arg.first);
   return true;
 }
 
@@ -92,9 +76,9 @@ bool processArg_height(Runner* runner, const RunnerArg& arg) {
       "-h",
       nullptr,
   };
-  if (!containsKey(arg.key.c_str(), keys)) return false;
-  runner->handleWindowSizeChanged(runner->display.width, std::stof(arg.value));
-  SPDLOG_INFO("`{}`: Height set to: {}", arg.key, arg.value);
+  if (!containsKey(arg.first.c_str(), keys)) return false;
+  runner->handleWindowSizeChanged(runner->display.width, std::stof(arg.second));
+  SPDLOG_INFO("`{}`: Height set to: {}", arg.first, arg.second);
   return true;
 }
 
@@ -104,14 +88,14 @@ bool processArg_width(Runner* runner, const RunnerArg& arg) {
       "-w",
       nullptr,
   };
-  if (!containsKey(arg.key.c_str(), keys)) return false;
-  runner->handleWindowSizeChanged(std::stof(arg.value), runner->display.height);
-  SPDLOG_INFO("`{}`: Width set to: {}", arg.key, arg.value);
+  if (!containsKey(arg.first.c_str(), keys)) return false;
+  runner->handleWindowSizeChanged(std::stof(arg.second), runner->display.height);
+  SPDLOG_INFO("`{}`: Width set to: {}", arg.first, arg.second);
   return true;
 }
 
 void expectNoValue(const RunnerArg& arg) {
-  if (!arg.value.empty()) SPDLOG_WARN("Argument '{}' provided an unexpected value.", arg.key);
+  if (!arg.second.empty()) SPDLOG_WARN("Argument '{}' provided an unexpected value.", arg.first);
 }
 
 }  // namespace uinta

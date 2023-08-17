@@ -7,7 +7,6 @@
 #include <iostream>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/runner/args.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/runner/runner_state.hpp>
 
@@ -16,6 +15,8 @@ namespace uinta {
 inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
 inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime);
 static spdlog::stopwatch sw;
+
+void processArgs(Runner* runner, i32 argc, const char** argv);
 
 Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : display(title) {
   processArgs(this, argc, argv);
