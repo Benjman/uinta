@@ -55,7 +55,7 @@ void uinta::enableVertexAttribs(Vao& vao) {
   }
 }
 
-void uinta::indexBuffer(Vao& vao, const uint* const data, uint size, uint offset) {
+void uinta::indexBuffer(Vao& vao, const u32* const data, u32 size, u32 offset) {
   if (vao.id == GL_ZERO) {
     initVao(vao);
   }
