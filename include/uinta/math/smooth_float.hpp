@@ -6,11 +6,11 @@
 namespace uinta {
 
 struct SmoothFloat final {
-  float agility;
-  float current;
-  float target;
+  f32 agility;
+  f32 current;
+  f32 target;
 
-  SmoothFloat(float agility, float start) noexcept : agility(agility), current(start), target(start) {
+  SmoothFloat(f32 agility, f32 start) noexcept : agility(agility), current(start), target(start) {
   }
 
   SmoothFloat(const SmoothFloat& other) noexcept {
@@ -24,22 +24,22 @@ struct SmoothFloat final {
     return *this;
   }
 
-  inline SmoothFloat& operator=(float v) noexcept {
+  inline SmoothFloat& operator=(f32 v) noexcept {
     target = v;
     return *this;
   }
 
-  inline SmoothFloat& operator+=(float v) noexcept {
+  inline SmoothFloat& operator+=(f32 v) noexcept {
     target += v;
     return *this;
   }
 
-  inline SmoothFloat& operator-=(float v) noexcept {
+  inline SmoothFloat& operator-=(f32 v) noexcept {
     target -= v;
     return *this;
   }
 
-  inline operator float() const {
+  inline operator f32() const {
     return current;
   }
 };
@@ -48,12 +48,12 @@ inline void force(SmoothFloat& v) {
   force(v, v.target);
 }
 
-inline void force(SmoothFloat& v, float value) {
+inline void force(SmoothFloat& v, f32 value) {
   v.current = value;
   v.target = value;
 }
 
-inline void update(SmoothFloat& v, float dt) {
+inline void update(SmoothFloat& v, f32 dt) {
   v.current += (v.target - v.current) * v.agility * dt;
 }
 
