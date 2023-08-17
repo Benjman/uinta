@@ -8,6 +8,8 @@
 
 namespace uinta {
 
+class FileManager;
+
 class CartesianGrid {
   friend bool initShader(CartesianGrid&, FileManager&);
   friend bool initGrid(CartesianGrid&);
