@@ -10,11 +10,14 @@
 #include <uinta/model_manager.hpp>
 #include <uinta/runner/args.hpp>
 #include <uinta/runner/display.hpp>
-#include <uinta/runner/runner_flags.hpp>
 #include <uinta/scene/scene.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
+
+constexpr flag_t RUNNER_FLAG_CAMERA = 1 << 0;
+constexpr flag_t RUNNER_FLAG_GRID = 1 << 1;
+constexpr flag_t RUNNER_FLAG_RENDERING = 1 << 2;
 
 class Runner {
  public:
@@ -40,6 +43,10 @@ class Runner {
   void handleMouseButtonInput(const i32 button, const u32 action, const i32 mods);
   void handleScrollInput(const f64 xoffset, const f64 yoffset);
   void handleWindowSizeChanged(const i32 width, const i32 height);
+
+  bool isRenderingEnabled();
+  bool isCameraEnabled();
+  bool isGridEnabled();
 
  protected:
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;

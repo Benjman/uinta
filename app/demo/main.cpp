@@ -17,7 +17,7 @@ class DemoRunner : public GlfwRunner {
         {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}},
     });
 
-    if (isCameraEnabled(flags)) {
+    if (isCameraEnabled()) {
       force(camera.angle, 45);
       force(camera.pitch, 45);
       force(camera.dist, 5);
