@@ -3,19 +3,17 @@
 
 #include <uinta/types.h>
 
-#include <uinta/runner/fwd.hpp>
-
 namespace uinta {
 
 struct RunnerState final {
   /// tick cycle
-  uint tick = 0;
+  u32 tick = 0;
 
   /// time in seconds since last tick cycle
-  float delta = 0;
+  f32 delta = 0;
 
   /// time in seconds the runner has been ticking
-  float runtime = 0;
+  f32 runtime = 0;
 };
 
 }  // namespace uinta
