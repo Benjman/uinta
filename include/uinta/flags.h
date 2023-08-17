@@ -19,4 +19,4 @@ inline void setFlag(const flag_t mask, const bool state, flags_t& flags) {
 
 }  // namespace uinta
 
-#endif  // UINTA_RUNNER_FLAGS_H
+#endif  // UINTA_FLAGS_H
