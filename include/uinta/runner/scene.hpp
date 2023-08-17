@@ -40,9 +40,9 @@ class SceneShader {
 class Scene {
  public:
   Vao vao = {{
-      {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0},
-      {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 3 * sizeof(float)},
-      {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 6 * sizeof(float)},
+      {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 0},
+      {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 3 * sizeof(f32)},
+      {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 6 * sizeof(f32)},
   }};
   Vbo vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   SceneShader shader;
