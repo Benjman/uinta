@@ -6,9 +6,7 @@
 
 namespace uinta {
 
-struct BasicCamera;
 struct CameraConfig;
-struct StaticCamera;
 struct TargetCamera;
 
 void update(TargetCamera&, const RunnerState&, const InputState&);
