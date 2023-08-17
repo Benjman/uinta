@@ -16,7 +16,7 @@ struct TargetCamera {
   SmoothFloat angle{8, 0};
   SmoothFloat dist{8, 1};
   SmoothFloat pitch{8, 0};
-  float vertOffset{0};
+  f32 vertOffset{0};
 
   CameraConfig config;
 
