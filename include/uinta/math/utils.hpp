@@ -7,14 +7,14 @@
 
 namespace uinta {
 
-inline glm::vec3 getForward(float pitch, float yaw) {
+inline glm::vec3 getForward(f32 pitch, f32 yaw) {
   auto pitchRad = glm::radians(pitch);
   auto yawRad = glm::radians(yaw);
   return {cos(pitchRad) * sin(yawRad), -sin(pitchRad), cos(pitchRad) * cos(yawRad)};
 }
 
-inline float getPlaneInterceptDist(const glm::vec3& planePos, const glm::vec3& planeNormal, const glm::vec3& rayPos,
-                                   const glm::vec3& rayDirection) {
+inline f32 getPlaneInterceptDist(const glm::vec3& planePos, const glm::vec3& planeNormal, const glm::vec3& rayPos,
+                                 const glm::vec3& rayDirection) {
   auto denom = glm::dot(planeNormal, rayDirection);
   if (std::abs(denom) <= 1e-6) return 0;
   return glm::dot(planePos - rayPos, planeNormal) / denom;
@@ -27,16 +27,16 @@ inline glm::vec3 getPlaneInterceptPoint(const glm::vec3& planePos, const glm::ve
   return getPointOnRay(rayPos, rayDirection, dist);
 }
 
-inline glm::vec3 getPointOnRay(const glm::vec3& position, const glm::vec3& direction, float dist) {
+inline glm::vec3 getPointOnRay(const glm::vec3& position, const glm::vec3& direction, f32 dist) {
   return position + direction * dist;
 }
 
-inline glm::vec3 getRight(float yaw) {
+inline glm::vec3 getRight(f32 yaw) {
   auto yawRad = glm::radians(yaw);
   return {cos(yawRad), 0, -sin(yawRad)};
 }
 
-inline glm::vec3 getUp(float pitch, float yaw) {
+inline glm::vec3 getUp(f32 pitch, f32 yaw) {
   return getUp(getForward(pitch, yaw), getRight(yaw));
 }
 
