@@ -3,8 +3,8 @@
 
 using namespace uinta;
 
-RunningAvg::RunningAvg(const unsigned int sample_size) noexcept {
-  buffer = new float[sample_size];
+RunningAvg::RunningAvg(const u32 sample_size) noexcept {
+  buffer = new f32[sample_size];
   mavg = 0.0;
   dirty = false;
   position = 0u;
@@ -24,7 +24,7 @@ RunningAvg& RunningAvg::operator=(const RunningAvg& other) noexcept {
   return *this;
 }
 
-void RunningAvg::operator+=(const float v) noexcept {
+void RunningAvg::operator+=(const f32 v) noexcept {
   add(v);
 }
 
@@ -32,23 +32,23 @@ RunningAvg::~RunningAvg() {
   delete[] buffer;
 }
 
-float RunningAvg::avg() noexcept {
+f32 RunningAvg::avg() noexcept {
   if (!position) return 0.0;
   if (dirty) {
-    float sum = 0.0;
-    unsigned int len = std::min(position, count);
-    for (unsigned int i = 0u; i < len; i++) {
+    f32 sum = 0.0;
+    u32 len = std::min(position, count);
+    for (u32 i = 0u; i < len; i++) {
       sum += buffer[i];
     }
-    mavg = sum / (float)len;
+    mavg = sum / (f32)len;
     dirty = false;
   }
   return mavg;
 }
 
-void RunningAvg::add(float v) noexcept {
+void RunningAvg::add(f32 v) noexcept {
   buffer[position % count] = v;
   dirty = true;
   position++;
-  // TODO check for cursor violating uint max
+  // TODO check for cursor violating u32 max
 }
