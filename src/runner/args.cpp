@@ -27,14 +27,14 @@ struct RunnerArg {
 };
 
 void expectNoValue(const RunnerArg& arg);
-std::vector<RunnerArg> extractArgs(int argc, const char** argv);
+std::vector<RunnerArg> extractArgs(i32 argc, const char** argv);
 
 bool processArg_noGrid(Runner* runner, const RunnerArg& arg);
 bool processArg_noRendering(Runner* runner, const RunnerArg& arg);
 bool processArg_width(Runner* runner, const RunnerArg& arg);
 bool processArg_height(Runner* runner, const RunnerArg& arg);
 
-void processArgs(Runner* runner, int argc, const char** argv) {
+void processArgs(Runner* runner, i32 argc, const char** argv) {
   for (auto& arg : extractArgs(argc, argv)) {
     if (processArg_noGrid(runner, arg)) continue;
     if (processArg_noRendering(runner, arg)) continue;
@@ -44,10 +44,10 @@ void processArgs(Runner* runner, int argc, const char** argv) {
   }
 }
 
-std::vector<RunnerArg> extractArgs(int argc, const char** argv) {
+std::vector<RunnerArg> extractArgs(i32 argc, const char** argv) {
   std::vector<RunnerArg> result;
   RunnerArg* current = nullptr;
-  for (int i = 0; i < argc; i++) {
+  for (i32 i = 0; i < argc; i++) {
     if (argv[i][0] == '-') {
       std::string key = argv[i];
       current = &result.emplace_back(key);

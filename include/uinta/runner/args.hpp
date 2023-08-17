@@ -5,7 +5,7 @@
 
 namespace uinta {
 
-void processArgs(Runner* runner, int argc, const char** argv);
+void processArgs(Runner* runner, i32 argc, const char** argv);
 
 }  // namespace uinta
 
