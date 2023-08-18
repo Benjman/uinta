@@ -7,27 +7,26 @@
 
 namespace uinta {
 
-#define DEFAULT_DECIMAL_PLACES 2
-
-inline std::string formatMemory(int count, uint decimalPlaces = DEFAULT_DECIMAL_PLACES);
+static constexpr u8 DEFAULT_DECIMAL_PLACES = 2;
+inline std::string formatMemory(i32 count, u8 decimalPlaces = DEFAULT_DECIMAL_PLACES);
 inline std::string removeTrailingZeroes(std::string str);
 
-inline std::string formatMemory(int count, uint decimalPlaces) {
+inline std::string formatMemory(i32 count, u8 decimalPlaces) {
   if (count == 1) return "1 byte";
 
-  float value_f = count;
+  f32 value_f = count;
   std::string label = " ";
   auto abs = std::abs(value_f);
   auto pow = std::pow(10, decimalPlaces);
 
   if (abs >= GIGABYTES(1)) {
-    value_f /= (float)GIGABYTES(1);
+    value_f /= static_cast<f32>(GIGABYTES(1));
     label += "GB";
   } else if (abs >= MEGABYTES(1)) {
-    value_f /= (float)(MEGABYTES(1));
+    value_f /= static_cast<f32>((MEGABYTES(1)));
     label += "MB";
   } else if (abs >= KILOBYTES(1)) {
-    value_f /= (float)KILOBYTES(1);
+    value_f /= static_cast<f32>(KILOBYTES(1));
     label += "KB";
   } else {
     label += "bytes";
