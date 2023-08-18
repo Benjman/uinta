@@ -1,8 +1,11 @@
 #ifndef UINTA_CAMERA_FWD_HPP
 #define UINTA_CAMERA_FWD_HPP
 
-#include <uinta/fwd.hpp>
+#include <uinta/types.h>
+
+#include <uinta/input/fwd.hpp>
 #include <uinta/math/fwd.hpp>
+#include <uinta/runner/fwd.hpp>
 
 namespace uinta {
 
