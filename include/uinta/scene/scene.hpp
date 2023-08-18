@@ -61,6 +61,7 @@ class Scene {
   Scene();
 
   bool init(Runner* runner);
+  void onTick(const RunnerState& state);
 
   entt::entity addEntity(const SceneEntityInitializer& info);
   void addModel(const model_t model);

@@ -25,6 +25,9 @@ bool Scene::init(Runner* runner) {
   return true;
 }
 
+void Scene::onTick(const RunnerState& state) {
+}
+
 entt::entity Scene::addEntity(const SceneEntityInitializer& info) {
   auto* file = fileManager->registerFile(info.modelPath);
   fileManager->loadFile(file);
