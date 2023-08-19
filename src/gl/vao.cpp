@@ -23,9 +23,7 @@ void uinta::bindVao(const Vao& vao) {
 }
 
 void uinta::destroyVao(Vao& vao) {
-  if (vao.id == GL_ZERO) {
-    return;
-  }
+  if (vao.id == GL_ZERO) return;
   bindVao(vao);
   disableVertexAttribs(vao);
   glDeleteVertexArrays(1, &vao.id);
@@ -34,9 +32,7 @@ void uinta::destroyVao(Vao& vao) {
 }
 
 void uinta::disableVertexAttribs(Vao& vao) {
-  if (vao.id == GL_ZERO) {
-    return;
-  }
+  if (vao.id == GL_ZERO) return;
   bindVao(vao);
   for (const auto& attrib : vao.attribs) {
     glDisableVertexAttribArray(attrib.index);
@@ -45,9 +41,7 @@ void uinta::disableVertexAttribs(Vao& vao) {
 }
 
 void uinta::enableVertexAttribs(Vao& vao) {
-  if (vao.id == GL_ZERO) {
-    initVao(vao);
-  }
+  if (vao.id == GL_ZERO) initVao(vao);
   bindVao(vao);
   for (const auto& attrib : vao.attribs) {
     glEnableVertexAttribArray(attrib.index);
@@ -56,16 +50,10 @@ void uinta::enableVertexAttribs(Vao& vao) {
 }
 
 void uinta::indexBuffer(Vao& vao, const u32* const data, u32 size, u32 offset) {
-  if (vao.id == GL_ZERO) {
-    initVao(vao);
-  }
-  if (vao.indexBuffer.id == GL_ZERO) {
-    initVbo(vao.indexBuffer);
-  }
+  if (vao.id == GL_ZERO) initVao(vao);
+  if (vao.indexBuffer.id == GL_ZERO) initVbo(vao.indexBuffer);
   bindVao(vao);
-  if (uploadVbo(vao.indexBuffer, data, size, offset)) {
-    initVertexAttribs(vao);
-  }
+  if (uploadVbo(vao.indexBuffer, data, size, offset)) initVertexAttribs(vao);
 }
 
 void uinta::initVao(Vao& vao) {
@@ -77,9 +65,7 @@ void uinta::initVao(Vao& vao) {
 }
 
 void uinta::initVertexAttribs(Vao& vao) {
-  if (!vao.id) {
-    initVao(vao);
-  }
+  if (!vao.id) initVao(vao);
   for (auto& a : vao.attribs) {
     glVertexAttribPointer(a.index, a.size, a.type, a.normalized, a.stride, a.pointer);
     glEnableVertexAttribArray(a.index);

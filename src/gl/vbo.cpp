@@ -29,9 +29,7 @@ void uinta::bindVbo(const Vbo& vbo) {
 }
 
 void uinta::destroyVbo(Vbo& vbo) {
-  if (vbo.id == GL_ZERO) {
-    return;
-  }
+  if (vbo.id == GL_ZERO) return;
   glDeleteBuffers(1, &vbo.id);
   UINTA_glGetError(glDeleteBuffers);
 }
@@ -44,9 +42,7 @@ void uinta::initVbo(Vbo& vbo) {
 }
 
 void uinta::resizeVbo(Vbo& vbo, uint size) {
-  if (vbo.id == GL_ZERO) {
-    initVbo(vbo);
-  }
+  if (vbo.id == GL_ZERO) initVbo(vbo);
   if (vbo.size == 0) {
     bindVbo(vbo);
     glBufferData(vbo.target, size, nullptr, vbo.usage);
@@ -84,9 +80,7 @@ void uinta::unbindVbo(const Vbo& vao) {
 
 bool uinta::uploadVbo(Vbo& vbo, const void* const data, uint size, uint offset) {
   bool resized = false;
-  if (vbo.id == GL_ZERO) {
-    initVbo(vbo);
-  }
+  if (vbo.id == GL_ZERO) initVbo(vbo);
   if (vbo.max < offset + size) {
     resizeVbo(vbo, offset + size);
     resized = true;
