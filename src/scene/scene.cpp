@@ -12,7 +12,7 @@
 
 namespace uinta {
 
-inline glm::mat4 getTransform(glm::mat4 baseTransform, const entt::entity entity, const entt::registry& registry);
+inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry);
 
 Scene::Scene() : diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
 }
@@ -100,14 +100,14 @@ void SceneShader::updateDiffuseLight(const Light& light) const {
   // TODO: Color and position
 }
 
-inline glm::mat4 getTransform(glm::mat4 baseTransform, const entt::entity entity, const entt::registry& registry) {
+inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry) {
   auto& transform = registry.get<Transform>(entity);
-  auto mvp = glm::translate(baseTransform, transform.position);
-  mvp = glm::scale(mvp, transform.scale);
-  if (transform.rotation.x) mvp = glm::rotate(mvp, transform.rotation.x, glm::vec3(1, 0, 0));
-  if (transform.rotation.y) mvp = glm::rotate(mvp, transform.rotation.y, glm::vec3(0, 1, 0));
-  if (transform.rotation.z) mvp = glm::rotate(mvp, transform.rotation.z, glm::vec3(0, 0, 1));
-  return mvp;
+  auto model = glm::translate(baseTransform, transform.position);
+  if (transform.rotation.x) model = glm::rotate(model, transform.rotation.x, glm::vec3(1, 0, 0));
+  if (transform.rotation.y) model = glm::rotate(model, transform.rotation.y, glm::vec3(0, 1, 0));
+  if (transform.rotation.z) model = glm::rotate(model, transform.rotation.z, glm::vec3(0, 0, 1));
+  model = glm::scale(model, transform.scale);
+  return model;
 }
 
 Light::Light(const glm::vec3& direction, const glm::vec3& pos, const glm::vec3& color) noexcept
