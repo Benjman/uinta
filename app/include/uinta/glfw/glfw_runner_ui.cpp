@@ -55,7 +55,7 @@ void ui::onRender(GlfwRunner &runner, const RunnerState &state) {
     renderTiming.render("Render ms");
     camera(runner.camera);
     inputUi(runner);
-    scene(runner.scene);
+    scene(runner);
     settings(runner);
   }
   if (io.WantCaptureKeyboard) setFlag(INPUT_HANDLED_KEYBOARD, true, flags);
