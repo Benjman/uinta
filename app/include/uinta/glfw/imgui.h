@@ -1,5 +1,5 @@
-#ifndef UINTA_IMGUI_SRC_CPP
-#define UINTA_IMGUI_SRC_CPP
+#ifndef UINTA_IMGUI_H
+#define UINTA_IMGUI_H
 
 #ifndef IMGUI_API_DISABLED
 
@@ -14,4 +14,4 @@
 const char* const UINTA_IMGUI_GLSL_VERSION = "#version 330 core";
 
 #endif  // IMGUI_API_DISABLED
-#endif  // UINTA_IMGUI_SRC_CPP
+#endif  // UINTA_IMGUI_H
