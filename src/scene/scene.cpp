@@ -29,6 +29,7 @@ void Scene::onTick(const RunnerState& state) {
 }
 
 entt::entity Scene::addEntity(const SceneEntityInitializer& info) {
+  if (std::empty(info.modelPath)) throw std::invalid_argument("Model path is required for scene entities");
   auto* file = fileManager->registerFile(info.modelPath);
   fileManager->loadFile(file);
   auto model = modelManager->loadModel(file, fileManager);
