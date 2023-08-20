@@ -36,10 +36,9 @@ entt::entity Scene::addEntity(const SceneEntityInitializer& info) {
   addModel(model);
   fileManager->releaseFile(file);
 
-  Transform transform = {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}};
   entt::entity result = registry->create();
   registry->emplace<Model>(result, modelManager->getModel(model));
-  registry->emplace<Transform>(result, transform);
+  registry->emplace<Transform>(result, info.transform);
 
   return result;
 }

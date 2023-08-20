@@ -14,7 +14,7 @@ namespace uinta {
 
 struct SceneEntityInitializer {
   std::string modelPath;
-  Transform transform;
+  Transform transform = {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}};
 };
 
 struct Light {
