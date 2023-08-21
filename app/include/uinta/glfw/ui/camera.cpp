@@ -74,6 +74,9 @@ inline void cameraTransform(TargetCamera &camera) {
   ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.angle.target), 0.1f, &limits.min, &limits.max,
                     "%+.2f");
 
+  ImGui::DragScalar("Y-Offset", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.vertOffset), 0.1f, &limits.zero,
+                    &limits.max, "%+.2f");
+
   ImGui::DragScalar("Speed factor", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.config.translationSpeedDistFactor),
                     0.005f, &limits.zero, &limits.max, "%+.2f");
   ImGui::DragScalar("Speed factor min", ImGuiDataType_Float,
