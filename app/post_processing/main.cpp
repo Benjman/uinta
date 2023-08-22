@@ -61,7 +61,6 @@ class PostProcessing {
 
   void render(const RunnerState& state, const Fbo& fbo) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDisable(GL_DEPTH_TEST);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     bindVao(quadVao);
@@ -99,6 +98,12 @@ class PostProcessingRunner final : public GlfwRunner {
 
     shaders.init(fileManager);
     initObj("model/cube.obj", fileManager, cubeVao, cubeVbo, &icount);
+
+    auto& cam = scene.camera;
+    cam.dist = 5;
+    cam.pitch = 35;
+    cam.angle = 35;
+
     return true;
   }
 
