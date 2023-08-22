@@ -1,12 +1,9 @@
 #include <entt/entt.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <uinta/components.hpp>
-#include <uinta/model_manager.hpp>
+#include <glm/gtx/transform.hpp>
 #include <uinta/runner/runner.hpp>
-#include <uinta/runner/runner_state.hpp>
 #include <uinta/scene/scene.hpp>
-#include <uinta/utils/direction.hpp>
 
 namespace uinta {
 
