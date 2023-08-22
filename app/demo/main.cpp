@@ -18,10 +18,10 @@ class DemoRunner : public GlfwRunner {
     entity = scene.addEntity({"models/xyz.obj"}, registry);
     registry.get<Transform>(entity).scale *= 0.5;
 
-    if (isCameraEnabled()) {
-      force(camera.angle, 45);
-      force(camera.pitch, 45);
-      force(camera.dist, 7);
+    if (isFlagSet(Scene::CAMERA_ENABLED, scene.flags)) {
+      force(scene.camera.angle, 45);
+      force(scene.camera.pitch, 45);
+      force(scene.camera.dist, 7);
     }
 
     scene.updateDiffuseLight({{-1.5, 2, 1}});

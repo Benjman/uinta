@@ -22,8 +22,8 @@ bool SceneShader::init(FileManager& fileManager) {
 
 void SceneShader::start(const Runner* runner, const RunnerState& state) const {
   glUseProgram(id);
-  glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(runner->camera)));
-  glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(runner->camera, runner->display)));
+  glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(runner->scene.camera)));
+  glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(runner->scene.camera, runner->display)));
   glUniform1f(u_time, state.runtime);
 }
 

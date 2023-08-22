@@ -1,6 +1,7 @@
 #ifndef UINTA_SCENE_HPP
 #define UINTA_SCENE_HPP
 
+#include <uinta/camera/target_camera.hpp>
 #include <uinta/components.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
@@ -18,8 +19,9 @@ struct SceneEntityInitializer {
 class Scene {
  public:
   static constexpr flag_t DIFFUSE_LIGHT_DIRTY = 1 << 0;
+  static constexpr flag_t CAMERA_ENABLED = 1 << 1;
 
-  flags_t flags = DIFFUSE_LIGHT_DIRTY;
+  flags_t flags = DIFFUSE_LIGHT_DIRTY | CAMERA_ENABLED;
 
   Vao vao = {{
       {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 0},
@@ -28,6 +30,7 @@ class Scene {
   }};
   Vbo vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   SceneShader shader;
+  TargetCamera camera;
 
   Scene();
 

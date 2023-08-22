@@ -2,7 +2,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
-#include <uinta/runner/runner.hpp>
+#include <uinta/runner.hpp>
 #include <uinta/scene/scene.hpp>
 
 namespace uinta {
@@ -16,10 +16,12 @@ bool Scene::init(Runner* runner) {
   fileManager = &runner->fileManager;
   modelManager = &runner->modelManager;
   if (!shader.init(*fileManager)) return false;
+  setFlag(CAMERA_ENABLED, isFlagSet(RUNNER_FLAG_RENDERING, runner->flags), flags);
   return true;
 }
 
 void Scene::update(const RunnerState& state, const InputState& input, entt::registry& registry) {
+  if (isFlagSet(CAMERA_ENABLED, flags)) updateCamera(camera, state, input);
 }
 
 entt::entity Scene::addEntity(const SceneEntityInitializer& info, entt::registry& registry) {

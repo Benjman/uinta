@@ -3,7 +3,6 @@
 
 #include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
-#include <uinta/camera/target_camera.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/input/state.hpp>
@@ -14,7 +13,6 @@
 
 namespace uinta {
 
-constexpr flag_t RUNNER_FLAG_CAMERA = 1 << 0;
 constexpr flag_t RUNNER_FLAG_GRID = 1 << 1;
 constexpr flag_t RUNNER_FLAG_RENDERING = 1 << 2;
 
@@ -24,12 +22,11 @@ class Runner {
   Display display;
   FileManager fileManager;
   InputState input;
-  TargetCamera camera;
   Scene scene;
   ModelManager modelManager;
   entt::registry registry;
 
-  flags_t flags = RUNNER_FLAG_CAMERA | RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
+  flags_t flags = RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
 
   Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept;
 
@@ -44,7 +41,6 @@ class Runner {
   void handleWindowSizeChanged(const i32 width, const i32 height);
 
   bool isRenderingEnabled();
-  bool isCameraEnabled();
   bool isGridEnabled();
 
  protected:

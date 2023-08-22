@@ -128,7 +128,7 @@ void Runner::doPreRender(const RunnerState& state) {
 }
 
 void Runner::doRender(const RunnerState& state) {
-  if (isGridEnabled()) grid.render(getPerspectiveMatrix(camera, display) * getViewMatrix(camera));
+  if (isGridEnabled()) grid.render(getPerspectiveMatrix(scene.camera, display) * getViewMatrix(scene.camera));
 }
 
 void Runner::doPostRender(const RunnerState& state) {
@@ -144,7 +144,6 @@ void Runner::doPreTick(const RunnerState& state) {
 }
 
 void Runner::doTick(const RunnerState& state) {
-  if (isCameraEnabled()) updateCamera(camera, state, input);
   scene.update(state, input, registry);
 }
 
@@ -165,10 +164,6 @@ inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime) {
 
 bool Runner::isRenderingEnabled() {
   return isFlagSet(RUNNER_FLAG_RENDERING, flags);
-}
-
-bool Runner::isCameraEnabled() {
-  return isRenderingEnabled() && isFlagSet(RUNNER_FLAG_CAMERA, flags);
 }
 
 bool Runner::isGridEnabled() {
