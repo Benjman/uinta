@@ -18,7 +18,7 @@ inline f32 getDistDelta(const InputState& input, const CameraConfig& config);
 inline f32 getPitchDelta(const InputState& input, const CameraConfig& config);
 inline glm::vec3 getTranslationDelta(const InputState& input, const TargetCamera& cam);
 
-void update(TargetCamera& cam, const RunnerState& state, const InputState& input) {
+void updateCamera(TargetCamera& cam, const RunnerState& state, const InputState& input) {
   processInput(cam, state, input);
   update(cam.target, state.delta);
   update(cam.angle, state.delta);

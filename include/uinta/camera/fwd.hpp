@@ -12,7 +12,7 @@ namespace uinta {
 struct CameraConfig;
 struct TargetCamera;
 
-void update(TargetCamera&, const RunnerState&, const InputState&);
+void updateCamera(TargetCamera&, const RunnerState&, const InputState&);
 glm::mat4 getViewMatrix(const TargetCamera&);
 glm::mat4 getPerspectiveMatrix(const TargetCamera&, const Display&);
 void getPerspectiveMatrix(glm::mat4* const ref, const TargetCamera&, const Display&);

@@ -144,7 +144,7 @@ void Runner::doPreTick(const RunnerState& state) {
 }
 
 void Runner::doTick(const RunnerState& state) {
-  if (isCameraEnabled()) update(camera, state, input);
+  if (isCameraEnabled()) updateCamera(camera, state, input);
   scene.update(state, input, registry);
 }
 
