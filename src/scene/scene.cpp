@@ -23,7 +23,7 @@ bool Scene::init(Runner* runner) {
   return true;
 }
 
-void Scene::onTick(const RunnerState& state) {
+void Scene::update(const RunnerState& state, const InputState& input, entt::registry& registry) {
 }
 
 entt::entity Scene::addEntity(const SceneEntityInitializer& info) {

@@ -34,7 +34,8 @@ class Scene {
   Scene();
 
   bool init(Runner* runner);
-  void onTick(const RunnerState& state);
+
+  void update(const RunnerState& state, const InputState& input, entt::registry& registry);
 
   entt::entity addEntity(const SceneEntityInitializer& info);
   void addModel(const model_t model);
