@@ -1,7 +1,7 @@
 #include <glm/gtc/type_ptr.hpp>
-#include <uinta/camera/fwd.hpp>
+#include <uinta/camera/target_camera.hpp>
 #include <uinta/file_manager.hpp>
-#include <uinta/runner.hpp>
+#include <uinta/scene/light.hpp>
 #include <uinta/scene/shader.hpp>
 #include <uinta/shader.hpp>
 
@@ -20,10 +20,10 @@ bool SceneShader::init(FileManager& fileManager) {
   return id > GL_ZERO;
 }
 
-void SceneShader::start(const Runner* runner, const RunnerState& state) const {
+void SceneShader::start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const {
   glUseProgram(id);
-  glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(runner->scene.camera)));
-  glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(runner->scene.camera, runner->display)));
+  glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(view));
+  glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(proj));
   glUniform1f(u_time, state.runtime);
 }
 

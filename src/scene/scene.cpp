@@ -47,7 +47,9 @@ void Scene::addModel(const model_t model) {
 }
 
 void Scene::startRender(const Runner* runner, const RunnerState& state) {
-  shader.start(runner, state);
+  const auto view = getViewMatrix(camera);
+  const auto proj = getPerspectiveMatrix(camera, runner->display);
+  shader.start(view, proj, state);
   if (isFlagSet(DIFFUSE_LIGHT_DIRTY, flags)) {
     shader.updateDiffuseLight(diffuseLight);
     setFlag(DIFFUSE_LIGHT_DIRTY, false, flags);

@@ -3,10 +3,13 @@
 
 #include <uinta/gl/api.h>
 
-#include <uinta/fwd.hpp>
-#include <uinta/scene/light.hpp>
+#include <glm/mat4x4.hpp>
+#include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
+
+class FileManager;
+struct Light;
 
 class SceneShader {
  public:
@@ -20,7 +23,7 @@ class SceneShader {
 
   bool init(FileManager& fileManager);
 
-  void start(const Runner* runner, const RunnerState& state) const;
+  void start(const glm::mat4& view = glm::mat4(), const glm::mat4& proj = glm::mat4(), const RunnerState& state = {}) const;
 
   void updateDiffuseLight(const Light& light) const;
 };
