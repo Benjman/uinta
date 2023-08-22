@@ -17,7 +17,7 @@ struct CameraConfig {
   f32 farPlane = 200;
 
   f32 translateSpeedKeyboard = 4;
-  f32 translateSpeedMouse = 0.5;
+  f32 translateSpeedMouse = 2.0;
   f32 translationSpeedDistFactor = .45;  // Scales translation speed as a factor proportional to distance
   f32 translationSpeedDistFactorMin = .15;
   input_key_t translateBackward = KEY_D;
@@ -29,7 +29,7 @@ struct CameraConfig {
   f32 pitchMax = 90;
   f32 pitchMin = 0.5;
   f32 pitchSpeedKeyboard = 90;
-  f32 pitchSpeedMouse = 10;
+  f32 pitchSpeedMouse = 20;
   input_key_t pitchDown = KEY_A;
   input_key_t pitchMouse = MOUSE_BUTTON_RIGHT;
   input_key_t pitchUp = KEY_Q;
@@ -42,7 +42,7 @@ struct CameraConfig {
   input_key_t distUp = KEY_C;
 
   f32 angleSpeedKeyboard = 90;
-  f32 angleSpeedMouse = 10;
+  f32 angleSpeedMouse = 20;
   input_key_t angleLeft = KEY_W;
   input_key_t angleMouse = MOUSE_BUTTON_RIGHT;
   input_key_t angleRight = KEY_R;
