@@ -37,11 +37,13 @@ class Scene {
 
   void update(const RunnerState& state, const InputState& input, entt::registry& registry);
 
-  entt::entity addEntity(const SceneEntityInitializer& info);
+  entt::entity addEntity(const SceneEntityInitializer& info, entt::registry& registry);
+
   void addModel(const model_t model);
 
   void startRender(const Runner* runner, const RunnerState& state);
-  void render(const entt::entity entity, const entt::registry& registry);
+
+  void renderEntity(const entt::entity entity, const entt::registry& registry);
 
   const Light& getDiffuseLight() const;
 
@@ -51,7 +53,6 @@ class Scene {
   flags_t flags = DIFFUSE_LIGHT_DIRTY;
   FileManager* fileManager;
   ModelManager* modelManager;
-  entt::registry* registry;
   Light diffuseLight;
 };
 

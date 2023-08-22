@@ -18,7 +18,6 @@ Scene::Scene() : diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {
 bool Scene::init(Runner* runner) {
   fileManager = &runner->fileManager;
   modelManager = &runner->modelManager;
-  registry = &runner->registry;
   if (!shader.init(*fileManager)) return false;
   return true;
 }
@@ -26,7 +25,7 @@ bool Scene::init(Runner* runner) {
 void Scene::update(const RunnerState& state, const InputState& input, entt::registry& registry) {
 }
 
-entt::entity Scene::addEntity(const SceneEntityInitializer& info) {
+entt::entity Scene::addEntity(const SceneEntityInitializer& info, entt::registry& registry) {
   if (std::empty(info.modelPath)) throw std::invalid_argument("Model path is required for scene entities");
   auto* file = fileManager->registerFile(info.modelPath);
   fileManager->loadFile(file);
@@ -34,9 +33,9 @@ entt::entity Scene::addEntity(const SceneEntityInitializer& info) {
   addModel(model);
   fileManager->releaseFile(file);
 
-  entt::entity result = registry->create();
-  registry->emplace<Model>(result, modelManager->getModel(model));
-  registry->emplace<Transform>(result, info.transform);
+  entt::entity result = registry.create();
+  registry.emplace<Model>(result, modelManager->getModel(model));
+  registry.emplace<Transform>(result, info.transform);
 
   return result;
 }
@@ -57,8 +56,7 @@ void Scene::startRender(const Runner* runner, const RunnerState& state) {
   bindVao(vao);
 }
 
-void Scene::render(const entt::entity entity, const entt::registry& registry) {
-  // TODO: Generate transformation matrix: auto& transform = registry.get<Transform>(entity);
+void Scene::renderEntity(const entt::entity entity, const entt::registry& registry) {
   glUniformMatrix4fv(shader.u_model, 1, false, glm::value_ptr(getTransform(glm::mat4(1), entity, registry)));
   auto& model = registry.get<Model>(entity);
   glDrawElements(GL_TRIANGLES, model.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0));

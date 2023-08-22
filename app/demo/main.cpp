@@ -15,7 +15,7 @@ class DemoRunner : public GlfwRunner {
     // Notice that there is an issue translating vertices from Blender into the engine where Blender's Y-plane is mapping to our
     // Z-plane. Though not intentional, it seemingly works because if we exported from Blender to correctly map to our xyz
     // coordinates, it would make modeling in Blender wonky because everything would be sideways-up.
-    entity = scene.addEntity({"models/xyz.obj"});
+    entity = scene.addEntity({"models/xyz.obj"}, registry);
     registry.get<Transform>(entity).scale *= 0.5;
 
     if (isCameraEnabled()) {
@@ -32,7 +32,7 @@ class DemoRunner : public GlfwRunner {
   void doRender(const RunnerState& state) override {
     GlfwRunner::doRender(state);
     scene.startRender(this, state);
-    scene.render(entity, registry);
+    scene.renderEntity(entity, registry);
   }
 };
 
