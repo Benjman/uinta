@@ -43,6 +43,7 @@ set(UINTA_SRCS
   ./src/runner/display.cpp
   ./src/runner/runner.cpp
   ./src/scene/scene.cpp
+  ./src/scene/shader.cpp
   ./src/shader.cpp
   ./src/utils/cartesian_grid.cpp
   ./src/utils/direction.cpp

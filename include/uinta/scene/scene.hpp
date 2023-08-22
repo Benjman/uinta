@@ -10,29 +10,13 @@
 #include <uinta/gl/vbo.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/scene/light.hpp>
+#include <uinta/scene/shader.hpp>
 
 namespace uinta {
 
 struct SceneEntityInitializer {
   std::string modelPath;
   Transform transform = {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}};
-};
-
-class SceneShader {
- public:
-  GLuint id;
-  GLuint u_lightColor;
-  GLuint u_lightDir;
-  GLuint u_model;
-  GLuint u_proj;
-  GLuint u_view;
-  GLuint u_time;
-
-  bool init(FileManager& fileManager);
-
-  void start(const Runner* runner, const RunnerState& state) const;
-
-  void updateDiffuseLight(const Light& light) const;
 };
 
 class Scene {

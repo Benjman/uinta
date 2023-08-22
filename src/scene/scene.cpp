@@ -2,12 +2,10 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <uinta/components.hpp>
-#include <uinta/file_manager.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/scene/scene.hpp>
-#include <uinta/shader.hpp>
 #include <uinta/utils/direction.hpp>
 
 namespace uinta {
@@ -73,31 +71,6 @@ const Light& Scene::getDiffuseLight() const {
 void Scene::updateDiffuseLight(const Light& light) {
   diffuseLight = light;
   setFlag(DIFFUSE_LIGHT_DIRTY, true, flags);
-}
-
-bool SceneShader::init(FileManager& fileManager) {
-  auto vs = fileManager.registerFile("shader/scene.vs");
-  auto fs = fileManager.registerFile("shader/scene.fs");
-  fileManager.loadFile({vs, fs});
-  std::vector<std::string> screenSrcs({fileManager.getDataString(vs), fileManager.getDataString(fs)});
-  std::vector<GLenum> screenStages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
-  std::vector<std::string> uNames({"u_lightColor", "u_lightDir", "u_model", "u_proj", "u_view", "u_time"});
-  std::vector<GLuint*> uLocations = {&u_lightColor, &u_lightDir, &u_model, &u_proj, &u_view, &u_time};
-  id = createShaderProgram(screenSrcs, screenStages, uNames, uLocations);
-  fileManager.releaseFile({vs, fs});
-  return id > GL_ZERO;
-}
-
-void SceneShader::start(const Runner* runner, const RunnerState& state) const {
-  glUseProgram(id);
-  glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(runner->camera)));
-  glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(runner->camera, runner->display)));
-  glUniform1f(u_time, state.runtime);
-}
-
-void SceneShader::updateDiffuseLight(const Light& light) const {
-  glUniform3fv(u_lightDir, 1, glm::value_ptr(light.direction));
-  // TODO: Color and position
 }
 
 inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry) {
