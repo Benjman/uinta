@@ -110,19 +110,4 @@ inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity
   return model;
 }
 
-Light::Light(const glm::vec3& direction, const glm::vec3& pos, const glm::vec3& color) noexcept
-    : direction(direction), pos(pos), color(color) {
-}
-
-Light::Light(const Light& other) noexcept {
-  *this = other;
-}
-
-Light& Light::operator=(const Light& other) noexcept {
-  this->direction = glm::normalize(other.direction);
-  this->pos = other.pos;
-  this->color = glm::normalize(other.color);
-  return *this;
-}
-
 }  // namespace uinta

@@ -9,24 +9,13 @@
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
 #include <uinta/model_manager.hpp>
+#include <uinta/scene/light.hpp>
 
 namespace uinta {
 
 struct SceneEntityInitializer {
   std::string modelPath;
   Transform transform = {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}};
-};
-
-struct Light {
-  glm::vec3 direction;
-  glm::vec3 pos;
-  glm::vec3 color;
-
-  Light(const glm::vec3& direction, const glm::vec3& pos = {0, 0, 0}, const glm::vec3& color = {0, 0, 0}) noexcept;
-
-  Light(const Light& other) noexcept;
-
-  Light& operator=(const Light& other) noexcept;
 };
 
 class SceneShader {
