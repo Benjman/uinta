@@ -18,7 +18,6 @@ glm::mat4 getPerspectiveMatrix(const TargetCamera&, const Display&);
 void getPerspectiveMatrix(glm::mat4* const ref, const TargetCamera&, const Display&);
 glm::mat4 getOrthographicMatrix(const TargetCamera&);
 void getOrthographicMatrix(glm::mat4* const ref, const TargetCamera&);
-inline float calculateTranslationFactor(const TargetCamera&);
 
 }  // namespace uinta
 
