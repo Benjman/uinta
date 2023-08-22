@@ -16,9 +16,11 @@ struct SceneEntityInitializer {
 };
 
 class Scene {
+ public:
   static constexpr flag_t DIFFUSE_LIGHT_DIRTY = 1 << 0;
 
- public:
+  flags_t flags = DIFFUSE_LIGHT_DIRTY;
+
   Vao vao = {{
       {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 0},
       {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 3 * sizeof(f32)},
@@ -46,7 +48,6 @@ class Scene {
   void updateDiffuseLight(const Light& light);
 
  private:
-  flags_t flags = DIFFUSE_LIGHT_DIRTY;
   FileManager* fileManager;
   ModelManager* modelManager;
   Light diffuseLight;
