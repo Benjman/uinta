@@ -16,7 +16,7 @@ bool Scene::init(Runner* runner) {
   fileManager = &runner->fileManager;
   modelManager = &runner->modelManager;
   if (!shader.init(*fileManager)) return false;
-  setFlag(CAMERA_ENABLED, isFlagSet(RUNNER_FLAG_RENDERING, runner->flags), flags);
+  setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner->flags), flags);
   return true;
 }
 

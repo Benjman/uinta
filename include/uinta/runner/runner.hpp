@@ -13,11 +13,11 @@
 
 namespace uinta {
 
-constexpr flag_t RUNNER_FLAG_GRID = 1 << 1;
-constexpr flag_t RUNNER_FLAG_RENDERING = 1 << 2;
-
 class Runner {
  public:
+  static constexpr flag_t GRID_ENABLED = 1 << 1;
+  static constexpr flag_t RENDERING_ENABLED = 1 << 2;
+
   CartesianGrid grid;
   Display display;
   FileManager fileManager;
@@ -26,7 +26,7 @@ class Runner {
   ModelManager modelManager;
   entt::registry registry;
 
-  flags_t flags = RUNNER_FLAG_GRID | RUNNER_FLAG_RENDERING;
+  flags_t flags = GRID_ENABLED | RENDERING_ENABLED;
 
   Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept;
 

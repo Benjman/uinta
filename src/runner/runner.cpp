@@ -163,11 +163,11 @@ inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime) {
 }
 
 bool Runner::isRenderingEnabled() {
-  return isFlagSet(RUNNER_FLAG_RENDERING, flags);
+  return isFlagSet(Runner::RENDERING_ENABLED, flags);
 }
 
 bool Runner::isGridEnabled() {
-  return isRenderingEnabled() && isFlagSet(RUNNER_FLAG_GRID, flags);
+  return isRenderingEnabled() && isFlagSet(Runner::GRID_ENABLED, flags);
 }
 
 }  // namespace uinta

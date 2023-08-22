@@ -52,7 +52,7 @@ bool processArg_noGrid(Runner* runner, const RunnerArg& arg) {
       nullptr,
   };
   if (!containsKey(arg.first.c_str(), keys)) return false;
-  setFlag(RUNNER_FLAG_GRID, false, runner->flags);
+  setFlag(Runner::GRID_ENABLED, false, runner->flags);
   expectNoValue(arg);
   SPDLOG_INFO("Cartesian grid disabled via argument '{}'.", arg.first);
   return true;
@@ -64,7 +64,7 @@ bool processArg_noRendering(Runner* runner, const RunnerArg& arg) {
       nullptr,
   };
   if (!containsKey(arg.first.c_str(), keys)) return false;
-  setFlag(RUNNER_FLAG_RENDERING, false, runner->flags);
+  setFlag(Runner::RENDERING_ENABLED, false, runner->flags);
   expectNoValue(arg);
   SPDLOG_INFO("Rendering disabled via argument '{}'.", arg.first);
   return true;

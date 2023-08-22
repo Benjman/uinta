@@ -20,8 +20,8 @@ inline void settings(Runner &runner) {
 
 void settingsGrid(Runner &runner) {
 #ifndef IMGUI_API_DISABLED
-  ImGui::CheckboxFlags("Grid", &runner.flags, RUNNER_FLAG_GRID);
-  if (!isFlagSet(RUNNER_FLAG_GRID, runner.flags)) return;
+  ImGui::CheckboxFlags("Grid", &runner.flags, Runner::GRID_ENABLED);
+  if (!isFlagSet(Runner::GRID_ENABLED, runner.flags)) return;
   ImGui::SameLine();
   ImGui::PushItemWidth(100);
   ImGui::DragFloat("Thickness", &runner.grid.lineWidth, 0.5, 0.5, 15.0, "%0.1f", ImGuiSliderFlags_AlwaysClamp);
