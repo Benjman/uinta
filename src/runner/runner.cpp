@@ -26,7 +26,7 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept :
 
 i32 Runner::run() {
   try {
-    if (isRenderingEnabled() && !createOpenGLContext()) return false;
+    if (isFlagSet(RENDERING_ENABLED, flags) && !createOpenGLContext()) return false;
     if (!doInit()) {
       SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
       return EXIT_FAILURE;
@@ -41,7 +41,7 @@ i32 Runner::run() {
         reset(input);
       } while (!shouldRenderFrame(state.delta));
       pollInput();
-      if (isRenderingEnabled()) {
+      if (isFlagSet(RENDERING_ENABLED, flags)) {
         swapBuffers();
         clearBuffer(clearColor, clearMask);
         render(state);
@@ -161,10 +161,6 @@ inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime) {
   state.runtime = runtime;
   state.delta = runtime - lastRuntime;
   lastRuntime = runtime;
-}
-
-bool Runner::isRenderingEnabled() {
-  return isFlagSet(Runner::RENDERING_ENABLED, flags);
 }
 
 }  // namespace uinta

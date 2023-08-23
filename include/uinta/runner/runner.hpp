@@ -40,8 +40,6 @@ class Runner {
   void handleScrollInput(const f64 xoffset, const f64 yoffset);
   void handleWindowSizeChanged(const i32 width, const i32 height);
 
-  bool isRenderingEnabled();
-
  protected:
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
