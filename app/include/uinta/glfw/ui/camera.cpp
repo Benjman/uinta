@@ -3,21 +3,21 @@
 
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/math/utils.hpp>
+#include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
 
-inline void camera(TargetCamera &camera);
 inline void cameraClippingPlanes(TargetCamera &camera);
 inline void cameraHotkeys(TargetCamera &camera);
-inline void cameraTransform(TargetCamera &camera);
+inline void cameraTransform(TargetCamera &camera, const RunnerState &state);
 
-inline void camera(TargetCamera &camera) {
+inline void camera(TargetCamera &camera, const RunnerState &state) {
 #ifndef IMGUI_API_DISABLED
   if (!ImGui::CollapsingHeader("Camera")) return;
   ImGui::PushItemWidth(200);
   cameraClippingPlanes(camera);
   cameraHotkeys(camera);
-  cameraTransform(camera);
+  cameraTransform(camera, state);
   ImGui::PopItemWidth();
 #endif  // IMGUI_API_DISABLED
 }
@@ -48,7 +48,7 @@ inline void cameraHotkeys(TargetCamera &camera) {
 #endif  // IMGUI_API_DISABLED
 }
 
-inline void cameraTransform(TargetCamera &camera) {
+inline void cameraTransform(TargetCamera &camera, const RunnerState &state) {
 #ifndef IMGUI_API_DISABLED
   if (!ImGui::TreeNode("Transform")) return;
   f32 agility = camera.angle.agility;
@@ -82,6 +82,16 @@ inline void cameraTransform(TargetCamera &camera) {
   ImGui::DragScalar("Speed factor min", ImGuiDataType_Float,
                     reinterpret_cast<void *>(&camera.config.translationSpeedDistFactorMin), 0.005f, &limits.zero, &limits.max,
                     "%+.2f");
+
+  static bool doSpin = false;
+  static i32 doSpinRate = 15;
+  ImGui::Checkbox("Spin", &doSpin);
+  if (doSpin) {
+    ImGui::SameLine();
+    ImGui::SliderInt("Rate", &doSpinRate, limits.zero, limits.threeSixty);
+    camera.angle += doSpinRate * state.delta;
+  }
+
   ImGui::Text("Speed scalar  %+.2f", calculateTranslationFactor(camera));
 
   auto forward = getForward(camera.pitch, camera.angle);

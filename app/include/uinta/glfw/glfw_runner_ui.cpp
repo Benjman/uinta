@@ -53,7 +53,7 @@ void ui::onRender(GlfwRunner &runner, const RunnerState &state) {
     ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
     tickTiming.render("Tick ms");
     renderTiming.render("Render ms");
-    camera(runner.scene.camera);
+    camera(runner.scene.camera, state);
     inputUi(runner);
     scene(runner);
     settings(runner);
