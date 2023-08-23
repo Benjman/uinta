@@ -62,7 +62,7 @@ i32 Runner::run() {
 
 bool Runner::doInit() {
   if (!fileManager.init()) return false;
-  if (!scene.init(this)) return false;
+  if (!scene.init(*this)) return false;
   if (!grid.init(fileManager)) return false;
   glEnable(GL_DEPTH_TEST);
   return true;

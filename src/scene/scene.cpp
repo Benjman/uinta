@@ -15,10 +15,10 @@ Scene::Scene(Runner& runner)
       diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
 }
 
-bool Scene::init(Runner* runner) {
+bool Scene::init(Runner& runner) {
   if (!shader.init(fileManager)) return false;
-  setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner->flags), flags);
-  camera.config.aspectRatio = runner->display.aspectRatio;
+  setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags), flags);
+  camera.config.aspectRatio = runner.display.aspectRatio;
   return true;
 }
 

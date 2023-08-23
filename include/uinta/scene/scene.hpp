@@ -34,7 +34,7 @@ class Scene {
 
   Scene(Runner& runner);
 
-  bool init(Runner* runner);
+  bool init(Runner& runner);
 
   void update(const RunnerState& state, const InputState& input, entt::registry& registry);
 
