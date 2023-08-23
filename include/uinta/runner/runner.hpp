@@ -41,7 +41,6 @@ class Runner {
   void handleWindowSizeChanged(const i32 width, const i32 height);
 
   bool isRenderingEnabled();
-  bool isGridEnabled();
 
  protected:
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
