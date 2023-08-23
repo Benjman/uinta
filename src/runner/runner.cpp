@@ -18,7 +18,7 @@ static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : display(title) {
+Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : display(title), scene(*this) {
   processArgs(this, argc, argv);
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);

@@ -40,7 +40,7 @@ class ModelManager {
   ModelManager(const ModelManager& other) {
   }
 
-  model_t loadModel(const file_t* const file, const FileManager* fm,
+  model_t loadModel(const file_t* const file, const FileManager& fm,
                     const std::unordered_map<MeshAttribType, MeshAttrib>& attribs = {
                         {MeshAttribType_Position, {9, 0}},
                         {MeshAttribType_Normal, {9, 3}},

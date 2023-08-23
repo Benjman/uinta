@@ -9,13 +9,14 @@ namespace uinta {
 
 inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry);
 
-Scene::Scene() : diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
+Scene::Scene(Runner& runner)
+    : fileManager(runner.fileManager),
+      modelManager(runner.modelManager),
+      diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
 }
 
 bool Scene::init(Runner* runner) {
-  fileManager = &runner->fileManager;
-  modelManager = &runner->modelManager;
-  if (!shader.init(*fileManager)) return false;
+  if (!shader.init(fileManager)) return false;
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner->flags), flags);
   camera.config.aspectRatio = runner->display.aspectRatio;
   return true;
@@ -27,14 +28,14 @@ void Scene::update(const RunnerState& state, const InputState& input, entt::regi
 
 entt::entity Scene::addEntity(const SceneEntityInitializer& info, entt::registry& registry) {
   if (std::empty(info.modelPath)) throw std::invalid_argument("Model path is required for scene entities");
-  auto* file = fileManager->registerFile(info.modelPath);
-  fileManager->loadFile(file);
-  auto model = modelManager->loadModel(file, fileManager);
+  auto* file = fileManager.registerFile(info.modelPath);
+  fileManager.loadFile(file);
+  auto model = modelManager.loadModel(file, fileManager);
   addModel(model);
-  fileManager->releaseFile(file);
+  fileManager.releaseFile(file);
 
   entt::entity result = registry.create();
-  registry.emplace<Model>(result, modelManager->getModel(model));
+  registry.emplace<Model>(result, modelManager.getModel(model));
   registry.emplace<Transform>(result, info.transform);
 
   return result;
@@ -42,9 +43,9 @@ entt::entity Scene::addEntity(const SceneEntityInitializer& info, entt::registry
 
 void Scene::addModel(const model_t model) {
   initVao(vao);
-  uploadVbo(vbo, modelManager->getVertexBuffer(model), modelManager->getVertexBufferSize(model));
+  uploadVbo(vbo, modelManager.getVertexBuffer(model), modelManager.getVertexBufferSize(model));
   initVertexAttribs(vao);
-  indexBuffer(vao, modelManager->getIndexBuffer(model), modelManager->getIndexBufferSize(model));
+  indexBuffer(vao, modelManager.getIndexBuffer(model), modelManager.getIndexBufferSize(model));
 }
 
 void Scene::startRender(const RunnerState& state) {

@@ -7,16 +7,16 @@ namespace uinta {
 
 constexpr u32 HANDLE_ID_MASK = 0xFFFF;
 
-model_t ModelManager::loadModel(const file_t* const file, const FileManager* fm,
+model_t ModelManager::loadModel(const file_t* const file, const FileManager& fm,
                                 const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
   Model model;
   model.id = models.size();
-  const auto fileSize = fm->getSize(file);
+  const auto fileSize = fm.getSize(file);
   f32 vertices[fileSize];
   u32 indices[fileSize];
   u32 indexOffset = !model.id ? 0 : getModel(model.id - 1).indexOffset + getModel(model.id).indexCount;
 
-  loadObj(fm->getDataString(file), vertices, &model.vertexCount, indices, &model.indexCount, &indexOffset, attribs);
+  loadObj(fm.getDataString(file), vertices, &model.vertexCount, indices, &model.indexCount, &indexOffset, attribs);
 
   vertexBuffers.push_back(new f32[model.vertexCount]);  // TODO better allocator
   memcpy(vertexBuffers.at(model.id), vertices, model.vertexCount * sizeof(f32));

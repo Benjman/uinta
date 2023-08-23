@@ -32,7 +32,7 @@ class Scene {
   SceneShader shader;
   TargetCamera camera;
 
-  Scene();
+  Scene(Runner& runner);
 
   bool init(Runner* runner);
 
@@ -51,8 +51,8 @@ class Scene {
   void updateDiffuseLight(const Light& light);
 
  private:
-  FileManager* fileManager;
-  ModelManager* modelManager;
+  FileManager& fileManager;
+  ModelManager& modelManager;
   Light diffuseLight;
 };
 
