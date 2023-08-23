@@ -116,6 +116,7 @@ void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
   display.width = width;
   display.height = height;
   display.aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
+  scene.camera.config.aspectRatio = display.aspectRatio;
   onWindowSizeChanged();
 }
 
@@ -128,7 +129,7 @@ void Runner::doPreRender(const RunnerState& state) {
 }
 
 void Runner::doRender(const RunnerState& state) {
-  if (isFlagSet(GRID_ENABLED, flags)) grid.render(getPerspectiveMatrix(scene.camera, display) * getViewMatrix(scene.camera));
+  if (isFlagSet(GRID_ENABLED, flags)) grid.render(getPerspectiveMatrix(scene.camera) * getViewMatrix(scene.camera));
 }
 
 void Runner::doPostRender(const RunnerState& state) {

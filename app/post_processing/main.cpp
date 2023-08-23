@@ -119,7 +119,7 @@ class PostProcessingRunner final : public GlfwRunner {
     bindVao(cubeVao);
 
     auto view = getViewMatrix(scene.camera);
-    auto proj = getPerspectiveMatrix(scene.camera, display);
+    auto proj = getPerspectiveMatrix(scene.camera);
     auto model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
     glUniformMatrix4fv(colorShader.u_mvp, 1, GL_FALSE, &(proj * view * model)[0][0]);
     glDrawArrays(GL_TRIANGLES, 0, icount);

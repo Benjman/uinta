@@ -12,6 +12,7 @@ struct CameraConfig {
   flags_t flags = CAMERA_DIST_LIMIT | CAMERA_PITCH_LIMIT;
 
   f32 fov = 45;
+  f32 aspectRatio = 1.0;
 
   f32 nearPlane = 0.07;
   f32 farPlane = 200;

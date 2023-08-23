@@ -34,14 +34,14 @@ glm::mat4 getViewMatrix(const TargetCamera& cam) {
   return delta;
 }
 
-glm::mat4 getPerspectiveMatrix(const TargetCamera& cam, const Display& display) {
+glm::mat4 getPerspectiveMatrix(const TargetCamera& cam) {
   glm::mat4 result;
-  getPerspectiveMatrix(&result, cam, display);
+  getPerspectiveMatrix(&result, cam);
   return result;
 }
 
-void getPerspectiveMatrix(glm::mat4* const ref, const TargetCamera& cam, const Display& display) {
-  *ref = glm::perspective(cam.config.fov, display.aspectRatio, cam.config.nearPlane, cam.config.farPlane);
+void getPerspectiveMatrix(glm::mat4* const ref, const TargetCamera& cam) {
+  *ref = glm::perspective(cam.config.fov, cam.config.aspectRatio, cam.config.nearPlane, cam.config.farPlane);
 }
 
 glm::mat4 getOrthographicMatrix(const TargetCamera& cam) {

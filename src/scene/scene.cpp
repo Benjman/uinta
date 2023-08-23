@@ -17,6 +17,7 @@ bool Scene::init(Runner* runner) {
   modelManager = &runner->modelManager;
   if (!shader.init(*fileManager)) return false;
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner->flags), flags);
+  camera.config.aspectRatio = runner->display.aspectRatio;
   return true;
 }
 
@@ -48,7 +49,7 @@ void Scene::addModel(const model_t model) {
 
 void Scene::startRender(const Runner* runner, const RunnerState& state) {
   const auto view = getViewMatrix(camera);
-  const auto proj = getPerspectiveMatrix(camera, runner->display);
+  const auto proj = getPerspectiveMatrix(camera);
   shader.start(view, proj, state);
   if (isFlagSet(DIFFUSE_LIGHT_DIRTY, flags)) {
     shader.updateDiffuseLight(diffuseLight);

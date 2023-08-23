@@ -57,8 +57,8 @@ class ModelManagerRunner : public GlfwRunner {
     bindVao(vao);
 
     glUniformMatrix4fv(u_model, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
-    glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(camera)));
-    glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(camera, display)));
+    glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(getViewMatrix(scene.camera)));
+    glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(getPerspectiveMatrix(scene.camera)));
 
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
   }

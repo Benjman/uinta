@@ -16,7 +16,7 @@ inline void inputUi(Runner &runner) {
   if (ImGui::TreeNode("Cursor info")) {
     const auto& camera = runner.scene.camera;
     auto view = getViewMatrix(camera);
-    auto proj = getPerspectiveMatrix(camera, runner.display);
+    auto proj = getPerspectiveMatrix(camera);
 
     glm::vec2 cursor = {runner.input.cursorx, runner.input.cursory};
     glm::vec2 viewport = {runner.display.width, runner.display.height};
