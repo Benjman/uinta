@@ -42,7 +42,7 @@ class Scene {
 
   void addModel(const model_t model);
 
-  void startRender(const Runner* runner, const RunnerState& state);
+  void startRender(const RunnerState& state);
 
   void renderEntity(const entt::entity entity, const entt::registry& registry);
 

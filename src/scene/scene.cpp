@@ -47,7 +47,7 @@ void Scene::addModel(const model_t model) {
   indexBuffer(vao, modelManager->getIndexBuffer(model), modelManager->getIndexBufferSize(model));
 }
 
-void Scene::startRender(const Runner* runner, const RunnerState& state) {
+void Scene::startRender(const RunnerState& state) {
   const auto view = getViewMatrix(camera);
   const auto proj = getPerspectiveMatrix(camera);
   shader.start(view, proj, state);

@@ -125,7 +125,7 @@ Runner::~Runner() {
 }
 
 void Runner::doPreRender(const RunnerState& state) {
-  scene.startRender(this, state);
+  scene.startRender(state);
 }
 
 void Runner::doRender(const RunnerState& state) {
