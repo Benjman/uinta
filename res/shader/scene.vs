@@ -4,10 +4,10 @@ layout (location = 0) in vec3 in_pos;
 layout (location = 1) in vec3 in_normal;
 layout (location = 2) in vec3 in_color;
 
-uniform mat4 u_model;
-uniform mat4 u_view;
-uniform mat4 u_proj;
-uniform float u_time;
+uniform mat4 u_model = mat4(1);
+uniform mat4 u_view = mat4(1);
+uniform mat4 u_proj = mat4(1);
+uniform float u_time = 0;
 
 flat out vec3 pass_normal;
 out vec3 pass_color;
