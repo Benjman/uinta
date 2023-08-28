@@ -41,13 +41,13 @@ class Scene {
 
   Scene(Runner& runner);
 
-  bool init(Runner& runner);
+  uinta_error_code init(Runner& runner);
 
   void update(const RunnerState& state, const InputState& input, entt::registry& registry);
 
-  entt::entity addEntity(const SceneEntityInitializer& info, entt::registry& registry);
+  uinta_error_code addEntity(entt::entity& ref, const SceneEntityInitializer& info, entt::registry& registry);
 
-  void addModel(const model_t model);
+  uinta_error_code addModel(const model_t model);
 
   void startRender(const RunnerState& state);
 

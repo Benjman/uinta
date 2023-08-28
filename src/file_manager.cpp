@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/memory/memory_link.hpp>
@@ -27,12 +28,12 @@ FileManager::~FileManager() {
   storageSize = 0;
 }
 
-bool FileManager::init(const std::string& searchPaths, const char delim) {
+uinta_error_code FileManager::init(const std::string& searchPaths, const char delim) {
   if (isFlagSet(FILEMANAGER_INITIALIZED, flags)) SPDLOG_WARN("Too many calls to FileManager::init()!");
   parseFileSearchPaths(searchPaths, delim);
   setFlag(FILEMANAGER_INITIALIZED, true, flags);
   loadAll();
-  return true;
+  return SUCCESS_EC;
 }
 
 const file_t* const FileManager::registerFile(const std::string& relativePath) {

@@ -7,7 +7,6 @@ namespace uinta {
 
 class GlfwRunner : public Runner {
   friend void registerCallbacks(GlfwRunner*);
-  friend bool createGLFWWindow(GlfwRunner*);
 
  public:
   GLFWwindow* window = nullptr;
@@ -18,7 +17,7 @@ class GlfwRunner : public Runner {
   ~GlfwRunner();
 
  protected:
-  virtual bool doInit() override;
+  virtual uinta_error_code doInit() override;
   virtual void doPreTick(const RunnerState& state) override;
   virtual void doTick(const RunnerState& state) override;
   virtual void doPostTick(const RunnerState& state) override;
@@ -28,7 +27,7 @@ class GlfwRunner : public Runner {
   virtual void doShutdown() override;
 
   void swapBuffers() override;
-  bool createOpenGLContext() override;
+  uinta_error_code createOpenGLContext() override;
   f64 getRuntime() const override;
   void pollInput() override;
 };

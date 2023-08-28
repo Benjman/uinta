@@ -2,10 +2,20 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
+#include <uinta/error.hpp>
 #include <uinta/runner.hpp>
 #include <uinta/scene/scene.hpp>
 
 namespace uinta {
+
+enum class error {
+  InvalidModelPath = 100,
+};
+static const std::map<uinta_error_code_t, std::string> errorMessages = {
+    {static_cast<uinta_error_code_t>(error::InvalidModelPath), "Model path is required for scene entities"},
+};
+
+UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
 inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry);
 
@@ -15,37 +25,41 @@ Scene::Scene(Runner& runner)
       diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
 }
 
-bool Scene::init(Runner& runner) {
-  if (!shader.init(fileManager)) return false;
+uinta_error_code Scene::init(Runner& runner) {
+  if (auto error = shader.init(fileManager); error) return error;
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags), flags);
   camera.config.aspectRatio = runner.display.aspectRatio;
-  return true;
+  return SUCCESS_EC;
 }
 
 void Scene::update(const RunnerState& state, const InputState& input, entt::registry& registry) {
   if (isFlagSet(CAMERA_ENABLED, flags)) updateCamera(camera, state, input);
 }
 
-entt::entity Scene::addEntity(const SceneEntityInitializer& info, entt::registry& registry) {
-  if (std::empty(info.modelPath)) throw std::invalid_argument("Model path is required for scene entities");
-  auto* file = fileManager.registerFile(info.modelPath);
+uinta_error_code Scene::addEntity(entt::entity& ref, const SceneEntityInitializer& info, entt::registry& registry) {
+  if (std::empty(info.modelPath)) return make_error(error::InvalidModelPath);
+  const auto* file = fileManager.registerFile(info.modelPath);
   fileManager.loadFile(file);
-  auto model = modelManager.loadModel(file, fileManager);
-  addModel(model);
+  model_t model;
+  if (auto error = modelManager.loadModel(model, file, fileManager); error) return error;
+  if (auto error = addModel(model); error) return error;
   fileManager.releaseFile(file);
 
-  entt::entity result = registry.create();
-  registry.emplace<Model>(result, modelManager.getModel(model));
-  registry.emplace<Transform>(result, info.transform);
+  ref = registry.create();
+  registry.emplace<Model>(ref, modelManager.getModel(model));
+  registry.emplace<Transform>(ref, info.transform);
 
-  return result;
+  return SUCCESS_EC;
 }
 
-void Scene::addModel(const model_t model) {
-  initVao(vao);
-  uploadVbo(vbo, modelManager.getVertexBuffer(model), modelManager.getVertexBufferSize(model));
-  initVertexAttribs(vao);
-  indexBuffer(vao, modelManager.getIndexBuffer(model), modelManager.getIndexBufferSize(model));
+uinta_error_code Scene::addModel(const model_t model) {
+  if (auto error = initVao(vao); error) return error;
+  if (auto error = uploadVbo(vbo, modelManager.getVertexBuffer(model), modelManager.getVertexBufferSize(model)); error)
+    return error;
+  if (auto error = initVertexAttribs(vao); error) return error;
+  if (auto error = indexBuffer(vao, modelManager.getIndexBuffer(model), modelManager.getIndexBufferSize(model)); error)
+    return error;
+  return SUCCESS_EC;
 }
 
 void Scene::startRender(const RunnerState& state) {

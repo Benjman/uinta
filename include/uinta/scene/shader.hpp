@@ -4,6 +4,7 @@
 #include <uinta/gl/api.h>
 
 #include <glm/mat4x4.hpp>
+#include <uinta/error.hpp>
 #include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
@@ -21,7 +22,7 @@ class SceneShader {
   GLuint u_view;
   GLuint u_time;
 
-  bool init(FileManager& fileManager);
+  uinta_error_code init(FileManager& fileManager);
 
   void start(const glm::mat4& view = glm::mat4(), const glm::mat4& proj = glm::mat4(), const RunnerState& state = {}) const;
 

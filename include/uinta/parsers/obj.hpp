@@ -2,6 +2,7 @@
 #define UINTA_OBJ_HPP
 
 #include <string>
+#include <uinta/error.hpp>
 #include <uinta/mesh.hpp>
 
 namespace uinta {
@@ -20,8 +21,8 @@ namespace uinta {
 //                  {MeshAttribType_Normal, {9, 3}},
 //                  {MeshAttribType_Color, {9, 6}},
 //              });
-void loadObj(const std::string& buffer, f32* const vbuf, u32* const vcount, u32* const ibuf, u32* icount, u32* const ioff,
-             const std::unordered_map<MeshAttribType, MeshAttrib>& attribs);
+uinta_error_code loadObj(const std::string& buffer, f32* const vbuf, u32* const vcount, u32* const ibuf, u32* icount,
+                         u32* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs);
 
 }  // namespace uinta
 

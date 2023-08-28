@@ -2,6 +2,7 @@
 #define UINTA_UTILS_CARTESIAN_GRID_HPP
 
 #include <glm/fwd.hpp>
+#include <uinta/error.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
@@ -11,12 +12,12 @@ namespace uinta {
 class FileManager;
 
 class CartesianGrid {
-  friend bool initShader(CartesianGrid&, FileManager&);
-  friend bool initGrid(CartesianGrid&);
+  friend uinta_error_code initShader(CartesianGrid&, FileManager&);
+  friend uinta_error_code initGrid(CartesianGrid&);
   friend void settingsGrid(Runner&);
 
  public:
-  bool init(FileManager& fileManager);
+  uinta_error_code init(FileManager& fileManager);
   void render(const glm::mat4& projView);
 
  private:

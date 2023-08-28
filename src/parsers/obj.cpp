@@ -1,4 +1,5 @@
 #include <glm/vec3.hpp>
+#include <uinta/error.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/parsers/obj.hpp>
 #include <vector>
@@ -10,6 +11,18 @@ using namespace uinta;
 /***********************************/
 
 namespace uinta {
+
+enum class error {
+  AttribsMissing = 100,
+  ColorsMissing = 110,
+};
+static const std::map<uinta_error_code_t, std::string> errorMessages = {
+    {static_cast<uinta_error_code_t>(error::AttribsMissing), "No attributes provided!"},
+    {static_cast<uinta_error_code_t>(error::ColorsMissing), "Color data requested but missing from .obj file!"},
+};
+
+UINTA_ERROR_FRAMEWORK(ObjParser, errorMessages);
+
 struct objface {
   i32 vert, uv, norm, index;
 
@@ -38,12 +51,9 @@ void processFaces(const std::vector<std::string>&, std::vector<objface>&, u32* c
 
 }  // namespace uinta
 
-void uinta::loadObj(const std::string& objBuffer, f32* const vbuf, u32* vcount, u32* const ibuf, u32* icount, u32* const ioff,
-                    const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
-  if (!attribs.size()) {
-    SPDLOG_WARN("Unable to parse .obj file: No attributes provided!");
-    return;
-  }
+uinta_error_code uinta::loadObj(const std::string& objBuffer, f32* const vbuf, u32* vcount, u32* const ibuf, u32* icount,
+                                u32* const ioff, const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
+  if (attribs.size() == 0) return make_error(error::AttribsMissing);
 
   std::vector<std::string> vertexLines;
   std::vector<std::string> uvLines;
@@ -80,12 +90,10 @@ void uinta::loadObj(const std::string& objBuffer, f32* const vbuf, u32* vcount, 
     packVertices(findMeshAttrib(MeshAttribType_Position, attribs), vbuf, vcount, faceData, vertices, hasColor);
   }
   if (hasMeshAttrib(MeshAttribType_Color, attribs)) {
-    if (!hasColor) {
-      SPDLOG_WARN("Mesh color data was requested, but the `.obj` file does not contain color data!");
-      return;
-    }
+    if (!hasColor) return make_error(error::ColorsMissing);
     packColors(findMeshAttrib(MeshAttribType_Color, attribs), vbuf, vcount, faceData, vertices);
   }
+  return SUCCESS_EC;
 }
 
 void uinta::processFaces(const std::vector<std::string>& faceLines, std::vector<objface>& result, u32* const indexbuffer,
@@ -162,7 +170,7 @@ i32 uinta::findOrInsertFaceData(const objface& face, std::vector<objface>& faceD
       return i;
     }
   }
-  SPDLOG_WARN("Failed to find appropriate index. This is a \"critical\" warniung");
+  SPDLOG_WARN("Failed to find matching index!");
   return -1;
 }
 

@@ -1,5 +1,6 @@
 #include <uinta/gl/api.h>
 
+#include <uinta/error.hpp>
 #include <uinta/gl/fbo.hpp>
 #include <uinta/gl/utils/errors.hpp>
 
@@ -9,9 +10,18 @@
 
 namespace uinta {
 
+enum class error {
+  IncompleteError = 100,
+};
+static const std::map<uinta_error_code_t, std::string> errorMessages = {
+    {static_cast<uinta_error_code_t>(error::IncompleteError), "OpenGL couldn't complete framebuffer!"},
+};
+
+UINTA_ERROR_FRAMEWORK(FBO, errorMessages);
+
 inline void genColorBufferAttachment(Fbo& fbo);
 
-void initFbo(Fbo& fbo) {
+uinta_error_code initFbo(Fbo& fbo) {
   glGenFramebuffers(1, &fbo.id);
   UINTA_glGetError(glGenFramebuffers);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo.id);
@@ -44,8 +54,9 @@ void initFbo(Fbo& fbo) {
 #ifdef UINTA_DEBUG
   auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   UINTA_glGetError(glCheckFramebufferStatus);
-  if (status != GL_FRAMEBUFFER_COMPLETE) SPDLOG_ERROR("Incomplete framebuffer!");
+  if (status != GL_FRAMEBUFFER_COMPLETE) return make_error(error::IncompleteError);
 #endif
+  return SUCCESS_EC;
 }
 
 void genColorBufferAttachment(Fbo& fbo) {

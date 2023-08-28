@@ -1,3 +1,4 @@
+#include <uinta/error.hpp>
 #include <uinta/gl/fwd.hpp>
 #include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/vao.hpp>
@@ -41,36 +42,46 @@ void uinta::disableVertexAttribs(Vao& vao) {
   }
 }
 
-void uinta::enableVertexAttribs(Vao& vao) {
-  if (vao.id == GL_ZERO) initVao(vao);
+uinta::uinta_error_code uinta::enableVertexAttribs(Vao& vao) {
+  if (vao.id == GL_ZERO)
+    if (auto error = initVao(vao); error) return error;
   bindVao(vao);
   for (const auto& attrib : vao.attribs) {
     glEnableVertexAttribArray(attrib.index);
     UINTA_glGetError(glEnableVertexAttribArray);
   }
+  return SUCCESS_EC;
 }
 
-void uinta::indexBuffer(Vao& vao, const u32* const data, u32 size, u32 offset) {
-  if (vao.id == GL_ZERO) initVao(vao);
-  if (vao.indexBuffer.id == GL_ZERO) initVbo(vao.indexBuffer);
+uinta::uinta_error_code uinta::indexBuffer(Vao& vao, const u32* const data, u32 size, u32 offset) {
+  if (vao.id == GL_ZERO)
+    if (auto error = initVao(vao); error) return error;
+  if (vao.indexBuffer.id == GL_ZERO)
+    if (auto error = initVbo(vao.indexBuffer); error) return error;
   bindVao(vao);
-  if (uploadVbo(vao.indexBuffer, data, size, offset)) initVertexAttribs(vao);
+  if (uploadVbo(vao.indexBuffer, data, size, offset))
+    if (auto error = initVertexAttribs(vao); error) return error;
+  return SUCCESS_EC;
 }
 
-void uinta::initVao(Vao& vao) {
-  if (vao.id) return;
-  glGenVertexArrays(1, &vao.id);
-  UINTA_glGetError(glGenVertexArrays);
-  SPDLOG_DEBUG("Initialized VAO {}.", vao.id);
-  bindVao(vao);
+uinta::uinta_error_code uinta::initVao(Vao& vao) {
+  if (!vao.id) {
+    glGenVertexArrays(1, &vao.id);
+    UINTA_glGetError(glGenVertexArrays);
+    SPDLOG_DEBUG("Initialized VAO {}.", vao.id);
+    bindVao(vao);
+  }
+  return SUCCESS_EC;
 }
 
-void uinta::initVertexAttribs(Vao& vao) {
-  if (!vao.id) initVao(vao);
+uinta::uinta_error_code uinta::initVertexAttribs(Vao& vao) {
+  if (!vao.id)
+    if (auto error = initVao(vao); error) return error;
   for (auto& a : vao.attribs) {
     glVertexAttribPointer(a.index, a.size, a.type, a.normalized, a.stride, a.pointer);
     glEnableVertexAttribArray(a.index);
   }
+  return SUCCESS_EC;
 }
 
 void uinta::unbindVao(const Vao& unused) {

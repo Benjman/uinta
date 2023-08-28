@@ -8,15 +8,16 @@ namespace uinta {
 
 class ColorShader {
  public:
-  bool init(FileManager& fm) {
-    auto vs = fm.registerFile("shader/base.vs");
-    auto fs = fm.registerFile("shader/color.fs");
+  uinta_error_code init(FileManager& fm) {
+    const auto vs = fm.registerFile("shader/base.vs");
+    const auto fs = fm.registerFile("shader/color.fs");
     fm.loadFile({vs, fs});
-
-    shaderId = createShaderProgram({fm.getDataString(vs), fm.getDataString(fs)}, {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"mvp"},
-                                   {&u_mvp});
-
-    return true;
+    const std::vector<std::string> srcs = {fm.getDataString(vs), fm.getDataString(fs)};
+    const std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+    const std::vector<std::string> uNames = {"mvp"};
+    const std::vector<GLuint*> uLocs = {&u_mvp};
+    if (auto error = createShaderProgram(shaderId, srcs, stages, uNames, uLocs); error) return error;
+    return SUCCESS_EC;
   }
 
   uint shaderId;
@@ -37,7 +38,7 @@ struct PostProcessingShaders {
 
   float shimmerScale = 0.001;
 
-  void init(FileManager& fm) {
+  uinta_error_code init(FileManager& fm) {
     auto vs = fm.registerFile("shader/screen.vs");
     auto fs = fm.registerFile("shader/shimmer.fs");
     fm.loadAll();
@@ -47,7 +48,8 @@ struct PostProcessingShaders {
     const std::vector<GLenum> screenStages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
     const std::vector<std::string> screenUniforms({"renderedTexture", "time", "scale"});
     const std::vector<GLuint*> screenLocations = {&u_screen, &u_time, &u_scale};
-    screen = createShaderProgram(screenSrcs, screenStages, screenUniforms, screenLocations);
+    if (auto error = createShaderProgram(screen, screenSrcs, screenStages, screenUniforms, screenLocations); error) return error;
+    return SUCCESS_EC;
   }
 };
 

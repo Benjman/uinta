@@ -1,6 +1,7 @@
 #include <uinta/gl/api.h>
 
 #include <cstring>
+#include <uinta/error.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/parsers/obj.hpp>
 
@@ -8,16 +9,19 @@ namespace uinta {
 
 constexpr u32 HANDLE_ID_MASK = 0xFFFF;
 
-model_t ModelManager::loadModel(const file_t* const file, const FileManager& fm,
-                                const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
+uinta_error_code ModelManager::loadModel(model_t& ref, const file_t* const file, const FileManager& fm,
+                                         const std::unordered_map<MeshAttribType, MeshAttrib>& attribs) {
   Model model;
-  model.id = models.size();
+  model.id = ref = models.size();
   const auto fileSize = fm.getSize(file);
   f32 vertices[fileSize];
   u32 indices[fileSize];
   u32 indexOffset = !model.id ? 0 : getModel(model.id - 1).indexOffset + getModel(model.id).indexCount;
 
-  loadObj(fm.getDataString(file), vertices, &model.vertexCount, indices, &model.indexCount, &indexOffset, attribs);
+  if (auto error =
+          loadObj(fm.getDataString(file), vertices, &model.vertexCount, indices, &model.indexCount, &indexOffset, attribs);
+      error)
+    return error;
 
   vertexBuffers.push_back(new f32[model.vertexCount]);  // TODO better allocator
   memcpy(vertexBuffers.at(model.id), vertices, model.vertexCount * sizeof(f32));
@@ -27,7 +31,8 @@ model_t ModelManager::loadModel(const file_t* const file, const FileManager& fm,
 
   files.push_back(file);
   models.push_back(model);
-  return model.id;
+
+  return SUCCESS_EC;
 }
 
 Model ModelManager::getModel(const model_t handle) const {

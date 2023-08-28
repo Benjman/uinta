@@ -1,5 +1,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <uinta/camera/target_camera.hpp>
+#include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/scene/light.hpp>
 #include <uinta/scene/shader.hpp>
@@ -7,7 +8,7 @@
 
 namespace uinta {
 
-bool SceneShader::init(FileManager& fileManager) {
+uinta_error_code SceneShader::init(FileManager& fileManager) {
   const auto* vs = fileManager.registerFile("shader/scene.vs");
   const auto* fs = fileManager.registerFile("shader/scene.fs");
   fileManager.loadFile({vs, fs});
@@ -15,9 +16,9 @@ bool SceneShader::init(FileManager& fileManager) {
   const std::vector<GLenum> screenStages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
   const std::vector<std::string> uNames = {"u_lightColor", "u_lightDir", "u_model", "u_proj", "u_view", "u_time"};
   const std::vector<GLuint*> uLocations = {&u_lightColor, &u_lightDir, &u_model, &u_proj, &u_view, &u_time};
-  id = createShaderProgram(screenSrcs, screenStages, uNames, uLocations);
+  if (auto error = createShaderProgram(id, screenSrcs, screenStages, uNames, uLocations); error) return error;
   fileManager.releaseFile({vs, fs});
-  return id > GL_ZERO;
+  return SUCCESS_EC;
 }
 
 void SceneShader::start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const {

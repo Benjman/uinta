@@ -3,8 +3,10 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
+#include <exception>
 #include <glm/mat4x4.hpp>
 #include <iostream>
+#include <uinta/error.hpp>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
@@ -14,6 +16,7 @@ namespace uinta {
 
 inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
 inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime);
+inline bool handleException(const UintaException& ex, const Runner& runner);
 static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
@@ -26,29 +29,34 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept :
 
 i32 Runner::run() {
   try {
-    if (isFlagSet(RENDERING_ENABLED, flags) && !createOpenGLContext()) return false;
-    if (!doInit()) {
-      SPDLOG_ERROR("Failed to initialize runner! Exiting application.");
-      return EXIT_FAILURE;
-    }
+    if (isFlagSet(RENDERING_ENABLED, flags))
+      if (auto error = createOpenGLContext(); error) throw UintaException(error);
+    if (auto error = doInit(); error) throw UintaException(error);
     SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
     RunnerState state;
     auto lastRuntime = getRuntime();
     while (!isFlagSet(SHUTDOWN, flags)) {
-      do {
-        advanceState(state, getRuntime(), lastRuntime);
-        tick(state);
-        reset(input);
-      } while (!shouldRenderFrame(state.delta));
-      pollInput();
-      if (isFlagSet(RENDERING_ENABLED, flags)) {
-        swapBuffers();
-        clearBuffer(clearColor, clearMask);
-        render(state);
+      try {
+        do {
+          advanceState(state, getRuntime(), lastRuntime);
+          tick(state);
+          reset(input);
+        } while (!shouldRenderFrame(state.delta));
+        pollInput();
+        if (isFlagSet(RENDERING_ENABLED, flags)) {
+          swapBuffers();
+          clearBuffer(clearColor, clearMask);
+          render(state);
+        }
+      } catch (const UintaException& ex) {
+        if (!handleException(ex, *this)) throw ex;  // handle internal game errors
       }
     }
     shutdown();
     return EXIT_SUCCESS;
+  } catch (const UintaException& ex) {
+    handleException(ex, *this);  // handle system boostrap or shutdown error
+    throw static_cast<std::exception>(ex);
   } catch (const std::exception& ex) {
     try {
       shutdown();
@@ -60,12 +68,12 @@ i32 Runner::run() {
   }
 }
 
-bool Runner::doInit() {
-  if (!fileManager.init()) return false;
-  if (!scene.init(*this)) return false;
-  if (!grid.init(fileManager)) return false;
+uinta_error_code Runner::doInit() {
+  if (auto error = fileManager.init(); error) return error;
+  if (auto error = scene.init(*this); error) return error;
+  if (auto error = grid.init(fileManager); error) return error;
   glEnable(GL_DEPTH_TEST);
-  return true;
+  return SUCCESS_EC;
 }
 
 void Runner::tick(const RunnerState& state) {
@@ -161,6 +169,14 @@ inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime) {
   state.runtime = runtime;
   state.delta = runtime - lastRuntime;
   lastRuntime = runtime;
+}
+
+inline bool handleException(const UintaException& ex, const Runner& runner) {
+  // TODO: Once an in-game error reporting solution is implemented, this is where we can hook in to handle non-catastrophic errors
+  // while the game is running. For example, if an in-game console is developed, this is where we would hook in to get the message
+  // of the exception, and display it in the console.
+  SPDLOG_CRITICAL(ex.what());
+  return false;
 }
 
 }  // namespace uinta

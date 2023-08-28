@@ -21,33 +21,38 @@ class ModelManagerRunner : public GlfwRunner {
   ModelManager modelManager;
   model_t modelId;
 
-  ModelManagerRunner(const int argc, const char** argv) : GlfwRunner("Model Manager Example", 1920, 1080, argc, argv) {
+  ModelManagerRunner(const int argc, const char** argv) : GlfwRunner("Model management", argc, argv) {
   }
 
-  bool doInit() override {
-    if (!GlfwRunner::doInit()) return false;
+  uinta_error_code doInit() override {
+    if (auto error = GlfwRunner::doInit(); error) return error;
 
     // model
     const file_t* const cubeFile = fileManager.registerFile("models/cube.obj");
     fileManager.loadFile(cubeFile);
-    modelId = modelManager.loadModel(cubeFile, &fileManager);
+    if (auto error = modelManager.loadModel(modelId, cubeFile, fileManager); error) return error;
 
-    initVao(vao);
-    uploadVbo(vbo, modelManager.getVertexBuffer(modelId), modelManager.getVertexBufferSize(modelId));
-    initVertexAttribs(vao);
-    indexBuffer(vao, modelManager.getIndexBuffer(modelId), modelManager.getIndexBufferSize(modelId));
+    auto* vtxBuffer = modelManager.getVertexBuffer(modelId);
+    auto vtxSize = modelManager.getVertexBufferSize(modelId);
+    auto* idxBuffer = modelManager.getIndexBuffer(modelId);
+    auto idxSize = modelManager.getIndexBufferSize(modelId);
+
+    if (auto error = initVao(vao); error) return error;
+    if (auto error = uploadVbo(vbo, vtxBuffer, vtxSize); error) return error;
+    if (auto error = initVertexAttribs(vao); error) return error;
+    if (auto error = indexBuffer(vao, idxBuffer, idxSize); error) return error;
 
     // shader
-    auto vs = fileManager.registerFile("shaders/scene.vs");
-    auto fs = fileManager.registerFile("shaders/scene.fs");
+    const auto vs = fileManager.registerFile("shaders/scene.vs");
+    const auto fs = fileManager.registerFile("shaders/scene.fs");
     fileManager.loadFile({vs, fs});
     const std::vector<std::string> screenSrcs({fileManager.getDataString(vs), fileManager.getDataString(fs)});
     const std::vector<GLenum> screenStages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
     const std::vector<std::string> uNames({"u_model", "u_view", "u_proj"});
     const std::vector<GLuint*> uLocations = {&u_model, &u_view, &u_proj};
-    if ((shader = createShaderProgram(screenSrcs, screenStages, uNames, uLocations)) == GL_ZERO) return false;
+    if (auto error = createShaderProgram(shader, screenSrcs, screenStages, uNames, uLocations); error) return error;
 
-    return shader != GL_ZERO;
+    return SUCCESS_EC;
   }
 
   void doRender(const RunnerState& state) override {

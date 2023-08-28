@@ -1,4 +1,5 @@
 #include <glm/gtc/type_ptr.hpp>
+#include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/mesh.hpp>
@@ -7,33 +8,40 @@
 
 namespace uinta {
 
-bool CartesianGrid::init(FileManager& fm) {
+enum class error {
+  InitShader = 100,
+  InitMesh = 200,
+};
+static const std::map<uinta_error_code_t, std::string> errorMessages = {
+    {static_cast<uinta_error_code_t>(error::InitShader), "Failed to initialize shader!"},
+    {static_cast<uinta_error_code_t>(error::InitMesh), "Failed to initialize mesh!"},
+};
+
+UINTA_ERROR_FRAMEWORK(CartesianGrid, errorMessages);
+
+uinta_error_code CartesianGrid::init(FileManager& fm) {
   SPDLOG_INFO("Initializing grid...");
-  if (!initShader(*this, fm)) {
-    SPDLOG_ERROR("Failed to initialize CartesianGrid shader!");
-    return false;
-  }
-  if (!initGrid(*this)) {
-    SPDLOG_ERROR("Failed to initialize CartesianGrid mesh!");
-    return false;
-  }
+  if (auto error = initShader(*this, fm); error) return error;
+  if (auto error = initGrid(*this); error) return error;
   SPDLOG_INFO("Initialized grid.");
-  return true;
+  return SUCCESS_EC;
 }
 
-bool initShader(CartesianGrid& grid, FileManager& fm) {
+uinta_error_code initShader(CartesianGrid& grid, FileManager& fm) {
   const auto vs = fm.registerFile("shader/cartesianGrid.vs");
   const auto fs = fm.registerFile("shader/cartesianGrid.fs");
   fm.loadFile({vs, fs});
 
   const std::vector<std::string> sources = {fm.getDataString(vs), fm.getDataString(fs)};
   const std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-  grid.shader = createShaderProgram(sources, stages, {"u_mvp"}, {&grid.u_mvp});
+  if (auto error = createShaderProgram(grid.shader, sources, stages, {"u_mvp"}, {&grid.u_mvp}); error) return error;
   fm.releaseFile({vs, fs});
-  return grid.shader != GL_ZERO;
+
+  if (grid.shader == GL_ZERO) return make_error(error::InitMesh);
+  return SUCCESS_EC;
 }
 
-bool initGrid(CartesianGrid& grid) {
+uinta_error_code initGrid(CartesianGrid& grid) {
   f32 buffer[220];
 
   constexpr auto colorX = glm::vec3(155, 34, 38) / 255.0f;
@@ -60,11 +68,12 @@ bool initGrid(CartesianGrid& grid) {
     }
   }
 
-  initVao(grid.vao);
-  uploadVbo(grid.vbo, buffer, grid.vcount * 5 * sizeof(f32));
-  initVertexAttribs(grid.vao);
+  if (auto error = initVao(grid.vao); error) return error;
+  if (auto error = uploadVbo(grid.vbo, buffer, grid.vcount * 5 * sizeof(f32)); error) return error;
+  if (auto error = initVertexAttribs(grid.vao); error) return error;
 
-  return grid.vao.id != GL_ZERO || grid.vbo.id != GL_ZERO;
+  if (grid.vao.id == GL_ZERO || grid.vbo.id == GL_ZERO) return make_error(error::InitMesh);
+  return SUCCESS_EC;
 }
 
 void CartesianGrid::render(const glm::mat4& projView) {

@@ -3,22 +3,36 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
+#include <uinta/error.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/glfw/glfw_runner_ui.hpp>
 #include <uinta/input.hpp>
 
 namespace uinta {
 
+enum class error {
+  InitError = 100,
+  WindowError = 200,
+  GladError = 300,
+};
+static const std::map<uinta_error_code_t, std::string> errorMessages = {
+    {static_cast<uinta_error_code_t>(error::InitError), "Failed to initialize GLFW!"},
+    {static_cast<uinta_error_code_t>(error::WindowError), "Failed to create GLFW window!"},
+    {static_cast<uinta_error_code_t>(error::GladError), "Failed to load GLAD!"},
+};
+
+UINTA_ERROR_FRAMEWORK(GLFWRunner, errorMessages);
+
 GlfwRunner::~GlfwRunner() {
   if (window) glfwDestroyWindow(window);
   glfwTerminate();
 }
 
-bool GlfwRunner::doInit() {
-  Runner::doInit();
+uinta_error_code GlfwRunner::doInit() {
+  if (auto error = Runner::doInit(); error) return error;
   registerCallbacks(this);
   ui::onInit(*this);
-  return true;
+  return SUCCESS_EC;
 }
 
 void GlfwRunner::pollInput() {
@@ -34,12 +48,32 @@ void GlfwRunner::swapBuffers() {
   glfwSwapBuffers(window);
 }
 
-bool GlfwRunner::createOpenGLContext() {
-  if (!createGLFWWindow(this)) {
-    SPDLOG_ERROR("Failed to create OpenGL context!");
-    return false;
-  }
-  return true;
+uinta_error_code GlfwRunner::createOpenGLContext() {
+  spdlog::stopwatch sw;
+
+  constexpr i32 version_major = 3;
+  constexpr i32 version_minor = 3;
+  SPDLOG_INFO("Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
+  if (!glfwInit()) return make_error(error::InitError);
+
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, version_major);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+  window = glfwCreateWindow(display.width, display.height, display.title.c_str(), NULL, NULL);
+  if (!window) return make_error(error::WindowError);
+  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", display.title, display.width, display.height, display.aspectRatio);
+
+  glfwSetWindowUserPointer(window, this);
+  glfwMakeContextCurrent(window);
+
+  SPDLOG_INFO("Loading GLAD...");
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return make_error(error::GladError);
+
+  SPDLOG_INFO("GLFW initialization completed in {} seconds.", sw.elapsed().count());
+
+  return SUCCESS_EC;
 }
 
 void GlfwRunner::doPreTick(const RunnerState& state) {
@@ -79,47 +113,6 @@ void GlfwRunner::doPostRender(const RunnerState& state) {
 void GlfwRunner::doShutdown() {
   Runner::doShutdown();
   ui::onShutdown(*this);
-}
-
-bool createGLFWWindow(GlfwRunner* runner) {
-  spdlog::stopwatch sw;
-
-  i32 version_major = 3;
-  i32 version_minor = 3;
-
-  SPDLOG_INFO("Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
-
-  if (!glfwInit()) {
-    SPDLOG_ERROR("Failed to initialize GLFW!");
-    return false;
-  }
-
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, version_major);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-  runner->window = glfwCreateWindow(runner->display.width, runner->display.height, runner->display.title.c_str(), NULL, NULL);
-  if (!runner->window) {
-    SPDLOG_ERROR("Failed to create GLFW window!");
-    return false;
-  }
-
-  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", runner->display.title, runner->display.width,
-              runner->display.height, runner->display.aspectRatio);
-
-  glfwSetWindowUserPointer(runner->window, runner);
-  glfwMakeContextCurrent(runner->window);
-
-  SPDLOG_INFO("Loading GLAD...");
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    SPDLOG_ERROR("Failed to load GLAD!");
-    return false;
-  }
-
-  SPDLOG_INFO("GLFW initialization completed in {} seconds.", sw.elapsed().count());
-
-  return true;
 }
 
 inline void registerCallbacks(GlfwRunner* runner) {

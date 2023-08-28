@@ -3,6 +3,7 @@
 #include <uinta/glfw/imgui.h>
 
 #include <glm/ext/matrix_transform.hpp>
+#include <uinta/error.hpp>
 #include <uinta/gl/fbo.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/mesh.hpp>
@@ -13,25 +14,28 @@
 
 namespace uinta {
 
-void initObj(const std::string& path, FileManager& fileManager, Vao& vao, Vbo& vbo, uint* icount) {
+uinta_error_code initObj(const std::string& path, FileManager& fileManager, Vao& vao, Vbo& vbo, uint* icount) {
   auto cubeObj = fileManager.registerFile(path);
   fileManager.loadFile(cubeObj);
   float vertices[fileManager.getSize(cubeObj)];
   uint indices[fileManager.getSize(cubeObj)];
   uint ioff = 0;
   uint vcount = 0;
-  loadObj(fileManager.getDataString(cubeObj), vertices, &vcount, indices, icount, &ioff,
-          {
-              {MeshAttribType_Position, {9, 0}},
-              {MeshAttribType_Normal, {9, 3}},
-              {MeshAttribType_Color, {9, 6}},
-          });
+  if (auto error = loadObj(fileManager.getDataString(cubeObj), vertices, &vcount, indices, icount, &ioff,
+                           {
+                               {MeshAttribType_Position, {9, 0}},
+                               {MeshAttribType_Normal, {9, 3}},
+                               {MeshAttribType_Color, {9, 6}},
+                           });
+      error)
+    return error;
 
   // cube VAO
-  initVao(vao);
-  uploadVbo(vbo, vertices, vcount * sizeof(GLfloat));
-  indexBuffer(vao, indices, *icount * sizeof(GLuint));
-  initVertexAttribs(vao);
+  if (auto error = initVao(vao); error) return error;
+  if (auto error = uploadVbo(vbo, vertices, vcount * sizeof(GLfloat)); error) return error;
+  if (auto error = indexBuffer(vao, indices, *icount * sizeof(GLuint)); error) return error;
+  if (auto error = initVertexAttribs(vao); error) return error;
+  return SUCCESS_EC;
 }
 
 class PostProcessing {
@@ -42,7 +46,7 @@ class PostProcessing {
   }};
   Vbo quadVbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
 
-  void init() {
+  uinta_error_code init() {
     // clang-format off
     float quadVertices[] = {
       // positions   // uvs
@@ -54,9 +58,10 @@ class PostProcessing {
        1.0f,  1.0f,  1.0f, 1.0f
     };
     // clang-format on
-    initVao(quadVao);
-    uploadVbo(quadVbo, quadVertices, sizeof(quadVertices));
-    initVertexAttribs(quadVao);
+    if (auto error = initVao(quadVao); error) return error;
+    if (auto error = uploadVbo(quadVbo, quadVertices, sizeof(quadVertices)); error) return error;
+    if (auto error = initVertexAttribs(quadVao); error) return error;
+    return SUCCESS_EC;
   }
 
   void render(const RunnerState& state, const Fbo& fbo) {
@@ -89,22 +94,20 @@ class PostProcessingRunner final : public GlfwRunner {
       : GlfwRunner("Post Processing", argc, argv), fbo({display.width, display.height}) {
   }
 
-  bool doInit() override {
-    if (!GlfwRunner::doInit()) return false;
-
-    initFbo(fbo);
-    pp.init();
-    colorShader.init(fileManager);
-
-    shaders.init(fileManager);
-    initObj("model/cube.obj", fileManager, cubeVao, cubeVbo, &icount);
+  uinta_error_code doInit() override {
+    if (auto error = GlfwRunner::doInit(); error) return error;
+    if (auto error = initFbo(fbo); error) return error;
+    if (auto error = pp.init(); error) return error;
+    if (auto error = colorShader.init(fileManager); error) return error;
+    if (auto error = shaders.init(fileManager); error) return error;
+    if (auto error = initObj("model/cube.obj", fileManager, cubeVao, cubeVbo, &icount); error) return error;
 
     auto& cam = scene.camera;
     cam.dist = 5;
     cam.pitch = 35;
     cam.angle = 35;
 
-    return true;
+    return SUCCESS_EC;
   }
 
   void doRender(const RunnerState& state) override {

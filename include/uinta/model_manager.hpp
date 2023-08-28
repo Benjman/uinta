@@ -40,12 +40,12 @@ class ModelManager {
   ModelManager(const ModelManager& other) {
   }
 
-  model_t loadModel(const file_t* const file, const FileManager& fm,
-                    const std::unordered_map<MeshAttribType, MeshAttrib>& attribs = {
-                        {MeshAttribType_Position, {9, 0}},
-                        {MeshAttribType_Normal, {9, 3}},
-                        {MeshAttribType_Color, {9, 6}},
-                    });
+  uinta_error_code loadModel(model_t& ref, const file_t* const file, const FileManager& fm,
+                             const std::unordered_map<MeshAttribType, MeshAttrib>& attribs = {
+                                 {MeshAttribType_Position, {9, 0}},
+                                 {MeshAttribType_Normal, {9, 3}},
+                                 {MeshAttribType_Color, {9, 6}},
+                             });
 
   Model getModel(const model_t handle) const;
   const file_t* getFile(const model_t handle) const;

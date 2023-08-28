@@ -1,9 +1,13 @@
 #ifndef UINTA_IO_FILE_MANAGER_HPP
 #define UINTA_IO_FILE_MANAGER_HPP
 
+#include <uinta/flags.h>
+#include <uinta/types.h>
+#include <uinta/utils/macros.h>
+
 #include <string>
 #include <uinta/cfg.hpp>
-#include <uinta/fwd.hpp>
+#include <uinta/error.hpp>
 #include <uinta/memory/memory_link.hpp>
 #include <vector>
 
@@ -20,7 +24,8 @@ class FileManager {
 
   ~FileManager();
 
-  bool init(const std::string& searchPaths = UINTA_FILE_SEARCH_PATHS, const char delim = UINTA_FILE_SEARCH_PATHS_DELIM);
+  uinta_error_code init(const std::string& searchPaths = UINTA_FILE_SEARCH_PATHS,
+                        const char delim = UINTA_FILE_SEARCH_PATHS_DELIM);
 
   const file_t* const registerFile(const std::string& relativePath);
 

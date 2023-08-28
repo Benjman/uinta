@@ -3,6 +3,8 @@
 
 #include <uinta/gl/api.h>
 
+#include <uinta/error.hpp>
+
 namespace uinta {
 
 struct Fbo {
@@ -17,7 +19,7 @@ struct Fbo {
   }
 };
 
-void initFbo(Fbo& fbo);
+uinta_error_code initFbo(Fbo& fbo);
 
 }  // namespace uinta
 

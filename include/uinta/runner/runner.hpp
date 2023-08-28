@@ -44,7 +44,7 @@ class Runner {
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
 
-  virtual bool doInit();
+  virtual uinta_error_code doInit();
   virtual void doPreTick(const RunnerState& state);
   virtual void doTick(const RunnerState& state);
   virtual void doPostTick(const RunnerState& state);
@@ -54,7 +54,7 @@ class Runner {
   virtual void doShutdown();
   virtual void onWindowSizeChanged();
 
-  virtual bool createOpenGLContext() = 0;
+  virtual uinta_error_code createOpenGLContext() = 0;
   virtual f64 getRuntime() const = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;

@@ -1,3 +1,4 @@
+#include <uinta/error.hpp>
 #include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/gl/vbo.hpp>
@@ -35,15 +36,17 @@ void uinta::destroyVbo(Vbo& vbo) {
   UINTA_glGetError(glDeleteBuffers);
 }
 
-void uinta::initVbo(Vbo& vbo) {
+uinta::uinta_error_code uinta::initVbo(Vbo& vbo) {
   glGenBuffers(1, &vbo.id);
   UINTA_glGetError(glGenBuffers);
   SPDLOG_DEBUG("Initialized {} {}.", getGlEnumName(vbo.target), vbo.id);
-  uploadVbo(vbo, nullptr, 0);
+  if (auto error = uploadVbo(vbo, nullptr, 0); error) return error;
+  return SUCCESS_EC;
 }
 
-void uinta::resizeVbo(Vbo& vbo, uint size) {
-  if (vbo.id == GL_ZERO) initVbo(vbo);
+uinta::uinta_error_code uinta::resizeVbo(Vbo& vbo, uint size) {
+  if (vbo.id == GL_ZERO)
+    if (auto error = initVbo(vbo); error) return error;
   if (vbo.size == 0) {
     bindVbo(vbo);
     glBufferData(vbo.target, size, nullptr, vbo.usage);
@@ -72,6 +75,7 @@ void uinta::resizeVbo(Vbo& vbo, uint size) {
     vbo.id = newId;
   }
   vbo.max = size;
+  return SUCCESS_EC;
 }
 
 void uinta::unbindVbo(const Vbo& vao) {
@@ -79,11 +83,17 @@ void uinta::unbindVbo(const Vbo& vao) {
   UINTA_glGetError(glBindBuffer);
 }
 
-bool uinta::uploadVbo(Vbo& vbo, const void* const data, uint size, uint offset) {
-  bool resized = false;
-  if (vbo.id == GL_ZERO) initVbo(vbo);
+uinta::uinta_error_code uinta::uploadVbo(Vbo& vbo, const void* const data, uint size, uint offset) {
+  bool resized;
+  return uploadVbo(vbo, data, size, offset, resized);
+}
+
+uinta::uinta_error_code uinta::uploadVbo(Vbo& vbo, const void* const data, uint size, uint offset, bool& resized) {
+  resized = false;
+  if (vbo.id == GL_ZERO)
+    if (auto error = initVbo(vbo); error) return error;
   if (vbo.max < offset + size) {
-    resizeVbo(vbo, offset + size);
+    if (auto error = resizeVbo(vbo, offset + size); error) return error;
     resized = true;
   }
   bindVbo(vbo);
@@ -92,5 +102,5 @@ bool uinta::uploadVbo(Vbo& vbo, const void* const data, uint size, uint offset) 
   if (offset + size > vbo.size) {
     vbo.size = offset + size;
   }
-  return resized;
+  return SUCCESS_EC;
 }

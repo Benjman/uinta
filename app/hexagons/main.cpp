@@ -1,3 +1,4 @@
+#include <uinta/error.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/math/hexagon.hpp>
 #include <uinta/math/perlin.hpp>
@@ -22,8 +23,8 @@ class HexagonsRunner : public GlfwRunner {
     scene.updateDiffuseLight({{0.5, -1, 0}});
   }
 
-  bool doInit() override {
-    if (!GlfwRunner::doInit()) return false;
+  uinta_error_code doInit() override {
+    if (auto error = GlfwRunner::doInit(); error) return error;
 
     constexpr auto hexRadius = 1.0;
 
@@ -58,13 +59,13 @@ class HexagonsRunner : public GlfwRunner {
     hexagon_pack(points, hex_normals(points), colors, vtxBuffer, idxBuffer, idxOffset);
 
     // Upload buffers to GPU:
-    initVao(vao);
-    uploadVbo(vbo, vtxBuffer, sizeof(vtxBuffer));
-    initVertexAttribs(vao);
-    indexBuffer(vao, idxBuffer, sizeof(idxBuffer));
+    if (auto error = initVao(vao); error) return error;
+    if (auto error = uploadVbo(vbo, vtxBuffer, sizeof(vtxBuffer)); error) return error;
+    if (auto error = initVertexAttribs(vao); error) return error;
+    if (auto error = indexBuffer(vao, idxBuffer, sizeof(idxBuffer)); error) return error;
     indexCount = IndicesPerHex * points.size();
 
-    return true;
+    return SUCCESS_EC;
   }
 
   void doRender(const RunnerState& state) override {

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <uinta/error.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
@@ -12,16 +13,16 @@ class TextureShader {
  public:
   GLuint id;
 
-  bool init(FileManager& fileManager) {
+  uinta_error_code init(FileManager& fileManager) {
     const auto vs = fileManager.registerFile("shader/texture.vs");
     const auto fs = fileManager.registerFile("shader/texture.fs");
     fileManager.loadFile({vs, fs});
     const std::vector<std::string> srcs({fileManager.getDataString(vs), fileManager.getDataString(fs)});
     const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
-    id = createShaderProgram(srcs, stages);
+    if (auto error = createShaderProgram(id, srcs, stages); error) return error;
     fileManager.releaseFile({vs, fs});
     SPDLOG_INFO("Initialized shader {}.", id);
-    return id > GL_ZERO;
+    return SUCCESS_EC;
   }
 };
 
@@ -45,9 +46,9 @@ class PerlinRunner : public GlfwRunner {
     clearColor = {0, 0, 0};
   }
 
-  bool doInit() override {
-    if (!GlfwRunner::doInit()) return false;
-    shader.init(fileManager);
+  uinta_error_code doInit() override {
+    if (auto error = GlfwRunner::doInit(); error) return error;
+    if (auto error = shader.init(fileManager); error) return error;
 
     // clang-format off
     const f32 vertices[] = {
@@ -59,10 +60,10 @@ class PerlinRunner : public GlfwRunner {
     };
     const u32 indices[] = { 0, 1, 3, 1, 2, 3 };
     // clang-format on
-    initVao(vao);
-    uploadVbo(vbo, vertices, sizeof(vertices));
-    initVertexAttribs(vao);
-    indexBuffer(vao, indices, sizeof(indices));
+    if (auto error = initVao(vao); error) return error;
+    if (auto error = uploadVbo(vbo, vertices, sizeof(vertices)); error) return error;
+    if (auto error = initVertexAttribs(vao); error) return error;
+    if (auto error = indexBuffer(vao, indices, sizeof(indices)); error) return error;
 
     glGenTextures(1, &textureId);
     updateTexture();
@@ -83,7 +84,7 @@ class PerlinRunner : public GlfwRunner {
     SPDLOG_INFO("    `-----------------------------------'");
     SPDLOG_INFO("");
 
-    return true;
+    return SUCCESS_EC;
   }
 
   void updateTexture() {
