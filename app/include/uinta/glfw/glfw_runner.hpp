@@ -29,7 +29,6 @@ class GlfwRunner : public Runner {
 
   void swapBuffers() override;
   bool createOpenGLContext() override;
-  bool shouldExit() override;
   f64 getRuntime() const override;
   void pollInput() override;
 };

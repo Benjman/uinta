@@ -17,6 +17,7 @@ class Runner {
  public:
   static constexpr flag_t GRID_ENABLED = 1 << 1;
   static constexpr flag_t RENDERING_ENABLED = 1 << 2;
+  static constexpr flag_t SHUTDOWN = 1 << 3;
 
   CartesianGrid grid;
   Display display;
@@ -55,7 +56,6 @@ class Runner {
   virtual void onWindowSizeChanged();
 
   virtual bool createOpenGLContext() = 0;
-  virtual bool shouldExit() = 0;
   virtual f64 getRuntime() const = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;

@@ -34,7 +34,7 @@ i32 Runner::run() {
     SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
     RunnerState state;
     auto lastRuntime = getRuntime();
-    while (!shouldExit()) {
+    while (!isFlagSet(SHUTDOWN, flags)) {
       do {
         advanceState(state, getRuntime(), lastRuntime);
         tick(state);

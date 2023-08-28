@@ -23,6 +23,7 @@ bool GlfwRunner::doInit() {
 
 void GlfwRunner::pollInput() {
   glfwPollEvents();
+  if (window && glfwWindowShouldClose(window)) setFlag(SHUTDOWN, true, flags);
 }
 
 f64 GlfwRunner::getRuntime() const {
@@ -39,10 +40,6 @@ bool GlfwRunner::createOpenGLContext() {
     return false;
   }
   return true;
-}
-
-bool GlfwRunner::shouldExit() {
-  return window && glfwWindowShouldClose(window);
 }
 
 void GlfwRunner::doPreTick(const RunnerState& state) {
@@ -131,7 +128,7 @@ inline void registerCallbacks(GlfwRunner* runner) {
   glfwSetKeyCallback(runner->window, [](auto* window, i32 key, i32 scancode, i32 action, i32 mods) {
     SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
     auto* runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
-    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return glfwSetWindowShouldClose(runner->window, true);
+    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return setFlag(Runner::SHUTDOWN, true, runner->flags);
     runner->handleKeyInput(key, scancode, action, mods);
   });
 
