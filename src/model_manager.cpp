@@ -1,5 +1,6 @@
+#include <uinta/gl/api.h>
+
 #include <cstring>
-#include <uinta/gl/vao.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/parsers/obj.hpp>
 

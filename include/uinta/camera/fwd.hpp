@@ -3,13 +3,13 @@
 
 #include <uinta/types.h>
 
-#include <uinta/input/fwd.hpp>
-#include <uinta/math/fwd.hpp>
-#include <uinta/runner/fwd.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace uinta {
 
 struct CameraConfig;
+struct InputState;
+struct RunnerState;
 struct TargetCamera;
 
 void updateCamera(TargetCamera&, const RunnerState&, const InputState&);

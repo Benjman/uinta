@@ -1,8 +1,13 @@
 #ifndef UINTA_SCENE_HPP
 #define UINTA_SCENE_HPP
 
+#include <uinta/flags.h>
+#include <uinta/types.h>
+
+#include <entt/fwd.hpp>
+#include <string>
 #include <uinta/camera/target_camera.hpp>
-#include <uinta/components.hpp>
+#include <uinta/component/transform.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
 #include <uinta/model_manager.hpp>
@@ -10,6 +15,8 @@
 #include <uinta/scene/shader.hpp>
 
 namespace uinta {
+
+class Runner;
 
 struct SceneEntityInitializer {
   std::string modelPath;

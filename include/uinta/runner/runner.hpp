@@ -4,7 +4,6 @@
 #include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/file_manager.hpp>
-#include <uinta/fwd.hpp>
 #include <uinta/input/state.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/runner/display.hpp>
