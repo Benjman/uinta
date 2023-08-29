@@ -54,16 +54,18 @@ void uinta::loadObj(const std::string& objBuffer, f32* const vbuf, u32* vcount, 
 
   *icount += faceLines.size() * 3;
 
-  bool hasColor = vertexLines.size() > 0 && 5 == std::count(vertexLines.at(0).begin(), vertexLines.at(0).end(), ' ');
+  static constexpr char DELIM = ' ';
+
+  bool hasColor = vertexLines.size() > 0 && 5 == std::count(vertexLines.at(0).begin(), vertexLines.at(0).end(), DELIM);
 
   f32 vertices[vertexLines.size() * (hasColor ? 6 : 3)];
-  extractLineFloats(vertexLines, vertices, hasColor ? 6 : 3, ' ');
+  extractLineFloats(vertexLines, vertices, hasColor ? 6 : 3, DELIM);
 
   f32 uvs[uvLines.size() * 2];
-  extractLineFloats(uvLines, uvs, 2, ' ');
+  extractLineFloats(uvLines, uvs, 2, DELIM);
 
   f32 normals[normalLines.size() * 3];
-  extractLineFloats(normalLines, normals, 3, ' ');
+  extractLineFloats(normalLines, normals, 3, DELIM);
 
   std::vector<objface> faceData;
   processFaces(faceLines, faceData, ibuf, ioff);
@@ -91,12 +93,13 @@ void uinta::processFaces(const std::vector<std::string>& faceLines, std::vector<
   for (u32 i = 0, len = faceLines.size(); i < len; i++) {
     auto tmp = std::string(faceLines.at(i));
 
+    static constexpr char DELIM = ' ';
     std::string strs[3];
-    strs[0] = tmp.substr(0, tmp.find(' '));
-    tmp.erase(0, tmp.find(' ') + 1);
-    strs[1] = tmp.substr(0, tmp.find(' '));
-    tmp.erase(0, tmp.find(' ') + 1);
-    strs[2] = tmp.substr(0, tmp.find(' '));
+    strs[0] = tmp.substr(0, tmp.find(DELIM));
+    tmp.erase(0, tmp.find(DELIM) + 1);
+    strs[1] = tmp.substr(0, tmp.find(DELIM));
+    tmp.erase(0, tmp.find(DELIM) + 1);
+    strs[2] = tmp.substr(0, tmp.find(DELIM));
 
     processFaceStrs(strs, result);
 
@@ -164,13 +167,14 @@ i32 uinta::findOrInsertFaceData(const objface& face, std::vector<objface>& faceD
 }
 
 void uinta::processFaceStrs(std::string* values, std::vector<objface>& result) {
+  static constexpr char DELIM = '/';
   for (i32 i = 0; i < 3; i++) {
     std::string tmp = std::string(values[i]);
-    std::string vert = tmp.substr(0, tmp.find('/'));
-    tmp.erase(0, tmp.find('/') + 1);
-    std::string uv = tmp.substr(0, tmp.find('/'));
-    tmp.erase(0, tmp.find('/') + 1);
-    std::string norm = tmp.substr(0, tmp.find('/'));
+    std::string vert = tmp.substr(0, tmp.find(DELIM));
+    tmp.erase(0, tmp.find(DELIM) + 1);
+    std::string uv = tmp.substr(0, tmp.find(DELIM));
+    tmp.erase(0, tmp.find(DELIM) + 1);
+    std::string norm = tmp.substr(0, tmp.find(DELIM));
 
     objface face;
     if (!vert.empty()) face.vert = std::stoi(vert);
@@ -201,13 +205,18 @@ void uinta::parseFile(const std::string& objBuffer, std::vector<std::string>& ve
     flag = line.substr(0, line.find(' '));
     data = line.substr(flag.length() + 1);
 
-    if ("v" == flag) {
+    static constexpr std::string VERTEX_TOKEN = "v";
+    static constexpr std::string UV_TOKEN = "vt";
+    static constexpr std::string NORMAL_TOKEN = "vn";
+    static constexpr std::string FACE_TOKEN = "f";
+
+    if (VERTEX_TOKEN == flag) {
       vertexLines.push_back(std::string(data));
-    } else if ("vt" == flag) {
+    } else if (UV_TOKEN == flag) {
       uvLines.push_back(std::string(data));
-    } else if ("vn" == flag) {
+    } else if (NORMAL_TOKEN == flag) {
       normalLines.push_back(std::string(data));
-    } else if ("f" == flag) {
+    } else if (FACE_TOKEN == flag) {
       faceLines.push_back(std::string(data));
     }
   }
