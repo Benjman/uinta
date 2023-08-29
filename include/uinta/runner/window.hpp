@@ -21,7 +21,7 @@ struct Window {
     *this = other;
   }
 
-  explicit Window(const std::string& title, u32 width = 1920, u32 height = 1080) noexcept
+  explicit Window(const std::string& title, u32 width = 0, u32 height = 0) noexcept
       : title(std::string(title)), width(width), height(height) {
     aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
   }

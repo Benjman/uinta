@@ -56,14 +56,29 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   SPDLOG_INFO("Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
   if (!glfwInit()) return make_error(error::InitError);
 
+  i32 monCount;
+  auto** const mons = glfwGetMonitors(&monCount);
+  for (i32 i = 0; i < std::min(monCount, GlfwRunner::MAX_MONITORS); ++i) {
+    auto* const mon = mons[i];
+    auto* const view = glfwGetVideoMode(mon);
+    monitors[i] = {mon, glfwGetMonitorName(mon), view->width, view->height, view->refreshRate};
+  }
+  // TODO: We need to listen for monitor changes, and update the monitor list. See
+  // https://www.glfw.org/docs/3.3/group__monitor.html#gab39df645587c8518192aa746c2fb06c3
+  // `GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun callback)`
+
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, version_major);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-  glfwWindow = glfwCreateWindow(window.width, window.height, window.title.c_str(), NULL, NULL);
+  u32 targetWidth = window.width ? window.width : monitors[0].width;
+  u32 targetHeight = window.height ? window.height : monitors[0].height;
+  GLFWmonitor* targetMon = isFlagSet(Window::FULLSCREEN, window.flags) ? monitors[0].ptr : NULL;
+  glfwWindow = glfwCreateWindow(targetWidth, targetHeight, window.title.c_str(), targetMon, NULL);
   if (!glfwWindow) return make_error(error::WindowError);
-  SPDLOG_INFO("Created glfwWindow '{}' {}x{} (aspect ratio {}).", window.title, window.width, window.height, window.aspectRatio);
+  SPDLOG_INFO("Created glfwWindow '{}' {}x{} (aspect ratio {}).", window.title, targetWidth, targetHeight, window.aspectRatio);
+  window = Window(window.title, targetWidth, targetHeight);
 
   glfwSetWindowUserPointer(glfwWindow, this);
   glfwMakeContextCurrent(glfwWindow);

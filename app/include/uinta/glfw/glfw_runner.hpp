@@ -6,8 +6,11 @@
 namespace uinta {
 
 class GlfwRunner : public Runner {
+  static constexpr i32 MAX_MONITORS = 4;
+
  public:
   GLFWwindow* glfwWindow = nullptr;
+  std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> monitors;
 
   explicit GlfwRunner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept : Runner(title, argc, argv) {
   }
