@@ -6,8 +6,6 @@
 namespace uinta {
 
 class GlfwRunner : public Runner {
-  friend void registerCallbacks(GlfwRunner*);
-
  public:
   GLFWwindow* window = nullptr;
 
@@ -30,6 +28,7 @@ class GlfwRunner : public Runner {
   uinta_error_code createOpenGLContext() override;
   f64 getRuntime() const override;
   void pollInput() override;
+  void registerCallbacks();
 };
 
 }  // namespace uinta
