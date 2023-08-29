@@ -6,7 +6,7 @@
 #include <uinta/file_manager.hpp>
 #include <uinta/input/state.hpp>
 #include <uinta/model_manager.hpp>
-#include <uinta/runner/display.hpp>
+#include <uinta/runner/window.hpp>
 #include <uinta/scene/scene.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
@@ -19,7 +19,7 @@ class Runner {
   static constexpr flag_t SHUTDOWN = 1 << 3;
 
   CartesianGrid grid;
-  Display display;
+  Window window;
   FileManager fileManager;
   InputState input;
   Scene scene;

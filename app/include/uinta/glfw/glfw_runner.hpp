@@ -7,7 +7,7 @@ namespace uinta {
 
 class GlfwRunner : public Runner {
  public:
-  GLFWwindow* window = nullptr;
+  GLFWwindow* glfwWindow = nullptr;
 
   explicit GlfwRunner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept : Runner(title, argc, argv) {
   }

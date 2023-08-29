@@ -24,7 +24,7 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 UINTA_ERROR_FRAMEWORK(GLFWRunner, errorMessages);
 
 GlfwRunner::~GlfwRunner() {
-  if (window) glfwDestroyWindow(window);
+  if (glfwWindow) glfwDestroyWindow(glfwWindow);
   glfwTerminate();
 }
 
@@ -37,7 +37,7 @@ uinta_error_code GlfwRunner::doInit() {
 
 void GlfwRunner::pollInput() {
   glfwPollEvents();
-  if (window && glfwWindowShouldClose(window)) setFlag(SHUTDOWN, true, flags);
+  if (glfwWindow && glfwWindowShouldClose(glfwWindow)) setFlag(SHUTDOWN, true, flags);
 }
 
 f64 GlfwRunner::getRuntime() const {
@@ -45,7 +45,7 @@ f64 GlfwRunner::getRuntime() const {
 }
 
 void GlfwRunner::swapBuffers() {
-  glfwSwapBuffers(window);
+  glfwSwapBuffers(glfwWindow);
 }
 
 uinta_error_code GlfwRunner::createOpenGLContext() {
@@ -61,12 +61,12 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-  window = glfwCreateWindow(display.width, display.height, display.title.c_str(), NULL, NULL);
-  if (!window) return make_error(error::WindowError);
-  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", display.title, display.width, display.height, display.aspectRatio);
+  glfwWindow = glfwCreateWindow(window.width, window.height, window.title.c_str(), NULL, NULL);
+  if (!glfwWindow) return make_error(error::WindowError);
+  SPDLOG_INFO("Created glfwWindow '{}' {}x{} (aspect ratio {}).", window.title, window.width, window.height, window.aspectRatio);
 
-  glfwSetWindowUserPointer(window, this);
-  glfwMakeContextCurrent(window);
+  glfwSetWindowUserPointer(glfwWindow, this);
+  glfwMakeContextCurrent(glfwWindow);
 
   SPDLOG_INFO("Loading GLAD...");
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return make_error(error::GladError);
@@ -116,42 +116,42 @@ void GlfwRunner::doShutdown() {
 }
 
 void GlfwRunner::registerCallbacks() {
-  if (!window) return;
+  if (!glfwWindow) return;
 
-  glfwSetKeyCallback(window, [](auto* window, i32 key, i32 scancode, i32 action, i32 mods) {
+  glfwSetKeyCallback(glfwWindow, [](auto* glfwWindow, i32 key, i32 scancode, i32 action, i32 mods) {
     SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
     if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return setFlag(Runner::SHUTDOWN, true, runner->flags);
     runner->handleKeyInput(key, scancode, action, mods);
   });
 
-  glfwSetCursorPosCallback(window, [](auto* window, f64 xpos, f64 ypos) {
+  glfwSetCursorPosCallback(glfwWindow, [](auto* glfwWindow, f64 xpos, f64 ypos) {
     SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypox);
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
     runner->handleCursorPositionChanged(xpos, ypos);
   });
 
-  glfwSetMouseButtonCallback(window, [](auto* window, i32 button, i32 action, i32 mods) {
+  glfwSetMouseButtonCallback(glfwWindow, [](auto* glfwWindow, i32 button, i32 action, i32 mods) {
     SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
     runner->handleMouseButtonInput(button, action, mods);
   });
 
-  glfwSetScrollCallback(window, [](auto* window, f64 xoffset, f64 yoffset) {
+  glfwSetScrollCallback(glfwWindow, [](auto* glfwWindow, f64 xoffset, f64 yoffset) {
     SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
     runner->handleScrollInput(xoffset, yoffset);
   });
 
-  glfwSetWindowSizeCallback(window, [](auto* window, i32 width, i32 height) {
+  glfwSetWindowSizeCallback(glfwWindow, [](auto* glfwWindow, i32 width, i32 height) {
     SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
     runner->handleWindowSizeChanged(width, height);
   });
 
-  glfwSetWindowPosCallback(window, [](auto* window, i32 xpos, i32 ypos) {
+  glfwSetWindowPosCallback(glfwWindow, [](auto* glfwWindow, i32 xpos, i32 ypos) {
     SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
-    glfwGetWindowUserPointer(window);
+    glfwGetWindowUserPointer(glfwWindow);
   });
 }
 

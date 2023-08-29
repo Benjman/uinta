@@ -28,7 +28,7 @@ Scene::Scene(Runner& runner)
 uinta_error_code Scene::init(Runner& runner) {
   if (auto error = shader.init(fileManager); error) return error;
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags), flags);
-  camera.config.aspectRatio = runner.display.aspectRatio;
+  camera.config.aspectRatio = runner.window.aspectRatio;
   return SUCCESS_EC;
 }
 

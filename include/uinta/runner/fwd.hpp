@@ -3,7 +3,7 @@
 
 namespace uinta {
 
-struct Display;
+struct Window;
 struct RunnerState;
 class Runner;
 

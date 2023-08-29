@@ -9,7 +9,7 @@
 
 namespace uinta {
 
-inline void inputUi(Runner &runner) {
+inline void inputUi(Runner& runner) {
 #ifndef IMGUI_API_DISABLED
   if (!ImGui::CollapsingHeader("Input")) return;
 
@@ -19,7 +19,7 @@ inline void inputUi(Runner &runner) {
     auto proj = getPerspectiveMatrix(camera);
 
     glm::vec2 cursor = {runner.input.cursorx, runner.input.cursory};
-    glm::vec2 viewport = {runner.display.width, runner.display.height};
+    glm::vec2 viewport = {runner.window.width, runner.window.height};
     glm::vec3 ndc = {(2 * cursor.x) / viewport.x - 1, 1 - (2 * cursor.y) / viewport.y, 1};
     auto worldRay = getWorldRay(cursor, viewport, view, proj);
     auto worldPoint = getPlaneInterceptPoint(glm::vec3(0), WORLD_UP, camera.position, worldRay);

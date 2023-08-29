@@ -21,7 +21,7 @@ static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : display(title), scene(*this) {
+Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : window(title), scene(*this) {
   processArgs(this, argc, argv);
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
@@ -32,7 +32,7 @@ i32 Runner::run() {
     if (isFlagSet(RENDERING_ENABLED, flags))
       if (auto error = createOpenGLContext(); error) throw UintaException(error);
     if (auto error = doInit(); error) throw UintaException(error);
-    SPDLOG_INFO("Initialized '{}' in {} seconds.", display.title, sw.elapsed().count());
+    SPDLOG_INFO("Initialized '{}' in {} seconds.", window.title, sw.elapsed().count());
     RunnerState state;
     auto lastRuntime = getRuntime();
     while (!isFlagSet(SHUTDOWN, flags)) {
@@ -89,7 +89,7 @@ void Runner::render(const RunnerState& state) {
 }
 
 void Runner::shutdown() {
-  SPDLOG_INFO("Shutdown requested for '{}'.", display.title);
+  SPDLOG_INFO("Shutdown requested for '{}'.", window.title);
   doShutdown();
 }
 
@@ -121,15 +121,15 @@ void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i3
 }
 
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
-  display.width = width;
-  display.height = height;
-  display.aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
-  scene.camera.config.aspectRatio = display.aspectRatio;
+  window.width = width;
+  window.height = height;
+  window.aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
+  scene.camera.config.aspectRatio = window.aspectRatio;
   onWindowSizeChanged();
 }
 
 Runner::~Runner() {
-  SPDLOG_INFO("Tearing down '{}'.", display.title);
+  SPDLOG_INFO("Tearing down '{}'.", window.title);
 }
 
 void Runner::doPreRender(const RunnerState& state) {

@@ -91,7 +91,7 @@ class PostProcessingRunner final : public GlfwRunner {
 
  public:
   PostProcessingRunner(const int argc, const char** argv)
-      : GlfwRunner("Post Processing", argc, argv), fbo({display.width, display.height}) {
+      : GlfwRunner("Post Processing", argc, argv), fbo({window.width, window.height}) {
   }
 
   uinta_error_code doInit() override {

@@ -41,8 +41,8 @@ class PerlinRunner : public GlfwRunner {
   glm::ivec2 offset = {0, 0};
 
   PerlinRunner(const i32 argc, const char** argv) : GlfwRunner("Perlin", argc, argv) {
-    display.width = 800;
-    display.height = 800;
+    window.width = 800;
+    window.height = 800;
     clearColor = {0, 0, 0};
   }
 
@@ -88,8 +88,8 @@ class PerlinRunner : public GlfwRunner {
   }
 
   void updateTexture() {
-    const auto width = display.width;
-    const auto height = display.height;
+    const auto width = window.width;
+    const auto height = window.height;
     auto textureData = Buffer2d(width, height);
     perlinNoise(textureData, siv::PerlinNoise(perlinSeed), frequency, octaves, offset);
     glBindTexture(GL_TEXTURE_2D, textureId);

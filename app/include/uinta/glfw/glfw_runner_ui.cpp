@@ -20,7 +20,7 @@ void ui::onInit(GlfwRunner &runner) {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
-  ImGui_ImplGlfw_InitForOpenGL(runner.window, true);
+  ImGui_ImplGlfw_InitForOpenGL(runner.glfwWindow, true);
   ImGui_ImplOpenGL3_Init(UINTA_IMGUI_GLSL_VERSION);
 #endif  // IMGUI_API_DISABLED
 }
@@ -42,7 +42,7 @@ void ui::onPreRender(GlfwRunner &runner, const RunnerState &state) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
-  showingWindow = ImGui::Begin(runner.display.title.data());
+  showingWindow = ImGui::Begin(runner.window.title.data());
 #endif  // IMGUI_API_DISABLED
 }
 

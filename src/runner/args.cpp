@@ -77,7 +77,7 @@ bool processArg_height(Runner* runner, const RunnerArg& arg) {
       nullptr,
   };
   if (!containsKey(arg.first.c_str(), keys)) return false;
-  runner->handleWindowSizeChanged(runner->display.width, std::stof(arg.second));
+  runner->handleWindowSizeChanged(runner->window.width, std::stof(arg.second));
   SPDLOG_INFO("`{}`: Height set to: {}", arg.first, arg.second);
   return true;
 }
@@ -89,7 +89,7 @@ bool processArg_width(Runner* runner, const RunnerArg& arg) {
       nullptr,
   };
   if (!containsKey(arg.first.c_str(), keys)) return false;
-  runner->handleWindowSizeChanged(std::stof(arg.second), runner->display.height);
+  runner->handleWindowSizeChanged(std::stof(arg.second), runner->window.height);
   SPDLOG_INFO("`{}`: Width set to: {}", arg.first, arg.second);
   return true;
 }
