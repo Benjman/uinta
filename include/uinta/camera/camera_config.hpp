@@ -5,12 +5,7 @@
 
 namespace uinta {
 
-const flag_t CAMERA_DIST_LIMIT = 1 << 0;
-const flag_t CAMERA_PITCH_LIMIT = 1 << 1;
-
 struct CameraConfig {
-  flags_t flags = CAMERA_DIST_LIMIT | CAMERA_PITCH_LIMIT;
-
   f32 fov = 45;
   f32 aspectRatio = 1.0;
 

@@ -64,12 +64,12 @@ inline void cameraTransform(TargetCamera &camera, const RunnerState &state) {
   ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.dist.target), 0.1f, &limits.one_tenth,
                     &limits.twenty, "%+.2f");
   ImGui::SameLine();
-  ImGui::CheckboxFlags("Limit dist", (u32 *)&camera.config.flags, CAMERA_DIST_LIMIT);
+  ImGui::CheckboxFlags("Limit dist", (u32 *)&camera.flags, TargetCamera::CAMERA_DIST_LIMIT);
 
   ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.pitch.target), 0.1f, &limits.min, &limits.max,
                     "%+.2f");
   ImGui::SameLine();
-  ImGui::CheckboxFlags("Limit pitch", (u32 *)&camera.config.flags, CAMERA_PITCH_LIMIT);
+  ImGui::CheckboxFlags("Limit pitch", (u32 *)&camera.flags, TargetCamera::CAMERA_PITCH_LIMIT);
 
   ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.angle.target), 0.1f, &limits.min, &limits.max,
                     "%+.2f");

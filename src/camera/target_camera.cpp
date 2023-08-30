@@ -62,8 +62,9 @@ inline void processInput(TargetCamera& cam, const RunnerState& state, const Inpu
   cam.angle += getAngleDelta(input, cam.config) * state.delta * scale;
   cam.dist += getDistDelta(input, cam.config) * state.delta * scale;
   cam.pitch += getPitchDelta(input, cam.config) * state.delta * scale;
-  if (isFlagSet(CAMERA_DIST_LIMIT, cam.config.flags)) cam.dist = clamp(cam.dist.target, cam.config.distMin, cam.config.distMax);
-  if (isFlagSet(CAMERA_PITCH_LIMIT, cam.config.flags))
+  if (isFlagSet(TargetCamera::CAMERA_DIST_LIMIT, cam.flags))
+    cam.dist = clamp(cam.dist.target, cam.config.distMin, cam.config.distMax);
+  if (isFlagSet(TargetCamera::CAMERA_PITCH_LIMIT, cam.flags))
     cam.pitch = clamp(cam.pitch.target, cam.config.pitchMin, cam.config.pitchMax);
   cam.target += getTranslationDelta(input, cam) * state.delta * scale;
 }

@@ -11,14 +11,17 @@ namespace uinta {
 
 // disclaimer about euler angles and gimbal locking ...
 struct TargetCamera {
+  static constexpr flag_t CAMERA_DIST_LIMIT = 1 << 1;
+  static constexpr flag_t CAMERA_PITCH_LIMIT = 1 << 2;
+
+  CameraConfig config;
   glm::vec3 position;
   SmoothVec3 target{8, 0};
   SmoothFloat angle{8, 0};
   SmoothFloat dist{8, 1};
   SmoothFloat pitch{8, 0};
   f32 vertOffset{0};
-
-  CameraConfig config;
+  flags_t flags = CAMERA_DIST_LIMIT | CAMERA_PITCH_LIMIT;
 
   TargetCamera() = default;
 
