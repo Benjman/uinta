@@ -3,7 +3,6 @@
 #include <uinta/camera/fwd.hpp>
 #include <uinta/camera/target_camera.hpp>
 #include <uinta/input.hpp>
-#include <uinta/math/map.hpp>
 #include <uinta/math/utils.hpp>
 #include <uinta/runner/display.hpp>
 #include <uinta/runner/runner_state.hpp>
@@ -63,9 +62,9 @@ inline void processInput(TargetCamera& cam, const RunnerState& state, const Inpu
   cam.dist += getDistDelta(input, cam.config) * state.delta * scale;
   cam.pitch += getPitchDelta(input, cam.config) * state.delta * scale;
   if (isFlagSet(TargetCamera::CAMERA_DIST_LIMIT, cam.flags))
-    cam.dist = clamp(cam.dist.target, cam.config.distMin, cam.config.distMax);
+    cam.dist = std::clamp(cam.dist.target, cam.config.distMin, cam.config.distMax);
   if (isFlagSet(TargetCamera::CAMERA_PITCH_LIMIT, cam.flags))
-    cam.pitch = clamp(cam.pitch.target, cam.config.pitchMin, cam.config.pitchMax);
+    cam.pitch = std::clamp(cam.pitch.target, cam.config.pitchMin, cam.config.pitchMax);
   cam.target += getTranslationDelta(input, cam) * state.delta * scale;
 }
 
