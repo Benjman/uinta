@@ -2,6 +2,7 @@
 #include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
+#include <uinta/logging.hpp>
 
 uinta::Vao::Vao(const std::vector<VertexAttrib>& attribs) : attribs(attribs) {
 }

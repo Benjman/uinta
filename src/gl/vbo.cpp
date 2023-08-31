@@ -1,6 +1,7 @@
 #include <uinta/gl/utils/errors.hpp>
 #include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/gl/vbo.hpp>
+#include <uinta/logging.hpp>
 #include <uinta/utils/formatters.hpp>
 
 uinta::Vbo::Vbo(GLenum target, GLenum usage) : Vbo(GL_ZERO, target, usage, 0) {

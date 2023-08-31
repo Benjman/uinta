@@ -1,6 +1,8 @@
 #ifndef UINTA_STRING_UTILS_H
 #define UINTA_STRING_UTILS_H
 
+#include <cstring>
+
 #ifdef UINTA_DEBUG
 #include <uinta/logging.hpp>
 #endif
