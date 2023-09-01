@@ -126,7 +126,7 @@ void GlfwRunner::registerCallbacks() {
   });
 
   glfwSetCursorPosCallback(glfwWindow, [](auto* glfwWindow, f64 xpos, f64 ypos) {
-    SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypox);
+    SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypos);
     auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
     runner->handleCursorPositionChanged(xpos, ypos);
   });
