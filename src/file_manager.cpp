@@ -13,11 +13,6 @@ inline const file_t UINTA_FILE_IS_ACTIVE_MASK = 0x80000;
 
 inline const flag_t FILEMANAGER_INITIALIZED = 1 << 0;
 
-inline std::string sanitizePath(const std::string& searchPath, const std::string& path) {
-  // TODO ensure searchPath, or path aren't double slashing "//", or that a slash isn't missing between the two
-  return searchPath + path;
-}
-
 FileManager::FileManager(const size_t storageSize) : storageSize(storageSize), storage(malloc(storageSize)) {
 }
 
@@ -273,9 +268,9 @@ void FileManager::setPath(const file_t* const handle, const std::string& path) {
 }
 
 std::string FileManager::findPath(const std::string& path) {
-  if (std::ifstream(path)) return path;
+  if (std::ifstream(std::filesystem::path(path).string())) return path;
   for (const auto& searchPath : fileSearchPaths) {
-    std::string absPath = sanitizePath(searchPath, path);
+    const std::string absPath = std::filesystem::path(searchPath + path).string();
     if (std::ifstream(absPath)) return absPath;
   }
   return "";
