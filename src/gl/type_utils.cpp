@@ -5,11 +5,16 @@
   ENTRY(GL_DEPTH_BUFFER_BIT)                                           \
   ENTRY(GL_STENCIL_BUFFER_BIT)                                         \
   ENTRY(GL_COLOR_BUFFER_BIT)                                           \
+  ENTRY(GL_FALSE)                                                      \
+  ENTRY(GL_TRUE)                                                       \
+  ENTRY(GL_POINTS)                                                     \
+  ENTRY(GL_LINES)                                                      \
   ENTRY(GL_LINE_LOOP)                                                  \
   ENTRY(GL_LINE_STRIP)                                                 \
   ENTRY(GL_TRIANGLES)                                                  \
   ENTRY(GL_TRIANGLE_STRIP)                                             \
   ENTRY(GL_TRIANGLE_FAN)                                               \
+  ENTRY(GL_QUADS)                                                      \
   ENTRY(GL_NEVER)                                                      \
   ENTRY(GL_LESS)                                                       \
   ENTRY(GL_EQUAL)                                                      \
@@ -29,6 +34,8 @@
   ENTRY(GL_DST_COLOR)                                                  \
   ENTRY(GL_ONE_MINUS_DST_COLOR)                                        \
   ENTRY(GL_SRC_ALPHA_SATURATE)                                         \
+  ENTRY(GL_NONE)                                                       \
+  ENTRY(GL_FRONT_LEFT)                                                 \
   ENTRY(GL_FRONT_RIGHT)                                                \
   ENTRY(GL_BACK_LEFT)                                                  \
   ENTRY(GL_BACK_RIGHT)                                                 \
@@ -37,6 +44,7 @@
   ENTRY(GL_LEFT)                                                       \
   ENTRY(GL_RIGHT)                                                      \
   ENTRY(GL_FRONT_AND_BACK)                                             \
+  ENTRY(GL_NO_ERROR)                                                   \
   ENTRY(GL_INVALID_ENUM)                                               \
   ENTRY(GL_INVALID_VALUE)                                              \
   ENTRY(GL_INVALID_OPERATION)                                          \
@@ -115,6 +123,8 @@
   ENTRY(GL_INT)                                                        \
   ENTRY(GL_UNSIGNED_INT)                                               \
   ENTRY(GL_FLOAT)                                                      \
+  ENTRY(GL_STACK_OVERFLOW)                                             \
+  ENTRY(GL_STACK_UNDERFLOW)                                            \
   ENTRY(GL_CLEAR)                                                      \
   ENTRY(GL_AND)                                                        \
   ENTRY(GL_AND_REVERSE)                                                \
@@ -165,6 +175,257 @@
   ENTRY(GL_TEXTURE_WRAP_S)                                             \
   ENTRY(GL_TEXTURE_WRAP_T)                                             \
   ENTRY(GL_REPEAT)                                                     \
+  ENTRY(GL_CURRENT_BIT)                                                \
+  ENTRY(GL_POINT_BIT)                                                  \
+  ENTRY(GL_LINE_BIT)                                                   \
+  ENTRY(GL_POLYGON_BIT)                                                \
+  ENTRY(GL_POLYGON_STIPPLE_BIT)                                        \
+  ENTRY(GL_PIXEL_MODE_BIT)                                             \
+  ENTRY(GL_LIGHTING_BIT)                                               \
+  ENTRY(GL_FOG_BIT)                                                    \
+  ENTRY(GL_ACCUM_BUFFER_BIT)                                           \
+  ENTRY(GL_VIEWPORT_BIT)                                               \
+  ENTRY(GL_TRANSFORM_BIT)                                              \
+  ENTRY(GL_ENABLE_BIT)                                                 \
+  ENTRY(GL_HINT_BIT)                                                   \
+  ENTRY(GL_EVAL_BIT)                                                   \
+  ENTRY(GL_LIST_BIT)                                                   \
+  ENTRY(GL_TEXTURE_BIT)                                                \
+  ENTRY(GL_SCISSOR_BIT)                                                \
+  ENTRY(GL_ALL_ATTRIB_BITS)                                            \
+  ENTRY(GL_QUAD_STRIP)                                                 \
+  ENTRY(GL_POLYGON)                                                    \
+  ENTRY(GL_ACCUM)                                                      \
+  ENTRY(GL_LOAD)                                                       \
+  ENTRY(GL_RETURN)                                                     \
+  ENTRY(GL_MULT)                                                       \
+  ENTRY(GL_ADD)                                                        \
+  ENTRY(GL_AUX0)                                                       \
+  ENTRY(GL_AUX1)                                                       \
+  ENTRY(GL_AUX2)                                                       \
+  ENTRY(GL_AUX3)                                                       \
+  ENTRY(GL_2D)                                                         \
+  ENTRY(GL_3D)                                                         \
+  ENTRY(GL_3D_COLOR)                                                   \
+  ENTRY(GL_3D_COLOR_TEXTURE)                                           \
+  ENTRY(GL_4D_COLOR_TEXTURE)                                           \
+  ENTRY(GL_PASS_THROUGH_TOKEN)                                         \
+  ENTRY(GL_POINT_TOKEN)                                                \
+  ENTRY(GL_LINE_TOKEN)                                                 \
+  ENTRY(GL_POLYGON_TOKEN)                                              \
+  ENTRY(GL_BITMAP_TOKEN)                                               \
+  ENTRY(GL_DRAW_PIXEL_TOKEN)                                           \
+  ENTRY(GL_COPY_PIXEL_TOKEN)                                           \
+  ENTRY(GL_LINE_RESET_TOKEN)                                           \
+  ENTRY(GL_EXP)                                                        \
+  ENTRY(GL_EXP2)                                                       \
+  ENTRY(GL_COEFF)                                                      \
+  ENTRY(GL_ORDER)                                                      \
+  ENTRY(GL_DOMAIN)                                                     \
+  ENTRY(GL_PIXEL_MAP_I_TO_I)                                           \
+  ENTRY(GL_PIXEL_MAP_S_TO_S)                                           \
+  ENTRY(GL_PIXEL_MAP_I_TO_R)                                           \
+  ENTRY(GL_PIXEL_MAP_I_TO_G)                                           \
+  ENTRY(GL_PIXEL_MAP_I_TO_B)                                           \
+  ENTRY(GL_PIXEL_MAP_I_TO_A)                                           \
+  ENTRY(GL_PIXEL_MAP_R_TO_R)                                           \
+  ENTRY(GL_PIXEL_MAP_G_TO_G)                                           \
+  ENTRY(GL_PIXEL_MAP_B_TO_B)                                           \
+  ENTRY(GL_PIXEL_MAP_A_TO_A)                                           \
+  ENTRY(GL_CURRENT_COLOR)                                              \
+  ENTRY(GL_CURRENT_INDEX)                                              \
+  ENTRY(GL_CURRENT_NORMAL)                                             \
+  ENTRY(GL_CURRENT_TEXTURE_COORDS)                                     \
+  ENTRY(GL_CURRENT_RASTER_COLOR)                                       \
+  ENTRY(GL_CURRENT_RASTER_INDEX)                                       \
+  ENTRY(GL_CURRENT_RASTER_TEXTURE_COORDS)                              \
+  ENTRY(GL_CURRENT_RASTER_POSITION)                                    \
+  ENTRY(GL_CURRENT_RASTER_POSITION_VALID)                              \
+  ENTRY(GL_CURRENT_RASTER_DISTANCE)                                    \
+  ENTRY(GL_POINT_SMOOTH)                                               \
+  ENTRY(GL_LINE_STIPPLE)                                               \
+  ENTRY(GL_LINE_STIPPLE_PATTERN)                                       \
+  ENTRY(GL_LINE_STIPPLE_REPEAT)                                        \
+  ENTRY(GL_LIST_MODE)                                                  \
+  ENTRY(GL_MAX_LIST_NESTING)                                           \
+  ENTRY(GL_LIST_BASE)                                                  \
+  ENTRY(GL_LIST_INDEX)                                                 \
+  ENTRY(GL_POLYGON_STIPPLE)                                            \
+  ENTRY(GL_EDGE_FLAG)                                                  \
+  ENTRY(GL_LIGHTING)                                                   \
+  ENTRY(GL_LIGHT_MODEL_LOCAL_VIEWER)                                   \
+  ENTRY(GL_LIGHT_MODEL_TWO_SIDE)                                       \
+  ENTRY(GL_LIGHT_MODEL_AMBIENT)                                        \
+  ENTRY(GL_SHADE_MODEL)                                                \
+  ENTRY(GL_COLOR_MATERIAL_FACE)                                        \
+  ENTRY(GL_COLOR_MATERIAL_PARAMETER)                                   \
+  ENTRY(GL_COLOR_MATERIAL)                                             \
+  ENTRY(GL_FOG)                                                        \
+  ENTRY(GL_FOG_INDEX)                                                  \
+  ENTRY(GL_FOG_DENSITY)                                                \
+  ENTRY(GL_FOG_START)                                                  \
+  ENTRY(GL_FOG_END)                                                    \
+  ENTRY(GL_FOG_MODE)                                                   \
+  ENTRY(GL_FOG_COLOR)                                                  \
+  ENTRY(GL_ACCUM_CLEAR_VALUE)                                          \
+  ENTRY(GL_MATRIX_MODE)                                                \
+  ENTRY(GL_NORMALIZE)                                                  \
+  ENTRY(GL_MODELVIEW_STACK_DEPTH)                                      \
+  ENTRY(GL_PROJECTION_STACK_DEPTH)                                     \
+  ENTRY(GL_TEXTURE_STACK_DEPTH)                                        \
+  ENTRY(GL_MODELVIEW_MATRIX)                                           \
+  ENTRY(GL_PROJECTION_MATRIX)                                          \
+  ENTRY(GL_TEXTURE_MATRIX)                                             \
+  ENTRY(GL_ATTRIB_STACK_DEPTH)                                         \
+  ENTRY(GL_ALPHA_TEST)                                                 \
+  ENTRY(GL_ALPHA_TEST_FUNC)                                            \
+  ENTRY(GL_ALPHA_TEST_REF)                                             \
+  ENTRY(GL_LOGIC_OP)                                                   \
+  ENTRY(GL_AUX_BUFFERS)                                                \
+  ENTRY(GL_INDEX_CLEAR_VALUE)                                          \
+  ENTRY(GL_INDEX_WRITEMASK)                                            \
+  ENTRY(GL_INDEX_MODE)                                                 \
+  ENTRY(GL_RGBA_MODE)                                                  \
+  ENTRY(GL_RENDER_MODE)                                                \
+  ENTRY(GL_PERSPECTIVE_CORRECTION_HINT)                                \
+  ENTRY(GL_POINT_SMOOTH_HINT)                                          \
+  ENTRY(GL_FOG_HINT)                                                   \
+  ENTRY(GL_TEXTURE_GEN_S)                                              \
+  ENTRY(GL_TEXTURE_GEN_T)                                              \
+  ENTRY(GL_TEXTURE_GEN_R)                                              \
+  ENTRY(GL_TEXTURE_GEN_Q)                                              \
+  ENTRY(GL_PIXEL_MAP_I_TO_I_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_S_TO_S_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_I_TO_R_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_I_TO_G_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_I_TO_B_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_I_TO_A_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_R_TO_R_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_G_TO_G_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_B_TO_B_SIZE)                                      \
+  ENTRY(GL_PIXEL_MAP_A_TO_A_SIZE)                                      \
+  ENTRY(GL_MAP_COLOR)                                                  \
+  ENTRY(GL_MAP_STENCIL)                                                \
+  ENTRY(GL_INDEX_SHIFT)                                                \
+  ENTRY(GL_INDEX_OFFSET)                                               \
+  ENTRY(GL_RED_SCALE)                                                  \
+  ENTRY(GL_RED_BIAS)                                                   \
+  ENTRY(GL_ZOOM_X)                                                     \
+  ENTRY(GL_ZOOM_Y)                                                     \
+  ENTRY(GL_GREEN_SCALE)                                                \
+  ENTRY(GL_GREEN_BIAS)                                                 \
+  ENTRY(GL_BLUE_SCALE)                                                 \
+  ENTRY(GL_BLUE_BIAS)                                                  \
+  ENTRY(GL_ALPHA_SCALE)                                                \
+  ENTRY(GL_ALPHA_BIAS)                                                 \
+  ENTRY(GL_DEPTH_SCALE)                                                \
+  ENTRY(GL_DEPTH_BIAS)                                                 \
+  ENTRY(GL_MAX_EVAL_ORDER)                                             \
+  ENTRY(GL_MAX_LIGHTS)                                                 \
+  ENTRY(GL_MAX_CLIP_PLANES)                                            \
+  ENTRY(GL_MAX_PIXEL_MAP_TABLE)                                        \
+  ENTRY(GL_MAX_ATTRIB_STACK_DEPTH)                                     \
+  ENTRY(GL_MAX_MODELVIEW_STACK_DEPTH)                                  \
+  ENTRY(GL_MAX_NAME_STACK_DEPTH)                                       \
+  ENTRY(GL_MAX_PROJECTION_STACK_DEPTH)                                 \
+  ENTRY(GL_MAX_TEXTURE_STACK_DEPTH)                                    \
+  ENTRY(GL_INDEX_BITS)                                                 \
+  ENTRY(GL_RED_BITS)                                                   \
+  ENTRY(GL_GREEN_BITS)                                                 \
+  ENTRY(GL_BLUE_BITS)                                                  \
+  ENTRY(GL_ALPHA_BITS)                                                 \
+  ENTRY(GL_DEPTH_BITS)                                                 \
+  ENTRY(GL_STENCIL_BITS)                                               \
+  ENTRY(GL_ACCUM_RED_BITS)                                             \
+  ENTRY(GL_ACCUM_GREEN_BITS)                                           \
+  ENTRY(GL_ACCUM_BLUE_BITS)                                            \
+  ENTRY(GL_ACCUM_ALPHA_BITS)                                           \
+  ENTRY(GL_NAME_STACK_DEPTH)                                           \
+  ENTRY(GL_AUTO_NORMAL)                                                \
+  ENTRY(GL_MAP1_COLOR_4)                                               \
+  ENTRY(GL_MAP1_INDEX)                                                 \
+  ENTRY(GL_MAP1_NORMAL)                                                \
+  ENTRY(GL_MAP1_TEXTURE_COORD_1)                                       \
+  ENTRY(GL_MAP1_TEXTURE_COORD_2)                                       \
+  ENTRY(GL_MAP1_TEXTURE_COORD_3)                                       \
+  ENTRY(GL_MAP1_TEXTURE_COORD_4)                                       \
+  ENTRY(GL_MAP1_VERTEX_3)                                              \
+  ENTRY(GL_MAP1_VERTEX_4)                                              \
+  ENTRY(GL_MAP2_COLOR_4)                                               \
+  ENTRY(GL_MAP2_INDEX)                                                 \
+  ENTRY(GL_MAP2_NORMAL)                                                \
+  ENTRY(GL_MAP2_TEXTURE_COORD_1)                                       \
+  ENTRY(GL_MAP2_TEXTURE_COORD_2)                                       \
+  ENTRY(GL_MAP2_TEXTURE_COORD_3)                                       \
+  ENTRY(GL_MAP2_TEXTURE_COORD_4)                                       \
+  ENTRY(GL_MAP2_VERTEX_3)                                              \
+  ENTRY(GL_MAP2_VERTEX_4)                                              \
+  ENTRY(GL_MAP1_GRID_DOMAIN)                                           \
+  ENTRY(GL_MAP1_GRID_SEGMENTS)                                         \
+  ENTRY(GL_MAP2_GRID_DOMAIN)                                           \
+  ENTRY(GL_MAP2_GRID_SEGMENTS)                                         \
+  ENTRY(GL_TEXTURE_COMPONENTS)                                         \
+  ENTRY(GL_TEXTURE_BORDER)                                             \
+  ENTRY(GL_AMBIENT)                                                    \
+  ENTRY(GL_DIFFUSE)                                                    \
+  ENTRY(GL_SPECULAR)                                                   \
+  ENTRY(GL_POSITION)                                                   \
+  ENTRY(GL_SPOT_DIRECTION)                                             \
+  ENTRY(GL_SPOT_EXPONENT)                                              \
+  ENTRY(GL_SPOT_CUTOFF)                                                \
+  ENTRY(GL_CONSTANT_ATTENUATION)                                       \
+  ENTRY(GL_LINEAR_ATTENUATION)                                         \
+  ENTRY(GL_QUADRATIC_ATTENUATION)                                      \
+  ENTRY(GL_COMPILE)                                                    \
+  ENTRY(GL_COMPILE_AND_EXECUTE)                                        \
+  ENTRY(GL_2_BYTES)                                                    \
+  ENTRY(GL_3_BYTES)                                                    \
+  ENTRY(GL_4_BYTES)                                                    \
+  ENTRY(GL_EMISSION)                                                   \
+  ENTRY(GL_SHININESS)                                                  \
+  ENTRY(GL_AMBIENT_AND_DIFFUSE)                                        \
+  ENTRY(GL_COLOR_INDEXES)                                              \
+  ENTRY(GL_MODELVIEW)                                                  \
+  ENTRY(GL_PROJECTION)                                                 \
+  ENTRY(GL_COLOR_INDEX)                                                \
+  ENTRY(GL_LUMINANCE)                                                  \
+  ENTRY(GL_LUMINANCE_ALPHA)                                            \
+  ENTRY(GL_BITMAP)                                                     \
+  ENTRY(GL_RENDER)                                                     \
+  ENTRY(GL_FEEDBACK)                                                   \
+  ENTRY(GL_SELECT)                                                     \
+  ENTRY(GL_FLAT)                                                       \
+  ENTRY(GL_SMOOTH)                                                     \
+  ENTRY(GL_S)                                                          \
+  ENTRY(GL_T)                                                          \
+  ENTRY(GL_R)                                                          \
+  ENTRY(GL_Q)                                                          \
+  ENTRY(GL_MODULATE)                                                   \
+  ENTRY(GL_DECAL)                                                      \
+  ENTRY(GL_TEXTURE_ENV_MODE)                                           \
+  ENTRY(GL_TEXTURE_ENV_COLOR)                                          \
+  ENTRY(GL_TEXTURE_ENV)                                                \
+  ENTRY(GL_EYE_LINEAR)                                                 \
+  ENTRY(GL_OBJECT_LINEAR)                                              \
+  ENTRY(GL_SPHERE_MAP)                                                 \
+  ENTRY(GL_TEXTURE_GEN_MODE)                                           \
+  ENTRY(GL_OBJECT_PLANE)                                               \
+  ENTRY(GL_EYE_PLANE)                                                  \
+  ENTRY(GL_CLAMP)                                                      \
+  ENTRY(GL_CLIP_PLANE0)                                                \
+  ENTRY(GL_CLIP_PLANE1)                                                \
+  ENTRY(GL_CLIP_PLANE2)                                                \
+  ENTRY(GL_CLIP_PLANE3)                                                \
+  ENTRY(GL_CLIP_PLANE4)                                                \
+  ENTRY(GL_CLIP_PLANE5)                                                \
+  ENTRY(GL_LIGHT0)                                                     \
+  ENTRY(GL_LIGHT1)                                                     \
+  ENTRY(GL_LIGHT2)                                                     \
+  ENTRY(GL_LIGHT3)                                                     \
+  ENTRY(GL_LIGHT4)                                                     \
+  ENTRY(GL_LIGHT5)                                                     \
+  ENTRY(GL_LIGHT6)                                                     \
+  ENTRY(GL_LIGHT7)                                                     \
   ENTRY(GL_COLOR_LOGIC_OP)                                             \
   ENTRY(GL_POLYGON_OFFSET_UNITS)                                       \
   ENTRY(GL_POLYGON_OFFSET_POINT)                                       \
@@ -195,6 +456,80 @@
   ENTRY(GL_RGB10_A2)                                                   \
   ENTRY(GL_RGBA12)                                                     \
   ENTRY(GL_RGBA16)                                                     \
+  ENTRY(GL_CLIENT_PIXEL_STORE_BIT)                                     \
+  ENTRY(GL_CLIENT_VERTEX_ARRAY_BIT)                                    \
+  ENTRY(GL_CLIENT_ALL_ATTRIB_BITS)                                     \
+  ENTRY(GL_VERTEX_ARRAY_POINTER)                                       \
+  ENTRY(GL_NORMAL_ARRAY_POINTER)                                       \
+  ENTRY(GL_COLOR_ARRAY_POINTER)                                        \
+  ENTRY(GL_INDEX_ARRAY_POINTER)                                        \
+  ENTRY(GL_TEXTURE_COORD_ARRAY_POINTER)                                \
+  ENTRY(GL_EDGE_FLAG_ARRAY_POINTER)                                    \
+  ENTRY(GL_FEEDBACK_BUFFER_POINTER)                                    \
+  ENTRY(GL_SELECTION_BUFFER_POINTER)                                   \
+  ENTRY(GL_CLIENT_ATTRIB_STACK_DEPTH)                                  \
+  ENTRY(GL_INDEX_LOGIC_OP)                                             \
+  ENTRY(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH)                              \
+  ENTRY(GL_FEEDBACK_BUFFER_SIZE)                                       \
+  ENTRY(GL_FEEDBACK_BUFFER_TYPE)                                       \
+  ENTRY(GL_SELECTION_BUFFER_SIZE)                                      \
+  ENTRY(GL_VERTEX_ARRAY)                                               \
+  ENTRY(GL_NORMAL_ARRAY)                                               \
+  ENTRY(GL_COLOR_ARRAY)                                                \
+  ENTRY(GL_INDEX_ARRAY)                                                \
+  ENTRY(GL_TEXTURE_COORD_ARRAY)                                        \
+  ENTRY(GL_EDGE_FLAG_ARRAY)                                            \
+  ENTRY(GL_VERTEX_ARRAY_SIZE)                                          \
+  ENTRY(GL_VERTEX_ARRAY_TYPE)                                          \
+  ENTRY(GL_VERTEX_ARRAY_STRIDE)                                        \
+  ENTRY(GL_NORMAL_ARRAY_TYPE)                                          \
+  ENTRY(GL_NORMAL_ARRAY_STRIDE)                                        \
+  ENTRY(GL_COLOR_ARRAY_SIZE)                                           \
+  ENTRY(GL_COLOR_ARRAY_TYPE)                                           \
+  ENTRY(GL_COLOR_ARRAY_STRIDE)                                         \
+  ENTRY(GL_INDEX_ARRAY_TYPE)                                           \
+  ENTRY(GL_INDEX_ARRAY_STRIDE)                                         \
+  ENTRY(GL_TEXTURE_COORD_ARRAY_SIZE)                                   \
+  ENTRY(GL_TEXTURE_COORD_ARRAY_TYPE)                                   \
+  ENTRY(GL_TEXTURE_COORD_ARRAY_STRIDE)                                 \
+  ENTRY(GL_EDGE_FLAG_ARRAY_STRIDE)                                     \
+  ENTRY(GL_TEXTURE_LUMINANCE_SIZE)                                     \
+  ENTRY(GL_TEXTURE_INTENSITY_SIZE)                                     \
+  ENTRY(GL_TEXTURE_PRIORITY)                                           \
+  ENTRY(GL_TEXTURE_RESIDENT)                                           \
+  ENTRY(GL_ALPHA4)                                                     \
+  ENTRY(GL_ALPHA8)                                                     \
+  ENTRY(GL_ALPHA12)                                                    \
+  ENTRY(GL_ALPHA16)                                                    \
+  ENTRY(GL_LUMINANCE4)                                                 \
+  ENTRY(GL_LUMINANCE8)                                                 \
+  ENTRY(GL_LUMINANCE12)                                                \
+  ENTRY(GL_LUMINANCE16)                                                \
+  ENTRY(GL_LUMINANCE4_ALPHA4)                                          \
+  ENTRY(GL_LUMINANCE6_ALPHA2)                                          \
+  ENTRY(GL_LUMINANCE8_ALPHA8)                                          \
+  ENTRY(GL_LUMINANCE12_ALPHA4)                                         \
+  ENTRY(GL_LUMINANCE12_ALPHA12)                                        \
+  ENTRY(GL_LUMINANCE16_ALPHA16)                                        \
+  ENTRY(GL_INTENSITY)                                                  \
+  ENTRY(GL_INTENSITY4)                                                 \
+  ENTRY(GL_INTENSITY8)                                                 \
+  ENTRY(GL_INTENSITY12)                                                \
+  ENTRY(GL_INTENSITY16)                                                \
+  ENTRY(GL_V2F)                                                        \
+  ENTRY(GL_V3F)                                                        \
+  ENTRY(GL_C4UB_V2F)                                                   \
+  ENTRY(GL_C4UB_V3F)                                                   \
+  ENTRY(GL_C3F_V3F)                                                    \
+  ENTRY(GL_N3F_V3F)                                                    \
+  ENTRY(GL_C4F_N3F_V3F)                                                \
+  ENTRY(GL_T2F_V3F)                                                    \
+  ENTRY(GL_T4F_V4F)                                                    \
+  ENTRY(GL_T2F_C4UB_V3F)                                               \
+  ENTRY(GL_T2F_C3F_V3F)                                                \
+  ENTRY(GL_T2F_N3F_V3F)                                                \
+  ENTRY(GL_T2F_C4F_N3F_V3F)                                            \
+  ENTRY(GL_T4F_C4F_N3F_V4F)                                            \
   ENTRY(GL_UNSIGNED_BYTE_3_3_2)                                        \
   ENTRY(GL_UNSIGNED_SHORT_4_4_4_4)                                     \
   ENTRY(GL_UNSIGNED_SHORT_5_5_5_1)                                     \
@@ -226,7 +561,16 @@
   ENTRY(GL_TEXTURE_MAX_LOD)                                            \
   ENTRY(GL_TEXTURE_BASE_LEVEL)                                         \
   ENTRY(GL_TEXTURE_MAX_LEVEL)                                          \
+  ENTRY(GL_SMOOTH_POINT_SIZE_RANGE)                                    \
+  ENTRY(GL_SMOOTH_POINT_SIZE_GRANULARITY)                              \
+  ENTRY(GL_SMOOTH_LINE_WIDTH_RANGE)                                    \
+  ENTRY(GL_SMOOTH_LINE_WIDTH_GRANULARITY)                              \
   ENTRY(GL_ALIASED_LINE_WIDTH_RANGE)                                   \
+  ENTRY(GL_RESCALE_NORMAL)                                             \
+  ENTRY(GL_LIGHT_MODEL_COLOR_CONTROL)                                  \
+  ENTRY(GL_SINGLE_COLOR)                                               \
+  ENTRY(GL_SEPARATE_SPECULAR_COLOR)                                    \
+  ENTRY(GL_ALIASED_POINT_SIZE_RANGE)                                   \
   ENTRY(GL_TEXTURE0)                                                   \
   ENTRY(GL_TEXTURE1)                                                   \
   ENTRY(GL_TEXTURE2)                                                   \
@@ -286,6 +630,43 @@
   ENTRY(GL_NUM_COMPRESSED_TEXTURE_FORMATS)                             \
   ENTRY(GL_COMPRESSED_TEXTURE_FORMATS)                                 \
   ENTRY(GL_CLAMP_TO_BORDER)                                            \
+  ENTRY(GL_CLIENT_ACTIVE_TEXTURE)                                      \
+  ENTRY(GL_MAX_TEXTURE_UNITS)                                          \
+  ENTRY(GL_TRANSPOSE_MODELVIEW_MATRIX)                                 \
+  ENTRY(GL_TRANSPOSE_PROJECTION_MATRIX)                                \
+  ENTRY(GL_TRANSPOSE_TEXTURE_MATRIX)                                   \
+  ENTRY(GL_TRANSPOSE_COLOR_MATRIX)                                     \
+  ENTRY(GL_MULTISAMPLE_BIT)                                            \
+  ENTRY(GL_NORMAL_MAP)                                                 \
+  ENTRY(GL_REFLECTION_MAP)                                             \
+  ENTRY(GL_COMPRESSED_ALPHA)                                           \
+  ENTRY(GL_COMPRESSED_LUMINANCE)                                       \
+  ENTRY(GL_COMPRESSED_LUMINANCE_ALPHA)                                 \
+  ENTRY(GL_COMPRESSED_INTENSITY)                                       \
+  ENTRY(GL_COMBINE)                                                    \
+  ENTRY(GL_COMBINE_RGB)                                                \
+  ENTRY(GL_COMBINE_ALPHA)                                              \
+  ENTRY(GL_SOURCE0_RGB)                                                \
+  ENTRY(GL_SOURCE1_RGB)                                                \
+  ENTRY(GL_SOURCE2_RGB)                                                \
+  ENTRY(GL_SOURCE0_ALPHA)                                              \
+  ENTRY(GL_SOURCE1_ALPHA)                                              \
+  ENTRY(GL_SOURCE2_ALPHA)                                              \
+  ENTRY(GL_OPERAND0_RGB)                                               \
+  ENTRY(GL_OPERAND1_RGB)                                               \
+  ENTRY(GL_OPERAND2_RGB)                                               \
+  ENTRY(GL_OPERAND0_ALPHA)                                             \
+  ENTRY(GL_OPERAND1_ALPHA)                                             \
+  ENTRY(GL_OPERAND2_ALPHA)                                             \
+  ENTRY(GL_RGB_SCALE)                                                  \
+  ENTRY(GL_ADD_SIGNED)                                                 \
+  ENTRY(GL_INTERPOLATE)                                                \
+  ENTRY(GL_SUBTRACT)                                                   \
+  ENTRY(GL_CONSTANT)                                                   \
+  ENTRY(GL_PRIMARY_COLOR)                                              \
+  ENTRY(GL_PREVIOUS)                                                   \
+  ENTRY(GL_DOT3_RGB)                                                   \
+  ENTRY(GL_DOT3_RGBA)                                                  \
   ENTRY(GL_BLEND_DST_RGB)                                              \
   ENTRY(GL_BLEND_SRC_RGB)                                              \
   ENTRY(GL_BLEND_DST_ALPHA)                                            \
@@ -302,6 +683,29 @@
   ENTRY(GL_TEXTURE_DEPTH_SIZE)                                         \
   ENTRY(GL_TEXTURE_COMPARE_MODE)                                       \
   ENTRY(GL_TEXTURE_COMPARE_FUNC)                                       \
+  ENTRY(GL_POINT_SIZE_MIN)                                             \
+  ENTRY(GL_POINT_SIZE_MAX)                                             \
+  ENTRY(GL_POINT_DISTANCE_ATTENUATION)                                 \
+  ENTRY(GL_GENERATE_MIPMAP)                                            \
+  ENTRY(GL_GENERATE_MIPMAP_HINT)                                       \
+  ENTRY(GL_FOG_COORDINATE_SOURCE)                                      \
+  ENTRY(GL_FOG_COORDINATE)                                             \
+  ENTRY(GL_FRAGMENT_DEPTH)                                             \
+  ENTRY(GL_CURRENT_FOG_COORDINATE)                                     \
+  ENTRY(GL_FOG_COORDINATE_ARRAY_TYPE)                                  \
+  ENTRY(GL_FOG_COORDINATE_ARRAY_STRIDE)                                \
+  ENTRY(GL_FOG_COORDINATE_ARRAY_POINTER)                               \
+  ENTRY(GL_FOG_COORDINATE_ARRAY)                                       \
+  ENTRY(GL_COLOR_SUM)                                                  \
+  ENTRY(GL_CURRENT_SECONDARY_COLOR)                                    \
+  ENTRY(GL_SECONDARY_COLOR_ARRAY_SIZE)                                 \
+  ENTRY(GL_SECONDARY_COLOR_ARRAY_TYPE)                                 \
+  ENTRY(GL_SECONDARY_COLOR_ARRAY_STRIDE)                               \
+  ENTRY(GL_SECONDARY_COLOR_ARRAY_POINTER)                              \
+  ENTRY(GL_SECONDARY_COLOR_ARRAY)                                      \
+  ENTRY(GL_TEXTURE_FILTER_CONTROL)                                     \
+  ENTRY(GL_DEPTH_TEXTURE_MODE)                                         \
+  ENTRY(GL_COMPARE_R_TO_TEXTURE)                                       \
   ENTRY(GL_BLEND_COLOR)                                                \
   ENTRY(GL_BLEND_EQUATION)                                             \
   ENTRY(GL_CONSTANT_COLOR)                                             \
@@ -341,6 +745,29 @@
   ENTRY(GL_DYNAMIC_COPY)                                               \
   ENTRY(GL_SAMPLES_PASSED)                                             \
   ENTRY(GL_SRC1_ALPHA)                                                 \
+  ENTRY(GL_VERTEX_ARRAY_BUFFER_BINDING)                                \
+  ENTRY(GL_NORMAL_ARRAY_BUFFER_BINDING)                                \
+  ENTRY(GL_COLOR_ARRAY_BUFFER_BINDING)                                 \
+  ENTRY(GL_INDEX_ARRAY_BUFFER_BINDING)                                 \
+  ENTRY(GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING)                         \
+  ENTRY(GL_EDGE_FLAG_ARRAY_BUFFER_BINDING)                             \
+  ENTRY(GL_SECONDARY_COLOR_ARRAY_BUFFER_BINDING)                       \
+  ENTRY(GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING)                        \
+  ENTRY(GL_WEIGHT_ARRAY_BUFFER_BINDING)                                \
+  ENTRY(GL_FOG_COORD_SRC)                                              \
+  ENTRY(GL_FOG_COORD)                                                  \
+  ENTRY(GL_CURRENT_FOG_COORD)                                          \
+  ENTRY(GL_FOG_COORD_ARRAY_TYPE)                                       \
+  ENTRY(GL_FOG_COORD_ARRAY_STRIDE)                                     \
+  ENTRY(GL_FOG_COORD_ARRAY_POINTER)                                    \
+  ENTRY(GL_FOG_COORD_ARRAY)                                            \
+  ENTRY(GL_FOG_COORD_ARRAY_BUFFER_BINDING)                             \
+  ENTRY(GL_SRC0_RGB)                                                   \
+  ENTRY(GL_SRC1_RGB)                                                   \
+  ENTRY(GL_SRC2_RGB)                                                   \
+  ENTRY(GL_SRC0_ALPHA)                                                 \
+  ENTRY(GL_SRC2_ALPHA)                                                 \
+  ENTRY(GL_BLEND_EQUATION_RGB)                                         \
   ENTRY(GL_VERTEX_ATTRIB_ARRAY_ENABLED)                                \
   ENTRY(GL_VERTEX_ATTRIB_ARRAY_SIZE)                                   \
   ENTRY(GL_VERTEX_ATTRIB_ARRAY_STRIDE)                                 \
@@ -420,6 +847,10 @@
   ENTRY(GL_STENCIL_BACK_REF)                                           \
   ENTRY(GL_STENCIL_BACK_VALUE_MASK)                                    \
   ENTRY(GL_STENCIL_BACK_WRITEMASK)                                     \
+  ENTRY(GL_VERTEX_PROGRAM_TWO_SIDE)                                    \
+  ENTRY(GL_POINT_SPRITE)                                               \
+  ENTRY(GL_COORD_REPLACE)                                              \
+  ENTRY(GL_MAX_TEXTURE_COORDS)                                         \
   ENTRY(GL_PIXEL_PACK_BUFFER)                                          \
   ENTRY(GL_PIXEL_UNPACK_BUFFER)                                        \
   ENTRY(GL_PIXEL_PACK_BUFFER_BINDING)                                  \
@@ -436,6 +867,13 @@
   ENTRY(GL_SRGB8_ALPHA8)                                               \
   ENTRY(GL_COMPRESSED_SRGB)                                            \
   ENTRY(GL_COMPRESSED_SRGB_ALPHA)                                      \
+  ENTRY(GL_CURRENT_RASTER_SECONDARY_COLOR)                             \
+  ENTRY(GL_SLUMINANCE_ALPHA)                                           \
+  ENTRY(GL_SLUMINANCE8_ALPHA8)                                         \
+  ENTRY(GL_SLUMINANCE)                                                 \
+  ENTRY(GL_SLUMINANCE8)                                                \
+  ENTRY(GL_COMPRESSED_SLUMINANCE)                                      \
+  ENTRY(GL_COMPRESSED_SLUMINANCE_ALPHA)                                \
   ENTRY(GL_COMPARE_REF_TO_TEXTURE)                                     \
   ENTRY(GL_CLIP_DISTANCE0)                                             \
   ENTRY(GL_CLIP_DISTANCE1)                                             \
@@ -452,6 +890,7 @@
   ENTRY(GL_CONTEXT_FLAGS)                                              \
   ENTRY(GL_COMPRESSED_RED)                                             \
   ENTRY(GL_COMPRESSED_RG)                                              \
+  ENTRY(GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)                        \
   ENTRY(GL_RGBA32F)                                                    \
   ENTRY(GL_RGB32F)                                                     \
   ENTRY(GL_RGBA16F)                                                    \
@@ -462,6 +901,7 @@
   ENTRY(GL_MAX_PROGRAM_TEXEL_OFFSET)                                   \
   ENTRY(GL_CLAMP_READ_COLOR)                                           \
   ENTRY(GL_FIXED_ONLY)                                                 \
+  ENTRY(GL_MAX_VARYING_COMPONENTS)                                     \
   ENTRY(GL_TEXTURE_1D_ARRAY)                                           \
   ENTRY(GL_PROXY_TEXTURE_1D_ARRAY)                                     \
   ENTRY(GL_TEXTURE_2D_ARRAY)                                           \
@@ -561,6 +1001,7 @@
   ENTRY(GL_TEXTURE_DEPTH_TYPE)                                         \
   ENTRY(GL_UNSIGNED_NORMALIZED)                                        \
   ENTRY(GL_FRAMEBUFFER_BINDING)                                        \
+  ENTRY(GL_DRAW_FRAMEBUFFER_BINDING)                                   \
   ENTRY(GL_RENDERBUFFER_BINDING)                                       \
   ENTRY(GL_READ_FRAMEBUFFER)                                           \
   ENTRY(GL_DRAW_FRAMEBUFFER)                                           \
@@ -629,8 +1070,14 @@
   ENTRY(GL_RENDERBUFFER_STENCIL_SIZE)                                  \
   ENTRY(GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE)                         \
   ENTRY(GL_MAX_SAMPLES)                                                \
+  ENTRY(GL_INDEX)                                                      \
+  ENTRY(GL_TEXTURE_LUMINANCE_TYPE)                                     \
+  ENTRY(GL_TEXTURE_INTENSITY_TYPE)                                     \
   ENTRY(GL_FRAMEBUFFER_SRGB)                                           \
   ENTRY(GL_HALF_FLOAT)                                                 \
+  ENTRY(GL_MAP_READ_BIT)                                               \
+  ENTRY(GL_MAP_WRITE_BIT)                                              \
+  ENTRY(GL_MAP_INVALIDATE_RANGE_BIT)                                   \
   ENTRY(GL_MAP_INVALIDATE_BUFFER_BIT)                                  \
   ENTRY(GL_MAP_FLUSH_EXPLICIT_BIT)                                     \
   ENTRY(GL_MAP_UNSYNCHRONIZED_BIT)                                     \
@@ -661,6 +1108,9 @@
   ENTRY(GL_RG32I)                                                      \
   ENTRY(GL_RG32UI)                                                     \
   ENTRY(GL_VERTEX_ARRAY_BINDING)                                       \
+  ENTRY(GL_CLAMP_VERTEX_COLOR)                                         \
+  ENTRY(GL_CLAMP_FRAGMENT_COLOR)                                       \
+  ENTRY(GL_ALPHA_INTEGER)                                              \
   ENTRY(GL_SAMPLER_2D_RECT)                                            \
   ENTRY(GL_SAMPLER_2D_RECT_SHADOW)                                     \
   ENTRY(GL_SAMPLER_BUFFER)                                             \
@@ -722,10 +1172,13 @@
   ENTRY(GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER)                \
   ENTRY(GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER)                \
   ENTRY(GL_INVALID_INDEX)                                              \
+  ENTRY(GL_CONTEXT_CORE_PROFILE_BIT)                                   \
+  ENTRY(GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)                          \
   ENTRY(GL_LINES_ADJACENCY)                                            \
   ENTRY(GL_LINE_STRIP_ADJACENCY)                                       \
   ENTRY(GL_TRIANGLES_ADJACENCY)                                        \
   ENTRY(GL_TRIANGLE_STRIP_ADJACENCY)                                   \
+  ENTRY(GL_PROGRAM_POINT_SIZE)                                         \
   ENTRY(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS)                           \
   ENTRY(GL_FRAMEBUFFER_ATTACHMENT_LAYERED)                             \
   ENTRY(GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS)                       \
@@ -760,6 +1213,8 @@
   ENTRY(GL_TIMEOUT_EXPIRED)                                            \
   ENTRY(GL_CONDITION_SATISFIED)                                        \
   ENTRY(GL_WAIT_FAILED)                                                \
+  ENTRY(GL_TIMEOUT_IGNORED)                                            \
+  ENTRY(GL_SYNC_FLUSH_COMMANDS_BIT)                                    \
   ENTRY(GL_SAMPLE_POSITION)                                            \
   ENTRY(GL_SAMPLE_MASK)                                                \
   ENTRY(GL_SAMPLE_MASK_VALUE)                                          \
@@ -847,7 +1302,6 @@
   ENTRY(GL_TESS_GEN_VERTEX_ORDER)                                      \
   ENTRY(GL_TESS_GEN_POINT_MODE)                                        \
   ENTRY(GL_ISOLINES)                                                   \
-  ENTRY(GL_QUADS)                                                      \
   ENTRY(GL_FRACTIONAL_ODD)                                             \
   ENTRY(GL_FRACTIONAL_EVEN)                                            \
   ENTRY(GL_MAX_PATCH_VERTICES)                                         \
@@ -895,6 +1349,12 @@
   ENTRY(GL_PROGRAM_BINARY_LENGTH)                                      \
   ENTRY(GL_NUM_PROGRAM_BINARY_FORMATS)                                 \
   ENTRY(GL_PROGRAM_BINARY_FORMATS)                                     \
+  ENTRY(GL_VERTEX_SHADER_BIT)                                          \
+  ENTRY(GL_FRAGMENT_SHADER_BIT)                                        \
+  ENTRY(GL_GEOMETRY_SHADER_BIT)                                        \
+  ENTRY(GL_TESS_CONTROL_SHADER_BIT)                                    \
+  ENTRY(GL_TESS_EVALUATION_SHADER_BIT)                                 \
+  ENTRY(GL_ALL_SHADER_BITS)                                            \
   ENTRY(GL_PROGRAM_SEPARABLE)                                          \
   ENTRY(GL_ACTIVE_PROGRAM)                                             \
   ENTRY(GL_PROGRAM_PIPELINE_BINDING)                                   \
@@ -904,6 +1364,10 @@
   ENTRY(GL_LAYER_PROVOKING_VERTEX)                                     \
   ENTRY(GL_VIEWPORT_INDEX_PROVOKING_VERTEX)                            \
   ENTRY(GL_UNDEFINED_VERTEX)                                           \
+  ENTRY(GL_COPY_READ_BUFFER_BINDING)                                   \
+  ENTRY(GL_COPY_WRITE_BUFFER_BINDING)                                  \
+  ENTRY(GL_TRANSFORM_FEEDBACK_ACTIVE)                                  \
+  ENTRY(GL_TRANSFORM_FEEDBACK_PAUSED)                                  \
   ENTRY(GL_UNPACK_COMPRESSED_BLOCK_WIDTH)                              \
   ENTRY(GL_UNPACK_COMPRESSED_BLOCK_HEIGHT)                             \
   ENTRY(GL_UNPACK_COMPRESSED_BLOCK_DEPTH)                              \
@@ -943,9 +1407,19 @@
   ENTRY(GL_ACTIVE_ATOMIC_COUNTER_BUFFERS)                              \
   ENTRY(GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX)                        \
   ENTRY(GL_UNSIGNED_INT_ATOMIC_COUNTER)                                \
+  ENTRY(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT)                            \
+  ENTRY(GL_ELEMENT_ARRAY_BARRIER_BIT)                                  \
+  ENTRY(GL_UNIFORM_BARRIER_BIT)                                        \
+  ENTRY(GL_TEXTURE_FETCH_BARRIER_BIT)                                  \
+  ENTRY(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT)                            \
   ENTRY(GL_COMMAND_BARRIER_BIT)                                        \
   ENTRY(GL_PIXEL_BUFFER_BARRIER_BIT)                                   \
+  ENTRY(GL_TEXTURE_UPDATE_BARRIER_BIT)                                 \
+  ENTRY(GL_BUFFER_UPDATE_BARRIER_BIT)                                  \
+  ENTRY(GL_FRAMEBUFFER_BARRIER_BIT)                                    \
   ENTRY(GL_TRANSFORM_FEEDBACK_BARRIER_BIT)                             \
+  ENTRY(GL_ATOMIC_COUNTER_BARRIER_BIT)                                 \
+  ENTRY(GL_ALL_BARRIER_BITS)                                           \
   ENTRY(GL_MAX_IMAGE_UNITS)                                            \
   ENTRY(GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS)              \
   ENTRY(GL_IMAGE_BINDING_NAME)                                         \
@@ -1034,6 +1508,7 @@
   ENTRY(GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER)         \
   ENTRY(GL_DISPATCH_INDIRECT_BUFFER)                                   \
   ENTRY(GL_DISPATCH_INDIRECT_BUFFER_BINDING)                           \
+  ENTRY(GL_COMPUTE_SHADER_BIT)                                         \
   ENTRY(GL_DEBUG_OUTPUT_SYNCHRONOUS)                                   \
   ENTRY(GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH)                           \
   ENTRY(GL_DEBUG_CALLBACK_FUNCTION)                                    \
@@ -1065,12 +1540,12 @@
   ENTRY(GL_BUFFER)                                                     \
   ENTRY(GL_SHADER)                                                     \
   ENTRY(GL_PROGRAM)                                                    \
-  ENTRY(GL_VERTEX_ARRAY)                                               \
   ENTRY(GL_QUERY)                                                      \
   ENTRY(GL_PROGRAM_PIPELINE)                                           \
   ENTRY(GL_SAMPLER)                                                    \
   ENTRY(GL_MAX_LABEL_LENGTH)                                           \
   ENTRY(GL_DEBUG_OUTPUT)                                               \
+  ENTRY(GL_CONTEXT_FLAG_DEBUG_BIT)                                     \
   ENTRY(GL_MAX_UNIFORM_LOCATIONS)                                      \
   ENTRY(GL_FRAMEBUFFER_DEFAULT_WIDTH)                                  \
   ENTRY(GL_FRAMEBUFFER_DEFAULT_HEIGHT)                                 \
@@ -1241,6 +1716,7 @@
   ENTRY(GL_MAX_SHADER_STORAGE_BLOCK_SIZE)                              \
   ENTRY(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT)                     \
   ENTRY(GL_SHADER_STORAGE_BARRIER_BIT)                                 \
+  ENTRY(GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES)                       \
   ENTRY(GL_DEPTH_STENCIL_TEXTURE_MODE)                                 \
   ENTRY(GL_TEXTURE_BUFFER_OFFSET)                                      \
   ENTRY(GL_TEXTURE_BUFFER_SIZE)                                        \
@@ -1259,10 +1735,14 @@
   ENTRY(GL_MAX_VERTEX_ATTRIB_BINDINGS)                                 \
   ENTRY(GL_VERTEX_BINDING_BUFFER)                                      \
   ENTRY(GL_DISPLAY_LIST)                                               \
-  ENTRY(GL_STACK_UNDERFLOW)                                            \
-  ENTRY(GL_STACK_OVERFLOW)                                             \
   ENTRY(GL_MAX_VERTEX_ATTRIB_STRIDE)                                   \
   ENTRY(GL_PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED)                    \
+  ENTRY(GL_TEXTURE_BUFFER_BINDING)                                     \
+  ENTRY(GL_MAP_PERSISTENT_BIT)                                         \
+  ENTRY(GL_MAP_COHERENT_BIT)                                           \
+  ENTRY(GL_DYNAMIC_STORAGE_BIT)                                        \
+  ENTRY(GL_CLIENT_STORAGE_BIT)                                         \
+  ENTRY(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT)                           \
   ENTRY(GL_BUFFER_IMMUTABLE_STORAGE)                                   \
   ENTRY(GL_BUFFER_STORAGE_FLAGS)                                       \
   ENTRY(GL_CLEAR_TEXTURE)                                              \
@@ -1293,6 +1773,7 @@
   ENTRY(GL_RESET_NOTIFICATION_STRATEGY)                                \
   ENTRY(GL_LOSE_CONTEXT_ON_RESET)                                      \
   ENTRY(GL_NO_RESET_NOTIFICATION)                                      \
+  ENTRY(GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT)                             \
   ENTRY(GL_COLOR_TABLE)                                                \
   ENTRY(GL_POST_CONVOLUTION_COLOR_TABLE)                               \
   ENTRY(GL_POST_COLOR_MATRIX_COLOR_TABLE)                              \
@@ -1311,6 +1792,7 @@
   ENTRY(GL_SPIR_V_BINARY)                                              \
   ENTRY(GL_PARAMETER_BUFFER)                                           \
   ENTRY(GL_PARAMETER_BUFFER_BINDING)                                   \
+  ENTRY(GL_CONTEXT_FLAG_NO_ERROR_BIT)                                  \
   ENTRY(GL_VERTICES_SUBMITTED)                                         \
   ENTRY(GL_PRIMITIVES_SUBMITTED)                                       \
   ENTRY(GL_VERTEX_SHADER_INVOCATIONS)                                  \
@@ -1327,7 +1809,48 @@
   ENTRY(GL_TEXTURE_MAX_ANISOTROPY)                                     \
   ENTRY(GL_MAX_TEXTURE_MAX_ANISOTROPY)                                 \
   ENTRY(GL_TRANSFORM_FEEDBACK_OVERFLOW)                                \
-  ENTRY(GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW)
+  ENTRY(GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW)                         \
+  ENTRY(GL_VERSION_1_0)                                                \
+  ENTRY(GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR)                               \
+  ENTRY(GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_KHR)                       \
+  ENTRY(GL_DEBUG_CALLBACK_FUNCTION_KHR)                                \
+  ENTRY(GL_DEBUG_CALLBACK_USER_PARAM_KHR)                              \
+  ENTRY(GL_DEBUG_SOURCE_API_KHR)                                       \
+  ENTRY(GL_DEBUG_SOURCE_WINDOW_SYSTEM_KHR)                             \
+  ENTRY(GL_DEBUG_SOURCE_SHADER_COMPILER_KHR)                           \
+  ENTRY(GL_DEBUG_SOURCE_THIRD_PARTY_KHR)                               \
+  ENTRY(GL_DEBUG_SOURCE_APPLICATION_KHR)                               \
+  ENTRY(GL_DEBUG_SOURCE_OTHER_KHR)                                     \
+  ENTRY(GL_DEBUG_TYPE_ERROR_KHR)                                       \
+  ENTRY(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_KHR)                         \
+  ENTRY(GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR)                          \
+  ENTRY(GL_DEBUG_TYPE_PORTABILITY_KHR)                                 \
+  ENTRY(GL_DEBUG_TYPE_PERFORMANCE_KHR)                                 \
+  ENTRY(GL_DEBUG_TYPE_OTHER_KHR)                                       \
+  ENTRY(GL_DEBUG_TYPE_MARKER_KHR)                                      \
+  ENTRY(GL_DEBUG_TYPE_PUSH_GROUP_KHR)                                  \
+  ENTRY(GL_DEBUG_TYPE_POP_GROUP_KHR)                                   \
+  ENTRY(GL_DEBUG_SEVERITY_NOTIFICATION_KHR)                            \
+  ENTRY(GL_MAX_DEBUG_GROUP_STACK_DEPTH_KHR)                            \
+  ENTRY(GL_DEBUG_GROUP_STACK_DEPTH_KHR)                                \
+  ENTRY(GL_BUFFER_KHR)                                                 \
+  ENTRY(GL_SHADER_KHR)                                                 \
+  ENTRY(GL_PROGRAM_KHR)                                                \
+  ENTRY(GL_VERTEX_ARRAY_KHR)                                           \
+  ENTRY(GL_QUERY_KHR)                                                  \
+  ENTRY(GL_PROGRAM_PIPELINE_KHR)                                       \
+  ENTRY(GL_SAMPLER_KHR)                                                \
+  ENTRY(GL_MAX_LABEL_LENGTH_KHR)                                       \
+  ENTRY(GL_MAX_DEBUG_MESSAGE_LENGTH_KHR)                               \
+  ENTRY(GL_MAX_DEBUG_LOGGED_MESSAGES_KHR)                              \
+  ENTRY(GL_DEBUG_LOGGED_MESSAGES_KHR)                                  \
+  ENTRY(GL_DEBUG_SEVERITY_HIGH_KHR)                                    \
+  ENTRY(GL_DEBUG_SEVERITY_MEDIUM_KHR)                                  \
+  ENTRY(GL_DEBUG_SEVERITY_LOW_KHR)                                     \
+  ENTRY(GL_DEBUG_OUTPUT_KHR)                                           \
+  ENTRY(GL_CONTEXT_FLAG_DEBUG_BIT_KHR)                                 \
+  ENTRY(GL_STACK_OVERFLOW_KHR)                                         \
+  ENTRY(GL_STACK_UNDERFLOW_KHR)
 
 #define ENTRY(e) {e, #e},
 
