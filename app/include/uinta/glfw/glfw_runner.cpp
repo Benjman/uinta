@@ -4,6 +4,7 @@
 // clang-format on
 
 #include <uinta/error.hpp>
+#include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/glfw/glfw_runner_ui.hpp>
 #include <uinta/input.hpp>
@@ -71,6 +72,10 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+#ifdef UINTA_DEBUG
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
 
   u32 targetWidth = window.width ? window.width : monitors[0].width;
   u32 targetHeight = window.height ? window.height : monitors[0].height;
@@ -168,6 +173,15 @@ void GlfwRunner::registerCallbacks() {
     SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
     glfwGetWindowUserPointer(glfwWindow);
   });
+
+#ifdef UINTA_DEBUG
+  if (glfwExtensionSupported("GL_KHR_debug")) {
+    glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message,
+                              const void* userParam) { SPDLOG_CRITICAL("OpenGL ERROR: [{}]: {}", severity, message); },
+                           nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+  }
+#endif
 }
 
 }  // namespace uinta
