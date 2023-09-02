@@ -14,14 +14,17 @@
 
 namespace uinta {
 
-inline void clearBuffer(const glm::vec3& color, GLbitfield mask);
 inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime);
 inline bool handleException(const UintaException& ex, const Runner& runner);
 static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : m_window(title), m_scene(&m_registry) {
+Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<RunnerGpuUtils> gpu_utils) noexcept
+    : m_window(title),
+      m_scene(&m_registry),
+      m_gpu_utils(gpu_utils ? std::move(gpu_utils) : std::make_unique<RunnerGpuUtils_OpenGL>()) {
+  assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
@@ -45,7 +48,7 @@ i32 Runner::run() {
         pollInput();
         if (isFlagSet(RENDERING_ENABLED, m_flags)) {
           swapBuffers();
-          clearBuffer(clearColor, clearMask);
+          m_gpu_utils->clear_buffer(clearColor, clearMask);
           render(state);
         }
       } catch (const UintaException& ex) {
@@ -71,7 +74,7 @@ i32 Runner::run() {
 uinta_error_code Runner::doInit() {
   if (auto error = m_file_manager.init(); error) return error;
   if (auto error = m_scene.init(*this); error) return error;
-  glEnable(GL_DEPTH_TEST);
+  if (auto error = m_gpu_utils->init(); error) return error;
   return SUCCESS_EC;
 }
 
@@ -157,11 +160,6 @@ void Runner::doTick(const RunnerState& state) {
 void Runner::doPostTick(const RunnerState& state) {
 }
 
-inline void clearBuffer(const glm::vec3& color, GLbitfield mask) {
-  glClearColor(color.r, color.g, color.b, 1.0);
-  glClear(mask);
-}
-
 inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime) {
   state.tick++;
   state.runtime = runtime;
@@ -175,6 +173,22 @@ inline bool handleException(const UintaException& ex, const Runner& runner) {
   // of the exception, and display it in the console.
   SPDLOG_CRITICAL(ex.what());
   return false;
+}
+
+// class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
+//    public:
+//        uinta_error_code init() override;
+//          void clear_buffer(const glm::vec3& color, GLbitfield mask) override;
+// };
+
+uinta_error_code RunnerGpuUtils_OpenGL::init() {
+  glEnable(GL_DEPTH_TEST);
+  return SUCCESS_EC;
+}
+
+void RunnerGpuUtils_OpenGL::clear_buffer(const glm::vec3& color, GLbitfield mask) {
+  glClearColor(color.r, color.g, color.b, 1.0);
+  glClear(mask);
 }
 
 }  // namespace uinta
