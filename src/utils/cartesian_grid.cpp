@@ -1,3 +1,4 @@
+
 #include <glm/gtc/type_ptr.hpp>
 #include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
@@ -19,29 +20,15 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(CartesianGrid, errorMessages);
 
+CartesianGrid::CartesianGrid(std::unique_ptr<CartesianGridRenderer> renderer)
+    : m_renderer(renderer ? std::move(renderer) : std::make_unique<CartesianGridRenderer_OpenGL>()) {
+  assert(m_renderer && "Renderer must be initialized!");
+}
+
 uinta_error_code CartesianGrid::init(FileManager& fm) {
   SPDLOG_INFO("Initializing grid...");
-  if (auto error = initShader(*this, fm); error) return error;
-  if (auto error = initGrid(*this); error) return error;
-  SPDLOG_INFO("Initialized grid.");
-  return SUCCESS_EC;
-}
+  if (auto error = m_renderer->init(fm); error) return error;
 
-uinta_error_code initShader(CartesianGrid& grid, FileManager& fm) {
-  const auto vs = fm.registerFile("shader/cartesianGrid.vs");
-  const auto fs = fm.registerFile("shader/cartesianGrid.fs");
-  fm.loadFile({vs, fs});
-
-  const std::vector<std::string> sources = {fm.getDataString(vs), fm.getDataString(fs)};
-  const std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-  if (auto error = createShaderProgram(grid.shader, sources, stages, {"u_mvp"}, {&grid.u_mvp}); error) return error;
-  fm.releaseFile({vs, fs});
-
-  if (grid.shader == GL_ZERO) return make_error(error::InitMesh);
-  return SUCCESS_EC;
-}
-
-uinta_error_code initGrid(CartesianGrid& grid) {
   f32 buffer[220];
 
   constexpr auto colorX = glm::vec3(155, 34, 38) / 255.0f;
@@ -63,32 +50,55 @@ uinta_error_code initGrid(CartesianGrid& grid) {
       };
       // clang-format on
 
-      memcpy(&buffer[grid.vcount * 5], vertices, sizeof(vertices));
-      grid.vcount += 2;
+      memcpy(&buffer[m_renderer->m_vertex_count * 5], vertices, sizeof(vertices));
+      m_renderer->m_vertex_count += 2;
     }
   }
 
-  if (auto error = initVao(grid.vao); error) return error;
-  if (auto error = uploadVbo(grid.vbo, buffer, grid.vcount * 5 * sizeof(f32)); error) return error;
-  if (auto error = initVertexAttribs(grid.vao); error) return error;
+  if (auto error = initVao(m_renderer->m_vao); error) return error;
+  if (auto error = uploadVbo(m_renderer->m_vbo, buffer, m_renderer->m_vertex_count * 5 * sizeof(f32)); error) return error;
+  if (auto error = initVertexAttribs(m_renderer->m_vao); error) return error;
 
-  if (grid.vao.id == GL_ZERO || grid.vbo.id == GL_ZERO) return make_error(error::InitMesh);
+  if (m_renderer->m_vao.id == GL_ZERO || m_renderer->m_vbo.id == GL_ZERO) return make_error(error::InitMesh);
+  return SUCCESS_EC;
+
+  SPDLOG_INFO("Initialized grid.");
   return SUCCESS_EC;
 }
 
 void CartesianGrid::render(const glm::mat4& projView) {
-  glUseProgram(shader);
-  bindVao(vao);
+  m_renderer->render(projView);
+}
+
+uinta_error_code CartesianGridRenderer_OpenGL::init(FileManager& fileManager) {
+  const auto vs = fileManager.registerFile("shader/cartesianGrid.vs");
+  const auto fs = fileManager.registerFile("shader/cartesianGrid.fs");
+  fileManager.loadFile({vs, fs});
+
+  const std::vector<std::string> sources = {fileManager.getDataString(vs), fileManager.getDataString(fs)};
+  const std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+  if (auto error = createShaderProgram(m_shader, sources, stages, {"u_mvp"}, {&m_u_mvp}); error) return error;
+  fileManager.releaseFile({vs, fs});
+
+  if (m_shader == GL_ZERO) return make_error(error::InitMesh);
+  return SUCCESS_EC;
+}
+
+void CartesianGridRenderer_OpenGL::render(const glm::mat4& projectViewMatrix) const {
+  static constexpr i32 GRID_RADIUS = 5;
+  glUseProgram(m_shader);
+  bindVao(m_vao);
   i32 currentLineWidth;
   glGetIntegerv(GL_LINE_WIDTH, &currentLineWidth);
-  if (lineWidth != currentLineWidth) glLineWidth(lineWidth);
-  for (i32 z = -5; z <= 5; z++) {
-    for (i32 x = -5; x <= 5; x++) {
-      glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(projView * glm::translate(glm::mat4(1), {x * 10, 0, z * 10})));
-      glDrawArrays(GL_LINES, 0, vcount);
+  if (m_line_width != currentLineWidth) glLineWidth(m_line_width);
+  for (i32 z = -GRID_RADIUS; z <= GRID_RADIUS; z++) {
+    for (i32 x = -GRID_RADIUS; x <= GRID_RADIUS; x++) {
+      glUniformMatrix4fv(m_u_mvp, 1, GL_FALSE,
+                         glm::value_ptr(projectViewMatrix * glm::translate(glm::mat4(1), {x * 10, 0, z * 10})));
+      glDrawArrays(GL_LINES, 0, m_vertex_count);
     }
   }
-  if (lineWidth != currentLineWidth) glLineWidth(currentLineWidth);
+  if (m_line_width != currentLineWidth) glLineWidth(currentLineWidth);
 }
 
 }  // namespace uinta
