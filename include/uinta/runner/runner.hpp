@@ -8,15 +8,13 @@
 #include <uinta/model_manager.hpp>
 #include <uinta/runner/window.hpp>
 #include <uinta/scene/scene.hpp>
-#include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
 
 class Runner {
  public:
-  static constexpr flag_t GRID_ENABLED = 1 << 1;
-  static constexpr flag_t RENDERING_ENABLED = 1 << 2;
-  static constexpr flag_t STOP_RUNNING = 1 << 3;
+  static constexpr flag_t RENDERING_ENABLED = 1 << 0;
+  static constexpr flag_t STOP_RUNNING = 1 << 1;
 
   Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept;
 
@@ -32,14 +30,6 @@ class Runner {
 
   void fullscreen(bool enabled) {
     setFlag(Window::FULLSCREEN, enabled, m_window.flags);
-  }
-
-  const CartesianGrid& cartesian_grid() const noexcept {
-    return m_cartesian_grid;
-  }
-
-  void cartesian_grid(const CartesianGrid& v) {
-    m_cartesian_grid = v;
   }
 
   const Window& window() const noexcept {
@@ -110,14 +100,13 @@ class Runner {
   virtual void swapBuffers() = 0;
 
  private:
-  CartesianGrid m_cartesian_grid;
   Window m_window;
   FileManager m_file_manager;
   InputState m_input;
   Scene m_scene;
   ModelManager m_model_manager;
   entt::registry m_registry;
-  flags_t m_flags = GRID_ENABLED | RENDERING_ENABLED;
+  flags_t m_flags = RENDERING_ENABLED;
 
   void tick(const RunnerState& state);
   void render(const RunnerState& state);

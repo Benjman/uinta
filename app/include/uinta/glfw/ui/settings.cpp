@@ -6,13 +6,13 @@
 namespace uinta {
 
 void settingsGraphics(GlfwRunner &runner);
-void settingsGrid(Runner &runner);
+void settingsGrid(Scene &scene);
 void settingsPolygonMode();
 
 inline void settings(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
   settingsGraphics(runner);
-  settingsGrid(runner);
+  settingsGrid(runner.scene());
   settingsPolygonMode();
   ImGui::Separator();
 #endif  // IMGUI_API_DISABLED
@@ -80,10 +80,10 @@ void settingsGraphics(GlfwRunner &runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-void settingsGrid(Runner &runner) {
+void settingsGrid(Scene &scene) {
 #ifndef IMGUI_API_DISABLED
-  bool grid = isFlagSet(Runner::GRID_ENABLED, runner.flags());
-  if (ImGui::Checkbox("Grid", &grid)) runner.flag(Runner::GRID_ENABLED, grid);
+  bool grid = isFlagSet(Scene::GRID_ENABLED, scene.flags());
+  if (ImGui::Checkbox("Grid", &grid)) scene.flag(Scene::GRID_ENABLED, grid);
 #endif  // IMGUI_API_DISABLED
 }
 

@@ -21,7 +21,7 @@ static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : m_window(title), m_scene(*this) {
+Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : m_window(title), m_scene(&m_registry) {
   processArgs(this, argc, argv);
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
@@ -71,7 +71,6 @@ i32 Runner::run() {
 uinta_error_code Runner::doInit() {
   if (auto error = m_file_manager.init(); error) return error;
   if (auto error = m_scene.init(*this); error) return error;
-  if (auto error = m_cartesian_grid.init(m_file_manager); error) return error;
   glEnable(GL_DEPTH_TEST);
   return SUCCESS_EC;
 }
@@ -133,12 +132,10 @@ Runner::~Runner() {
 }
 
 void Runner::doPreRender(const RunnerState& state) {
-  m_scene.startRender(state);
 }
 
 void Runner::doRender(const RunnerState& state) {
-  if (isFlagSet(GRID_ENABLED, m_flags))
-    m_cartesian_grid.render(getPerspectiveMatrix(m_scene.camera()) * getViewMatrix(m_scene.camera()));
+  m_scene.render(state);
 }
 
 void Runner::doPostRender(const RunnerState& state) {
