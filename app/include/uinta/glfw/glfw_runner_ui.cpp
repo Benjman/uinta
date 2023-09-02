@@ -20,7 +20,7 @@ void ui::onInit(GlfwRunner &runner) {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
-  ImGui_ImplGlfw_InitForOpenGL(runner.glfwWindow, true);
+  ImGui_ImplGlfw_InitForOpenGL(runner.glfwWindow(), true);
   ImGui_ImplOpenGL3_Init(UINTA_IMGUI_GLSL_VERSION);
 #endif  // IMGUI_API_DISABLED
 }
@@ -42,7 +42,7 @@ void ui::onPreRender(GlfwRunner &runner, const RunnerState &state) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
-  showingWindow = ImGui::Begin(runner.window.title.data());
+  showingWindow = ImGui::Begin(runner.window().title.data());
 #endif  // IMGUI_API_DISABLED
 }
 
@@ -53,10 +53,13 @@ void ui::onRender(GlfwRunner &runner, const RunnerState &state) {
     ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
     tickTiming.render("Tick ms");
     renderTiming.render("Render ms");
-    camera(runner.scene.camera, state);
-    inputUi(runner);
-    scene(runner);
-    settings(runner);
+    if (ImGui::CollapsingHeader("Camera")) {
+      auto cam = TargetCamera(runner.scene().camera());
+      if (camera(cam, state)) runner.scene().camera(cam);
+    }
+    if (ImGui::CollapsingHeader("Input")) inputUi(runner);
+    if (ImGui::CollapsingHeader("Scene")) scene(runner);
+    if (ImGui::CollapsingHeader("Settings")) settings(runner);
   }
   if (io.WantCaptureKeyboard) setFlag(INPUT_HANDLED_KEYBOARD, true, flags);
   if (io.WantCaptureMouse) setFlag(INPUT_HANDLED_MOUSE, true, flags);

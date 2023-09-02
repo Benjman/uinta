@@ -44,16 +44,16 @@ class FileManager {
   void releaseFile(const std::vector<const file_t*>& handles);
 
  private:
-  std::vector<std::string> fileSearchPaths;
+  std::vector<std::string> m_searchPaths;
 
-  std::vector<file_t*> handles;
-  std::vector<MemoryLink> links;
-  std::vector<std::string> handlePaths;
+  std::vector<file_t*> m_handles;
+  std::vector<MemoryLink> m_links;
+  std::vector<std::string> m_handlePaths;
 
-  size_t storageSize;
-  void* storage = nullptr;
+  size_t m_storageSize;
+  void* m_storage = nullptr;
 
-  flags_t flags = 0;
+  flags_t m_flags = 0;
 
   void reserveSpace(const file_t* const handle);
   void parseFileSearchPaths(const std::string& searchPaths, const char delim);

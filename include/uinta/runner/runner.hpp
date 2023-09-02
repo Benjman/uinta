@@ -16,17 +16,7 @@ class Runner {
  public:
   static constexpr flag_t GRID_ENABLED = 1 << 1;
   static constexpr flag_t RENDERING_ENABLED = 1 << 2;
-  static constexpr flag_t SHUTDOWN = 1 << 3;
-
-  CartesianGrid grid;
-  Window window;
-  FileManager fileManager;
-  InputState input;
-  Scene scene;
-  ModelManager modelManager;
-  entt::registry registry;
-
-  flags_t flags = GRID_ENABLED | RENDERING_ENABLED;
+  static constexpr flag_t STOP_RUNNING = 1 << 3;
 
   Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept;
 
@@ -39,6 +29,66 @@ class Runner {
   void handleMouseButtonInput(const i32 button, const u32 action, const i32 mods);
   void handleScrollInput(const f64 xoffset, const f64 yoffset);
   void handleWindowSizeChanged(const i32 width, const i32 height);
+
+  void fullscreen(bool enabled) {
+    setFlag(Window::FULLSCREEN, enabled, m_window.flags);
+  }
+
+  const CartesianGrid& cartesian_grid() const noexcept {
+    return m_cartesian_grid;
+  }
+
+  void cartesian_grid(const CartesianGrid& v) {
+    m_cartesian_grid = v;
+  }
+
+  const Window& window() const noexcept {
+    return m_window;
+  }
+
+  void window(const Window& v) {
+    m_window = v;
+  }
+
+  FileManager& file_manager() noexcept {
+    return m_file_manager;
+  }
+
+  InputState& input() noexcept {
+    return m_input;
+  }
+
+  void input(const InputState& v) {
+    m_input = v;
+  }
+
+  Scene& scene() noexcept {
+    return m_scene;
+  }
+
+  ModelManager& model_manager() noexcept {
+    return m_model_manager;
+  }
+
+  void model_manager(const ModelManager& v) {
+    m_model_manager = v;
+  }
+
+  entt::registry& registry() noexcept {
+    return m_registry;
+  }
+
+  void flag(const flag_t mask, const bool state) {
+    setFlag(mask, state, m_flags);
+  }
+
+  const flags_t flags() const noexcept {
+    return m_flags;
+  }
+
+  void flags(const flags_t v) {
+    m_flags = v;
+  }
 
  protected:
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
@@ -55,11 +105,20 @@ class Runner {
   virtual void onWindowSizeChanged();
 
   virtual uinta_error_code createOpenGLContext() = 0;
-  virtual f64 getRuntime() const = 0;
+  virtual f64 runtime() const = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;
 
  private:
+  CartesianGrid m_cartesian_grid;
+  Window m_window;
+  FileManager m_file_manager;
+  InputState m_input;
+  Scene m_scene;
+  ModelManager m_model_manager;
+  entt::registry m_registry;
+  flags_t m_flags = GRID_ENABLED | RENDERING_ENABLED;
+
   void tick(const RunnerState& state);
   void render(const RunnerState& state);
   void shutdown();

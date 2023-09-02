@@ -21,7 +21,7 @@ static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : window(title), scene(*this) {
+Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept : m_window(title), m_scene(*this) {
   processArgs(this, argc, argv);
   initSpdlog();
   SPDLOG_INFO("Runner started for '{}'.", title);
@@ -29,21 +29,21 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv) noexcept :
 
 i32 Runner::run() {
   try {
-    if (isFlagSet(RENDERING_ENABLED, flags))
+    if (isFlagSet(RENDERING_ENABLED, m_flags))
       if (auto error = createOpenGLContext(); error) throw UintaException(error);
     if (auto error = doInit(); error) throw UintaException(error);
-    SPDLOG_INFO("Initialized '{}' in {} seconds.", window.title, sw.elapsed().count());
+    SPDLOG_INFO("Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
     RunnerState state;
-    auto lastRuntime = getRuntime();
-    while (!isFlagSet(SHUTDOWN, flags)) {
+    auto lastRuntime = runtime();
+    while (!isFlagSet(STOP_RUNNING, m_flags)) {
       try {
         do {
-          advanceState(state, getRuntime(), lastRuntime);
+          advanceState(state, runtime(), lastRuntime);
           tick(state);
-          reset(input);
+          reset(m_input);
         } while (!shouldRenderFrame(state.delta));
         pollInput();
-        if (isFlagSet(RENDERING_ENABLED, flags)) {
+        if (isFlagSet(RENDERING_ENABLED, m_flags)) {
           swapBuffers();
           clearBuffer(clearColor, clearMask);
           render(state);
@@ -69,9 +69,9 @@ i32 Runner::run() {
 }
 
 uinta_error_code Runner::doInit() {
-  if (auto error = fileManager.init(); error) return error;
-  if (auto error = scene.init(*this); error) return error;
-  if (auto error = grid.init(fileManager); error) return error;
+  if (auto error = m_file_manager.init(); error) return error;
+  if (auto error = m_scene.init(*this); error) return error;
+  if (auto error = m_cartesian_grid.init(m_file_manager); error) return error;
   glEnable(GL_DEPTH_TEST);
   return SUCCESS_EC;
 }
@@ -89,7 +89,7 @@ void Runner::render(const RunnerState& state) {
 }
 
 void Runner::shutdown() {
-  SPDLOG_INFO("Shutdown requested for '{}'.", window.title);
+  SPDLOG_INFO("Shutdown requested for '{}'.", m_window.title);
   doShutdown();
 }
 
@@ -101,43 +101,44 @@ bool Runner::shouldRenderFrame(f32 dt) {
 }
 
 void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) {
-  mouseMoved(input, xpos, ypos);
+  mouseMoved(m_input, xpos, ypos);
 }
 
 void Runner::handleScrollInput(const f64 xoffset, const f64 yoffset) {
-  mouseScrolled(input, xoffset, yoffset);
+  mouseScrolled(m_input, xoffset, yoffset);
 }
 
 void Runner::handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods) {
-  if (action == ACTION_PRESS) keyPressed(input, key, mods);
-  if (action == ACTION_RELEASE) keyReleased(input, key, mods);
-  if (action == ACTION_REPEAT) keyRepeated(input, key, mods);
+  if (action == ACTION_PRESS) keyPressed(m_input, key, mods);
+  if (action == ACTION_RELEASE) keyReleased(m_input, key, mods);
+  if (action == ACTION_REPEAT) keyRepeated(m_input, key, mods);
 }
 
 void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i32 mods) {
-  if (action == ACTION_PRESS) mouseButtonPressed(input, button, mods);
-  if (action == ACTION_RELEASE) mouseButtonReleased(input, button, mods);
-  input.platform_flags = mods;
+  if (action == ACTION_PRESS) mouseButtonPressed(m_input, button, mods);
+  if (action == ACTION_RELEASE) mouseButtonReleased(m_input, button, mods);
+  m_input.platform_flags = mods;
 }
 
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
-  window.width = width;
-  window.height = height;
-  window.aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
-  scene.camera.config.aspectRatio = window.aspectRatio;
+  m_window.width = width;
+  m_window.height = height;
+  m_window.aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
+  m_scene.onAspectRatioUpdate(m_window.aspectRatio);
   onWindowSizeChanged();
 }
 
 Runner::~Runner() {
-  SPDLOG_INFO("Tearing down '{}'.", window.title);
+  SPDLOG_INFO("Tearing down '{}'.", m_window.title);
 }
 
 void Runner::doPreRender(const RunnerState& state) {
-  scene.startRender(state);
+  m_scene.startRender(state);
 }
 
 void Runner::doRender(const RunnerState& state) {
-  if (isFlagSet(GRID_ENABLED, flags)) grid.render(getPerspectiveMatrix(scene.camera) * getViewMatrix(scene.camera));
+  if (isFlagSet(GRID_ENABLED, m_flags))
+    m_cartesian_grid.render(getPerspectiveMatrix(m_scene.camera()) * getViewMatrix(m_scene.camera()));
 }
 
 void Runner::doPostRender(const RunnerState& state) {
@@ -153,7 +154,7 @@ void Runner::doPreTick(const RunnerState& state) {
 }
 
 void Runner::doTick(const RunnerState& state) {
-  scene.update(state, input, registry);
+  m_scene.update(state, m_input, m_registry);
 }
 
 void Runner::doPostTick(const RunnerState& state) {

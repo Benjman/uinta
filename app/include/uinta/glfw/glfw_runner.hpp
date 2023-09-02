@@ -9,13 +9,26 @@ class GlfwRunner : public Runner {
   static constexpr i32 MAX_MONITORS = 4;
 
  public:
-  GLFWwindow* glfwWindow = nullptr;
-  std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> monitors;
-
   explicit GlfwRunner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept : Runner(title, argc, argv) {
   }
 
   ~GlfwRunner();
+
+  GLFWwindow* glfwWindow() const noexcept {
+    return m_window;
+  }
+
+  void glfwWindow(GLFWwindow* const v) {
+    m_window = v;
+  }
+
+  const std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> monitors() const noexcept {
+    return m_monitors;
+  }
+
+  void monitors(const std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> v) {
+    m_monitors = v;
+  }
 
  protected:
   virtual uinta_error_code doInit() override;
@@ -29,9 +42,13 @@ class GlfwRunner : public Runner {
 
   void swapBuffers() override;
   uinta_error_code createOpenGLContext() override;
-  f64 getRuntime() const override;
+  f64 runtime() const override;
   void pollInput() override;
   void registerCallbacks();
+
+ private:
+  GLFWwindow* m_window = nullptr;
+  std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> m_monitors;
 };
 
 }  // namespace uinta

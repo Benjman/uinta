@@ -11,7 +11,6 @@ void settingsPolygonMode();
 
 inline void settings(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
-  if (!ImGui::CollapsingHeader("Settings")) return;
   settingsGraphics(runner);
   settingsGrid(runner);
   settingsPolygonMode();
@@ -42,11 +41,11 @@ void settingsGraphics(GlfwRunner &runner) {
   static Resolution selectedResolution = arResolutions.at(0);
   static i32 refreshRate = 0;
   if (refreshRate == 0) {
-    refreshRate = runner.monitors.at(0).refreshRate;
+    refreshRate = runner.monitors().at(0).refreshRate;
     for (const auto &resolutions : resolutions) {
-      if (std::abs(resolutions.first - runner.window.aspectRatio) > 0.01) continue;
+      if (std::abs(resolutions.first - runner.window().aspectRatio) > 0.01) continue;
       arResolutions = resolutions.second;
-      Resolution windowResolution(runner.window.width, runner.window.height);
+      Resolution windowResolution(runner.window().width, runner.window().height);
       for (auto &resolution : resolutions.second)
         if (resolution == windowResolution) selectedResolution = resolution;
       break;
@@ -62,14 +61,18 @@ void settingsGraphics(GlfwRunner &runner) {
     }
     ImGui::EndCombo();
   }
-  ImGui::CheckboxFlags("Fullscreen", &runner.window.flags, Window::FULLSCREEN);
+  bool fullscreen = isFlagSet(Window::FULLSCREEN, runner.window().flags);
+  ImGui::Checkbox("Fullscreen", &fullscreen);
+  if (fullscreen != isFlagSet(Window::FULLSCREEN, runner.window().flags)) runner.fullscreen(fullscreen);
   if (ImGui::Button("Apply")) {
-    runner.window = Window(runner.window.title, selectedResolution.width, selectedResolution.height);
-    runner.monitors.at(0).refreshRate = refreshRate;
+    runner.window(Window(runner.window().title, selectedResolution.width, selectedResolution.height));
+    auto monitors = runner.monitors();
+    monitors.at(0).refreshRate = refreshRate;
+    runner.monitors(monitors);
     GLFWmonitor *mon = nullptr;
-    if (isFlagSet(Window::FULLSCREEN, runner.window.flags)) mon = runner.monitors.at(0).ptr;
-    glfwSetWindowMonitor(runner.glfwWindow, mon, 0, 0, runner.window.width, runner.window.height,
-                         runner.monitors.at(0).refreshRate);
+    if (isFlagSet(Window::FULLSCREEN, runner.window().flags)) mon = runner.monitors().at(0).ptr;
+    glfwSetWindowMonitor(runner.glfwWindow(), mon, 0, 0, runner.window().width, runner.window().height,
+                         runner.monitors().at(0).refreshRate);
     glViewport(0, 0, selectedResolution.width, selectedResolution.height);
   }
   ImGui::TreePop();
@@ -79,12 +82,8 @@ void settingsGraphics(GlfwRunner &runner) {
 
 void settingsGrid(Runner &runner) {
 #ifndef IMGUI_API_DISABLED
-  ImGui::CheckboxFlags("Grid", &runner.flags, Runner::GRID_ENABLED);
-  if (!isFlagSet(Runner::GRID_ENABLED, runner.flags)) return;
-  ImGui::SameLine();
-  ImGui::PushItemWidth(100);
-  ImGui::DragFloat("Thickness", &runner.grid.lineWidth, 0.5, 0.5, 15.0, "%0.1f", ImGuiSliderFlags_AlwaysClamp);
-  ImGui::PopItemWidth();
+  bool grid = isFlagSet(Runner::GRID_ENABLED, runner.flags());
+  if (ImGui::Checkbox("Grid", &grid)) runner.flag(Runner::GRID_ENABLED, grid);
 #endif  // IMGUI_API_DISABLED
 }
 

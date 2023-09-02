@@ -30,13 +30,19 @@ struct TargetCamera {
   }
 
   TargetCamera& operator=(const TargetCamera& rhs) {
+    config = rhs.config;
     position = rhs.position;
     target = rhs.target;
     angle = rhs.angle;
     dist = rhs.dist;
     pitch = rhs.pitch;
     vertOffset = rhs.vertOffset;
+    flags = rhs.flags;
     return *this;
+  }
+
+  void aspect_ratio(f32 v) noexcept {
+    config.aspectRatio = v;
   }
 };
 

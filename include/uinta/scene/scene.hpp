@@ -28,39 +28,71 @@ class Scene {
   static constexpr flag_t DIFFUSE_LIGHT_DIRTY = 1 << 0;
   static constexpr flag_t CAMERA_ENABLED = 1 << 1;
 
-  flags_t flags = DIFFUSE_LIGHT_DIRTY | CAMERA_ENABLED;
-
-  Vao vao = {{
-      {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 0},
-      {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 3 * sizeof(f32)},
-      {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 6 * sizeof(f32)},
-  }};
-  Vbo vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
-  SceneShader shader;
-  TargetCamera camera;
-
   Scene(Runner& runner);
 
   uinta_error_code init(Runner& runner);
 
   void update(const RunnerState& state, const InputState& input, entt::registry& registry);
 
-  uinta_error_code addEntity(entt::entity& ref, const SceneEntityInitializer& info, entt::registry& registry);
+  uinta_error_code addEntity(entt::entity& ref, FileManager& file_manager, ModelManager& model_manager,
+                             const SceneEntityInitializer& info, entt::registry& registry);
 
-  uinta_error_code addModel(const model_t model);
+  uinta_error_code addModel(const model_t model, ModelManager& model_manager);
 
   void startRender(const RunnerState& state);
 
   void renderEntity(const entt::entity entity, const entt::registry& registry);
 
-  const Light& getDiffuseLight() const;
+  void onAspectRatioUpdate(f32 newAspectRatio);
 
-  void updateDiffuseLight(const Light& light);
+  const Vao& vao() const noexcept {
+    return m_vao;
+  }
+
+  const Vbo& vbo() const noexcept {
+    return m_vbo;
+  }
+
+  const SceneShader& shader() const noexcept {
+    return m_shader;
+  }
+
+  const TargetCamera& camera() const noexcept {
+    return m_camera;
+  }
+
+  void camera(const TargetCamera& camera) noexcept {
+    m_camera = camera;
+  }
+
+  const Light& diffuse_light() const noexcept {
+    return m_diffuse_light;
+  }
+
+  void diffuse_light(const Light& v) noexcept {
+    m_diffuse_light = v;
+    setFlag(DIFFUSE_LIGHT_DIRTY, true, m_flags);
+  }
+
+  const flags_t flags() const noexcept {
+    return m_flags;
+  }
+
+  void flags(const flags_t v) noexcept {
+    m_flags = v;
+  }
 
  private:
-  FileManager& fileManager;
-  ModelManager& modelManager;
-  Light diffuseLight;
+  Vao m_vao = {{
+      {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 0},
+      {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 3 * sizeof(f32)},
+      {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 6 * sizeof(f32)},
+  }};
+  Vbo m_vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
+  SceneShader m_shader;
+  TargetCamera m_camera;
+  Light m_diffuse_light;
+  flags_t m_flags = DIFFUSE_LIGHT_DIRTY | CAMERA_ENABLED;
 };
 
 }  // namespace uinta

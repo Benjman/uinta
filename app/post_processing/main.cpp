@@ -91,21 +91,22 @@ class PostProcessingRunner final : public GlfwRunner {
 
  public:
   PostProcessingRunner(const int argc, const char** argv)
-      : GlfwRunner("Post Processing", argc, argv), fbo({window.width, window.height}) {
+      : GlfwRunner("Post Processing", argc, argv), fbo({window().width, window().height}) {
   }
 
   uinta_error_code doInit() override {
     if (auto error = GlfwRunner::doInit(); error) return error;
     if (auto error = initFbo(fbo); error) return error;
     if (auto error = pp.init(); error) return error;
-    if (auto error = colorShader.init(fileManager); error) return error;
-    if (auto error = shaders.init(fileManager); error) return error;
-    if (auto error = initObj("model/cube.obj", fileManager, cubeVao, cubeVbo, &icount); error) return error;
+    if (auto error = colorShader.init(file_manager()); error) return error;
+    if (auto error = shaders.init(file_manager()); error) return error;
+    if (auto error = initObj("model/cube.obj", file_manager(), cubeVao, cubeVbo, &icount); error) return error;
 
-    auto& cam = scene.camera;
-    cam.dist = 5;
-    cam.pitch = 35;
-    cam.angle = 35;
+    auto camera = scene().camera();
+    camera.angle = 35;
+    camera.pitch = 35;
+    camera.dist = 5;
+    scene().camera(camera);
 
     return SUCCESS_EC;
   }
@@ -121,8 +122,8 @@ class PostProcessingRunner final : public GlfwRunner {
     glUseProgram(colorShader.shaderId);
     bindVao(cubeVao);
 
-    auto view = getViewMatrix(scene.camera);
-    auto proj = getPerspectiveMatrix(scene.camera);
+    auto view = getViewMatrix(scene().camera());
+    auto proj = getPerspectiveMatrix(scene().camera());
     auto model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
     glUniformMatrix4fv(colorShader.u_mvp, 1, GL_FALSE, &(proj * view * model)[0][0]);
     glDrawArrays(GL_TRIANGLES, 0, icount);

@@ -34,25 +34,21 @@ struct Model {
 // TODO ModelManager should take a pointer and size instead of allocating its own memory
 class ModelManager {
  public:
-  explicit ModelManager() {
-  }
+  ModelManager() = default;
 
-  ModelManager(const ModelManager& other) {
-  }
+  uinta_error_code load(model_t& ref, const file_t* const file, const FileManager& fm,
+                        const std::unordered_map<MeshAttribType, MeshAttrib>& attribs = {
+                            {MeshAttribType_Position, {9, 0}},
+                            {MeshAttribType_Normal, {9, 3}},
+                            {MeshAttribType_Color, {9, 6}},
+                        });
 
-  uinta_error_code loadModel(model_t& ref, const file_t* const file, const FileManager& fm,
-                             const std::unordered_map<MeshAttribType, MeshAttrib>& attribs = {
-                                 {MeshAttribType_Position, {9, 0}},
-                                 {MeshAttribType_Normal, {9, 3}},
-                                 {MeshAttribType_Color, {9, 6}},
-                             });
-
-  Model getModel(const model_t handle) const;
-  const file_t* getFile(const model_t handle) const;
-  const f32* const getVertexBuffer(const model_t handle) const;
-  u32 getVertexBufferSize(const model_t handle) const;
-  const u32* const getIndexBuffer(const model_t handle) const;
-  u32 getIndexBufferSize(const model_t handle) const;
+  Model model(const model_t handle) const;
+  const file_t* file(const model_t handle) const;
+  const f32* const vertexBuffer(const model_t handle) const;
+  u32 vertexBufferSize(const model_t handle) const;
+  const u32* const indexBuffer(const model_t handle) const;
+  u32 indexBufferSize(const model_t handle) const;
 
  private:
   std::vector<Model> models;

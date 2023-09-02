@@ -4,8 +4,7 @@
 namespace uinta {
 
 inline void scene(Runner& runner) {
-  if (!ImGui::CollapsingHeader("Scene")) return;
-  lighting(runner.scene);
+  lighting(runner.scene());
 }
 
 }  // namespace uinta

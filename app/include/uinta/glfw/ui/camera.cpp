@@ -7,105 +7,122 @@
 
 namespace uinta {
 
-inline void cameraClippingPlanes(TargetCamera &camera);
-inline void cameraHotkeys(TargetCamera &camera);
-inline void cameraTransform(TargetCamera &camera, const RunnerState &state);
+inline bool cameraClippingPlanes(TargetCamera &camera);
+inline bool cameraHotkeys(TargetCamera &camera);
+inline bool cameraTransform(TargetCamera &camera, const RunnerState &state);
 
-inline void camera(TargetCamera &camera, const RunnerState &state) {
+inline bool camera(TargetCamera &camera, const RunnerState &state) {
 #ifndef IMGUI_API_DISABLED
-  if (!ImGui::CollapsingHeader("Camera")) return;
   ImGui::PushItemWidth(200);
-  cameraClippingPlanes(camera);
-  cameraHotkeys(camera);
-  cameraTransform(camera, state);
+  auto cpUpdated = cameraClippingPlanes(camera);
+  auto hkUpdated = cameraHotkeys(camera);
+  auto tfUpdated = cameraTransform(camera, state);
   ImGui::PopItemWidth();
 #endif  // IMGUI_API_DISABLED
+  return cpUpdated || hkUpdated || tfUpdated;
 }
 
-inline void cameraClippingPlanes(TargetCamera &camera) {
+inline bool cameraClippingPlanes(TargetCamera &camera) {
+  bool result = false;
 #ifndef IMGUI_API_DISABLED
-  if (!ImGui::TreeNode("Clipping planes")) return;
-  f32 cameraClippingValues[] = {camera.config.nearPlane, camera.config.farPlane};
-  ImGui::DragFloat2("Clipping planes", cameraClippingValues, 0.05, camera.config.farPlane, camera.config.nearPlane, "%+.1f",
-                    ImGuiSliderFlags_AlwaysClamp);
-  camera.config.nearPlane = cameraClippingValues[0];
-  camera.config.farPlane = cameraClippingValues[1];
-  ImGui::TreePop();
-  ImGui::Separator();
-#endif  // IMGUI_API_DISABLED
-}
-
-inline void cameraHotkeys(TargetCamera &camera) {
-#ifndef IMGUI_API_DISABLED
-  if (!ImGui::TreeNode("Hotkeys")) return;
-  ImGui::Text("Translation:   edsf or LMB");
-  ImGui::Text("Angle:         wr or RMB");
-  ImGui::Text("Pitch:         qa or RMB");
-  ImGui::Text("Dist:          cv or Scroll");
-
-  ImGui::TreePop();
-  ImGui::Separator();
-#endif  // IMGUI_API_DISABLED
-}
-
-inline void cameraTransform(TargetCamera &camera, const RunnerState &state) {
-#ifndef IMGUI_API_DISABLED
-  if (!ImGui::TreeNode("Transform")) return;
-  f32 agility = camera.angle.agility;
-  if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, reinterpret_cast<void *>(&agility), 0.1f, &limits.min,
-                        &limits.max, "%+.2f")) {
-    camera.dist.agility = agility;
-    camera.pitch.agility = agility;
-    camera.target.x.agility = agility;
-    camera.target.y.agility = agility;
-    camera.target.z.agility = agility;
+  if (ImGui::TreeNode("Clipping planes")) {
+    f32 cameraClippingValues[] = {camera.config.nearPlane, camera.config.farPlane};
+    if (ImGui::DragFloat2("Clipping planes", cameraClippingValues, 0.05, camera.config.farPlane, camera.config.nearPlane, "%+.1f",
+                          ImGuiSliderFlags_AlwaysClamp))
+      result = true;
+    camera.config.nearPlane = cameraClippingValues[0];
+    camera.config.farPlane = cameraClippingValues[1];
+    ImGui::TreePop();
+    ImGui::Separator();
   }
+#endif  // IMGUI_API_DISABLED
+  return result;
+}
 
-  ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.dist.target), 0.1f, &limits.one_tenth,
-                    &limits.twenty, "%+.2f");
-  ImGui::SameLine();
-  ImGui::CheckboxFlags("Limit dist", (u32 *)&camera.flags, TargetCamera::CAMERA_DIST_LIMIT);
+inline bool cameraHotkeys(TargetCamera &camera) {
+#ifndef IMGUI_API_DISABLED
+  if (ImGui::TreeNode("Hotkeys")) {
+    ImGui::Text("Translation:   edsf or LMB");
+    ImGui::Text("Angle:         wr or RMB");
+    ImGui::Text("Pitch:         qa or RMB");
+    ImGui::Text("Dist:          cv or Scroll");
 
-  ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.pitch.target), 0.1f, &limits.min, &limits.max,
-                    "%+.2f");
-  ImGui::SameLine();
-  ImGui::CheckboxFlags("Limit pitch", (u32 *)&camera.flags, TargetCamera::CAMERA_PITCH_LIMIT);
+    ImGui::TreePop();
+    ImGui::Separator();
+  }
+#endif  // IMGUI_API_DISABLED
+  return false;
+}
 
-  ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.angle.target), 0.1f, &limits.min, &limits.max,
-                    "%+.2f");
+inline bool cameraTransform(TargetCamera &camera, const RunnerState &state) {
+  bool result = false;
+#ifndef IMGUI_API_DISABLED
+  if (ImGui::TreeNode("Transform")) {
+    f32 agility = camera.angle.agility;
+    if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, reinterpret_cast<void *>(&agility), 0.1f, &limits.min,
+                          &limits.max, "%+.2f")) {
+      camera.angle.agility = agility;
+      camera.dist.agility = agility;
+      camera.pitch.agility = agility;
+      camera.target = {agility, camera.target};
+      result = true;
+    }
 
-  ImGui::DragScalar("Y-Offset", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.vertOffset), 0.1f, &limits.zero,
-                    &limits.max, "%+.2f");
-
-  ImGui::DragScalar("Speed factor", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.config.translationSpeedDistFactor),
-                    0.005f, &limits.zero, &limits.max, "%+.2f");
-  ImGui::DragScalar("Speed factor min", ImGuiDataType_Float,
-                    reinterpret_cast<void *>(&camera.config.translationSpeedDistFactorMin), 0.005f, &limits.zero, &limits.max,
-                    "%+.2f");
-
-  static bool doSpin = false;
-  static i32 doSpinRate = 15;
-  ImGui::Checkbox("Spin", &doSpin);
-  if (doSpin) {
+    if (ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.dist.target), 0.1f, &limits.one_tenth,
+                          &limits.twenty, "%+.2f"))
+      result = true;
     ImGui::SameLine();
-    ImGui::SliderInt("Rate", &doSpinRate, limits.zero, limits.threeSixty);
-    camera.angle += doSpinRate * state.delta;
+    if (ImGui::CheckboxFlags("Limit dist", (u32 *)&camera.flags, TargetCamera::CAMERA_DIST_LIMIT)) result = true;
+
+    if (ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.pitch.target), 0.1f, &limits.min,
+                          &limits.max, "%+.2f"))
+      result = true;
+    ImGui::SameLine();
+    if (ImGui::CheckboxFlags("Limit pitch", (u32 *)&camera.flags, TargetCamera::CAMERA_PITCH_LIMIT)) result = true;
+
+    if (ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.angle.target), 0.1f, &limits.min,
+                          &limits.max, "%+.2f"))
+      result = true;
+
+    if (ImGui::DragScalar("Y-Offset", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.vertOffset), 0.1f, &limits.zero,
+                          &limits.max, "%+.2f"))
+      result = true;
+
+    if (ImGui::DragScalar("Speed factor", ImGuiDataType_Float,
+                          reinterpret_cast<void *>(&camera.config.translationSpeedDistFactor), 0.005f, &limits.zero, &limits.max,
+                          "%+.2f"))
+      result = true;
+    if (ImGui::DragScalar("Speed factor min", ImGuiDataType_Float,
+                          reinterpret_cast<void *>(&camera.config.translationSpeedDistFactorMin), 0.005f, &limits.zero,
+                          &limits.max, "%+.2f"))
+      result = true;
+
+    static bool doSpin = false;
+    static i32 doSpinRate = 15;
+    ImGui::Checkbox("Spin", &doSpin);
+    if (doSpin) {
+      ImGui::SameLine();
+      if (ImGui::SliderInt("Rate", &doSpinRate, limits.zero, limits.threeSixty)) result = true;
+      camera.angle += doSpinRate * state.delta;
+      result = true;
+    }
+
+    ImGui::Text("Speed scalar  %+.2f", calculateTranslationFactor(camera));
+
+    const auto forward = getForward(camera.pitch, camera.angle);
+    const auto right = getRight(camera.angle);
+    const auto up = getUp(forward, right);
+    ImGui::Text("Position      %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
+    ImGui::Text("Target        %+.2f %+.2f %+.2f", camera.target.x.target, camera.target.y.target, camera.target.z.target);
+    ImGui::Text("Forward       %+.2f %+.2f %+.2f", forward.x, forward.y, forward.z);
+    ImGui::Text("Right         %+.2f %+.2f %+.2f", right.x, right.y, right.z);
+    ImGui::Text("Up            %+.2f %+.2f %+.2f", up.x, up.y, up.z);
+
+    ImGui::TreePop();
+    ImGui::Separator();
   }
-
-  ImGui::Text("Speed scalar  %+.2f", calculateTranslationFactor(camera));
-
-  auto forward = getForward(camera.pitch, camera.angle);
-  auto right = getRight(camera.angle);
-  auto up = getUp(forward, right);
-  ImGui::Text("Position      %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
-  ImGui::Text("Target        %+.2f %+.2f %+.2f", camera.target.x.target, camera.target.y.target, camera.target.z.target);
-  ImGui::Text("Forward       %+.2f %+.2f %+.2f", forward.x, forward.y, forward.z);
-  ImGui::Text("Right         %+.2f %+.2f %+.2f", right.x, right.y, right.z);
-  ImGui::Text("Up            %+.2f %+.2f %+.2f", up.x, up.y, up.z);
-
-  ImGui::TreePop();
-  ImGui::Separator();
 #endif  // IMGUI_API_DISABLED
+  return result;
 }
 
 }  // namespace uinta

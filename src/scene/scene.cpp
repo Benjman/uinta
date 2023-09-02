@@ -19,73 +19,66 @@ UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
 inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry);
 
-Scene::Scene(Runner& runner)
-    : fileManager(runner.fileManager),
-      modelManager(runner.modelManager),
-      diffuseLight({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
+Scene::Scene(Runner& runner) : m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
 }
 
 uinta_error_code Scene::init(Runner& runner) {
-  if (auto error = shader.init(fileManager); error) return error;
-  setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags), flags);
-  camera.config.aspectRatio = runner.window.aspectRatio;
+  if (auto error = m_shader.init(runner.file_manager()); error) return error;
+  setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags()), m_flags);
+  m_camera.config.aspectRatio = runner.window().aspectRatio;
   return SUCCESS_EC;
 }
 
 void Scene::update(const RunnerState& state, const InputState& input, entt::registry& registry) {
-  if (isFlagSet(CAMERA_ENABLED, flags)) updateCamera(camera, state, input);
+  if (isFlagSet(CAMERA_ENABLED, m_flags)) updateCamera(m_camera, state, input);
 }
 
-uinta_error_code Scene::addEntity(entt::entity& ref, const SceneEntityInitializer& info, entt::registry& registry) {
+uinta_error_code Scene::addEntity(entt::entity& ref, FileManager& file_manager, ModelManager& model_manager,
+                                  const SceneEntityInitializer& info, entt::registry& registry) {
   if (std::empty(info.modelPath)) return make_error(error::InvalidModelPath);
-  const auto* file = fileManager.registerFile(info.modelPath);
-  fileManager.loadFile(file);
+  const auto* file = file_manager.registerFile(info.modelPath);
+  file_manager.loadFile(file);
   model_t model;
-  if (auto error = modelManager.loadModel(model, file, fileManager); error) return error;
-  if (auto error = addModel(model); error) return error;
-  fileManager.releaseFile(file);
+  if (auto error = model_manager.load(model, file, file_manager); error) return error;
+  if (auto error = addModel(model, model_manager); error) return error;
+  file_manager.releaseFile(file);
 
   ref = registry.create();
-  registry.emplace<Model>(ref, modelManager.getModel(model));
+  registry.emplace<Model>(ref, model_manager.model(model));
   registry.emplace<Transform>(ref, info.transform);
 
   return SUCCESS_EC;
 }
 
-uinta_error_code Scene::addModel(const model_t model) {
-  if (auto error = initVao(vao); error) return error;
-  if (auto error = uploadVbo(vbo, modelManager.getVertexBuffer(model), modelManager.getVertexBufferSize(model)); error)
+uinta_error_code Scene::addModel(const model_t model, ModelManager& model_manager) {
+  if (auto error = initVao(m_vao); error) return error;
+  if (auto error = uploadVbo(m_vbo, model_manager.vertexBuffer(model), model_manager.vertexBufferSize(model)); error)
     return error;
-  if (auto error = initVertexAttribs(vao); error) return error;
-  if (auto error = indexBuffer(vao, modelManager.getIndexBuffer(model), modelManager.getIndexBufferSize(model)); error)
+  if (auto error = initVertexAttribs(m_vao); error) return error;
+  if (auto error = indexBuffer(m_vao, model_manager.indexBuffer(model), model_manager.indexBufferSize(model)); error)
     return error;
   return SUCCESS_EC;
 }
 
 void Scene::startRender(const RunnerState& state) {
-  const auto view = getViewMatrix(camera);
-  const auto proj = getPerspectiveMatrix(camera);
-  shader.start(view, proj, state);
-  if (isFlagSet(DIFFUSE_LIGHT_DIRTY, flags)) {
-    shader.updateDiffuseLight(diffuseLight);
-    setFlag(DIFFUSE_LIGHT_DIRTY, false, flags);
+  const auto view = getViewMatrix(m_camera);
+  const auto proj = getPerspectiveMatrix(m_camera);
+  m_shader.start(view, proj, state);
+  if (isFlagSet(DIFFUSE_LIGHT_DIRTY, m_flags)) {
+    m_shader.updateDiffuseLight(m_diffuse_light);
+    setFlag(DIFFUSE_LIGHT_DIRTY, false, m_flags);
   }
-  bindVao(vao);
+  bindVao(m_vao);
 }
 
 void Scene::renderEntity(const entt::entity entity, const entt::registry& registry) {
-  glUniformMatrix4fv(shader.u_model, 1, false, glm::value_ptr(getTransform(glm::mat4(1), entity, registry)));
+  glUniformMatrix4fv(m_shader.u_model, 1, false, glm::value_ptr(getTransform(glm::mat4(1), entity, registry)));
   auto& model = registry.get<Model>(entity);
   glDrawElements(GL_TRIANGLES, model.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0));
 }
 
-const Light& Scene::getDiffuseLight() const {
-  return diffuseLight;
-}
-
-void Scene::updateDiffuseLight(const Light& light) {
-  diffuseLight = light;
-  setFlag(DIFFUSE_LIGHT_DIRTY, true, flags);
+void Scene::onAspectRatioUpdate(f32 aspect_ratio) {
+  m_camera.aspect_ratio(aspect_ratio);
 }
 
 inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry) {

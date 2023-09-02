@@ -41,14 +41,13 @@ class PerlinRunner : public GlfwRunner {
   glm::ivec2 offset = {0, 0};
 
   PerlinRunner(const i32 argc, const char** argv) : GlfwRunner("Perlin", argc, argv) {
-    window.width = 800;
-    window.height = 800;
+    window(Window(window().title, 800, 800));
     clearColor = {0, 0, 0};
   }
 
   uinta_error_code doInit() override {
     if (auto error = GlfwRunner::doInit(); error) return error;
-    if (auto error = shader.init(fileManager); error) return error;
+    if (auto error = shader.init(file_manager()); error) return error;
 
     // clang-format off
     const f32 vertices[] = {
@@ -88,8 +87,8 @@ class PerlinRunner : public GlfwRunner {
   }
 
   void updateTexture() {
-    const auto width = window.width;
-    const auto height = window.height;
+    const auto width = window().width;
+    const auto height = window().height;
     auto textureData = Buffer2d(width, height);
     perlinNoise(textureData, siv::PerlinNoise(perlinSeed), frequency, octaves, offset);
     glBindTexture(GL_TEXTURE_2D, textureId);
@@ -98,36 +97,36 @@ class PerlinRunner : public GlfwRunner {
 
   void doTick(const RunnerState& state) override {
     static constexpr i32 OFFSET_DELTA = 10;
-    if (isKeyPressed(input, KEY_S)) {
-      perlinSeed += isShiftDown(input) ? -1 : 1;
+    if (isKeyPressed(input(), KEY_S)) {
+      perlinSeed += isShiftDown(input()) ? -1 : 1;
       SPDLOG_INFO("Seed set to {}", perlinSeed);
       updateTexture();
     }
-    if (isKeyPressed(input, KEY_F)) {
-      frequency = std::clamp(frequency + (isShiftDown(input) ? -1 : 1), 0.0f, 64.0f);
+    if (isKeyPressed(input(), KEY_F)) {
+      frequency = std::clamp(frequency + (isShiftDown(input()) ? -1 : 1), 0.0f, 64.0f);
       updateTexture();
     }
-    if (isKeyPressed(input, KEY_O)) {
-      octaves = std::clamp(static_cast<i32>(octaves + (isShiftDown(input) ? -1 : 1)), 0, 16);
+    if (isKeyPressed(input(), KEY_O)) {
+      octaves = std::clamp(static_cast<i32>(octaves + (isShiftDown(input()) ? -1 : 1)), 0, 16);
       updateTexture();
     }
-    if (isKeyPressed(input, KEY_LEFT)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
+    if (isKeyPressed(input(), KEY_LEFT)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
       offset += glm::ivec2(-delta, 0);
       updateTexture();
     }
-    if (isKeyPressed(input, KEY_RIGHT)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
+    if (isKeyPressed(input(), KEY_RIGHT)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
       offset += glm::ivec2(delta, 0);
       updateTexture();
     }
-    if (isKeyPressed(input, KEY_UP)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
+    if (isKeyPressed(input(), KEY_UP)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
       offset += glm::ivec2(0, delta);
       updateTexture();
     }
-    if (isKeyPressed(input, KEY_DOWN)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
+    if (isKeyPressed(input(), KEY_DOWN)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
       offset += glm::ivec2(0, -delta);
       updateTexture();
     }

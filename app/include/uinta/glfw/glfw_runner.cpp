@@ -25,7 +25,7 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 UINTA_ERROR_FRAMEWORK(GLFWRunner, errorMessages);
 
 GlfwRunner::~GlfwRunner() {
-  if (glfwWindow) glfwDestroyWindow(glfwWindow);
+  if (m_window) glfwDestroyWindow(m_window);
   glfwTerminate();
 }
 
@@ -38,15 +38,15 @@ uinta_error_code GlfwRunner::doInit() {
 
 void GlfwRunner::pollInput() {
   glfwPollEvents();
-  if (glfwWindow && glfwWindowShouldClose(glfwWindow)) setFlag(SHUTDOWN, true, flags);
+  if (m_window && glfwWindowShouldClose(m_window)) flag(STOP_RUNNING, true);
 }
 
-f64 GlfwRunner::getRuntime() const {
+f64 GlfwRunner::runtime() const {
   return glfwGetTime();
 }
 
 void GlfwRunner::swapBuffers() {
-  glfwSwapBuffers(glfwWindow);
+  glfwSwapBuffers(m_window);
 }
 
 uinta_error_code GlfwRunner::createOpenGLContext() {
@@ -62,7 +62,7 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   for (i32 i = 0; i < std::min(monCount, GlfwRunner::MAX_MONITORS); ++i) {
     auto* const mon = mons[i];
     auto* const view = glfwGetVideoMode(mon);
-    monitors[i] = {mon, glfwGetMonitorName(mon), view->width, view->height, view->refreshRate};
+    m_monitors[i] = {mon, glfwGetMonitorName(mon), view->width, view->height, view->refreshRate};
   }
   // TODO: We need to listen for monitor changes, and update the monitor list. See
   // https://www.glfw.org/docs/3.3/group__monitor.html#gab39df645587c8518192aa746c2fb06c3
@@ -77,16 +77,16 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif
 
-  u32 targetWidth = window.width ? window.width : monitors[0].width;
-  u32 targetHeight = window.height ? window.height : monitors[0].height;
-  GLFWmonitor* targetMon = isFlagSet(Window::FULLSCREEN, window.flags) ? monitors[0].ptr : NULL;
-  glfwWindow = glfwCreateWindow(targetWidth, targetHeight, window.title.c_str(), targetMon, NULL);
-  if (!glfwWindow) return make_error(error::WindowError);
-  SPDLOG_INFO("Created glfwWindow '{}' {}x{} (aspect ratio {}).", window.title, targetWidth, targetHeight, window.aspectRatio);
-  window = Window(window.title, targetWidth, targetHeight);
+  u32 targetWidth = window().width ? window().width : m_monitors[0].width;
+  u32 targetHeight = window().height ? window().height : m_monitors[0].height;
+  GLFWmonitor* targetMon = isFlagSet(Window::FULLSCREEN, window().flags) ? m_monitors[0].ptr : NULL;
+  m_window = glfwCreateWindow(targetWidth, targetHeight, window().title.c_str(), targetMon, NULL);
+  if (!m_window) return make_error(error::WindowError);
+  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", window().title, targetWidth, targetHeight, window().aspectRatio);
+  window(Window(window().title, targetWidth, targetHeight));
 
-  glfwSetWindowUserPointer(glfwWindow, this);
-  glfwMakeContextCurrent(glfwWindow);
+  glfwSetWindowUserPointer(m_window, this);
+  glfwMakeContextCurrent(m_window);
 
   SPDLOG_INFO("Loading GLAD...");
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return make_error(error::GladError);
@@ -123,8 +123,8 @@ void GlfwRunner::doRender(const RunnerState& state) {
 
 void GlfwRunner::doPostRender(const RunnerState& state) {
   Runner::doPostRender(state);
-  if (isFlagSet(ui::INPUT_HANDLED_KEYBOARD, ui::flags)) resetKeyboard(input);
-  if (isFlagSet(ui::INPUT_HANDLED_MOUSE, ui::flags)) resetMouse(input);
+  if (isFlagSet(ui::INPUT_HANDLED_KEYBOARD, ui::flags)) resetKeyboard(input());
+  if (isFlagSet(ui::INPUT_HANDLED_MOUSE, ui::flags)) resetMouse(input());
   ui::flags = 0;
   /* SPDLOG_CRITICAL(v); */
   ui::onPostRender(*this, state);
@@ -136,42 +136,42 @@ void GlfwRunner::doShutdown() {
 }
 
 void GlfwRunner::registerCallbacks() {
-  if (!glfwWindow) return;
+  if (!m_window) return;
 
-  glfwSetKeyCallback(glfwWindow, [](auto* glfwWindow, i32 key, i32 scancode, i32 action, i32 mods) {
+  glfwSetKeyCallback(m_window, [](auto* window, i32 key, i32 scancode, i32 action, i32 mods) {
     SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
-    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) return setFlag(Runner::SHUTDOWN, true, runner->flags);
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
+    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) runner->flag(STOP_RUNNING, true);
     runner->handleKeyInput(key, scancode, action, mods);
   });
 
-  glfwSetCursorPosCallback(glfwWindow, [](auto* glfwWindow, f64 xpos, f64 ypos) {
+  glfwSetCursorPosCallback(m_window, [](auto* m_window, f64 xpos, f64 ypos) {
     SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypos);
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleCursorPositionChanged(xpos, ypos);
   });
 
-  glfwSetMouseButtonCallback(glfwWindow, [](auto* glfwWindow, i32 button, i32 action, i32 mods) {
+  glfwSetMouseButtonCallback(m_window, [](auto* m_window, i32 button, i32 action, i32 mods) {
     SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleMouseButtonInput(button, action, mods);
   });
 
-  glfwSetScrollCallback(glfwWindow, [](auto* glfwWindow, f64 xoffset, f64 yoffset) {
+  glfwSetScrollCallback(m_window, [](auto* m_window, f64 xoffset, f64 yoffset) {
     SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleScrollInput(xoffset, yoffset);
   });
 
-  glfwSetWindowSizeCallback(glfwWindow, [](auto* glfwWindow, i32 width, i32 height) {
+  glfwSetWindowSizeCallback(m_window, [](auto* m_window, i32 width, i32 height) {
     SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
-    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(glfwWindow));
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleWindowSizeChanged(width, height);
   });
 
-  glfwSetWindowPosCallback(glfwWindow, [](auto* glfwWindow, i32 xpos, i32 ypos) {
+  glfwSetWindowPosCallback(m_window, [](auto* m_window, i32 xpos, i32 ypos) {
     SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
-    glfwGetWindowUserPointer(glfwWindow);
+    glfwGetWindowUserPointer(m_window);
   });
 
 #ifdef UINTA_DEBUG

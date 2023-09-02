@@ -6,7 +6,23 @@
 namespace uinta {
 
 class HexagonsRunner : public GlfwRunner {
+  static constexpr auto yScale = 15;
+
  public:
+  HexagonsRunner(const i32 argc, const char** argv) : GlfwRunner("Hexagons", argc, argv) {
+    if (isFlagSet(Scene::CAMERA_ENABLED, scene().flags())) {
+      auto camera = scene().camera();
+      camera.angle = 12;
+      camera.pitch = 8;
+      camera.dist = 56;
+      camera.config.distMax = 1e6;
+      camera.vertOffset = yScale * 0.5;
+      scene().camera(camera);
+    }
+    scene().diffuse_light({{0.5, -1, 0}});
+  }
+
+ private:
   Vao vao = {{
       {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 0},
       {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 3 * sizeof(f32)},
@@ -14,14 +30,6 @@ class HexagonsRunner : public GlfwRunner {
   }};
   Vbo vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   u32 indexCount;
-
-  HexagonsRunner(const i32 argc, const char** argv) : GlfwRunner("Hexagons", argc, argv) {
-    setFlag(TargetCamera::CAMERA_DIST_LIMIT, false, scene.camera.flags);
-    scene.camera.dist = 56;
-    scene.camera.pitch = 8;
-    scene.camera.angle = 12;
-    scene.updateDiffuseLight({{0.5, -1, 0}});
-  }
 
   uinta_error_code doInit() override {
     if (auto error = GlfwRunner::doInit(); error) return error;
@@ -40,11 +48,7 @@ class HexagonsRunner : public GlfwRunner {
     auto points = radial_hexagons(centerPoint, gridRings, hexRadius);
 
     /// Set height values for the vertex points based on the height map:
-    constexpr auto yScale = 15;
     hex_set_heights(points, heightMap, yScale);
-
-    /// Set camera to a pleasant vertical offset:
-    scene.camera.vertOffset = yScale * 0.5;
 
     /// Add some fun colors:
     srand(time(nullptr));  /// rand() seed
@@ -70,7 +74,7 @@ class HexagonsRunner : public GlfwRunner {
 
   void doRender(const RunnerState& state) override {
     GlfwRunner::doRender(state);
-    scene.shader.start(getViewMatrix(scene.camera), getPerspectiveMatrix(scene.camera), state);
+    scene().shader().start(getViewMatrix(scene().camera()), getPerspectiveMatrix(scene().camera()), state);
     bindVao(vao);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0L));
   }
