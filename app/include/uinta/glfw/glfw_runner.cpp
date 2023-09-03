@@ -145,39 +145,34 @@ void GlfwRunner::registerCallbacks() {
   if (!m_window) return;
 
   glfwSetKeyCallback(m_window, [](auto* window, i32 key, i32 scancode, i32 action, i32 mods) {
-    SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
     auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
     if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) runner->flag(STOP_RUNNING, true);
     runner->handleKeyInput(key, scancode, action, mods);
   });
 
   glfwSetCursorPosCallback(m_window, [](auto* m_window, f64 xpos, f64 ypos) {
-    SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypos);
     auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleCursorPositionChanged(xpos, ypos);
   });
 
   glfwSetMouseButtonCallback(m_window, [](auto* m_window, i32 button, i32 action, i32 mods) {
-    SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
     auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleMouseButtonInput(button, action, mods);
   });
 
   glfwSetScrollCallback(m_window, [](auto* m_window, f64 xoffset, f64 yoffset) {
-    SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
     auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleScrollInput(xoffset, yoffset);
   });
 
   glfwSetWindowSizeCallback(m_window, [](auto* m_window, i32 width, i32 height) {
-    SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
     auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
     runner->handleWindowSizeChanged(width, height);
   });
 
   glfwSetWindowPosCallback(m_window, [](auto* m_window, i32 xpos, i32 ypos) {
-    SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
-    glfwGetWindowUserPointer(m_window);
+    auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(m_window));
+    runner->handleWindowPosChanged(xpos, ypos);
   });
 
 #ifdef UINTA_DEBUG

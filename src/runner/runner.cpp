@@ -106,33 +106,44 @@ bool Runner::shouldRenderFrame(f32 dt) {
 }
 
 void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) {
+  SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypos);
   mouseMoved(m_input, xpos, ypos);
 }
 
 void Runner::handleScrollInput(const f64 xoffset, const f64 yoffset) {
+  SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
   mouseScrolled(m_input, xoffset, yoffset);
 }
 
 void Runner::handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods) {
+  SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
   if (action == ACTION_PRESS) keyPressed(m_input, key, mods);
   if (action == ACTION_RELEASE) keyReleased(m_input, key, mods);
   if (action == ACTION_REPEAT) keyRepeated(m_input, key, mods);
 }
 
 void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i32 mods) {
+  SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
   if (action == ACTION_PRESS) mouseButtonPressed(m_input, button, mods);
   if (action == ACTION_RELEASE) mouseButtonReleased(m_input, button, mods);
   m_input.platform_flags = mods;
 }
 
+void Runner::handleWindowPosChanged(const i32 xpos, const i32 ypos) {
+  SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
+}
+
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
+  SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
   const auto orig_width = m_window.width;
   const auto orig_height = m_window.width;
   auto win = window();
   win.width = width;
   win.height = height;
   m_window = win;
-  if (orig_width != m_window.width || orig_height != m_window.height) onWindowSizeChanged();
+  if (orig_width != m_window.width || orig_height != m_window.height) {
+    m_scene.onAspectRatioUpdate(m_window.aspect_ratio);
+  }
 }
 
 Runner::~Runner() {
@@ -150,10 +161,6 @@ void Runner::doPostRender(const RunnerState& state) {
 }
 
 void Runner::doShutdown() {
-}
-
-void Runner::onWindowSizeChanged() {
-  m_scene.onAspectRatioUpdate(m_window.aspect_ratio);
 }
 
 void Runner::doPreTick(const RunnerState& state) {

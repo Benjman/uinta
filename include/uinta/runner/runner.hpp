@@ -39,6 +39,7 @@ class Runner {
   void handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods);
   void handleMouseButtonInput(const i32 button, const u32 action, const i32 mods);
   void handleScrollInput(const f64 xoffset, const f64 yoffset);
+  void handleWindowPosChanged(const i32 xpos, const i32 ypos);
   void handleWindowSizeChanged(const i32 width, const i32 height);
 
   const Window& window() const noexcept {
@@ -101,7 +102,6 @@ class Runner {
   virtual void doRender(const RunnerState& state);
   virtual void doPostRender(const RunnerState& state);
   virtual void doShutdown();
-  virtual void onWindowSizeChanged();
 
   virtual uinta_error_code createOpenGLContext() = 0;
   virtual f64 runtime() const = 0;
