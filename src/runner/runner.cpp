@@ -126,11 +126,13 @@ void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i3
 }
 
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
-  m_window.width = width;
-  m_window.height = height;
-  m_window.aspectRatio = static_cast<f32>(width) / static_cast<f32>(height);
-  m_scene.onAspectRatioUpdate(m_window.aspectRatio);
-  onWindowSizeChanged();
+  const auto orig_width = m_window.width;
+  const auto orig_height = m_window.width;
+  auto win = window();
+  win.width = width;
+  win.height = height;
+  m_window = win;
+  if (orig_width != m_window.width || orig_height != m_window.height) onWindowSizeChanged();
 }
 
 Runner::~Runner() {
@@ -151,6 +153,7 @@ void Runner::doShutdown() {
 }
 
 void Runner::onWindowSizeChanged() {
+  m_scene.onAspectRatioUpdate(m_window.aspect_ratio);
 }
 
 void Runner::doPreTick(const RunnerState& state) {

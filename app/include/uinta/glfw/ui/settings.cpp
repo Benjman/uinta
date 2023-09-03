@@ -43,7 +43,7 @@ void settingsGraphics(GlfwRunner &runner) {
   if (refreshRate == 0) {
     refreshRate = runner.monitors().at(0).refreshRate;
     for (const auto &resolutions : resolutions) {
-      if (std::abs(resolutions.first - runner.window().aspectRatio) > 0.01) continue;
+      if (std::abs(resolutions.first - runner.window().aspect_ratio) > 0.01) continue;
       arResolutions = resolutions.second;
       Resolution windowResolution(runner.window().width, runner.window().height);
       for (auto &resolution : resolutions.second)
@@ -61,17 +61,20 @@ void settingsGraphics(GlfwRunner &runner) {
     }
     ImGui::EndCombo();
   }
-  bool fullscreen = isFlagSet(Window::FULLSCREEN, runner.window().flags);
+  static auto fullscreen = runner.window().fullscreen;
   ImGui::Checkbox("Fullscreen", &fullscreen);
-  if (fullscreen != isFlagSet(Window::FULLSCREEN, runner.window().flags)) runner.fullscreen(fullscreen);
   if (ImGui::Button("Apply")) {
-    runner.window(Window(runner.window().title, selectedResolution.width, selectedResolution.height));
+    const auto window = Window(runner.window().title, selectedResolution.width, selectedResolution.height, fullscreen);
+    runner.window(Window(window));
     auto monitors = runner.monitors();
     monitors.at(0).refreshRate = refreshRate;
     runner.monitors(monitors);
     GLFWmonitor *mon = nullptr;
-    if (isFlagSet(Window::FULLSCREEN, runner.window().flags)) mon = runner.monitors().at(0).ptr;
-    glfwSetWindowMonitor(runner.glfwWindow(), mon, 0, 0, runner.window().width, runner.window().height,
+    if (runner.window().fullscreen) mon = runner.monitors().at(0).ptr;
+    const auto *const view = glfwGetVideoMode(runner.monitors().at(0).ptr);
+    int x = view ? view->width / 2.0 + window.width / 2.0 : 0;
+    int y = view ? view->height / 2.0 + window.height / 2.0 : 0;
+    glfwSetWindowMonitor(runner.glfwWindow(), mon, x, y, runner.window().width, runner.window().height,
                          runner.monitors().at(0).refreshRate);
     glViewport(0, 0, selectedResolution.width, selectedResolution.height);
   }

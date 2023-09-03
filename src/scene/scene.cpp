@@ -24,7 +24,7 @@ uinta_error_code Scene::init(Runner& runner) {
   if (auto error = m_renderer->init(runner.file_manager()); error) return error;
   if (auto error = m_cartesian_grid.init(runner.file_manager()); error) return error;
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags()), m_flags);
-  m_camera.config.aspectRatio = runner.window().aspectRatio;
+  m_camera.config.aspectRatio = runner.window().aspect_ratio;
   return SUCCESS_EC;
 }
 

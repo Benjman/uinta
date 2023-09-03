@@ -41,15 +41,11 @@ class Runner {
   void handleScrollInput(const f64 xoffset, const f64 yoffset);
   void handleWindowSizeChanged(const i32 width, const i32 height);
 
-  void fullscreen(bool enabled) {
-    setFlag(Window::FULLSCREEN, enabled, m_window.flags);
-  }
-
   const Window& window() const noexcept {
     return m_window;
   }
 
-  void window(const Window& v) {
+  void window(const Window& v) noexcept {
     m_window = v;
   }
 

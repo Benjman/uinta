@@ -77,13 +77,19 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif
 
-  u32 targetWidth = window().width ? window().width : m_monitors[0].width;
-  u32 targetHeight = window().height ? window().height : m_monitors[0].height;
-  GLFWmonitor* targetMon = isFlagSet(Window::FULLSCREEN, window().flags) ? m_monitors[0].ptr : NULL;
-  m_window = glfwCreateWindow(targetWidth, targetHeight, window().title.c_str(), targetMon, NULL);
+  auto* const target_mon = window().fullscreen ? m_monitors[0].ptr : NULL;
+  const auto target_width = window().width ? window().width : m_monitors[0].width;
+  const auto target_height = window().height ? window().height : m_monitors[0].height;
+  m_window = glfwCreateWindow(target_width, target_height, window().title.c_str(), target_mon, NULL);
   if (!m_window) return make_error(error::WindowError);
-  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", window().title, targetWidth, targetHeight, window().aspectRatio);
-  window(Window(window().title, targetWidth, targetHeight));
+
+  const auto* const view = glfwGetVideoMode(m_monitors[0].ptr);
+  const auto target_x = view ? view->width / 2.0 - target_width / 2.0 : 0;
+  const auto target_y = view ? view->height / 2.0 - target_height / 2.0 : 0;
+  glfwSetWindowPos(m_window, target_x, target_y);
+
+  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height, window().aspect_ratio);
+  window(Window(window().title, target_width, target_height));
 
   glfwSetWindowUserPointer(m_window, this);
   glfwMakeContextCurrent(m_window);
