@@ -28,8 +28,8 @@ class Runner {
   static constexpr flag_t RENDERING_ENABLED = 1 << 0;
   static constexpr flag_t STOP_RUNNING = 1 << 1;
 
-  Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr,
-         std::unique_ptr<RunnerGpuUtils> gpu_utils = nullptr) noexcept;
+  Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr, std::unique_ptr<RunnerGpuUtils> gpu_utils = nullptr,
+         std::unique_ptr<FileManager> file_manager = nullptr) noexcept;
 
   ~Runner();
 
@@ -54,7 +54,7 @@ class Runner {
   }
 
   FileManager& file_manager() noexcept {
-    return m_file_manager;
+    return *m_file_manager;
   }
 
   InputState& input() noexcept {
@@ -114,11 +114,11 @@ class Runner {
 
  private:
   Window m_window;
-  FileManager m_file_manager;
   InputState m_input;
   Scene m_scene;
   ModelManager m_model_manager;
   entt::registry m_registry;
+  std::unique_ptr<FileManager> m_file_manager;
   std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
   flags_t m_flags = RENDERING_ENABLED;
 

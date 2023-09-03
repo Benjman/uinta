@@ -43,7 +43,10 @@ class FileManager {
   void releaseFile(const file_t* const handle, bool force = false);
   void releaseFile(const std::vector<const file_t*>& handles);
 
- private:
+ protected:
+  virtual void loadFileBinary(const file_t* const handle) = 0;
+  virtual void loadFileText(const file_t* const handle) = 0;
+
   std::vector<std::string> m_searchPaths;
 
   std::vector<file_t*> m_handles;
@@ -58,10 +61,7 @@ class FileManager {
   void reserveSpace(const file_t* const handle);
   void parseFileSearchPaths(const std::string& searchPaths, const char delim);
   std::string findPath(const std::string& path);
-
   void loadHandleData(const file_t* const handle);
-  void loadFileBinary(const file_t* const handle);
-  void loadFileText(const file_t* const handle);
 
   const file_t getId(const file_t* const handle) const;
 
@@ -70,6 +70,12 @@ class FileManager {
   void setPath(const file_t* const handle, const std::string& path);
 
   bool isInitialized() const;
+};
+
+class FileManager_Desktop final : public FileManager {
+ protected:
+  void loadFileBinary(const file_t* const handle) override;
+  void loadFileText(const file_t* const handle) override;
 };
 
 }  // namespace uinta

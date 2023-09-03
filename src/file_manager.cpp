@@ -238,18 +238,6 @@ void FileManager::loadHandleData(const file_t* const handle) {
   setIsBuffered(handle, true);
 }
 
-void FileManager::loadFileText(const file_t* const handle) {
-  std::ifstream stream;
-  stream.open(getPath(handle));
-  if (!stream) {
-    SPDLOG_ERROR("Failed to open file at '{}'.", getPath(handle));
-    return;
-  }
-  auto& link = m_links.at(getId(handle));
-  stream.read(static_cast<char*>(link.ptr), link.size);
-  stream.close();
-}
-
 void FileManager::setIsActive(const file_t* const handle, const bool isActive) {
   auto* h = m_handles.at(getId(handle));
   *h &= ~UINTA_FILE_IS_ACTIVE_MASK;
@@ -283,6 +271,21 @@ bool FileManager::isInitialized() const {
     return false;
   }
   return true;
+}
+
+void FileManager_Desktop::loadFileBinary(const file_t* const handle) {
+  // TODO:
+}
+void FileManager_Desktop::loadFileText(const file_t* const handle) {
+  std::ifstream stream;
+  stream.open(getPath(handle));
+  if (!stream) {
+    SPDLOG_ERROR("Failed to open file at '{}'.", getPath(handle));
+    return;
+  }
+  auto& link = m_links.at(getId(handle));
+  stream.read(static_cast<char*>(link.ptr), link.size);
+  stream.close();
 }
 
 }  // namespace uinta

@@ -50,12 +50,14 @@ uinta_error_code Scene::addEntity(entt::entity& ref, FileManager& file_manager, 
 }
 
 uinta_error_code Scene::addModel(const model_t model, ModelManager& model_manager) {
+  const auto* vtx = model_manager.vertexBuffer(model);
+  const auto* idx = model_manager.indexBuffer(model);
+  const auto vtxSize = model_manager.vertexBufferSize(model);
+  const auto idxSize = model_manager.indexBufferSize(model);
   if (auto error = initVao(m_vao); error) return error;
-  if (auto error = uploadVbo(m_vbo, model_manager.vertexBuffer(model), model_manager.vertexBufferSize(model)); error)
-    return error;
+  if (auto error = uploadVbo(m_vbo, vtx, vtxSize); error) return error;
   if (auto error = initVertexAttribs(m_vao); error) return error;
-  if (auto error = indexBuffer(m_vao, model_manager.indexBuffer(model), model_manager.indexBufferSize(model)); error)
-    return error;
+  if (auto error = indexBuffer(m_vao, idx, idxSize); error) return error;
   return SUCCESS_EC;
 }
 

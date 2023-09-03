@@ -20,10 +20,13 @@ static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<RunnerGpuUtils> gpu_utils) noexcept
+Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<RunnerGpuUtils> gpu_utils,
+               std::unique_ptr<FileManager> file_manager) noexcept
     : m_window(title),
       m_scene(&m_registry, std::make_unique<SceneRenderer_OpenGL>()),
+      m_file_manager(file_manager ? std::move(file_manager) : std::make_unique<FileManager_Desktop>()),
       m_gpu_utils(gpu_utils ? std::move(gpu_utils) : std::make_unique<RunnerGpuUtils_OpenGL>()) {
+  assert(m_file_manager && "File manager must be initialized!");
   assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);
   initSpdlog();
@@ -72,7 +75,7 @@ i32 Runner::run() {
 }
 
 uinta_error_code Runner::doInit() {
-  if (auto error = m_file_manager.init(); error) return error;
+  if (auto error = m_file_manager->init(); error) return error;
   if (auto error = m_scene.init(*this); error) return error;
   if (auto error = m_gpu_utils->init(); error) return error;
   return SUCCESS_EC;
