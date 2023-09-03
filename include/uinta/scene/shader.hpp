@@ -20,11 +20,16 @@ class SceneShader {
   u32 u_view;
   u32 u_time;
 
-  uinta_error_code init(FileManager& fileManager);
+  virtual uinta_error_code init(FileManager& fileManager);
+  virtual void start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const = 0;
+  virtual void diffuse(const Light& light) const = 0;
+};
 
-  void start(const glm::mat4& view = glm::mat4(), const glm::mat4& proj = glm::mat4(), const RunnerState& state = {}) const;
-
-  void diffuse(const Light& light) const;
+class SceneShader_OpenGL final : public SceneShader {
+ public:
+  void start(const glm::mat4& view = glm::mat4(), const glm::mat4& proj = glm::mat4(),
+             const RunnerState& state = {}) const override;
+  void diffuse(const Light& light) const override;
 };
 
 }  // namespace uinta

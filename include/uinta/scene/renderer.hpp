@@ -15,9 +15,14 @@ class SceneRenderer {
     assert(m_shader && "Shader must be initialized!");
   }
 
-  virtual uinta_error_code init(FileManager& fileManager) = 0;
+  virtual uinta_error_code init(FileManager& fileManager) {
+    if (auto error = m_shader.get()->init(fileManager); error) return error;
+    return SUCCESS_EC;
+  }
 
-  virtual void start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const = 0;
+  virtual void start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const {
+    m_shader->start(view, proj, state);
+  }
 
   virtual void renderEntity(const entt::entity entity, const entt::registry& registry) = 0;
 
@@ -35,15 +40,10 @@ class SceneRenderer {
 
 class SceneRenderer_OpenGL final : public SceneRenderer {
  public:
-  SceneRenderer_OpenGL() : SceneRenderer(std::make_unique<SceneShader>()) {
+  SceneRenderer_OpenGL() : SceneRenderer(std::make_unique<SceneShader_OpenGL>()) {
   }
 
-  uinta_error_code init(FileManager& fileManager) override;
-  void start(const glm::mat4& view = glm::mat4(), const glm::mat4& proj = glm::mat4(),
-             const RunnerState& state = {}) const override;
   void renderEntity(const entt::entity entity, const entt::registry& registry) override;
-
- protected:
 };
 
 }  // namespace uinta

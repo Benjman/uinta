@@ -21,14 +21,14 @@ uinta_error_code SceneShader::init(FileManager& fileManager) {
   return SUCCESS_EC;
 }
 
-void SceneShader::start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const {
+void SceneShader_OpenGL::start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const {
   glUseProgram(id);
   glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(view));
   glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(proj));
   glUniform1f(u_time, state.runtime);
 }
 
-void SceneShader::diffuse(const Light& light) const {
+void SceneShader_OpenGL::diffuse(const Light& light) const {
   glUniform3fv(u_lightDir, 1, glm::value_ptr(light.direction));
   // TODO: Color and position
 }
