@@ -11,9 +11,11 @@ uniform float u_time = 0;
 
 flat out vec3 pass_normal;
 out vec3 pass_color;
+out vec4 pass_world_pos;
 
 void main() {
   pass_color = in_color;
   pass_normal = mat3(transpose(inverse(u_model))) * in_normal;
-  gl_Position = u_proj * u_view * u_model * vec4(in_pos, 1);
+  pass_world_pos = u_model * vec4(in_pos, 1);
+  gl_Position = u_proj * u_view * pass_world_pos;
 }
