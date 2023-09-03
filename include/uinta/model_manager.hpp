@@ -1,35 +1,12 @@
 #ifndef UINTA_MODEL_MANAGER_HPP
 #define UINTA_MODEL_MANAGER_HPP
 
+#include <uinta/component/model.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/mesh.hpp>
 #include <vector>
 
 namespace uinta {
-
-using model_t = u16;
-
-struct Model {
-  model_t id;  // TODO move to flags
-  u32 vertexCount;
-  u32 indexCount;
-  u32 indexOffset;
-
-  Model() : id(0), vertexCount(0), indexCount(0), indexOffset(0) {
-  }
-
-  Model(const Model& other) {
-    *this = other;
-  }
-
-  Model& operator=(const Model& rhs) {
-    id = rhs.id;
-    vertexCount = rhs.vertexCount;
-    indexCount = rhs.indexCount;
-    indexOffset = rhs.indexOffset;
-    return *this;
-  }
-};
 
 // TODO ModelManager should take a pointer and size instead of allocating its own memory
 class ModelManager {
