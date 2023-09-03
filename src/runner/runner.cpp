@@ -22,7 +22,7 @@ void processArgs(Runner* runner, i32 argc, const char** argv);
 
 Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<RunnerGpuUtils> gpu_utils) noexcept
     : m_window(title),
-      m_scene(&m_registry),
+      m_scene(&m_registry, std::make_unique<SceneRenderer_OpenGL>()),
       m_gpu_utils(gpu_utils ? std::move(gpu_utils) : std::make_unique<RunnerGpuUtils_OpenGL>()) {
   assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);

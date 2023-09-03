@@ -28,7 +28,7 @@ void SceneShader::start(const glm::mat4& view, const glm::mat4& proj, const Runn
   glUniform1f(u_time, state.runtime);
 }
 
-void SceneShader::updateDiffuseLight(const Light& light) const {
+void SceneShader::diffuse(const Light& light) const {
   glUniform3fv(u_lightDir, 1, glm::value_ptr(light.direction));
   // TODO: Color and position
 }

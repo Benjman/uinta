@@ -1,7 +1,4 @@
 #include <entt/entt.hpp>
-#include <glm/geometric.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>
 #include <uinta/error.hpp>
 #include <uinta/runner.hpp>
 #include <uinta/scene/scene.hpp>
@@ -17,13 +14,14 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
-inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry);
-
-Scene::Scene(entt::registry* registry) : m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1)), {0, 0, 0}, {0, 0, 0}}) {
+Scene::Scene(entt::registry* const registry, std::unique_ptr<SceneRenderer> renderer)
+    : m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}),
+      m_renderer(renderer ? std::move(renderer) : std::make_unique<SceneRenderer_OpenGL>()) {
+  assert(m_renderer && "Renderer must be initialized!");
 }
 
 uinta_error_code Scene::init(Runner& runner) {
-  if (auto error = m_shader.init(runner.file_manager()); error) return error;
+  if (auto error = m_renderer->init(runner.file_manager()); error) return error;
   if (auto error = m_cartesian_grid.init(runner.file_manager()); error) return error;
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags()), m_flags);
   m_camera.config.aspectRatio = runner.window().aspectRatio;
@@ -63,32 +61,20 @@ uinta_error_code Scene::addModel(const model_t model, ModelManager& model_manage
 
 void Scene::render(const RunnerState& state) {
   if (isFlagSet(GRID_ENABLED, m_flags)) m_cartesian_grid.render(getPerspectiveMatrix(m_camera) * getViewMatrix(m_camera));
-  m_shader.start(getViewMatrix(m_camera), getPerspectiveMatrix(m_camera), state);
+  m_renderer->start(getViewMatrix(m_camera), getPerspectiveMatrix(m_camera), state);
   if (isFlagSet(DIFFUSE_LIGHT_DIRTY, m_flags)) {
-    m_shader.updateDiffuseLight(m_diffuse_light);
+    m_renderer->diffuse(m_diffuse_light);
     setFlag(DIFFUSE_LIGHT_DIRTY, false, m_flags);
   }
   bindVao(m_vao);
 }
 
 void Scene::renderEntity(const entt::entity entity, const entt::registry& registry) {
-  glUniformMatrix4fv(m_shader.u_model, 1, false, glm::value_ptr(getTransform(glm::mat4(1), entity, registry)));
-  auto& model = registry.get<Model>(entity);
-  glDrawElements(GL_TRIANGLES, model.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0));
+  m_renderer->renderEntity(entity, registry);
 }
 
 void Scene::onAspectRatioUpdate(f32 aspect_ratio) {
   m_camera.aspect_ratio(aspect_ratio);
-}
-
-inline glm::mat4 getTransform(const glm::mat4& baseTransform, const entt::entity entity, const entt::registry& registry) {
-  auto& transform = registry.get<Transform>(entity);
-  auto model = glm::translate(baseTransform, transform.position);
-  if (transform.rotation.x) model = glm::rotate(model, transform.rotation.x, glm::vec3(1, 0, 0));
-  if (transform.rotation.y) model = glm::rotate(model, transform.rotation.y, glm::vec3(0, 1, 0));
-  if (transform.rotation.z) model = glm::rotate(model, transform.rotation.z, glm::vec3(0, 0, 1));
-  model = glm::scale(model, transform.scale);
-  return model;
 }
 
 }  // namespace uinta

@@ -74,7 +74,7 @@ class HexagonsRunner : public GlfwRunner {
 
   void doRender(const RunnerState& state) override {
     GlfwRunner::doRender(state);
-    scene().shader().start(getViewMatrix(scene().camera()), getPerspectiveMatrix(scene().camera()), state);
+    scene().renderer().start(getViewMatrix(scene().camera()), getPerspectiveMatrix(scene().camera()), state);
     bindVao(vao);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0L));
   }

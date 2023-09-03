@@ -12,7 +12,7 @@
 #include <uinta/gl/vbo.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/scene/light.hpp>
-#include <uinta/scene/shader.hpp>
+#include <uinta/scene/renderer.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
@@ -30,7 +30,7 @@ class Scene {
   static constexpr flag_t CAMERA_ENABLED = 1 << 1;
   static constexpr flag_t GRID_ENABLED = 1 << 2;
 
-  Scene(entt::registry* const registry);
+  Scene(entt::registry* const registry, std::unique_ptr<SceneRenderer> renderer = nullptr);
 
   uinta_error_code init(Runner& runner);
 
@@ -40,6 +40,10 @@ class Scene {
                              const SceneEntityInitializer& info, entt::registry& registry);
 
   uinta_error_code addModel(const model_t model, ModelManager& model_manager);
+
+  const SceneRenderer& renderer() {
+    return *m_renderer;
+  }
 
   void render(const RunnerState& state);
 
@@ -53,10 +57,6 @@ class Scene {
 
   const Vbo& vbo() const noexcept {
     return m_vbo;
-  }
-
-  const SceneShader& shader() const noexcept {
-    return m_shader;
   }
 
   const TargetCamera& camera() const noexcept {
@@ -100,9 +100,9 @@ class Scene {
   }};
   Vbo m_vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   CartesianGrid m_cartesian_grid;
-  SceneShader m_shader;
   TargetCamera m_camera;
   Light m_diffuse_light;
+  std::unique_ptr<SceneRenderer> m_renderer;
   flags_t m_flags = DIFFUSE_LIGHT_DIRTY | CAMERA_ENABLED | GRID_ENABLED;
 };
 
