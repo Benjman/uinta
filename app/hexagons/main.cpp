@@ -15,7 +15,7 @@ class HexagonsRunner : public GlfwRunner {
       camera.angle = 12;
       camera.pitch = 8;
       camera.dist = 56;
-      camera.config.distMax = 1e6;
+      camera.config.dst_max = 1e6;
       camera.vertOffset = yScale * 0.5;
       scene().camera(camera);
     }

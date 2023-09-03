@@ -42,7 +42,7 @@ struct TargetCamera {
   }
 
   void aspect_ratio(f32 v) noexcept {
-    config.aspectRatio = v;
+    config.aspect_ratio = v;
   }
 };
 
@@ -50,8 +50,8 @@ inline f32 calculateTranslationFactor(const TargetCamera& cam) {
   auto result = cam.dist.current;
   result = std::abs(result);
   result = 1.3 * std::sqrt(result);
-  result *= cam.config.translationSpeedDistFactor;
-  result = std::max(cam.config.translationSpeedDistFactorMin, result);
+  result *= cam.config.spd_factor;
+  result = std::max(cam.config.spd_factor_min, result);
   return result;
 }
 

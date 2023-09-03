@@ -10,20 +10,20 @@
 
 namespace uinta {
 
-inline void processInput(TargetCamera&, const RunnerState&, const InputState&);
-inline void updatePosition(TargetCamera&);
-inline f32 getAngleDelta(const InputState& input, const CameraConfig& config);
-inline f32 getDistDelta(const InputState& input, const CameraConfig& config);
-inline f32 getPitchDelta(const InputState& input, const CameraConfig& config);
-inline glm::vec3 getTranslationDelta(const InputState& input, const TargetCamera& cam);
+inline void process_input(TargetCamera&, const RunnerState&, const InputState&);
+inline void position(TargetCamera&);
+inline f32 angle(const InputState& input, const CameraConfig& config);
+inline f32 dist(const InputState& input, const CameraConfig& config);
+inline f32 pitch(const InputState& input, const CameraConfig& config);
+inline glm::vec3 translate(const InputState& input, const TargetCamera& cam);
 
 void updateCamera(TargetCamera& cam, const RunnerState& state, const InputState& input) {
-  processInput(cam, state, input);
+  process_input(cam, state, input);
   update(cam.target, state.delta);
   update(cam.angle, state.delta);
   update(cam.pitch, state.delta);
   update(cam.dist, state.delta);
-  updatePosition(cam);
+  position(cam);
 }
 
 glm::mat4 getViewMatrix(const TargetCamera& cam) {
@@ -40,7 +40,8 @@ glm::mat4 getPerspectiveMatrix(const TargetCamera& cam) {
 }
 
 void getPerspectiveMatrix(glm::mat4* const ref, const TargetCamera& cam) {
-  *ref = glm::perspective(cam.config.fov, cam.config.aspectRatio, cam.config.nearPlane, cam.config.farPlane);
+  // FIXME: The camera config shouldn't have knowledge of the window's aspect ratio. Make that an input parameter
+  *ref = glm::perspective(cam.config.fov, cam.config.aspect_ratio, cam.config.near, cam.config.far);
 }
 
 glm::mat4 getOrthographicMatrix(const TargetCamera& cam) {
@@ -51,24 +52,24 @@ glm::mat4 getOrthographicMatrix(const TargetCamera& cam) {
 
 void getOrthographicMatrix(glm::mat4* const ref, const TargetCamera& cam) {
   constexpr auto size = 5.0f;
-  *ref = glm::orthoLH(-size, size, -size, size, cam.config.nearPlane, cam.config.farPlane);
+  *ref = glm::orthoLH(-size, size, -size, size, cam.config.near, cam.config.far);
 }
 
-inline void processInput(TargetCamera& cam, const RunnerState& state, const InputState& input) {
+inline void process_input(TargetCamera& cam, const RunnerState& state, const InputState& input) {
   auto scale = 1.0f;
   if (isKeyDown(input, KEY_LEFT_CONTROL)) scale = 5;
   if (isKeyDown(input, KEY_LEFT_ALT)) scale = 0.1;
-  cam.angle += getAngleDelta(input, cam.config) * state.delta * scale;
-  cam.dist += getDistDelta(input, cam.config) * state.delta * scale;
-  cam.pitch += getPitchDelta(input, cam.config) * state.delta * scale;
+  cam.angle += angle(input, cam.config) * state.delta * scale;
+  cam.dist += dist(input, cam.config) * state.delta * scale;
+  cam.pitch += pitch(input, cam.config) * state.delta * scale;
   if (isFlagSet(TargetCamera::CAMERA_DIST_LIMIT, cam.flags))
-    cam.dist = std::clamp(cam.dist.target, cam.config.distMin, cam.config.distMax);
+    cam.dist = std::clamp(cam.dist.target, cam.config.dst_min, cam.config.dst_max);
   if (isFlagSet(TargetCamera::CAMERA_PITCH_LIMIT, cam.flags))
-    cam.pitch = std::clamp(cam.pitch.target, cam.config.pitchMin, cam.config.pitchMax);
-  cam.target += getTranslationDelta(input, cam) * state.delta * scale;
+    cam.pitch = std::clamp(cam.pitch.target, cam.config.pitch_min, cam.config.pitch_max);
+  cam.target += translate(input, cam) * state.delta * scale;
 }
 
-inline void updatePosition(TargetCamera& cam) {
+inline void position(TargetCamera& cam) {
   const auto ar = glm::radians(cam.angle.current);
   const auto pr = glm::radians(cam.pitch.current);
   const auto ca = cos(ar);
@@ -84,44 +85,44 @@ inline void updatePosition(TargetCamera& cam) {
   cam.position += glm::vec3(cam.target) + cam.vertOffset * WORLD_UP;
 }
 
-inline f32 getAngleDelta(const InputState& input, const CameraConfig& config) {
+inline f32 angle(const InputState& input, const CameraConfig& config) {
   f32 delta = 0;
-  if (isKeyDown(input, config.angleLeft)) delta += config.angleSpeedKeyboard;
-  if (isKeyDown(input, config.angleRight)) delta += -config.angleSpeedKeyboard;
-  if (isMouseButtonDown(input, config.angleMouse) && input.cursordx) delta += input.cursordx * config.angleSpeedMouse;
+  if (isKeyDown(input, config.angl_lt_k)) delta += config.angl_spd_k;
+  if (isKeyDown(input, config.angl_rt_k)) delta += -config.angl_spd_k;
+  if (isMouseButtonDown(input, config.angke_m) && input.cursordx) delta += input.cursordx * config.angl_spd_m;
   return delta;
 }
 
-inline f32 getDistDelta(const InputState& input, const CameraConfig& config) {
+inline f32 dist(const InputState& input, const CameraConfig& config) {
   f32 delta = 0;
-  if (isKeyDown(input, config.distUp)) delta += -config.distSpeedKeyboard;
-  if (isKeyDown(input, config.distDown)) delta += config.distSpeedKeyboard;
-  if (isMouseScrolled(input)) delta += input.scrolldy * -config.distSpeedMouse;
+  if (isKeyDown(input, config.dst_inc_k)) delta += -config.dst_spd_k;
+  if (isKeyDown(input, config.dst_dec_k)) delta += config.dst_spd_k;
+  if (isMouseScrolled(input)) delta += input.scrolldy * -config.dst_spd_m;
   return delta;
 }
 
-inline f32 getPitchDelta(const InputState& input, const CameraConfig& config) {
+inline f32 pitch(const InputState& input, const CameraConfig& config) {
   f32 delta = 0;
-  if (isKeyDown(input, config.pitchUp)) delta += config.pitchSpeedKeyboard;
-  if (isKeyDown(input, config.pitchDown)) delta += -config.pitchSpeedKeyboard;
-  if (isMouseButtonDown(input, config.pitchMouse) && input.cursordy) delta += input.cursordy * config.pitchSpeedMouse;
+  if (isKeyDown(input, config.pitch_up_k)) delta += config.pitch_spd_k;
+  if (isKeyDown(input, config.pitch_dwn_k)) delta += -config.pitch_spd_k;
+  if (isMouseButtonDown(input, config.pitch_m) && input.cursordy) delta += input.cursordy * config.pitch_spd_m;
   return delta;
 }
 
-inline glm::vec3 getTranslationDelta(const InputState& input, const TargetCamera& cam) {
+inline glm::vec3 translate(const InputState& input, const TargetCamera& cam) {
   glm::vec3 delta(0);
-  if (isKeyDown(input, cam.config.translateForward))
-    delta += glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.translateSpeedKeyboard;
-  if (isKeyDown(input, cam.config.translateBackward))
-    delta += -glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.translateSpeedKeyboard;
-  if (isKeyDown(input, cam.config.translateLeft))
-    delta += -glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.translateSpeedKeyboard;
-  if (isKeyDown(input, cam.config.translateRight))
-    delta += glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.translateSpeedKeyboard;
-  if (isMouseButtonDown(input, cam.config.translateMouse) && (input.cursordx || input.cursordy))
+  if (isKeyDown(input, cam.config.forward_k))
+    delta += glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.trnsl_spd_k;
+  if (isKeyDown(input, cam.config.backward_k))
+    delta += -glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * cam.config.trnsl_spd_k;
+  if (isKeyDown(input, cam.config.left_k))
+    delta += -glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.trnsl_spd_k;
+  if (isKeyDown(input, cam.config.right_k))
+    delta += glm::normalize(getRight(cam.angle) * WORLD_HORIZONTAL) * cam.config.trnsl_spd_k;
+  if (isMouseButtonDown(input, cam.config.trnsl_m) && (input.cursordx || input.cursordy))
     delta += -(glm::normalize(WORLD_HORIZONTAL * getRight(cam.angle)) * input.cursordx -
                glm::normalize(WORLD_HORIZONTAL * getForward(cam.pitch, cam.angle)) * input.cursordy) *
-             cam.config.translateSpeedMouse;
+             cam.config.trnsl_spd_m;
   return delta * calculateTranslationFactor(cam);
 }
 

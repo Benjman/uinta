@@ -26,12 +26,12 @@ inline bool cameraClippingPlanes(TargetCamera &camera) {
   bool result = false;
 #ifndef IMGUI_API_DISABLED
   if (ImGui::TreeNode("Clipping planes")) {
-    f32 cameraClippingValues[] = {camera.config.nearPlane, camera.config.farPlane};
-    if (ImGui::DragFloat2("Clipping planes", cameraClippingValues, 0.05, camera.config.farPlane, camera.config.nearPlane, "%+.1f",
+    f32 cameraClippingValues[] = {camera.config.near, camera.config.far};
+    if (ImGui::DragFloat2("Clipping planes", cameraClippingValues, 0.05, camera.config.far, camera.config.near, "%+.1f",
                           ImGuiSliderFlags_AlwaysClamp))
       result = true;
-    camera.config.nearPlane = cameraClippingValues[0];
-    camera.config.farPlane = cameraClippingValues[1];
+    camera.config.near = cameraClippingValues[0];
+    camera.config.far = cameraClippingValues[1];
     ImGui::TreePop();
     ImGui::Separator();
   }
@@ -88,13 +88,11 @@ inline bool cameraTransform(TargetCamera &camera, const RunnerState &state) {
                           &limits.max, "%+.2f"))
       result = true;
 
-    if (ImGui::DragScalar("Speed factor", ImGuiDataType_Float,
-                          reinterpret_cast<void *>(&camera.config.translationSpeedDistFactor), 0.005f, &limits.zero, &limits.max,
-                          "%+.2f"))
+    if (ImGui::DragScalar("Speed factor", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.config.spd_factor), 0.005f,
+                          &limits.zero, &limits.max, "%+.2f"))
       result = true;
-    if (ImGui::DragScalar("Speed factor min", ImGuiDataType_Float,
-                          reinterpret_cast<void *>(&camera.config.translationSpeedDistFactorMin), 0.005f, &limits.zero,
-                          &limits.max, "%+.2f"))
+    if (ImGui::DragScalar("Speed factor min", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.config.spd_factor_min),
+                          0.005f, &limits.zero, &limits.max, "%+.2f"))
       result = true;
 
     static bool doSpin = false;
