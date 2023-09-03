@@ -6,30 +6,18 @@
 #include <uinta/file_manager.hpp>
 #include <uinta/input/state.hpp>
 #include <uinta/model_manager.hpp>
+#include <uinta/runner/dependencies.hpp>
 #include <uinta/runner/window.hpp>
 #include <uinta/scene/scene.hpp>
 
 namespace uinta {
-
-class RunnerGpuUtils {
- public:
-  virtual uinta_error_code init() = 0;
-  virtual void clear_buffer(const glm::vec3& color, GLbitfield mask) = 0;
-};
-
-class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
- public:
-  uinta_error_code init() override;
-  void clear_buffer(const glm::vec3& color, GLbitfield mask) override;
-};
 
 class Runner {
  public:
   static constexpr flag_t RENDERING_ENABLED = 1 << 0;
   static constexpr flag_t STOP_RUNNING = 1 << 1;
 
-  Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr, std::unique_ptr<RunnerGpuUtils> gpu_utils = nullptr,
-         std::unique_ptr<FileManager> file_manager = nullptr) noexcept;
+  Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr, RunnerDependencies dependencies = {}) noexcept;
 
   ~Runner();
 

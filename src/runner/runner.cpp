@@ -20,12 +20,11 @@ static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<RunnerGpuUtils> gpu_utils,
-               std::unique_ptr<FileManager> file_manager) noexcept
+Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDependencies dependencies) noexcept
     : m_window(title),
-      m_scene(&m_registry, std::make_unique<SceneRenderer_OpenGL>()),
-      m_file_manager(file_manager ? std::move(file_manager) : std::make_unique<FileManager_Desktop>()),
-      m_gpu_utils(gpu_utils ? std::move(gpu_utils) : std::make_unique<RunnerGpuUtils_OpenGL>()) {
+      m_scene(&m_registry, std::move(dependencies.scene_renderer)),
+      m_file_manager(std::move(dependencies.file_manager)),
+      m_gpu_utils(std::move(dependencies.gpu_utils)) {
   assert(m_file_manager && "File manager must be initialized!");
   assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);
