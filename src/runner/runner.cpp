@@ -3,6 +3,8 @@
 #include <spdlog/stopwatch.h>
 // clang-format on
 
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 #include <exception>
 #include <glm/mat4x4.hpp>
 #include <iostream>
@@ -19,7 +21,8 @@ static spdlog::stopwatch sw;
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
 Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDependencies dependencies) noexcept
-    : m_window(title),
+    : m_logger(spdlog::stdout_color_mt(title)),
+      m_window(title),
       m_scene(&m_registry, std::move(dependencies.scene_renderer)),
       m_file_manager(std::move(dependencies.file_manager)),
       m_gpu_utils(std::move(dependencies.gpu_utils)) {
@@ -27,7 +30,7 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDepe
   assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);
   initSpdlog();
-  SPDLOG_INFO("Runner started for '{}'.", title);
+  SPDLOG_LOGGER_INFO(m_logger, "Runner started for '{}'.", title);
 }
 
 i32 Runner::run() {
@@ -35,7 +38,7 @@ i32 Runner::run() {
     if (isFlagSet(RENDERING_ENABLED, m_flags))
       if (auto error = createOpenGLContext(); error) throw UintaException(error);
     if (auto error = doInit(); error) throw UintaException(error);
-    SPDLOG_INFO("Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
+    SPDLOG_LOGGER_INFO(m_logger, "Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
     RunnerState state;
     while (!isFlagSet(STOP_RUNNING, m_flags)) {
       try {
@@ -90,7 +93,7 @@ void Runner::render(const RunnerState& state) {
 }
 
 void Runner::shutdown() {
-  SPDLOG_INFO("Shutdown requested for '{}'.", m_window.title);
+  SPDLOG_LOGGER_INFO(m_logger, "Shutdown requested for '{}'.", m_window.title);
   doShutdown();
 }
 
@@ -108,35 +111,35 @@ void Runner::advanceState(RunnerState& state) {
 }
 
 void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) {
-  SPDLOG_TRACE("Mouse position event x:{} y:{}", xpos, ypos);
+  SPDLOG_LOGGER_TRACE(m_logger, "Mouse position event x:{} y:{}", xpos, ypos);
   mouseMoved(m_input, xpos, ypos);
 }
 
 void Runner::handleScrollInput(const f64 xoffset, const f64 yoffset) {
-  SPDLOG_TRACE("Mouse scroll event x:{} y:{}", xoffset, yoffset);
+  SPDLOG_LOGGER_TRACE(m_logger, "Mouse scroll event x:{} y:{}", xoffset, yoffset);
   mouseScrolled(m_input, xoffset, yoffset);
 }
 
 void Runner::handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods) {
-  SPDLOG_TRACE("Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
+  SPDLOG_LOGGER_TRACE(m_logger, "Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
   if (action == ACTION_PRESS) keyPressed(m_input, key, mods);
   if (action == ACTION_RELEASE) keyReleased(m_input, key, mods);
   if (action == ACTION_REPEAT) keyRepeated(m_input, key, mods);
 }
 
 void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i32 mods) {
-  SPDLOG_TRACE("Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
+  SPDLOG_LOGGER_TRACE(m_logger, "Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
   if (action == ACTION_PRESS) mouseButtonPressed(m_input, button, mods);
   if (action == ACTION_RELEASE) mouseButtonReleased(m_input, button, mods);
   m_input.platform_flags = mods;
 }
 
 void Runner::handleWindowPosChanged(const i32 xpos, const i32 ypos) {
-  SPDLOG_DEBUG("Window position updated: {}x{}.", xpos, ypos);
+  SPDLOG_LOGGER_DEBUG(m_logger, "Window position updated: {}x{}.", xpos, ypos);
 }
 
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
-  SPDLOG_DEBUG("Window size updated: {}x{}.", width, height);
+  SPDLOG_LOGGER_DEBUG(m_logger, "Window size updated: {}x{}.", width, height);
   const auto orig_width = m_window.width;
   const auto orig_height = m_window.width;
   auto win = window();
@@ -149,7 +152,7 @@ void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
 }
 
 Runner::~Runner() {
-  SPDLOG_INFO("Tearing down '{}'.", m_window.title);
+  SPDLOG_LOGGER_INFO(m_logger, "Tearing down '{}'.", m_window.title);
 }
 
 void Runner::doPreRender(const RunnerState& state) {
@@ -179,7 +182,7 @@ bool Runner::handleException(const UintaException& ex) {
   // TODO: Once an in-game error reporting solution is implemented, this is where we can hook in to handle non-catastrophic errors
   // while the game is running. For example, if an in-game console is developed, this is where we would hook in to get the message
   // of the exception, and display it in the console.
-  SPDLOG_CRITICAL(ex.what());
+  SPDLOG_LOGGER_CRITICAL(m_logger, ex.what());
   return false;
 }
 

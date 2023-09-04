@@ -1,6 +1,8 @@
 #ifndef UINTA_RUNNER_RUNNER_HPP
 #define UINTA_RUNNER_RUNNER_HPP
 
+#include <spdlog/fwd.h>
+
 #include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/file_manager.hpp>
@@ -79,6 +81,7 @@ class Runner {
   }
 
  protected:
+  const std::shared_ptr<spdlog::logger> m_logger;
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
 

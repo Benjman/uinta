@@ -1,6 +1,8 @@
 #ifndef UINTA_UTILS_CARTESIAN_GRID_HPP
 #define UINTA_UTILS_CARTESIAN_GRID_HPP
 
+#include <spdlog/fwd.h>
+
 #include <glm/fwd.hpp>
 #include <memory>
 #include <uinta/error.hpp>

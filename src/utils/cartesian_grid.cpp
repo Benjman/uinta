@@ -1,4 +1,6 @@
 
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 #include <glm/gtc/type_ptr.hpp>
 #include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>

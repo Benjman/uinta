@@ -54,7 +54,7 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
 
   constexpr i32 version_major = 3;
   constexpr i32 version_minor = 3;
-  SPDLOG_INFO("Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
+  SPDLOG_LOGGER_INFO(m_logger, "Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
   if (!glfwInit()) return make_error(error::InitError);
 
   i32 monCount;
@@ -88,16 +88,17 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   const auto target_y = view ? view->height / 2.0 - target_height / 2.0 : 0;
   glfwSetWindowPos(m_window, target_x, target_y);
 
-  SPDLOG_INFO("Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height, window().aspect_ratio);
+  SPDLOG_LOGGER_INFO(m_logger, "Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height,
+                     window().aspect_ratio);
   window(Window(window().title, target_width, target_height));
 
   glfwSetWindowUserPointer(m_window, this);
   glfwMakeContextCurrent(m_window);
 
-  SPDLOG_INFO("Loading GLAD...");
+  SPDLOG_LOGGER_INFO(m_logger, "Loading GLAD...");
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return make_error(error::GladError);
 
-  SPDLOG_INFO("GLFW initialization completed in {} seconds.", sw.elapsed().count());
+  SPDLOG_LOGGER_INFO(m_logger, "GLFW initialization completed in {} seconds.", sw.elapsed().count());
 
   return SUCCESS_EC;
 }
@@ -132,7 +133,6 @@ void GlfwRunner::doPostRender(const RunnerState& state) {
   if (isFlagSet(ui::INPUT_HANDLED_KEYBOARD, ui::flags)) resetKeyboard(input());
   if (isFlagSet(ui::INPUT_HANDLED_MOUSE, ui::flags)) resetMouse(input());
   ui::flags = 0;
-  /* SPDLOG_CRITICAL(v); */
   ui::onPostRender(*this, state);
 }
 
