@@ -61,7 +61,7 @@ i32 Runner::run() {
     return EXIT_SUCCESS;
   } catch (const UintaException& ex) {
     handleException(ex, *this);  // handle system boostrap or shutdown error
-    throw static_cast<std::exception>(ex);
+    throw ex;
   } catch (const std::exception& ex) {
     try {
       shutdown();
