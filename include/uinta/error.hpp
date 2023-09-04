@@ -38,8 +38,11 @@ class uinta_error_category_t : public std::error_category {
 
 class UintaException : public std::exception {
  public:
-  UintaException(const uinta_error_code& ec)
-      : m_error_code(ec), m_what(std::string("[") + ec.category().name() + ("] " + ec.message())) {
+  static std::string format_message(const std::string& message, const uinta_error_code& ec) {
+    return std::string("[") + ec.category().name() + ("] " + ec.message());
+  }
+
+  UintaException(const uinta_error_code& ec) : m_error_code(ec), m_what(format_message(ec.message(), ec)) {
   }
 
   const char* what() const noexcept override {
