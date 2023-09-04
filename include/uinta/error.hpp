@@ -64,7 +64,7 @@ static const uinta_error_code SUCCESS_EC = make_error(uinta_error_category_t::SU
 #define UINTA_ERROR_FRAMEWORK(NAME, MESSAGES)                                         \
   class error_category_##NAME##_t : public uinta_error_category_t {                   \
    public:                                                                            \
-    error_category_##NAME##_t() : uinta_error_category_t(#NAME, errorMessages) {      \
+    error_category_##NAME##_t() : uinta_error_category_t(#NAME, MESSAGES) {           \
     }                                                                                 \
   } static const error_##NAME##_category;                                             \
   namespace error_##NAME##_ns {                                                       \
