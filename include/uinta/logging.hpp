@@ -14,7 +14,6 @@
 // #define SPDLOG_ACTIVE_LEVEL 6 /* off */
 
 #include <spdlog/spdlog.h>
-using logger_t = std::shared_ptr<spdlog::logger>;
 
 namespace uinta {
 void initSpdlog();
