@@ -92,7 +92,7 @@ class Runner {
   virtual void doShutdown();
 
   virtual uinta_error_code createOpenGLContext() = 0;
-  virtual f64 runtime() const = 0;
+  virtual f64 runtime() = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;
 

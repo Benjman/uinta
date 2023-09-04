@@ -42,7 +42,7 @@ class GlfwRunner : public Runner {
 
   void swapBuffers() override;
   uinta_error_code createOpenGLContext() override;
-  f64 runtime() const override;
+  f64 runtime() override;
   void pollInput() override;
   void registerCallbacks();
 

@@ -41,7 +41,7 @@ void GlfwRunner::pollInput() {
   if (m_window && glfwWindowShouldClose(m_window)) flag(STOP_RUNNING, true);
 }
 
-f64 GlfwRunner::runtime() const {
+f64 GlfwRunner::runtime() {
   return glfwGetTime();
 }
 
