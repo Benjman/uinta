@@ -14,7 +14,6 @@
 
 namespace uinta {
 
-inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime);
 inline bool handleException(const UintaException& ex, const Runner& runner);
 static spdlog::stopwatch sw;
 
@@ -39,11 +38,10 @@ i32 Runner::run() {
     if (auto error = doInit(); error) throw UintaException(error);
     SPDLOG_INFO("Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
     RunnerState state;
-    auto lastRuntime = runtime();
     while (!isFlagSet(STOP_RUNNING, m_flags)) {
       try {
         do {
-          advanceState(state, runtime(), lastRuntime);
+          advanceState(state);
           tick(state);
           reset(m_input);
         } while (!shouldRenderFrame(state.delta));
@@ -102,6 +100,12 @@ bool Runner::shouldRenderFrame(f32 dt) {
   //
   // See https://github.com/Benjman/renderer/blob/main/src/core/src/runner.cpp#L46
   return true;
+}
+
+void Runner::advanceState(RunnerState& state) {
+  state.tick++;
+  state.delta = runtime() - state.runtime;
+  state.runtime += state.delta;
 }
 
 void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) {
@@ -170,13 +174,6 @@ void Runner::doTick(const RunnerState& state) {
 }
 
 void Runner::doPostTick(const RunnerState& state) {
-}
-
-inline void advanceState(RunnerState& state, f64 runtime, f64& lastRuntime) {
-  state.tick++;
-  state.runtime = runtime;
-  state.delta = runtime - lastRuntime;
-  lastRuntime = runtime;
 }
 
 inline bool handleException(const UintaException& ex, const Runner& runner) {

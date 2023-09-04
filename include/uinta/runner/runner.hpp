@@ -110,6 +110,7 @@ class Runner {
   void render(const RunnerState& state);
   void shutdown();
   bool shouldRenderFrame(f32 dt);
+  void advanceState(RunnerState& state);
 };
 
 }  // namespace uinta
