@@ -4,6 +4,7 @@ add_executable(
   tests
   ./main.cpp
   ./tests/formatters.cpp
+  ./tests/runner_tests.cpp
   ./tests/utils/test_input.cpp
   )
 
