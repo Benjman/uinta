@@ -111,6 +111,7 @@ class Runner {
   void shutdown();
   bool shouldRenderFrame(f32 dt);
   void advanceState(RunnerState& state);
+  bool handleException(const UintaException& ex);
 };
 
 }  // namespace uinta

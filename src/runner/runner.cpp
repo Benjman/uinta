@@ -14,7 +14,6 @@
 
 namespace uinta {
 
-inline bool handleException(const UintaException& ex, const Runner& runner);
 static spdlog::stopwatch sw;
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
@@ -52,13 +51,13 @@ i32 Runner::run() {
           render(state);
         }
       } catch (const UintaException& ex) {
-        if (!handleException(ex, *this)) throw ex;  // handle internal game errors
+        if (!handleException(ex)) throw ex;  // handle internal game errors
       }
     }
     shutdown();
     return EXIT_SUCCESS;
   } catch (const UintaException& ex) {
-    handleException(ex, *this);  // handle system boostrap or shutdown error
+    handleException(ex);  // handle system boostrap or shutdown error
     throw ex;
   } catch (const std::exception& ex) {
     try {
@@ -176,19 +175,13 @@ void Runner::doTick(const RunnerState& state) {
 void Runner::doPostTick(const RunnerState& state) {
 }
 
-inline bool handleException(const UintaException& ex, const Runner& runner) {
+bool Runner::handleException(const UintaException& ex) {
   // TODO: Once an in-game error reporting solution is implemented, this is where we can hook in to handle non-catastrophic errors
   // while the game is running. For example, if an in-game console is developed, this is where we would hook in to get the message
   // of the exception, and display it in the console.
   SPDLOG_CRITICAL(ex.what());
   return false;
 }
-
-// class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
-//    public:
-//        uinta_error_code init() override;
-//          void clear_buffer(const glm::vec3& color, GLbitfield mask) override;
-// };
 
 uinta_error_code RunnerGpuUtils_OpenGL::init() {
   glEnable(GL_DEPTH_TEST);
