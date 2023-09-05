@@ -1,11 +1,10 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-#include <uinta/camera/fwd.hpp>
-#include <uinta/camera/target_camera.hpp>
 #include <uinta/input.hpp>
 #include <uinta/math/utils.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/runner/window.hpp>
+#include <uinta/target_camera.hpp>
 #include <uinta/utils/direction.hpp>
 
 namespace uinta {
@@ -87,8 +86,8 @@ inline void position(TargetCamera& cam) {
 
 inline f32 angle(const InputState& input, const CameraConfig& config) {
   f32 delta = 0;
-  if (isKeyDown(input, config.angl_lt_k)) delta += config.angl_spd_k;
-  if (isKeyDown(input, config.angl_rt_k)) delta += -config.angl_spd_k;
+  if (isKeyDown(input, config.angl_neg_k)) delta += config.angl_spd_k;
+  if (isKeyDown(input, config.angl_pos_k)) delta += -config.angl_spd_k;
   if (isMouseButtonDown(input, config.angke_m) && input.cursordx) delta += input.cursordx * config.angl_spd_m;
   return delta;
 }
@@ -103,9 +102,9 @@ inline f32 dist(const InputState& input, const CameraConfig& config) {
 
 inline f32 pitch(const InputState& input, const CameraConfig& config) {
   f32 delta = 0;
-  if (isKeyDown(input, config.pitch_up_k)) delta += config.pitch_spd_k;
-  if (isKeyDown(input, config.pitch_dwn_k)) delta += -config.pitch_spd_k;
-  if (isMouseButtonDown(input, config.pitch_m) && input.cursordy) delta += input.cursordy * config.pitch_spd_m;
+  if (isKeyDown(input, config.pitch_pos_k)) delta += config.pitch_spd_k;
+  if (isKeyDown(input, config.pitch_neg_k)) delta += -config.pitch_spd_k;
+  if (isMouseButtonDown(input, config.pitch_m) && input.cursordy) delta += input.cursordy * config.pitch_m;
   return delta;
 }
 

@@ -6,13 +6,13 @@
 
 #include <entt/fwd.hpp>
 #include <string>
-#include <uinta/camera/target_camera.hpp>
 #include <uinta/component/transform.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vbo.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/scene/light.hpp>
 #include <uinta/scene/renderer.hpp>
+#include <uinta/target_camera.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {

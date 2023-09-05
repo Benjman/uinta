@@ -1,10 +1,10 @@
 #include <glm/gtc/type_ptr.hpp>
-#include <uinta/camera/target_camera.hpp>
 #include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/scene/light.hpp>
 #include <uinta/scene/shader.hpp>
 #include <uinta/shader.hpp>
+#include <uinta/target_camera.hpp>
 
 namespace uinta {
 

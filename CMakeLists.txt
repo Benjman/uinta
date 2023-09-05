@@ -23,7 +23,6 @@ set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
 
 set(UINTA_SRCS
 
-  ./src/camera/target_camera.cpp
   ./src/file_manager.cpp
   ./src/font.cpp
   ./src/gl/fbo.cpp
@@ -47,6 +46,7 @@ set(UINTA_SRCS
   ./src/scene/scene.cpp
   ./src/scene/shader.cpp
   ./src/shader.cpp
+  ./src/target_camera.cpp
   ./src/utils/cartesian_grid.cpp
   ./src/utils/direction.cpp
 
