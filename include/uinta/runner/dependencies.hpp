@@ -7,7 +7,7 @@
 #include <memory>
 #include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
-#include <uinta/scene/renderer.hpp>
+#include <uinta/scene/scene.hpp>
 
 namespace uinta {
 
@@ -26,19 +26,18 @@ class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
 struct RunnerDependencies final {
   std::unique_ptr<FileManager> file_manager = std::make_unique<FileManager_Desktop>();
   std::unique_ptr<RunnerGpuUtils> gpu_utils = std::make_unique<RunnerGpuUtils_OpenGL>();
-  std::unique_ptr<SceneRenderer> scene_renderer = std::make_unique<SceneRenderer_OpenGL>();
+
+  SceneDependencies scene = {};
 
   RunnerDependencies(RunnerDependencies&& other) noexcept
-      : file_manager(std::move(other.file_manager)),
-        gpu_utils(std::move(other.gpu_utils)),
-        scene_renderer(std::move(other.scene_renderer)) {
+      : file_manager(std::move(other.file_manager)), gpu_utils(std::move(other.gpu_utils)), scene(std::move(other.scene)) {
   }
 
   RunnerDependencies& operator=(RunnerDependencies&& other) noexcept {
     if (this == &other) return *this;
     file_manager = std::move(other.file_manager);
     gpu_utils = std::move(other.gpu_utils);
-    scene_renderer = std::move(other.scene_renderer);
+    scene = std::move(other.scene);
     return *this;
   }
 

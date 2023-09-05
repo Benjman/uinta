@@ -24,13 +24,17 @@ struct SceneEntityInitializer {
   Transform transform = {{0, 0, 0}, {1, 1, 1}, {0, 0, 0}};
 };
 
+struct SceneDependencies {
+  std::unique_ptr<SceneRenderer> renderer = std::make_unique<SceneRenderer_OpenGL>();
+};
+
 class Scene {
  public:
   static constexpr flag_t DIFFUSE_LIGHT_DIRTY = 1 << 0;
   static constexpr flag_t CAMERA_ENABLED = 1 << 1;
   static constexpr flag_t GRID_ENABLED = 1 << 2;
 
-  Scene(std::unique_ptr<SceneRenderer> renderer);
+  Scene(SceneDependencies dependencies);
 
   uinta_error_code init(Runner& runner);
 

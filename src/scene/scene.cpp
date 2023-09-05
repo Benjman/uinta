@@ -14,9 +14,8 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
-Scene::Scene(std::unique_ptr<SceneRenderer> renderer)
-    : m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}),
-      m_renderer(renderer ? std::move(renderer) : std::make_unique<SceneRenderer_OpenGL>()) {
+Scene::Scene(SceneDependencies dependencies)
+    : m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}), m_renderer(std::move(dependencies.renderer)) {
   assert(m_renderer && "Renderer must be initialized!");
 }
 
