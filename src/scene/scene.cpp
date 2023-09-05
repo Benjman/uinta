@@ -63,7 +63,7 @@ uinta_error_code Scene::addModel(const model_t model, ModelManager& model_manage
 
 void Scene::render(const RunnerState& state) {
   if (isFlagSet(GRID_ENABLED, m_flags)) m_cartesian_grid.render(getPerspectiveMatrix(m_camera) * getViewMatrix(m_camera));
-  m_renderer->start(getViewMatrix(m_camera), getPerspectiveMatrix(m_camera), state);
+  m_renderer->start(state, getViewMatrix(m_camera), getPerspectiveMatrix(m_camera));
   if (isFlagSet(DIFFUSE_LIGHT_DIRTY, m_flags)) {
     m_renderer->diffuse(m_diffuse_light);
     setFlag(DIFFUSE_LIGHT_DIRTY, false, m_flags);

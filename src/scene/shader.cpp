@@ -21,7 +21,7 @@ uinta_error_code SceneShader::init(FileManager& fileManager) {
   return SUCCESS_EC;
 }
 
-void SceneShader_OpenGL::start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const {
+void SceneShader_OpenGL::start(const RunnerState& state, const glm::mat4& view, const glm::mat4& proj) const {
   glUseProgram(id);
   glUniformMatrix4fv(u_view, 1, GL_FALSE, glm::value_ptr(view));
   glUniformMatrix4fv(u_proj, 1, GL_FALSE, glm::value_ptr(proj));

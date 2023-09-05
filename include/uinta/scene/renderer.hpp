@@ -20,8 +20,8 @@ class SceneRenderer {
     return SUCCESS_EC;
   }
 
-  virtual void start(const glm::mat4& view, const glm::mat4& proj, const RunnerState& state) const {
-    m_shader->start(view, proj, state);
+  virtual void start(const RunnerState& state, const glm::mat4& view, const glm::mat4& proj) const {
+    m_shader->start(state, view, proj);
   }
 
   virtual void renderEntity(const entt::entity entity, const entt::registry& registry) = 0;
