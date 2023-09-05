@@ -88,9 +88,9 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   const auto target_y = view ? view->height / 2.0 - target_height / 2.0 : 0;
   glfwSetWindowPos(m_window, target_x, target_y);
 
+  window(Window(window().title, target_width, target_height));
   SPDLOG_LOGGER_INFO(m_logger, "Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height,
                      window().aspect_ratio);
-  window(Window(window().title, target_width, target_height));
 
   glfwSetWindowUserPointer(m_window, this);
   glfwMakeContextCurrent(m_window);
