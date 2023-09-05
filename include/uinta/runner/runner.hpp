@@ -64,10 +64,6 @@ class Runner {
     m_model_manager = v;
   }
 
-  entt::registry& registry() noexcept {
-    return m_registry;
-  }
-
   void flag(const flag_t mask, const bool state) {
     setFlag(mask, state, m_flags);
   }
@@ -104,7 +100,6 @@ class Runner {
   InputState m_input;
   Scene m_scene;
   ModelManager m_model_manager;
-  entt::registry m_registry;
   std::unique_ptr<FileManager> m_file_manager;
   std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
   flags_t m_flags = RENDERING_ENABLED;

@@ -4,7 +4,7 @@
 #include <uinta/flags.h>
 #include <uinta/types.h>
 
-#include <entt/fwd.hpp>
+#include <entt/entity/registry.hpp>
 #include <string>
 #include <uinta/component/transform.hpp>
 #include <uinta/gl/vao.hpp>
@@ -30,14 +30,14 @@ class Scene {
   static constexpr flag_t CAMERA_ENABLED = 1 << 1;
   static constexpr flag_t GRID_ENABLED = 1 << 2;
 
-  Scene(entt::registry* const registry, std::unique_ptr<SceneRenderer> renderer = nullptr);
+  Scene(std::unique_ptr<SceneRenderer> renderer);
 
   uinta_error_code init(Runner& runner);
 
-  void update(const RunnerState& state, const InputState& input, entt::registry& registry);
+  void update(const RunnerState& state, const InputState& input);
 
   uinta_error_code addEntity(entt::entity& ref, FileManager& file_manager, ModelManager& model_manager,
-                             const SceneEntityInitializer& info, entt::registry& registry);
+                             const SceneEntityInitializer& info);
 
   uinta_error_code addModel(const model_t model, ModelManager& model_manager);
 
@@ -47,7 +47,7 @@ class Scene {
 
   void render(const RunnerState& state);
 
-  void renderEntity(const entt::entity entity, const entt::registry& registry);
+  void renderEntity(const entt::entity entity);
 
   void onAspectRatioUpdate(f32 newAspectRatio);
 
@@ -92,6 +92,10 @@ class Scene {
     return m_cartesian_grid;
   }
 
+  entt::registry& registry() {
+    return m_registry;
+  }
+
  private:
   Vao m_vao = {{
       {0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 0},
@@ -103,6 +107,7 @@ class Scene {
   TargetCamera m_camera;
   Light m_diffuse_light;
   std::unique_ptr<SceneRenderer> m_renderer;
+  entt::registry m_registry;
   flags_t m_flags = DIFFUSE_LIGHT_DIRTY | CAMERA_ENABLED | GRID_ENABLED;
 };
 

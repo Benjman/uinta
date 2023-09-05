@@ -23,7 +23,7 @@ void processArgs(Runner* runner, i32 argc, const char** argv);
 Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDependencies dependencies) noexcept
     : m_logger(spdlog::stdout_color_mt(title)),
       m_window(title),
-      m_scene(&m_registry, std::move(dependencies.scene_renderer)),
+      m_scene(std::move(dependencies.scene_renderer)),
       m_file_manager(std::move(dependencies.file_manager)),
       m_gpu_utils(std::move(dependencies.gpu_utils)) {
   assert(m_file_manager && "File manager must be initialized!");
@@ -172,7 +172,7 @@ void Runner::doPreTick(const RunnerState& state) {
 }
 
 void Runner::doTick(const RunnerState& state) {
-  m_scene.update(state, m_input, m_registry);
+  m_scene.update(state, m_input);
 }
 
 void Runner::doPostTick(const RunnerState& state) {

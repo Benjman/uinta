@@ -14,7 +14,7 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
-Scene::Scene(entt::registry* const registry, std::unique_ptr<SceneRenderer> renderer)
+Scene::Scene(std::unique_ptr<SceneRenderer> renderer)
     : m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}),
       m_renderer(renderer ? std::move(renderer) : std::make_unique<SceneRenderer_OpenGL>()) {
   assert(m_renderer && "Renderer must be initialized!");
@@ -28,12 +28,12 @@ uinta_error_code Scene::init(Runner& runner) {
   return SUCCESS_EC;
 }
 
-void Scene::update(const RunnerState& state, const InputState& input, entt::registry& registry) {
+void Scene::update(const RunnerState& state, const InputState& input) {
   if (isFlagSet(CAMERA_ENABLED, m_flags)) updateCamera(m_camera, state, input);
 }
 
 uinta_error_code Scene::addEntity(entt::entity& ref, FileManager& file_manager, ModelManager& model_manager,
-                                  const SceneEntityInitializer& info, entt::registry& registry) {
+                                  const SceneEntityInitializer& info) {
   if (std::empty(info.modelPath)) return make_error(error::InvalidModelPath);
   const auto* file = file_manager.registerFile(info.modelPath);
   file_manager.loadFile(file);
@@ -42,9 +42,9 @@ uinta_error_code Scene::addEntity(entt::entity& ref, FileManager& file_manager, 
   if (auto error = addModel(model, model_manager); error) return error;
   file_manager.releaseFile(file);
 
-  ref = registry.create();
-  registry.emplace<Model>(ref, model_manager.model(model));
-  registry.emplace<Transform>(ref, info.transform);
+  ref = m_registry.create();
+  m_registry.emplace<Model>(ref, model_manager.model(model));
+  m_registry.emplace<Transform>(ref, info.transform);
 
   return SUCCESS_EC;
 }
@@ -71,8 +71,8 @@ void Scene::render(const RunnerState& state) {
   bindVao(m_vao);
 }
 
-void Scene::renderEntity(const entt::entity entity, const entt::registry& registry) {
-  m_renderer->renderEntity(entity, registry);
+void Scene::renderEntity(const entt::entity entity) {
+  m_renderer->renderEntity(entity, m_registry);
 }
 
 void Scene::onAspectRatioUpdate(f32 aspect_ratio) {
