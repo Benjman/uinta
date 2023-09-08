@@ -104,7 +104,7 @@ inline f32 pitch(const InputState& input, const CameraConfig& config) {
   f32 delta = 0;
   if (isKeyDown(input, config.pitch_pos_k)) delta += config.pitch_spd_k;
   if (isKeyDown(input, config.pitch_neg_k)) delta += -config.pitch_spd_k;
-  if (isMouseButtonDown(input, config.pitch_m) && input.cursordy) delta += input.cursordy * config.pitch_m;
+  if (isMouseButtonDown(input, config.pitch_m) && input.cursordy) delta += input.cursordy * config.pitch_spd_m;
   return delta;
 }
 
