@@ -148,7 +148,7 @@ f32 cube_distance(const glm::vec3& a, const glm::vec3& b);
 glm::ivec2 world_to_axial(const glm::vec2& pos, const glm::vec2& origin, f32 radius);
 
 /**
- * @brief Calculate the neightbor's cube coordinate of a given cube and direction.
+ * @brief Calculate the neighbor's cube coordinate of a given cube and direction.
  *
  * @param cube The cube coordinate to calculate its neighbor.
  * @param direction The direction to calculate from a given cube coordinate.
