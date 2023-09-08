@@ -129,6 +129,15 @@ glm::ivec3 axial_to_cube(const glm::vec2& hex);
 glm::vec2 cube_to_axial(const glm::ivec3& cube);
 
 /**
+ * @brief Returns the distance between two cube based coordinates.
+ *
+ * @param a Cube coordinate of the first hexagon.
+ * @param b Cube coordinate of the second hexagon.
+ * @return Distance between cube coordinates a, and b.
+ */
+f32 cube_distance(const glm::vec3& a, const glm::vec3& b);
+
+/**
  * @brief Generate an axial coordinate when given a world position along a 2D plane (usually XZ).
  *
  * @param pos The world position.

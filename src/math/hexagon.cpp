@@ -156,6 +156,11 @@ glm::vec2 cube_to_axial(const glm::ivec3& cube) {
   return {col, row};
 }
 
+f32 cube_distance(const glm::vec3& a, const glm::vec3& b) {
+  const auto v = a - b;
+  return (fabs(v.x) + fabs(v.y) + fabs(v.z)) / 2.0f;
+}
+
 glm::ivec2 world_to_axial(const glm::vec2& pos, const glm::vec2& origin, f32 size) {
   // TODO: This isn't exactly correct. See https://www.redblobgames.com/grids/hexagons/#hex-to-pixel
 
