@@ -103,37 +103,37 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   return SUCCESS_EC;
 }
 
-void GlfwRunner::doPreTick(const RunnerState& state) {
-  ui::onPreTick(*this, state);
-  Runner::doPreTick(state);
+void GlfwRunner::doPreTick() {
+  ui::onPreTick(*this, state());
+  Runner::doPreTick();
 }
 
-void GlfwRunner::doTick(const RunnerState& state) {
-  Runner::doTick(state);
-  ui::onTick(*this, state);
+void GlfwRunner::doTick() {
+  Runner::doTick();
+  ui::onTick(*this, state());
 }
 
-void GlfwRunner::doPostTick(const RunnerState& state) {
-  Runner::doPostTick(state);
-  ui::onPostTick(*this, state);
+void GlfwRunner::doPostTick() {
+  Runner::doPostTick();
+  ui::onPostTick(*this, state());
 }
 
-void GlfwRunner::doPreRender(const RunnerState& state) {
-  ui::onPreRender(*this, state);
-  Runner::doPreRender(state);
+void GlfwRunner::doPreRender() {
+  ui::onPreRender(*this, state());
+  Runner::doPreRender();
 }
 
-void GlfwRunner::doRender(const RunnerState& state) {
-  Runner::doRender(state);
-  ui::onRender(*this, state);
+void GlfwRunner::doRender() {
+  Runner::doRender();
+  ui::onRender(*this, state());
 }
 
-void GlfwRunner::doPostRender(const RunnerState& state) {
-  Runner::doPostRender(state);
+void GlfwRunner::doPostRender() {
+  Runner::doPostRender();
   if (isFlagSet(ui::INPUT_HANDLED_KEYBOARD, ui::flags)) resetKeyboard(input());
   if (isFlagSet(ui::INPUT_HANDLED_MOUSE, ui::flags)) resetMouse(input());
   ui::flags = 0;
-  ui::onPostRender(*this, state);
+  ui::onPostRender(*this, state());
 }
 
 void GlfwRunner::doShutdown() {

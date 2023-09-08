@@ -100,7 +100,7 @@ TEST(RunnerTest, advanceState) {
 
   constexpr u32 LoopCount = 1e3;  // limit number of loops because of rounding errors
   for (u32 i = 1; i < LoopCount; ++i) {
-    runner.advanceState(state);
+    runner.advanceState();
     const auto rt = runner.runtime_delta * pow(i, runner.runtime_exponent);
     const auto rd = state.runtime - runner.runtime_delta * pow(i - 1, runner.runtime_exponent);
     ASSERT_EQ(i, state.tick) << "Unexpected tick.";

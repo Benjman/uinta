@@ -32,12 +32,12 @@ class GlfwRunner : public Runner {
 
  protected:
   virtual uinta_error_code doInit() override;
-  virtual void doPreTick(const RunnerState& state) override;
-  virtual void doTick(const RunnerState& state) override;
-  virtual void doPostTick(const RunnerState& state) override;
-  virtual void doPreRender(const RunnerState& state) override;
-  virtual void doRender(const RunnerState& state) override;
-  virtual void doPostRender(const RunnerState& state) override;
+  virtual void doPreTick() override;
+  virtual void doTick() override;
+  virtual void doPostTick() override;
+  virtual void doPreRender() override;
+  virtual void doRender() override;
+  virtual void doPostRender() override;
   virtual void doShutdown() override;
 
   void swapBuffers() override;

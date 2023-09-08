@@ -72,9 +72,9 @@ class HexagonsRunner : public GlfwRunner {
     return SUCCESS_EC;
   }
 
-  void doRender(const RunnerState& state) override {
-    GlfwRunner::doRender(state);
-    scene().renderer().start(state, getViewMatrix(scene().camera()), getPerspectiveMatrix(scene().camera()));
+  void doRender() override {
+    GlfwRunner::doRender();
+    scene().renderer().start(state(), getViewMatrix(scene().camera()), getPerspectiveMatrix(scene().camera()));
     bindVao(vao);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0L));
   }

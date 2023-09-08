@@ -76,19 +76,24 @@ class Runner {
     m_flags = v;
   }
 
+  const RunnerState& state() const {
+    return m_state;
+  }
+
  protected:
+  RunnerState m_state;
   const std::shared_ptr<spdlog::logger> m_logger;
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
   flags_t m_flags = RENDERING_ENABLED;
 
   virtual uinta_error_code doInit();
-  virtual void doPreTick(const RunnerState& state);
-  virtual void doTick(const RunnerState& state);
-  virtual void doPostTick(const RunnerState& state);
-  virtual void doPreRender(const RunnerState& state);
-  virtual void doRender(const RunnerState& state);
-  virtual void doPostRender(const RunnerState& state);
+  virtual void doPreTick();
+  virtual void doTick();
+  virtual void doPostTick();
+  virtual void doPreRender();
+  virtual void doRender();
+  virtual void doPostRender();
   virtual void doShutdown();
 
   virtual uinta_error_code createOpenGLContext() = 0;
@@ -104,11 +109,11 @@ class Runner {
   std::unique_ptr<FileManager> m_file_manager;
   std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
 
-  void tick(const RunnerState& state);
-  void render(const RunnerState& state);
+  void tick();
+  void render();
   void shutdown();
   bool shouldRenderFrame(f32 dt);
-  void advanceState(RunnerState& state);
+  void advanceState();
   bool handleException(const UintaException& ex);
 };
 

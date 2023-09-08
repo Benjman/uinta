@@ -39,19 +39,18 @@ i32 Runner::run() {
       if (auto error = createOpenGLContext(); error) throw UintaException(error);
     if (auto error = doInit(); error) throw UintaException(error);
     SPDLOG_LOGGER_INFO(m_logger, "Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
-    RunnerState state;
     while (!isFlagSet(STOP_RUNNING, m_flags)) {
       try {
         do {
-          advanceState(state);
-          tick(state);
+          advanceState();
+          tick();
           reset(m_input);
-        } while (!shouldRenderFrame(state.delta));
+        } while (!shouldRenderFrame(m_state.delta));
         pollInput();
         if (isFlagSet(RENDERING_ENABLED, m_flags)) {
           swapBuffers();
           m_gpu_utils->clear_buffer(clearColor, clearMask);
-          render(state);
+          render();
         }
       } catch (const UintaException& ex) {
         if (!handleException(ex)) throw ex;  // handle internal game errors
@@ -80,16 +79,16 @@ uinta_error_code Runner::doInit() {
   return SUCCESS_EC;
 }
 
-void Runner::tick(const RunnerState& state) {
-  doPreTick(state);
-  doTick(state);
-  doPostTick(state);
+void Runner::tick() {
+  doPreTick();
+  doTick();
+  doPostTick();
 }
 
-void Runner::render(const RunnerState& state) {
-  doPreRender(state);
-  doRender(state);
-  doPostRender(state);
+void Runner::render() {
+  doPreRender();
+  doRender();
+  doPostRender();
 }
 
 void Runner::shutdown() {
@@ -104,10 +103,10 @@ bool Runner::shouldRenderFrame(f32 dt) {
   return true;
 }
 
-void Runner::advanceState(RunnerState& state) {
-  state.tick++;
-  state.delta = runtime() - state.runtime;
-  state.runtime += state.delta;
+void Runner::advanceState() {
+  m_state.tick++;
+  m_state.delta = runtime() - m_state.runtime;
+  m_state.runtime += m_state.delta;
 }
 
 void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) {
@@ -155,27 +154,27 @@ Runner::~Runner() {
   SPDLOG_LOGGER_INFO(m_logger, "Tearing down '{}'.", m_window.title);
 }
 
-void Runner::doPreRender(const RunnerState& state) {
+void Runner::doPreRender() {
 }
 
-void Runner::doRender(const RunnerState& state) {
-  m_scene.render(state);
+void Runner::doRender() {
+  m_scene.render(m_state);
 }
 
-void Runner::doPostRender(const RunnerState& state) {
+void Runner::doPostRender() {
 }
 
 void Runner::doShutdown() {
 }
 
-void Runner::doPreTick(const RunnerState& state) {
+void Runner::doPreTick() {
 }
 
-void Runner::doTick(const RunnerState& state) {
-  m_scene.update(state, m_input);
+void Runner::doTick() {
+  m_scene.update(m_state, m_input);
 }
 
-void Runner::doPostTick(const RunnerState& state) {
+void Runner::doPostTick() {
 }
 
 bool Runner::handleException(const UintaException& ex) {

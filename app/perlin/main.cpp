@@ -95,7 +95,7 @@ class PerlinRunner : public GlfwRunner {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, &textureData);
   }
 
-  void doTick(const RunnerState& state) override {
+  void doTick() override {
     static constexpr i32 OFFSET_DELTA = 10;
     if (isKeyPressed(input(), KEY_S)) {
       perlinSeed += isShiftDown(input()) ? -1 : 1;
@@ -132,13 +132,13 @@ class PerlinRunner : public GlfwRunner {
     }
   }
 
-  void doPreRender(const RunnerState& state) override {
+  void doPreRender() override {
   }
 
-  void doPostRender(const RunnerState& state) override {
+  void doPostRender() override {
   }
 
-  void doRender(const RunnerState& state) override {
+  void doRender() override {
     glBindTexture(GL_TEXTURE_2D, textureId);
     glUseProgram(shader.id);
     bindVao(vao);

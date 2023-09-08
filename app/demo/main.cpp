@@ -31,8 +31,8 @@ class DemoRunner : public GlfwRunner {
     return SUCCESS_EC;
   }
 
-  void doRender(const RunnerState& state) override {
-    GlfwRunner::doRender(state);
+  void doRender() override {
+    GlfwRunner::doRender();
     scene().renderEntity(entity);
   }
 };

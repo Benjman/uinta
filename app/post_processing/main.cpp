@@ -111,13 +111,13 @@ class PostProcessingRunner final : public GlfwRunner {
     return SUCCESS_EC;
   }
 
-  void doRender(const RunnerState& state) override {
+  void doRender() override {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.id);
 
     glClearColor(0.3, 0.3, 0.3, 1.0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-    GlfwRunner::doRender(state);
+    GlfwRunner::doRender();
 
     glUseProgram(colorShader.shaderId);
     bindVao(cubeVao);
@@ -129,11 +129,11 @@ class PostProcessingRunner final : public GlfwRunner {
     glDrawArrays(GL_TRIANGLES, 0, icount);
 
     glUseProgram(shaders.screen);
-    glUniform1f(shaders.u_time, state.runtime);
+    glUniform1f(shaders.u_time, state().runtime);
     glUniform1f(shaders.u_scale, shaders.shimmerScale);
 
-    pp.render(state, fbo);
-    renderUi(state);
+    pp.render(state(), fbo);
+    renderUi(state());
   }
 
   void renderUi(const RunnerState& state) {
