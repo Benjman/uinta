@@ -80,6 +80,7 @@ class Runner {
   const std::shared_ptr<spdlog::logger> m_logger;
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
+  flags_t m_flags = RENDERING_ENABLED;
 
   virtual uinta_error_code doInit();
   virtual void doPreTick(const RunnerState& state);
@@ -102,7 +103,6 @@ class Runner {
   ModelManager m_model_manager;
   std::unique_ptr<FileManager> m_file_manager;
   std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
-  flags_t m_flags = RENDERING_ENABLED;
 
   void tick(const RunnerState& state);
   void render(const RunnerState& state);
