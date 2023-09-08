@@ -134,7 +134,7 @@ void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i3
 }
 
 void Runner::handleWindowPosChanged(const i32 xpos, const i32 ypos) {
-  SPDLOG_LOGGER_DEBUG(m_logger, "Window position updated: {}x{}.", xpos, ypos);
+  SPDLOG_LOGGER_TRACE(m_logger, "Window position updated: {}x{}.", xpos, ypos);
 }
 
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
