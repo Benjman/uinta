@@ -11,9 +11,16 @@
 
 using namespace uinta;
 
-#define TEST_DEPENDENCIES                                          \
-  dependencies.file_manager = std::make_unique<TestFileManager>(); \
-  dependencies.gpu_utils = std::make_unique<TestRunnerGpuUtils>();
+namespace uinta {
+enum class error {
+  ExpectedError = 100,
+};
+static const std::map<uinta_error_code_t, std::string> errorMessages = {
+    {static_cast<uinta_error_code_t>(error::ExpectedError), "This error was produced by unit tests, and was expected."},
+};
+// NOLINTNEXTLINE
+UINTA_ERROR_FRAMEWORK(TestRunner, errorMessages);
+}  // namespace uinta
 
 TEST(RunnerTest, file_manager_null) {
   RunnerDependencies dependencies;
@@ -76,35 +83,20 @@ TEST(RunnerTest, doInit_errorStopsRunner) {
       << "Unexpected type of exception was thrown.";
 }
 
-TEST(RunnerTest, initial_runtime) {
-  RunnerDependencies dependencies;
-  TEST_DEPENDENCIES;
-  TestRunner runner(RunnerTest_initial_runtime_Test::test_info_->name(), 0, nullptr, std::move(dependencies));
-  auto flags = runner.flags();
-  setFlag(Runner::STOP_RUNNING, true, flags);
-  runner.flags(flags);
-  ASSERT_EQ(0, runner.runtime_count) << "Initial runtime unexpected.";
-  runner.run();
-}
-
 TEST(RunnerTest, advanceState) {
   RunnerDependencies dependencies;
   TEST_DEPENDENCIES;
   TestRunner runner(RunnerTest_advanceState_Test::test_info_->name(), 0, nullptr, std::move(dependencies));
-  RunnerState state;
-  runner.runtime_delta = 1.5;
 
-  ASSERT_EQ(0, state.tick) << "Initial `tick` count was expected to be zero.";
-  ASSERT_FLOAT_EQ(0, state.delta) << "Initial `delta` count was expected to be zero.";
-  ASSERT_FLOAT_EQ(0, state.runtime) << "Initial `runtime` count was expected to be zero.";
+  ASSERT_EQ(0, runner.state().tick) << "Initial `tick` count was expected to be zero.";
+  ASSERT_FLOAT_EQ(0, runner.state().delta) << "Initial `delta` count was expected to be zero.";
+  ASSERT_FLOAT_EQ(0, runner.state().runtime) << "Initial `runtime` count was expected to be zero.";
 
   constexpr u32 LoopCount = 1e3;  // limit number of loops because of rounding errors
   for (u32 i = 1; i < LoopCount; ++i) {
     runner.advanceState();
-    const auto rt = runner.runtime_delta * pow(i, runner.runtime_exponent);
-    const auto rd = state.runtime - runner.runtime_delta * pow(i - 1, runner.runtime_exponent);
-    ASSERT_EQ(i, state.tick) << "Unexpected tick.";
-    ASSERT_NEAR(rd, state.delta, 0.001) << "Unexpect runtime delta.";
-    ASSERT_NEAR(rt, state.runtime, 0.001) << "Unexpected runtime.";
+    ASSERT_EQ(i, runner.state().tick) << "Unexpected tick.";
+    ASSERT_NEAR(runner.rt_delta, runner.state().delta, 0.001) << "Unexpect runtime delta.";
+    ASSERT_NEAR(runner.rt_delta * runner.state().tick, runner.state().runtime, 0.001) << "Unexpected runtime.";
   }
 }
