@@ -36,19 +36,19 @@ class HexagonsRunner : public GlfwRunner {
 
     constexpr auto hexRadius = 1.0;
 
-    /// Construct and fill height map
-    constexpr auto gridRings = 20;
-    const auto spacing = hex_spacing(hexRadius);
-    const auto heightMapSize = glm::ivec2(std::ceil((gridRings + 1) * spacing.x * (gridRings + 1) * spacing.y));
-    auto heightMap = Buffer2d(heightMapSize);
-    perlinNoise(heightMap, siv::PerlinNoise(), 40, 1);
-
     /// Generate vertex points for a radial hexagon grid:
+    constexpr auto gridRings = 20;
     constexpr auto centerPoint = glm::ivec3(0);
+    const auto spacing = hex_spacing(hexRadius);
     auto points = radial_hexagons(centerPoint, gridRings, hexRadius);
 
     /// Set height values for the vertex points based on the height map:
-    hex_set_heights(points, heightMap, yScale);
+    if (yScale) {
+      const auto heightMapSize = glm::ivec2(std::ceil((gridRings + 1) * spacing.x * (gridRings + 1) * spacing.y));
+      auto heightMap = Buffer2d(heightMapSize);
+      perlinNoise(heightMap, siv::PerlinNoise(), 40, 1);
+      hex_set_heights(points, heightMap, yScale);
+    }
 
     /// Add some fun colors:
     srand(time(nullptr));  /// rand() seed
