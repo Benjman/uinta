@@ -164,7 +164,7 @@ glm::ivec2 world_to_axial(const glm::vec2& pos, const glm::vec2& origin, f32 siz
   const auto yNorm = pos.y - origin.y;
 
   // convert to fractional axial coordinates
-  const auto qFractional = (M_SQRT3 / 3 * xNorm - 1.0 / 3 * yNorm) / size;
+  const auto qFractional = (glm::root_three<f32>() / 3 * xNorm - 1.0 / 3 * yNorm) / size;
   const auto rFractional = (2.0 / 3 * yNorm) / size;
 
   // round to the nearest axial coordinates
