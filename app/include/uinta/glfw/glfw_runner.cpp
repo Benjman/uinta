@@ -146,7 +146,14 @@ void GlfwRunner::registerCallbacks() {
 
   glfwSetKeyCallback(m_window, [](auto* window, i32 key, i32 scancode, i32 action, i32 mods) {
     auto* const runner = static_cast<GlfwRunner*>(glfwGetWindowUserPointer(window));
-    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) runner->flag(STOP_RUNNING, true);
+    if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) {
+      if (mods & GLFW_MOD_CONTROL) {
+        const size_t exit_code = 1;
+        SPDLOG_CRITICAL("Intentionally hard exiting the application with exit code {}.", exit_code);
+        exit(exit_code);
+      }
+      runner->flag(STOP_RUNNING, true);
+    }
     runner->handleKeyInput(key, scancode, action, mods);
   });
 
