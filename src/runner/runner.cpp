@@ -168,13 +168,15 @@ void Runner::doShutdown() {
 }
 
 void Runner::doPreTick() {
+  m_scene.preTick(m_state, m_input);
 }
 
 void Runner::doTick() {
-  m_scene.update(m_state, m_input);
+  m_scene.tick(m_state, m_input);
 }
 
 void Runner::doPostTick() {
+  m_scene.postTick(m_state, m_input);
 }
 
 bool Runner::handleException(const UintaException& ex) {

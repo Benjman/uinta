@@ -27,8 +27,14 @@ uinta_error_code Scene::init(Runner& runner) {
   return SUCCESS_EC;
 }
 
-void Scene::update(const RunnerState& state, const InputState& input) {
+void Scene::preTick(const RunnerState& state, const InputState& input) {
+}
+
+void Scene::tick(const RunnerState& state, const InputState& input) {
   if (isFlagSet(CAMERA_ENABLED, m_flags)) updateCamera(m_camera, state, input);
+}
+
+void Scene::postTick(const RunnerState& state, const InputState& input) {
 }
 
 uinta_error_code Scene::addEntity(entt::entity& ref, FileManager& file_manager, ModelManager& model_manager,

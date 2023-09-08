@@ -38,7 +38,11 @@ class Scene {
 
   uinta_error_code init(Runner& runner);
 
-  void update(const RunnerState& state, const InputState& input);
+  virtual void preTick(const RunnerState& state, const InputState& input);
+
+  virtual void tick(const RunnerState& state, const InputState& input);
+
+  virtual void postTick(const RunnerState& state, const InputState& input);
 
   uinta_error_code addEntity(entt::entity& ref, FileManager& file_manager, ModelManager& model_manager,
                              const SceneEntityInitializer& info);
