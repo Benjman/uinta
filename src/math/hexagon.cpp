@@ -28,10 +28,6 @@ std::array<glm::vec3, VerticesPerHex> hex_points(const glm::vec2& origin, f32 ra
   return points;
 }
 
-glm::vec2 hex_spacing(f32 radius) {
-  return {glm::root_three<f32>() * radius, 3.0 / 2.0 * radius};
-}
-
 void hexagon_pack(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& normals,
                   const std::vector<glm::vec3>& colors, f32* const vtxBuffer, u32* const idxBuffer, u32& idxOffset) {
   // Offsets describing position in the buffer to pack each part
@@ -112,12 +108,8 @@ std::vector<glm::vec3> radial_hexagons(const glm::vec3& origin, u32 rings, f32 r
   return points;
 }
 
-glm::ivec3 cube_neighbor(glm::ivec3& cube, hex_direction direction) {
+glm::ivec3 cube_neighbor(const glm::ivec3& cube, hex_direction direction) {
   return cube + cube_directions[static_cast<i32>(direction)];
-}
-
-u32 hexagon_count(u32 rings) {
-  return 1 + 3 * rings * (rings + 1);
 }
 
 std::vector<glm::ivec3> cube_ring(const glm::ivec3& origin, u32 radius) {

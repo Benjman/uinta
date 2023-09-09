@@ -3,6 +3,7 @@
 
 #include <uinta/types.h>
 
+#include <glm/gtc/constants.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/utils/buffer2d.hpp>
@@ -31,7 +32,9 @@ static constexpr glm::ivec3 cube_directions[] = {
  * @param radius The radius of the hexagon.
  * @return 2D floating-point vector representing the horizontal and vertical spacing between hexagons along a 2D plane.
  */
-glm::vec2 hex_spacing(f32 radius);
+constexpr glm::vec2 hex_spacing(f32 radius) {
+  return {glm::root_three<f32>() * radius, 3.0 / 2.0 * radius};
+}
 
 /**
  * @brief Generates a single point for a pointy-top hexagon.
@@ -161,7 +164,7 @@ glm::ivec2 world_to_axial(const glm::vec2& pos, const glm::vec2& origin, f32 rad
  * @param direction The direction to calculate the neighbor's coordinate.
  * @return The neighbor's 3D cube coordinate.
  */
-glm::ivec3 cube_neighbor(glm::ivec3& cube, hex_direction direction);
+glm::ivec3 cube_neighbor(const glm::ivec3& cube, hex_direction direction);
 
 /**
  * @brief Generates a collection of points representing a ring of hexagons around a specified origin.
@@ -188,7 +191,9 @@ std::vector<glm::ivec3> cube_spiral(const glm::ivec3& origin, u32 radius);
  * @param rings The number of rings in the radial grid.
  * @return The total number of hexagons in a radial grid.
  */
-u32 hexagon_count(u32 rings);
+constexpr u32 hexagon_count(u32 rings) {
+  return 1 + 3 * rings * (rings + 1);
+}
 
 }  // namespace uinta
 
