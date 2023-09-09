@@ -127,11 +127,12 @@ std::vector<glm::ivec3> cube_ring(const glm::ivec3& origin, u32 radius) {
 
 std::vector<glm::ivec3> cube_spiral(const glm::ivec3& origin, u32 radius) {
   auto result = std::vector<glm::ivec3>(hexagon_count(radius));
-  for (u32 r = 1, count = 0; r <= static_cast<u32>(radius); ++r) {
+  for (u32 r = 1, count = 0; r <= radius; ++r) {
     const auto ring = cube_ring(origin, r);
     std::copy(ring.begin(), ring.end(), result.begin() + count);
     count += ring.size();
   }
+  result.at(result.size() - 1) = origin;
   return result;
 }
 
