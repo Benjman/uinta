@@ -1,22 +1,50 @@
 #ifndef UINTA_VAO_HPP
 #define UINTA_VAO_HPP
 
-#include <uinta/gl/api.h>
-
+#include <uinta/error.hpp>
 #include <uinta/gl/vbo.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
 #include <vector>
 
 namespace uinta {
 
-struct Vao {
-  GLuint id = GL_ZERO;
-  std::vector<VertexAttrib> attribs;
-  Vbo indexBuffer{GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW};
+class Vao {
+ public:
+  Vao(const std::vector<VertexAttrib>& attributes) : m_attributes(attributes) {
+  }
 
-  Vao(const std::vector<VertexAttrib>& attribs);
-  Vao(const Vao& other);
-  Vao& operator=(const Vao& rhs);
+  u32 id() const noexcept {
+    return m_id;
+  }
+
+  std::vector<VertexAttrib> attributes() const noexcept {
+    return m_attributes;
+  }
+
+  Vbo& index_buffer() noexcept {
+    return m_index_buffer;
+  }
+
+  void init();
+
+  void bind() const;
+
+  void index_buffer(const u32* const data, u32 size);
+
+  void init_attributes() const;
+
+  void enable_attributes() const;
+
+  void disable_attributes();
+
+  void destroy();
+
+  void unbind() const;
+
+ private:
+  u32 m_id = 0;
+  std::vector<VertexAttrib> m_attributes;
+  Vbo m_index_buffer = {GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW};
 };
 
 }  // namespace uinta

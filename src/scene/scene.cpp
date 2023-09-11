@@ -22,6 +22,8 @@ Scene::Scene(SceneDependencies dependencies)
 uinta_error_code Scene::init(Runner& runner) {
   if (auto error = m_renderer->init(runner.file_manager()); error) return error;
   if (auto error = m_cartesian_grid.init(runner.file_manager()); error) return error;
+  m_vao.init();
+  m_vbo.init();
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags()), m_flags);
   m_camera.config.aspect_ratio = runner.window().aspect_ratio;
   return SUCCESS_EC;
@@ -59,10 +61,8 @@ uinta_error_code Scene::addModel(const model_t model, ModelManager& model_manage
   const auto* idx = model_manager.indexBuffer(model);
   const auto vtxSize = model_manager.vertexBufferSize(model);
   const auto idxSize = model_manager.indexBufferSize(model);
-  if (auto error = initVao(m_vao); error) return error;
-  if (auto error = uploadVbo(m_vbo, vtx, vtxSize); error) return error;
-  if (auto error = initVertexAttribs(m_vao); error) return error;
-  if (auto error = indexBuffer(m_vao, idx, idxSize); error) return error;
+  m_vao.index_buffer(idx, idxSize);
+  m_vbo.upload(vtx, vtxSize, 0);
   return SUCCESS_EC;
 }
 
@@ -73,7 +73,7 @@ void Scene::render(const RunnerState& state) {
     m_renderer->diffuse(m_diffuse_light);
     setFlag(DIFFUSE_LIGHT_DIRTY, false, m_flags);
   }
-  bindVao(m_vao);
+  m_vao.bind();
 }
 
 void Scene::renderEntity(const entt::entity entity) {

@@ -1,83 +1,66 @@
 #include <uinta/error.hpp>
-#include <uinta/gl/fwd.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
 #include <uinta/logging.hpp>
 
-uinta::Vao::Vao(const std::vector<VertexAttrib>& attribs) : attribs(attribs) {
+namespace uinta {
+
+void Vao::init() {
+  assert(!m_id && "Cannot re-initialized an already initialized VAO.");
+  glGenVertexArrays(1, &m_id);
+  SPDLOG_DEBUG("Initialized VAO {}.", m_id);
+  bind();
+  init_attributes();
+  m_index_buffer.init();
 }
 
-uinta::Vao::Vao(const Vao& other) {
-  *this = other;
+void Vao::bind() const {
+  assert(m_id && "Cannot bind an unitialized VAO.");
+  glBindVertexArray(m_id);
 }
 
-uinta::Vao& uinta::Vao::operator=(const Vao& rhs) {
-  attribs = std::vector<VertexAttrib>(rhs.attribs);
-  id = rhs.id;
-  indexBuffer = rhs.indexBuffer;
-  return *this;
+void Vao::index_buffer(const u32* const data, u32 size) {
+  assert(m_id && "Cannot create index buffer for an uninitialized VAO.");
+  assert(!m_index_buffer.id() && "Cannot recreate an already initialized index buffer.");
+  m_index_buffer.init();
+  bind();
+  m_index_buffer.upload(data, size, 0);
+  init_attributes();
 }
 
-void uinta::bindVao(const Vao& vao) {
-  glBindVertexArray(vao.id);
+void Vao::init_attributes() const {
+  assert(m_id && "Cannot initialize attributes of an uninitialized VAO..");
+  for (auto& attribute : m_attributes)
+    glVertexAttribPointer(attribute.index, attribute.size, attribute.type, attribute.normalized, attribute.stride,
+                          attribute.pointer);
+  enable_attributes();
 }
 
-void uinta::destroyVao(Vao& vao) {
-  if (vao.id == GL_ZERO) return;
-  bindVao(vao);
-  disableVertexAttribs(vao);
-  glDeleteVertexArrays(1, &vao.id);
-  vao = Vao({});
+void Vao::enable_attributes() const {
+  assert(m_id && "Cannot enable attributes of an uninitialized VAO.");
+  bind();
+  for (const auto& attribute : m_attributes) glEnableVertexAttribArray(attribute.index);
 }
 
-void uinta::disableVertexAttribs(Vao& vao) {
-  if (vao.id == GL_ZERO) return;
-  bindVao(vao);
-  for (const auto& attrib : vao.attribs) {
-    glDisableVertexAttribArray(attrib.index);
-  }
+void Vao::disable_attributes() {
+  assert(m_id && "Cannot disable attributes of an uninitialized VAO.");
+  if (!m_id) return;
+  bind();
+  for (const auto& attribute : m_attributes) glDisableVertexAttribArray(attribute.index);
 }
 
-uinta::uinta_error_code uinta::enableVertexAttribs(Vao& vao) {
-  if (vao.id == GL_ZERO)
-    if (auto error = initVao(vao); error) return error;
-  bindVao(vao);
-  for (const auto& attrib : vao.attribs) {
-    glEnableVertexAttribArray(attrib.index);
-  }
-  return SUCCESS_EC;
+void Vao::destroy() {
+  assert(m_id && "Cannot destroy an uninitialized VAO.");
+  bind();
+  disable_attributes();
+  glDeleteVertexArrays(1, &m_id);
+  m_id = 0;
+  m_attributes = {};
+  m_index_buffer.destroy();
 }
 
-uinta::uinta_error_code uinta::indexBuffer(Vao& vao, const u32* const data, u32 size, u32 offset) {
-  if (vao.id == GL_ZERO)
-    if (auto error = initVao(vao); error) return error;
-  if (vao.indexBuffer.id == GL_ZERO)
-    if (auto error = initVbo(vao.indexBuffer); error) return error;
-  bindVao(vao);
-  if (uploadVbo(vao.indexBuffer, data, size, offset))
-    if (auto error = initVertexAttribs(vao); error) return error;
-  return SUCCESS_EC;
-}
-
-uinta::uinta_error_code uinta::initVao(Vao& vao) {
-  if (!vao.id) {
-    glGenVertexArrays(1, &vao.id);
-    SPDLOG_DEBUG("Initialized VAO {}.", vao.id);
-    bindVao(vao);
-  }
-  return SUCCESS_EC;
-}
-
-uinta::uinta_error_code uinta::initVertexAttribs(Vao& vao) {
-  if (!vao.id)
-    if (auto error = initVao(vao); error) return error;
-  for (auto& a : vao.attribs) {
-    glVertexAttribPointer(a.index, a.size, a.type, a.normalized, a.stride, a.pointer);
-    glEnableVertexAttribArray(a.index);
-  }
-  return SUCCESS_EC;
-}
-
-void uinta::unbindVao(const Vao& unused) {
+void Vao::unbind() const {
   glBindVertexArray(0);
 }
+
+}  // namespace uinta

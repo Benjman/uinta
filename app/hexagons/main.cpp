@@ -63,10 +63,11 @@ class HexagonsRunner : public GlfwRunner {
     hexagon_pack(points, hex_normals(points), colors, vtxBuffer, idxBuffer, idxOffset);
 
     // Upload buffers to GPU:
-    if (auto error = initVao(vao); error) return error;
-    if (auto error = uploadVbo(vbo, vtxBuffer, sizeof(vtxBuffer)); error) return error;
-    if (auto error = initVertexAttribs(vao); error) return error;
-    if (auto error = indexBuffer(vao, idxBuffer, sizeof(idxBuffer)); error) return error;
+    vao.init();
+    vao.index_buffer().upload(idxBuffer, sizeof(idxBuffer), 0);
+    vbo.init();
+    vbo.upload(vtxBuffer, sizeof(vtxBuffer), 0);
+    vao.init_attributes();
     indexCount = IndicesPerHex * points.size();
 
     return SUCCESS_EC;
@@ -75,7 +76,7 @@ class HexagonsRunner : public GlfwRunner {
   void doRender() override {
     GlfwRunner::doRender();
     scene().renderer().start(state(), getViewMatrix(scene().camera()), getPerspectiveMatrix(scene().camera()));
-    bindVao(vao);
+    vao.bind();
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0L));
   }
 };

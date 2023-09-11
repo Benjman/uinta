@@ -59,10 +59,11 @@ class PerlinRunner : public GlfwRunner {
     };
     const u32 indices[] = { 0, 1, 3, 1, 2, 3 };
     // clang-format on
-    if (auto error = initVao(vao); error) return error;
-    if (auto error = uploadVbo(vbo, vertices, sizeof(vertices)); error) return error;
-    if (auto error = initVertexAttribs(vao); error) return error;
-    if (auto error = indexBuffer(vao, indices, sizeof(indices)); error) return error;
+    vao.init();
+    vbo.init();
+    vao.bind();
+    vbo.upload(vertices, sizeof(vertices), 0);
+    vao.index_buffer(indices, sizeof(indices));
 
     glGenTextures(1, &textureId);
     updateTexture();
@@ -141,7 +142,7 @@ class PerlinRunner : public GlfwRunner {
   void doRender() override {
     glBindTexture(GL_TEXTURE_2D, textureId);
     glUseProgram(shader.id);
-    bindVao(vao);
+    vao.bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   }
 };

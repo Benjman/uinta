@@ -31,10 +31,10 @@ uinta_error_code initObj(const std::string& path, FileManager& fileManager, Vao&
     return error;
 
   // cube VAO
-  if (auto error = initVao(vao); error) return error;
-  if (auto error = uploadVbo(vbo, vertices, vcount * sizeof(GLfloat)); error) return error;
-  if (auto error = indexBuffer(vao, indices, *icount * sizeof(GLuint)); error) return error;
-  if (auto error = initVertexAttribs(vao); error) return error;
+  vao.init();
+  vbo.init();
+  vbo.upload(vertices, vcount * sizeof(GLfloat), 0);
+  vao.index_buffer(indices, *icount * sizeof(GLuint));
   return SUCCESS_EC;
 }
 
@@ -58,9 +58,10 @@ class PostProcessing {
        1.0f,  1.0f,  1.0f, 1.0f
     };
     // clang-format on
-    if (auto error = initVao(quadVao); error) return error;
-    if (auto error = uploadVbo(quadVbo, quadVertices, sizeof(quadVertices)); error) return error;
-    if (auto error = initVertexAttribs(quadVao); error) return error;
+    quadVao.init();
+    quadVbo.init();
+    quadVbo.upload(quadVertices, sizeof(quadVertices), 0);
+    quadVao.init_attributes();
     return SUCCESS_EC;
   }
 
@@ -68,7 +69,7 @@ class PostProcessing {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    bindVao(quadVao);
+    quadVao.bind();
     glBindTexture(GL_TEXTURE_2D, fbo.renderTexture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
   }
@@ -120,7 +121,7 @@ class PostProcessingRunner final : public GlfwRunner {
     GlfwRunner::doRender();
 
     glUseProgram(colorShader.shaderId);
-    bindVao(cubeVao);
+    cubeVao.bind();
 
     auto view = getViewMatrix(scene().camera());
     auto proj = getPerspectiveMatrix(scene().camera());
