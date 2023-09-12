@@ -192,4 +192,8 @@ void GlfwRunner::registerCallbacks() {
 #endif
 }
 
+void GlfwRunner::setWindowPosition(u32 x, u32 y) {
+  glfwSetWindowPos(m_window, x, y);
+}
+
 }  // namespace uinta

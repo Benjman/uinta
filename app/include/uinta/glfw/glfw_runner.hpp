@@ -45,6 +45,7 @@ class GlfwRunner : public Runner {
   f64 runtime() override;
   void pollInput() override;
   void registerCallbacks();
+  void setWindowPosition(u32 x, u32 y);
 
  private:
   GLFWwindow* m_window = nullptr;
