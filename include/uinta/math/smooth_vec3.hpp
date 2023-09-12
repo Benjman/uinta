@@ -7,58 +7,84 @@
 
 namespace uinta {
 
-struct SmoothVec3 {
-  SmoothFloat x;
-  SmoothFloat y;
-  SmoothFloat z;
-
-  explicit SmoothVec3(f32 agility, f32 x = 0, f32 y = 0, f32 z = 0) : x({agility, x}), y({agility, y}), z({agility, z}) {
+class SmoothVec3 {
+ public:
+  SmoothVec3(f32 agility, f32 x = 0, f32 y = 0, f32 z = 0) : m_x({agility, x}), m_y({agility, y}), m_z({agility, z}) {
   }
 
-  SmoothVec3(f32 agility, const glm::vec3& v) : x({agility, v.x}), y({agility, v.y}), z({agility, v.z}) {
+  SmoothVec3(f32 agility, const glm::vec3& v) : m_x({agility, v.x}), m_y({agility, v.y}), m_z({agility, v.z}) {
   }
 
-  inline SmoothVec3& operator+=(const glm::vec3& v) {
-    x += v.x;
-    y += v.y;
-    z += v.z;
+  void force() {
+    force({m_x.target(), m_y.target(), m_z.target()});
+  }
+
+  void force(const glm::vec3& value) {
+    m_x.force(value.x);
+    m_y.force(value.y);
+    m_z.force(value.z);
+  }
+
+  void update(f32 dt) {
+    m_x.update(dt);
+    m_y.update(dt);
+    m_z.update(dt);
+  }
+
+  inline SmoothVec3& operator+=(const glm::vec3& v) noexcept {
+    m_x += v.x;
+    m_y += v.y;
+    m_z += v.z;
     return *this;
   }
 
-  inline SmoothVec3& operator-=(const glm::vec3& v) {
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
+  inline SmoothVec3& operator-=(const glm::vec3& v) noexcept {
+    m_x -= v.x;
+    m_y -= v.y;
+    m_z -= v.z;
     return *this;
   }
 
-  inline SmoothVec3& operator=(const glm::vec3& v) {
-    x = v.x;
-    y = v.y;
-    z = v.z;
+  inline SmoothVec3& operator=(const glm::vec3& v) noexcept {
+    m_x = v.x;
+    m_y = v.y;
+    m_z = v.z;
     return *this;
   }
 
-  inline operator glm::vec3() const {
-    return {x, y, z};
+  inline operator glm::vec3() const noexcept {
+    return {m_x, m_y, m_z};
   }
+
+  SmoothFloat x() const noexcept {
+    return m_x;
+  }
+
+  void x(const SmoothFloat& v) noexcept {
+    m_x = v;
+  }
+
+  SmoothFloat y() const noexcept {
+    return m_y;
+  }
+
+  void y(const SmoothFloat& v) noexcept {
+    m_y = v;
+  }
+
+  SmoothFloat z() const noexcept {
+    return m_z;
+  }
+
+  void z(const SmoothFloat& v) noexcept {
+    m_z = v;
+  }
+
+ private:
+  SmoothFloat m_x;
+  SmoothFloat m_y;
+  SmoothFloat m_z;
 };
-
-inline void force(SmoothVec3& v) {
-  force(v, {v.x.target, v.y.target, v.z.target});
-}
-
-inline void force(SmoothVec3& v, const glm::vec3& value) {
-  force(v.x, value.x);
-  force(v.y, value.y);
-  force(v.z, value.z);
-}
-
-inline void update(SmoothVec3& v, f32 dt) {
-  update(v.x, dt);
-  update(v.y, dt);
-  update(v.z, dt);
-}
 
 }  // namespace uinta
 

@@ -18,16 +18,16 @@ inline glm::vec3 translate(const InputState& input, const TargetCamera& cam);
 
 void updateCamera(TargetCamera& cam, const RunnerState& state, const InputState& input) {
   process_input(cam, state, input);
-  update(cam.target, state.delta);
-  update(cam.angle, state.delta);
-  update(cam.pitch, state.delta);
-  update(cam.dist, state.delta);
+  cam.target.update(state.delta);
+  cam.angle.update(state.delta);
+  cam.pitch.update(state.delta);
+  cam.dist.update(state.delta);
   position(cam);
 }
 
 glm::mat4 getViewMatrix(const TargetCamera& cam) {
-  auto delta = glm::rotate(glm::mat4(1), glm::radians(cam.pitch.current), WORLD_RIGHT);
-  delta = glm::rotate(delta, glm::radians(cam.angle.current), WORLD_UP);
+  auto delta = glm::rotate(glm::mat4(1), glm::radians(cam.pitch.current()), WORLD_RIGHT);
+  delta = glm::rotate(delta, glm::radians(cam.angle.current()), WORLD_UP);
   delta = glm::translate(delta, -cam.position);
   return delta;
 }
@@ -62,15 +62,15 @@ inline void process_input(TargetCamera& cam, const RunnerState& state, const Inp
   cam.dist += dist(input, cam.config) * state.delta * scale;
   cam.pitch += pitch(input, cam.config) * state.delta * scale;
   if (isFlagSet(TargetCamera::CAMERA_DIST_LIMIT, cam.flags))
-    cam.dist = std::clamp(cam.dist.target, cam.config.dst_min, cam.config.dst_max);
+    cam.dist = std::clamp(cam.dist.target(), cam.config.dst_min, cam.config.dst_max);
   if (isFlagSet(TargetCamera::CAMERA_PITCH_LIMIT, cam.flags))
-    cam.pitch = std::clamp(cam.pitch.target, cam.config.pitch_min, cam.config.pitch_max);
+    cam.pitch = std::clamp(cam.pitch.target(), cam.config.pitch_min, cam.config.pitch_max);
   cam.target += translate(input, cam) * state.delta * scale;
 }
 
 inline void position(TargetCamera& cam) {
-  const auto ar = glm::radians(cam.angle.current);
-  const auto pr = glm::radians(cam.pitch.current);
+  const auto ar = glm::radians(cam.angle.current());
+  const auto pr = glm::radians(cam.pitch.current());
   const auto ca = cos(ar);
   const auto cp = cos(pr);
   const auto sa = sin(ar);

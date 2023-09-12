@@ -5,57 +5,72 @@
 
 namespace uinta {
 
-struct SmoothFloat final {
-  f32 agility;
-  f32 current;
-  f32 target;
-
-  SmoothFloat(f32 agility, f32 start) noexcept : agility(agility), current(start), target(start) {
+class SmoothFloat {
+ public:
+  SmoothFloat(f32 agility, f32 start) noexcept : m_agility(agility), m_current(start), m_target(start) {
   }
 
-  SmoothFloat(const SmoothFloat& other) noexcept {
-    *this = other;
+  void force() {
+    force(m_target);
   }
 
-  inline SmoothFloat& operator=(const SmoothFloat& other) noexcept {
-    agility = other.agility;
-    current = other.current;
-    target = other.target;
-    return *this;
+  void force(f32 value) {
+    m_current = value;
+    m_target = value;
+  }
+
+  inline void update(f32 dt) {
+    m_current += (m_target - m_current) * m_agility * dt;
   }
 
   inline SmoothFloat& operator=(f32 v) noexcept {
-    target = v;
+    m_target = v;
     return *this;
   }
 
   inline SmoothFloat& operator+=(f32 v) noexcept {
-    target += v;
+    m_target += v;
     return *this;
   }
 
   inline SmoothFloat& operator-=(f32 v) noexcept {
-    target -= v;
+    m_target -= v;
     return *this;
   }
 
   inline operator f32() const {
-    return current;
+    return m_current;
   }
+
+  f32 agility() const noexcept {
+    return m_agility;
+  }
+
+  void agility(f32 v) noexcept {
+    m_agility = v;
+  }
+
+  f32 current() const noexcept {
+    return m_current;
+  }
+
+  void current(f32 v) noexcept {
+    m_current = v;
+  }
+
+  f32 target() const noexcept {
+    return m_target;
+  }
+
+  void target(f32 v) noexcept {
+    m_target = v;
+  }
+
+ private:
+  f32 m_agility;
+  f32 m_current;
+  f32 m_target;
 };
-
-inline void force(SmoothFloat& v) {
-  force(v, v.target);
-}
-
-inline void force(SmoothFloat& v, f32 value) {
-  v.current = value;
-  v.target = value;
-}
-
-inline void update(SmoothFloat& v, f32 dt) {
-  v.current += (v.target - v.current) * v.agility * dt;
-}
 
 }  // namespace uinta
 

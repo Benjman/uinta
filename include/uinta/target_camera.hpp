@@ -125,7 +125,7 @@ struct TargetCamera {
 };
 
 inline f32 calculateTranslationFactor(const TargetCamera& cam) {
-  auto result = cam.dist.current;
+  auto result = cam.dist.current();
   result = std::abs(result);
   result = 1.3 * std::sqrt(result);
   result *= cam.config.spd_factor;

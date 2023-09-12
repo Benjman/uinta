@@ -58,31 +58,42 @@ inline bool cameraTransform(TargetCamera &camera, const RunnerState &state) {
   bool result = false;
 #ifndef IMGUI_API_DISABLED
   if (ImGui::TreeNode("Transform")) {
-    f32 agility = camera.angle.agility;
+    f32 agility = camera.angle.agility();
     if (ImGui::DragScalar("Translation agility", ImGuiDataType_Float, reinterpret_cast<void *>(&agility), 0.1f, &limits.min,
                           &limits.max, "%+.2f")) {
-      camera.angle.agility = agility;
-      camera.dist.agility = agility;
-      camera.pitch.agility = agility;
+      camera.angle.agility(agility);
+      camera.dist.agility(agility);
+      camera.pitch.agility(agility);
       camera.target = {agility, camera.target};
       result = true;
     }
 
-    if (ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.dist.target), 0.1f, &limits.one_tenth,
-                          &limits.twenty, "%+.2f"))
+    f32 dist = camera.dist.target();
+    if (ImGui::DragScalar("Dist", ImGuiDataType_Float, reinterpret_cast<void *>(&dist), 0.1f, &limits.one_tenth, &limits.twenty,
+                          "%+.2f")) {
+      camera.dist.target(dist);
       result = true;
+    }
+
     ImGui::SameLine();
     if (ImGui::CheckboxFlags("Limit dist", (u32 *)&camera.flags, TargetCamera::CAMERA_DIST_LIMIT)) result = true;
 
-    if (ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.pitch.target), 0.1f, &limits.min,
-                          &limits.max, "%+.2f"))
+    f32 pitch = camera.pitch.target();
+    if (ImGui::DragScalar("Pitch", ImGuiDataType_Float, reinterpret_cast<void *>(&pitch), 0.1f, &limits.min, &limits.max,
+                          "%+.2f")) {
+      camera.dist.target(dist);
       result = true;
+    }
+
     ImGui::SameLine();
     if (ImGui::CheckboxFlags("Limit pitch", (u32 *)&camera.flags, TargetCamera::CAMERA_PITCH_LIMIT)) result = true;
 
-    if (ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.angle.target), 0.1f, &limits.min,
-                          &limits.max, "%+.2f"))
+    f32 angle = camera.angle.target();
+    if (ImGui::DragScalar("Angle", ImGuiDataType_Float, reinterpret_cast<void *>(&angle), 0.1f, &limits.min, &limits.max,
+                          "%+.2f")) {
+      camera.dist.target(dist);
       result = true;
+    }
 
     if (ImGui::DragScalar("Y-Offset", ImGuiDataType_Float, reinterpret_cast<void *>(&camera.vertOffset), 0.1f, &limits.zero,
                           &limits.max, "%+.2f"))
@@ -111,7 +122,8 @@ inline bool cameraTransform(TargetCamera &camera, const RunnerState &state) {
     const auto right = getRight(camera.angle);
     const auto up = getUp(forward, right);
     ImGui::Text("Position      %+.2f %+.2f %+.2f", camera.position.x, camera.position.y, camera.position.z);
-    ImGui::Text("Target        %+.2f %+.2f %+.2f", camera.target.x.target, camera.target.y.target, camera.target.z.target);
+    ImGui::Text("Target        %+.2f %+.2f %+.2f", camera.target.x().target(), camera.target.y().target(),
+                camera.target.z().target());
     ImGui::Text("Forward       %+.2f %+.2f %+.2f", forward.x, forward.y, forward.z);
     ImGui::Text("Right         %+.2f %+.2f %+.2f", right.x, right.y, right.z);
     ImGui::Text("Up            %+.2f %+.2f %+.2f", up.x, up.y, up.z);

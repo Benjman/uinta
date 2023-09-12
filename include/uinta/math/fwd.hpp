@@ -7,9 +7,6 @@
 
 namespace uinta {
 
-struct SmoothFloat;
-struct SmoothVec3;
-
 inline glm::vec3 getForward(f32 pitch, f32 yaw);
 inline f32 getPlaneInterceptDist(const glm::vec3& planePos, const glm::vec3& planeNormal, const glm::vec3& rayPos,
                                  const glm::vec3& rayDirection);
@@ -24,15 +21,6 @@ inline glm::vec3 getWorldRay(const glm::vec2& cursorPos, const glm::vec2& viewpo
 
 inline f32 map0to1Range(const f32 value, const f32 min, const f32 max);
 inline f32 map0to1RangeClamped(const f32 value, const f32 min, const f32 max);
-inline f32 clamp(f32 value, f32 min, f32 max);
-
-inline void force(SmoothFloat&);
-inline void force(SmoothFloat&, f32 value);
-inline void update(SmoothFloat&, f32 dt);
-
-inline void force(SmoothVec3&);
-inline void force(SmoothVec3&, const glm::vec3& value);
-inline void update(SmoothVec3&, f32 value);
 
 }  // namespace uinta
 
