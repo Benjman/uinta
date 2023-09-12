@@ -112,6 +112,10 @@ glm::ivec3 cube_neighbor(const glm::ivec3& cube, hex_direction direction) {
   return cube + cube_directions[static_cast<i32>(direction)];
 }
 
+glm::ivec3 cube_diagonal_neighbor(const glm::ivec3& cube, hex_direction direction) {
+  return cube + cube_diagonal_neighbors[static_cast<i32>(direction)];
+}
+
 std::vector<glm::ivec3> cube_ring(const glm::ivec3& origin, u32 radius) {
   auto result = std::vector<glm::ivec3>(6 * radius);
   auto hex = origin + cube_directions[static_cast<i32>(hex_direction::SouthWest)] * static_cast<i32>(radius);

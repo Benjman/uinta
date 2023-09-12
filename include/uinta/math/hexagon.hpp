@@ -26,6 +26,10 @@ static constexpr glm::ivec3 cube_directions[] = {
     {+1, 0, -1}, {+1, -1, 0}, {0, -1, +1}, {-1, 0, +1}, {-1, +1, 0}, {0, +1, -1},
 };
 
+static constexpr glm::ivec3 cube_diagonal_neighbors[] = {
+    {+2, -1, -1}, {+1, -2, +1}, {-1, -1, +2}, {-2, +1, +1}, {-1, +2, -1}, {+1, +1, -2},
+};
+
 /**
  * @brief Calculates the spacing of a hexagon.
  *
