@@ -2,7 +2,6 @@
 #define UINTA_MATH_SMOOTH_VEC3_HPP
 
 #include <glm/vec3.hpp>
-#include <uinta/math/fwd.hpp>
 #include <uinta/math/smooth_float.hpp>
 
 namespace uinta {
@@ -13,6 +12,12 @@ class SmoothVec3 {
   }
 
   SmoothVec3(f32 agility, const glm::vec3& v) : m_x({agility, v.x}), m_y({agility, v.y}), m_z({agility, v.z}) {
+  }
+
+  void agility(f32 agility) {
+    m_x.agility(agility);
+    m_y.agility(agility);
+    m_z.agility(agility);
   }
 
   void force() {
@@ -31,28 +36,28 @@ class SmoothVec3 {
     m_z.update(dt);
   }
 
-  inline SmoothVec3& operator+=(const glm::vec3& v) noexcept {
+  SmoothVec3& operator+=(const glm::vec3& v) noexcept {
     m_x += v.x;
     m_y += v.y;
     m_z += v.z;
     return *this;
   }
 
-  inline SmoothVec3& operator-=(const glm::vec3& v) noexcept {
+  SmoothVec3& operator-=(const glm::vec3& v) noexcept {
     m_x -= v.x;
     m_y -= v.y;
     m_z -= v.z;
     return *this;
   }
 
-  inline SmoothVec3& operator=(const glm::vec3& v) noexcept {
+  SmoothVec3& operator=(const glm::vec3& v) noexcept {
     m_x = v.x;
     m_y = v.y;
     m_z = v.z;
     return *this;
   }
 
-  inline operator glm::vec3() const noexcept {
+  operator glm::vec3() const noexcept {
     return {m_x, m_y, m_z};
   }
 

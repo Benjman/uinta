@@ -22,9 +22,9 @@ class DemoRunner : public GlfwRunner {
     scene().diffuse_light({{-1.5, 2, 1}});
     if (isFlagSet(Scene::CAMERA_ENABLED, scene().flags())) {
       auto camera = scene().camera();
-      camera.angle = 45;
-      camera.pitch = 45;
-      camera.dist = 7;
+      camera.angle(45);
+      camera.pitch(45);
+      camera.dist(7);
       scene().camera(camera);
     }
 

@@ -1,7 +1,7 @@
 #ifndef UINTA_MATH_SMOOTH_FLOAT_HPP
 #define UINTA_MATH_SMOOTH_FLOAT_HPP
 
-#include <uinta/math/fwd.hpp>
+#include <uinta/types.h>
 
 namespace uinta {
 
@@ -19,26 +19,26 @@ class SmoothFloat {
     m_target = value;
   }
 
-  inline void update(f32 dt) {
+  void update(f32 dt) {
     m_current += (m_target - m_current) * m_agility * dt;
   }
 
-  inline SmoothFloat& operator=(f32 v) noexcept {
+  SmoothFloat& operator=(f32 v) noexcept {
     m_target = v;
     return *this;
   }
 
-  inline SmoothFloat& operator+=(f32 v) noexcept {
+  SmoothFloat& operator+=(f32 v) noexcept {
     m_target += v;
     return *this;
   }
 
-  inline SmoothFloat& operator-=(f32 v) noexcept {
+  SmoothFloat& operator-=(f32 v) noexcept {
     m_target -= v;
     return *this;
   }
 
-  inline operator f32() const {
+  operator f32() const {
     return m_current;
   }
 

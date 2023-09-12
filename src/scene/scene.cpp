@@ -25,7 +25,7 @@ uinta_error_code Scene::init(Runner& runner) {
   m_vao.init();
   m_vbo.init();
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags()), m_flags);
-  m_camera.config.aspect_ratio = runner.window().aspect_ratio;
+  m_camera.aspect_ratio(runner.window().aspect_ratio);
   return SUCCESS_EC;
 }
 
@@ -33,7 +33,7 @@ void Scene::preTick(const RunnerState& state, const InputState& input) {
 }
 
 void Scene::tick(const RunnerState& state, const InputState& input) {
-  if (isFlagSet(CAMERA_ENABLED, m_flags)) updateCamera(m_camera, state, input);
+  if (isFlagSet(CAMERA_ENABLED, m_flags)) m_camera.update(state, input);
 }
 
 void Scene::postTick(const RunnerState& state, const InputState& input) {
@@ -67,8 +67,10 @@ uinta_error_code Scene::addModel(const model_t model, ModelManager& model_manage
 }
 
 void Scene::render(const RunnerState& state) {
-  if (isFlagSet(GRID_ENABLED, m_flags)) m_cartesian_grid.render(getPerspectiveMatrix(m_camera) * getViewMatrix(m_camera));
-  m_renderer->start(state, getViewMatrix(m_camera), getPerspectiveMatrix(m_camera));
+  glm::mat4 view = m_camera.view_matrix();
+  glm::mat4 projection = m_camera.perspective_matrix();
+  if (isFlagSet(GRID_ENABLED, m_flags)) m_cartesian_grid.render(projection * view);
+  m_renderer->start(state, view, projection);
   if (isFlagSet(DIFFUSE_LIGHT_DIRTY, m_flags)) {
     m_renderer->diffuse(m_diffuse_light);
     setFlag(DIFFUSE_LIGHT_DIRTY, false, m_flags);

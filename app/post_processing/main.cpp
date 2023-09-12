@@ -104,9 +104,9 @@ class PostProcessingRunner final : public GlfwRunner {
     if (auto error = initObj("model/cube.obj", file_manager(), cubeVao, cubeVbo, &icount); error) return error;
 
     auto camera = scene().camera();
-    camera.angle = 35;
-    camera.pitch = 35;
-    camera.dist = 5;
+    camera.angle(35);
+    camera.pitch(35);
+    camera.dist(5);
     scene().camera(camera);
 
     return SUCCESS_EC;
@@ -123,8 +123,8 @@ class PostProcessingRunner final : public GlfwRunner {
     glUseProgram(colorShader.shaderId);
     cubeVao.bind();
 
-    auto view = getViewMatrix(scene().camera());
-    auto proj = getPerspectiveMatrix(scene().camera());
+    auto view = scene().camera().view_matrix();
+    auto proj = scene().camera().perspective_matrix();
     auto model = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
     glUniformMatrix4fv(colorShader.u_mvp, 1, GL_FALSE, &(proj * view * model)[0][0]);
     glDrawArrays(GL_TRIANGLES, 0, icount);

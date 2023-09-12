@@ -13,14 +13,14 @@ inline void inputUi(Runner& runner) {
 #ifndef IMGUI_API_DISABLED
   if (ImGui::TreeNode("Cursor info")) {
     const auto& camera = runner.scene().camera();
-    auto view = getViewMatrix(camera);
-    auto proj = getPerspectiveMatrix(camera);
+    auto view = camera.view_matrix();
+    auto proj = camera.perspective_matrix();
 
     glm::vec2 cursor = {runner.input().cursorx, runner.input().cursory};
     glm::vec2 viewport = {runner.window().width, runner.window().height};
     glm::vec3 ndc = {(2 * cursor.x) / viewport.x - 1, 1 - (2 * cursor.y) / viewport.y, 1};
     auto worldRay = getWorldRay(cursor, viewport, view, proj);
-    auto worldPoint = getPlaneInterceptPoint(glm::vec3(0), WORLD_UP, camera.position, worldRay);
+    auto worldPoint = getPlaneInterceptPoint(glm::vec3(0), WORLD_UP, camera.position(), worldRay);
 
     ImGui::Text("Screen          (%5.0f, %5.0f)", runner.input().cursorx, runner.input().cursory);
     ImGui::Text("Device coord    (%5.2f, %5.2f, %5.2f)", ndc.x, ndc.y, ndc.z);

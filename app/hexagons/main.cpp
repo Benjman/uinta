@@ -12,11 +12,13 @@ class HexagonsRunner : public GlfwRunner {
   HexagonsRunner(const i32 argc, const char** argv) : GlfwRunner("Hexagons", argc, argv) {
     if (isFlagSet(Scene::CAMERA_ENABLED, scene().flags())) {
       auto camera = scene().camera();
-      camera.angle = 12;
-      camera.pitch = 8;
-      camera.dist = 56;
-      camera.config.dst_max = 1e6;
-      camera.vertOffset = yScale * 0.5;
+      camera.angle(12);
+      camera.pitch(25);
+      camera.dist(56);
+      camera.vert_offset(yScale * 0.5);
+      auto config = camera.config();
+      config.dst_max = 1e6;
+      camera.config(config);
       scene().camera(camera);
     }
     scene().diffuse_light({{0.5, -1, 0}});
@@ -75,7 +77,9 @@ class HexagonsRunner : public GlfwRunner {
 
   void doRender() override {
     GlfwRunner::doRender();
-    scene().renderer().start(state(), getViewMatrix(scene().camera()), getPerspectiveMatrix(scene().camera()));
+    glm::mat4 view = scene().camera().view_matrix();
+    glm::mat4 projection = scene().camera().perspective_matrix();
+    scene().renderer().start(state(), view, projection);
     vao.bind();
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(sizeof(GLfloat) * 0L));
   }
