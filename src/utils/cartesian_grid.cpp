@@ -57,19 +57,18 @@ uinta_error_code CartesianGrid::init(FileManager& fm) {
     }
   }
 
-  m_renderer->m_vao.init();
-  m_renderer->m_vbo.init();
-  m_renderer->m_vbo.upload(buffer, m_renderer->m_vertex_count * 5 * sizeof(f32), 0);
-  m_renderer->m_vao.init_attributes();
+  m_vao.init();
+  m_vbo.init();
+  m_vbo.upload(buffer, m_renderer->m_vertex_count * 5 * sizeof(f32), 0);
+  m_vao.init_attributes();
 
-  if (m_renderer->m_vao.id() == GL_ZERO || m_renderer->m_vbo.id() == GL_ZERO) return make_error(error::InitMesh);
-  return SUCCESS_EC;
-
+  if (m_vao.id() == GL_ZERO || m_vbo.id() == GL_ZERO) return make_error(error::InitMesh);
   SPDLOG_INFO("Initialized grid.");
   return SUCCESS_EC;
 }
 
 void CartesianGrid::render(const glm::mat4& projView) {
+  m_vao.bind();
   m_renderer->render(projView);
 }
 
@@ -90,7 +89,6 @@ uinta_error_code CartesianGridRenderer_OpenGL::init(FileManager& fileManager) {
 void CartesianGridRenderer_OpenGL::render(const glm::mat4& projectViewMatrix) const {
   static constexpr i32 GRID_RADIUS = 5;
   glUseProgram(m_shader);
-  m_vao.bind();
   i32 currentLineWidth;
   glGetIntegerv(GL_LINE_WIDTH, &currentLineWidth);
   if (m_line_width != currentLineWidth) glLineWidth(m_line_width);

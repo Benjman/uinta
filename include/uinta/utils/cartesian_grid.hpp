@@ -22,11 +22,6 @@ class CartesianGridRenderer {
   virtual void render(const glm::mat4& projectViewMatrix) const = 0;
 
  protected:
-  Vao m_vao{{
-      {0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0},
-      {1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 2 * sizeof(GLfloat)},
-  }};
-  Vbo m_vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   GLuint m_u_mvp = GL_ZERO;
   u32 m_vertex_count = 0;
   GLuint m_shader = GL_ZERO;
@@ -55,6 +50,11 @@ class CartesianGrid {
   }
 
  private:
+  Vao m_vao{{
+      {0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0},
+      {1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 2 * sizeof(GLfloat)},
+  }};
+  Vbo m_vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   std::unique_ptr<CartesianGridRenderer> m_renderer;
 };
 
