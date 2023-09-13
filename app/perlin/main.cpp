@@ -60,7 +60,7 @@ class PerlinRunner : public GlfwRunner {
     const u32 indices[] = { 0, 1, 3, 1, 2, 3 };
     // clang-format on
     vao.init(logger());
-    vbo.init();
+    vbo.init(logger());
     vao.bind();
     vbo.upload(vertices, sizeof(vertices), 0);
     vao.index_buffer(indices, sizeof(indices));

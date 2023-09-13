@@ -30,7 +30,7 @@ uinta_error_code Scene::init() {
   if (auto error = m_renderer->init(m_runner.file_manager()); error) return error;
   if (auto error = m_cartesian_grid.init(m_runner.file_manager()); error) return error;
   m_vao.init(m_logger);
-  m_vbo.init();
+  m_vbo.init(m_logger);
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, m_runner.flags()), m_flags);
   m_camera.aspect_ratio(m_runner.window().aspect_ratio);
   SPDLOG_LOGGER_INFO(m_logger, "Initialized Scene.");

@@ -11,8 +11,7 @@ void Vao::init(const std::shared_ptr<spdlog::logger> logger) {
   glGenVertexArrays(1, &m_id);
   if (m_logger) SPDLOG_LOGGER_DEBUG(m_logger, "Initialized VAO {}.", m_id);
   bind();
-  init_attributes();
-  m_index_buffer.init();
+  m_index_buffer.init(m_logger);
 }
 
 void Vao::bind() const {
@@ -23,7 +22,7 @@ void Vao::bind() const {
 void Vao::index_buffer(const u32* const data, u32 size) {
   assert(m_id && "Cannot create index buffer for an uninitialized VAO.");
   assert(!m_index_buffer.id() && "Cannot recreate an already initialized index buffer.");
-  m_index_buffer.init();
+  m_index_buffer.init(m_logger);
   bind();
   m_index_buffer.upload(data, size, 0);
   init_attributes();

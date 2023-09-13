@@ -31,7 +31,6 @@ uinta_error_code initObj(const std::string& path, FileManager& fileManager, Vao&
     return error;
 
   // cube VAO
-  vbo.init();
   vbo.upload(vertices, vcount * sizeof(GLfloat), 0);
   vao.index_buffer(indices, *icount * sizeof(GLuint));
   return SUCCESS_EC;
@@ -45,7 +44,7 @@ class PostProcessing {
   }};
   Vbo quadVbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
 
-  uinta_error_code init() {
+  uinta_error_code init(std::shared_ptr<spdlog::logger> logger) {
     // clang-format off
     float quadVertices[] = {
       // positions   // uvs
@@ -57,7 +56,8 @@ class PostProcessing {
        1.0f,  1.0f,  1.0f, 1.0f
     };
     // clang-format on
-    quadVbo.init();
+    quadVao.init(logger);
+    quadVbo.init(logger);
     quadVbo.upload(quadVertices, sizeof(quadVertices), 0);
     quadVao.init_attributes();
     return SUCCESS_EC;
@@ -97,8 +97,10 @@ class PostProcessingRunner final : public GlfwRunner {
     if (auto error = GlfwRunner::doInit(); error) return error;
 
     cubeVao.init(logger());
+    cubeVbo.init(logger());
+
     if (auto error = initFbo(fbo); error) return error;
-    if (auto error = pp.init(); error) return error;
+    if (auto error = pp.init(logger()); error) return error;
     if (auto error = colorShader.init(file_manager()); error) return error;
     if (auto error = shaders.init(file_manager()); error) return error;
     if (auto error = initObj("model/cube.obj", file_manager(), cubeVao, cubeVbo, &icount); error) return error;

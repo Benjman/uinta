@@ -66,8 +66,8 @@ class HexagonsRunner : public GlfwRunner {
 
     // Upload buffers to GPU:
     vao.init(logger());
+    vbo.init(logger());
     vao.index_buffer().upload(idxBuffer, sizeof(idxBuffer), 0);
-    vbo.init();
     vbo.upload(vtxBuffer, sizeof(vtxBuffer), 0);
     vao.init_attributes();
     indexCount = IndicesPerHex * points.size();
