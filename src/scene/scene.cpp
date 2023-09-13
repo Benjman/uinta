@@ -1,5 +1,8 @@
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 #include <entt/entt.hpp>
 #include <uinta/error.hpp>
+#include <uinta/logging.hpp>
 #include <uinta/runner.hpp>
 #include <uinta/scene/scene.hpp>
 
@@ -15,7 +18,10 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
 Scene::Scene(Runner& runner, SceneDependencies dependencies)
-    : m_runner(runner), m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}), m_renderer(std::move(dependencies.renderer)) {
+    : m_runner(runner),
+      m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}),
+      m_renderer(std::move(dependencies.renderer)),
+      m_logger(spdlog::stdout_color_st(m_runner.logger()->name() + ":Scene")) {
   assert(m_renderer && "Renderer must be initialized!");
 }
 
@@ -26,6 +32,7 @@ uinta_error_code Scene::init() {
   m_vbo.init();
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, m_runner.flags()), m_flags);
   m_camera.aspect_ratio(m_runner.window().aspect_ratio);
+  SPDLOG_LOGGER_INFO(m_logger, "Initialized Scene.");
   return SUCCESS_EC;
 }
 

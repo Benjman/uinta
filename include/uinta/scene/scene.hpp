@@ -1,6 +1,7 @@
 #ifndef UINTA_SCENE_HPP
 #define UINTA_SCENE_HPP
 
+#include <spdlog/fwd.h>
 #include <uinta/flags.h>
 #include <uinta/types.h>
 
@@ -120,6 +121,7 @@ class Scene {
   TargetCamera m_camera;
   Light m_diffuse_light;
   std::unique_ptr<SceneRenderer> m_renderer;
+  std::shared_ptr<spdlog::logger> m_logger;
   entt::registry m_registry;
   flags_t m_flags = DIFFUSE_LIGHT_DIRTY | CAMERA_ENABLED | GRID_ENABLED;
 };
