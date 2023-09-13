@@ -19,6 +19,7 @@ UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
 Scene::Scene(Runner& runner, SceneDependencies dependencies)
     : m_runner(runner),
+      m_cartesian_grid(*this),
       m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}),
       m_renderer(std::move(dependencies.renderer)),
       m_logger(spdlog::stdout_color_st(m_runner.logger()->name() + ":Scene")) {

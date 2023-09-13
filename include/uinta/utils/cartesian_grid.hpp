@@ -13,6 +13,7 @@
 namespace uinta {
 
 class FileManager;
+class Scene;
 
 class CartesianGridRenderer {
   friend class CartesianGrid;
@@ -39,7 +40,7 @@ class CartesianGrid {
   friend void settingsGrid(Runner&);
 
  public:
-  CartesianGrid(std::unique_ptr<CartesianGridRenderer> renderer = nullptr);
+  CartesianGrid(const Scene& scene, std::unique_ptr<CartesianGridRenderer> renderer = nullptr);
 
   uinta_error_code init(FileManager& fileManager);
   void render(const glm::mat4& projView);
@@ -56,6 +57,7 @@ class CartesianGrid {
   }};
   Vbo m_vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   std::unique_ptr<CartesianGridRenderer> m_renderer;
+  std::shared_ptr<spdlog::logger> m_logger;
 };
 
 }  // namespace uinta

@@ -1,4 +1,3 @@
-
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -6,6 +5,7 @@
 #include <uinta/file_manager.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/mesh.hpp>
+#include <uinta/runner/runner.hpp>
 #include <uinta/shader.hpp>
 #include <uinta/utils/cartesian_grid.hpp>
 
@@ -22,13 +22,14 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(CartesianGrid, errorMessages);
 
-CartesianGrid::CartesianGrid(std::unique_ptr<CartesianGridRenderer> renderer)
-    : m_renderer(renderer ? std::move(renderer) : std::make_unique<CartesianGridRenderer_OpenGL>()) {
+CartesianGrid::CartesianGrid(const Scene& scene, std::unique_ptr<CartesianGridRenderer> renderer)
+    : m_renderer(renderer ? std::move(renderer) : std::make_unique<CartesianGridRenderer_OpenGL>()),
+      m_logger(spdlog::stdout_color_mt(scene.runner().logger()->name() + ":Grid")) {
   assert(m_renderer && "Renderer must be initialized!");
 }
 
 uinta_error_code CartesianGrid::init(FileManager& fm) {
-  SPDLOG_INFO("Initializing grid...");
+  SPDLOG_LOGGER_INFO(m_logger, "Initializing grid...");
   if (auto error = m_renderer->init(fm); error) return error;
 
   f32 buffer[220];
@@ -63,7 +64,7 @@ uinta_error_code CartesianGrid::init(FileManager& fm) {
   m_vao.init_attributes();
 
   if (m_vao.id() == GL_ZERO || m_vbo.id() == GL_ZERO) return make_error(error::InitMesh);
-  SPDLOG_INFO("Initialized grid.");
+  SPDLOG_LOGGER_INFO(m_logger, "Initialized grid.");
   return SUCCESS_EC;
 }
 
