@@ -58,7 +58,7 @@ uinta_error_code CartesianGrid::init(FileManager& fm) {
     }
   }
 
-  m_vao.init();
+  m_vao.init(m_logger);
   m_vbo.init();
   m_vbo.upload(buffer, m_renderer->m_vertex_count * 5 * sizeof(f32), 0);
   m_vao.init_attributes();

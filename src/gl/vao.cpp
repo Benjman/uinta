@@ -5,10 +5,11 @@
 
 namespace uinta {
 
-void Vao::init() {
+void Vao::init(const std::shared_ptr<spdlog::logger> logger) {
+  if (logger) m_logger = logger;
   assert(!m_id && "Cannot re-initialized an already initialized VAO.");
   glGenVertexArrays(1, &m_id);
-  SPDLOG_DEBUG("Initialized VAO {}.", m_id);
+  if (m_logger) SPDLOG_LOGGER_DEBUG(m_logger, "Initialized VAO {}.", m_id);
   bind();
   init_attributes();
   m_index_buffer.init();
@@ -26,6 +27,7 @@ void Vao::index_buffer(const u32* const data, u32 size) {
   bind();
   m_index_buffer.upload(data, size, 0);
   init_attributes();
+  if (m_logger) SPDLOG_LOGGER_INFO(m_logger, "Created index buffer.");
 }
 
 void Vao::init_attributes() const {
@@ -34,12 +36,14 @@ void Vao::init_attributes() const {
     glVertexAttribPointer(attribute.index, attribute.size, attribute.type, attribute.normalized, attribute.stride,
                           attribute.pointer);
   enable_attributes();
+  if (m_logger) SPDLOG_LOGGER_DEBUG(m_logger, "Initialized attributes.");
 }
 
 void Vao::enable_attributes() const {
   assert(m_id && "Cannot enable attributes of an uninitialized VAO.");
   bind();
   for (const auto& attribute : m_attributes) glEnableVertexAttribArray(attribute.index);
+  if (m_logger) SPDLOG_LOGGER_TRACE(m_logger, "Enabled all attributes.");
 }
 
 void Vao::disable_attributes() {
@@ -47,6 +51,7 @@ void Vao::disable_attributes() {
   if (!m_id) return;
   bind();
   for (const auto& attribute : m_attributes) glDisableVertexAttribArray(attribute.index);
+  if (m_logger) SPDLOG_LOGGER_TRACE(m_logger, "Disabled all attributes.");
 }
 
 void Vao::destroy() {
@@ -57,6 +62,7 @@ void Vao::destroy() {
   m_id = 0;
   m_attributes = {};
   m_index_buffer.destroy();
+  if (m_logger) SPDLOG_LOGGER_INFO(m_logger, "Destroyed VAO.");
 }
 
 void Vao::unbind() const {

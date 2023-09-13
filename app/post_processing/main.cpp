@@ -31,7 +31,6 @@ uinta_error_code initObj(const std::string& path, FileManager& fileManager, Vao&
     return error;
 
   // cube VAO
-  vao.init();
   vbo.init();
   vbo.upload(vertices, vcount * sizeof(GLfloat), 0);
   vao.index_buffer(indices, *icount * sizeof(GLuint));
@@ -58,7 +57,6 @@ class PostProcessing {
        1.0f,  1.0f,  1.0f, 1.0f
     };
     // clang-format on
-    quadVao.init();
     quadVbo.init();
     quadVbo.upload(quadVertices, sizeof(quadVertices), 0);
     quadVao.init_attributes();
@@ -97,6 +95,8 @@ class PostProcessingRunner final : public GlfwRunner {
 
   uinta_error_code doInit() override {
     if (auto error = GlfwRunner::doInit(); error) return error;
+
+    cubeVao.init(logger());
     if (auto error = initFbo(fbo); error) return error;
     if (auto error = pp.init(); error) return error;
     if (auto error = colorShader.init(file_manager()); error) return error;

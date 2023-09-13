@@ -65,7 +65,7 @@ class HexagonsRunner : public GlfwRunner {
     hexagon_pack(points, hex_normals(points), colors, vtxBuffer, idxBuffer, idxOffset);
 
     // Upload buffers to GPU:
-    vao.init();
+    vao.init(logger());
     vao.index_buffer().upload(idxBuffer, sizeof(idxBuffer), 0);
     vbo.init();
     vbo.upload(vtxBuffer, sizeof(vtxBuffer), 0);
