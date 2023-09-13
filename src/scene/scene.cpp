@@ -14,18 +14,18 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(Scene, errorMessages);
 
-Scene::Scene(SceneDependencies dependencies)
-    : m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}), m_renderer(std::move(dependencies.renderer)) {
+Scene::Scene(Runner& runner, SceneDependencies dependencies)
+    : m_runner(runner), m_diffuse_light({glm::normalize(glm::vec3(0, -3, 1))}), m_renderer(std::move(dependencies.renderer)) {
   assert(m_renderer && "Renderer must be initialized!");
 }
 
-uinta_error_code Scene::init(Runner& runner) {
-  if (auto error = m_renderer->init(runner.file_manager()); error) return error;
-  if (auto error = m_cartesian_grid.init(runner.file_manager()); error) return error;
+uinta_error_code Scene::init() {
+  if (auto error = m_renderer->init(m_runner.file_manager()); error) return error;
+  if (auto error = m_cartesian_grid.init(m_runner.file_manager()); error) return error;
   m_vao.init();
   m_vbo.init();
-  setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, runner.flags()), m_flags);
-  m_camera.aspect_ratio(runner.window().aspect_ratio);
+  setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, m_runner.flags()), m_flags);
+  m_camera.aspect_ratio(m_runner.window().aspect_ratio);
   return SUCCESS_EC;
 }
 

@@ -34,9 +34,9 @@ class Scene {
   static constexpr flag_t CAMERA_ENABLED = 1 << 1;
   static constexpr flag_t GRID_ENABLED = 1 << 2;
 
-  Scene(SceneDependencies dependencies);
+  Scene(Runner& runner, SceneDependencies dependencies);
 
-  uinta_error_code init(Runner& runner);
+  uinta_error_code init();
 
   virtual void preTick(const RunnerState& state, const InputState& input);
 
@@ -48,6 +48,10 @@ class Scene {
                              const SceneEntityInitializer& info);
 
   uinta_error_code addModel(const model_t model, ModelManager& model_manager);
+
+  const Runner& runner() const noexcept {
+    return m_runner;
+  }
 
   const SceneRenderer& renderer() {
     return *m_renderer;
@@ -110,6 +114,7 @@ class Scene {
       {1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 3 * sizeof(f32)},
       {2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(f32), 6 * sizeof(f32)},
   }};
+  Runner& m_runner;
   Vbo m_vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
   CartesianGrid m_cartesian_grid;
   TargetCamera m_camera;
