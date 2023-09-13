@@ -73,7 +73,7 @@ i32 Runner::run() {
 }
 
 uinta_error_code Runner::doInit() {
-  if (auto error = m_file_manager->init(); error) return error;
+  if (auto error = m_file_manager->init(*this); error) return error;
   if (auto error = m_scene.init(); error) return error;
   if (auto error = m_gpu_utils->init(); error) return error;
   return SUCCESS_EC;

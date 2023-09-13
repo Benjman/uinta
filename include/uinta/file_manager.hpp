@@ -1,10 +1,12 @@
 #ifndef UINTA_IO_FILE_MANAGER_HPP
 #define UINTA_IO_FILE_MANAGER_HPP
 
+#include <spdlog/fwd.h>
 #include <uinta/flags.h>
 #include <uinta/types.h>
 #include <uinta/utils/macros.h>
 
+#include <memory>
 #include <string>
 #include <uinta/cfg.hpp>
 #include <uinta/error.hpp>
@@ -12,6 +14,8 @@
 #include <vector>
 
 namespace uinta {
+
+class Runner;
 
 using file_size_t = u32;
 using file_t = u32;
@@ -24,7 +28,7 @@ class FileManager {
 
   ~FileManager();
 
-  uinta_error_code init(const std::string& searchPaths = UINTA_FILE_SEARCH_PATHS,
+  uinta_error_code init(const Runner& runner, const std::string& searchPaths = UINTA_FILE_SEARCH_PATHS,
                         const char delim = UINTA_FILE_SEARCH_PATHS_DELIM);
 
   const file_t* const registerFile(const std::string& relativePath);
@@ -52,6 +56,8 @@ class FileManager {
   std::vector<file_t*> m_handles;
   std::vector<MemoryLink> m_links;
   std::vector<std::string> m_handlePaths;
+
+  std::shared_ptr<spdlog::logger> m_logger;
 
   size_t m_storageSize;
   void* m_storage = nullptr;
