@@ -64,10 +64,6 @@ class Runner {
     m_model_manager = v;
   }
 
-  void flag(const flag_t mask, const bool state) {
-    setFlag(mask, state, m_flags);
-  }
-
   const flags_t flags() const noexcept {
     return m_flags;
   }

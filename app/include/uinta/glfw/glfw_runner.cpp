@@ -38,7 +38,7 @@ uinta_error_code GlfwRunner::doInit() {
 
 void GlfwRunner::pollInput() {
   glfwPollEvents();
-  if (m_window && glfwWindowShouldClose(m_window)) flag(IS_RUNNING, false);
+  if (m_window && glfwWindowShouldClose(m_window)) setFlag(IS_RUNNING, false, m_flags);
 }
 
 f64 GlfwRunner::runtime() {
@@ -152,7 +152,9 @@ void GlfwRunner::registerCallbacks() {
         SPDLOG_CRITICAL("Intentionally hard exiting the application with exit code {}.", exit_code);
         exit(exit_code);
       }
-      runner->flag(IS_RUNNING, false);
+      auto flags = runner->flags();
+      setFlag(IS_RUNNING, false, flags);
+      runner->flags(flags);
     }
     runner->handleKeyInput(key, scancode, action, mods);
   });

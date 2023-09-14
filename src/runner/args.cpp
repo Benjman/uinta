@@ -64,7 +64,9 @@ bool processArg_noRendering(Runner* runner, const RunnerArg& arg) {
       nullptr,
   };
   if (!containsKey(arg.first.c_str(), keys)) return false;
-  runner->flag(Runner::RENDERING_ENABLED, false);
+  auto flags = runner->flags();
+  setFlag(Runner::RENDERING_ENABLED, false, flags);
+  runner->flags(flags);
   expectNoValue(arg);
   SPDLOG_INFO("Rendering disabled via argument '{}'.", arg.first);
   return true;
