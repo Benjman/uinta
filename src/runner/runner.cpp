@@ -39,7 +39,7 @@ i32 Runner::run() {
       if (auto error = createOpenGLContext(); error) throw UintaException(error);
     if (auto error = doInit(); error) throw UintaException(error);
     SPDLOG_LOGGER_INFO(m_logger, "Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
-    while (!isFlagSet(STOP_RUNNING, m_flags)) {
+    while (isFlagSet(IS_RUNNING, m_flags)) {
       try {
         do {
           advanceState();

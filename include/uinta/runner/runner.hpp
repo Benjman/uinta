@@ -17,7 +17,7 @@ namespace uinta {
 class Runner {
  public:
   static constexpr flag_t RENDERING_ENABLED = 1 << 0;
-  static constexpr flag_t STOP_RUNNING = 1 << 1;
+  static constexpr flag_t IS_RUNNING = 1 << 1;
 
   Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr, RunnerDependencies dependencies = {}) noexcept;
 
@@ -89,7 +89,7 @@ class Runner {
   const std::shared_ptr<spdlog::logger> m_logger;
   GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
-  flags_t m_flags = RENDERING_ENABLED;
+  flags_t m_flags = RENDERING_ENABLED | IS_RUNNING;
 
   virtual uinta_error_code doInit();
   virtual void doPreTick();
