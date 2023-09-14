@@ -4,6 +4,7 @@
 #include <uinta/types.h>
 
 #include <glm/gtc/constants.hpp>
+#include <glm/mat3x3.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/utils/buffer2d.hpp>
@@ -198,6 +199,24 @@ std::vector<glm::ivec3> cube_spiral(const glm::ivec3& origin, u32 radius);
 constexpr u32 hexagon_count(u32 rings) {
   return 1 + 3 * rings * (rings + 1);
 }
+
+/**
+ * @brief Rotates a cube-based hexagon coordinate clockwise.
+ *
+ * @param vec The vector coordinate to rotate.
+ * @param steps Number of steps to rotate.
+ * @return The rotated vector in the cube coordinate system.
+ */
+glm::ivec3 rotate_cw(glm::ivec3 vec, size_t steps);
+
+/**
+ * @brief Rotates a cube-based hexagon coordinate counterclockwise.
+ *
+ * @param vec The vector coordinate to rotate.
+ * @param steps Number of steps to rotate.
+ * @return The rotated vector in the cube coordinate system.
+ */
+glm::ivec3 rotate_ccw(glm::ivec3 vec, size_t steps);
 
 }  // namespace uinta
 

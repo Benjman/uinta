@@ -226,4 +226,24 @@ void hex_set_heights(std::vector<glm::vec3>& points, const Buffer2d<f32>& height
   }
 }
 
+glm::ivec3 rotate_cw(glm::ivec3 vec, size_t steps) {
+  // clang-format off
+  static constexpr glm::mat3 CW_LUT[] = {
+      {{ 1, 0, 0}, {0,  1, 0}, {0, 0,  1}}, {{0, 0, -1}, {-1, 0, 0}, {0, -1, 0}}, {{0,  1, 0}, {0, 0,  1}, { 1, 0, 0}},
+      {{-1, 0, 0}, {0, -1, 0}, {0, 0, -1}}, {{0, 0,  1}, { 1, 0, 0}, {0,  1, 0}}, {{0, -1, 0}, {0, 0, -1}, {-1, 0, 0}},
+  };
+  // clang-format on
+  return CW_LUT[steps % 6] * vec;
+}
+
+glm::ivec3 rotate_ccw(glm::ivec3 vec, size_t steps) {
+  // clang-format off
+  static constexpr glm::mat3 CCW_LUT[] = {
+      {{ 1, 0, 0}, {0,  1, 0}, {0, 0,  1}}, {{0, -1, 0}, {0, 0, -1}, {-1, 0, 0}}, {{0, 0,  1}, { 1, 0, 0}, {0,  1, 0}},
+      {{-1, 0, 0}, {0, -1, 0}, {0, 0, -1}}, {{0,  1, 0}, {0, 0,  1}, { 1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}, {0, -1, 0}},
+  };
+  // clang-format on
+  return CCW_LUT[steps % 6] * vec;
+}
+
 }  // namespace uinta

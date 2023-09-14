@@ -2,11 +2,14 @@ include_directories(../include)
 
 add_executable(
   tests
+
   ./main.cpp
   ./tests/formatters.cpp
+  ./tests/hexagon_tests.cpp
   ./tests/runner_tests.cpp
   ./tests/scene_tests.cpp
   ./tests/utils/test_input.cpp
+
   )
 
 target_link_libraries(tests uinta EnTT::EnTT gtest gtest_main)
