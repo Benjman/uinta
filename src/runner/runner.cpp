@@ -16,8 +16,6 @@
 
 namespace uinta {
 
-static spdlog::stopwatch sw;
-
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
 Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDependencies dependencies) noexcept
@@ -34,6 +32,7 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDepe
 }
 
 i32 Runner::run() {
+  spdlog::stopwatch sw;
   try {
     if (isFlagSet(RENDERING_ENABLED, m_flags))
       if (auto error = createOpenGLContext(); error) throw UintaException(error);
