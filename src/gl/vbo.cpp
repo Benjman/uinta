@@ -12,8 +12,8 @@ void Vbo::size(size_t v) noexcept {
 }
 
 void Vbo::init(const std::shared_ptr<spdlog::logger> logger) {
-  if (logger) m_logger = logger;
   assert(!m_id && "Cannot re-initialize VBO.");
+  if (logger) m_logger = logger;
   glGenBuffers(1, &m_id);
   if (m_size) {
     auto size = m_size;
@@ -21,8 +21,7 @@ void Vbo::init(const std::shared_ptr<spdlog::logger> logger) {
     resize(size);
   } else {
     if (m_logger)
-      SPDLOG_LOGGER_DEBUG(m_logger, "Initialized VBO({}) for {} drawing {}.", m_id, getGlEnumName(m_target),
-                          getGlEnumName(m_usage));
+      SPDLOG_LOGGER_DEBUG(m_logger, "Initialized {} {}, drawing {}.", getGlEnumName(m_target), m_id, getGlEnumName(m_usage));
   }
 }
 
@@ -39,8 +38,8 @@ void Vbo::upload(const void* const data, size_t size, size_t offset) {
   glBufferSubData(m_target, offset, size, data);
   m_size = std::max(offset + size, m_size);
   if (m_logger)
-    SPDLOG_LOGGER_DEBUG(m_logger, "Uploaded {} to {} ({}) {}, with an offset of {}.", formatMemory(size), getGlEnumName(m_target),
-                        getGlEnumName(m_usage), m_id, formatMemory(offset));
+    SPDLOG_LOGGER_DEBUG(m_logger, "Uploaded {} to {} {}, with an offset of {}.", formatMemory(size), getGlEnumName(m_target),
+                        m_id, formatMemory(offset));
 }
 
 void Vbo::resize(size_t size) {
@@ -50,9 +49,7 @@ void Vbo::resize(size_t size) {
     m_size = size;
     bind();
     glBufferData(m_target, m_size, nullptr, m_usage);
-    if (m_logger)
-      SPDLOG_LOGGER_DEBUG(m_logger, "Allocated {} for VBO({}) for {} drawing {}.", formatMemory(m_size), m_id,
-                          getGlEnumName(m_target), getGlEnumName(m_usage));
+    if (m_logger) SPDLOG_LOGGER_DEBUG(m_logger, "Allocated {} for {} {}.", formatMemory(m_size), getGlEnumName(m_target), m_id);
   } else {
     GLuint newId;
     glGenBuffers(1, &newId);
@@ -65,8 +62,8 @@ void Vbo::resize(size_t size) {
     glBindBuffer(GL_COPY_READ_BUFFER, m_id);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, m_size);
     if (m_logger)
-      SPDLOG_LOGGER_DEBUG(m_logger, "Copied {} for VBO({}) {} from {} to {}.", formatMemory(m_size), m_id,
-                          getGlEnumName(m_target), m_id, newId);
+      SPDLOG_LOGGER_DEBUG(m_logger, "Copied {} for {} from {} to {}.", formatMemory(m_size), getGlEnumName(m_target), m_id,
+                          newId);
     glDeleteBuffers(1, &m_id);
     m_id = newId;
   }
