@@ -1,7 +1,5 @@
 #include <algorithm>
-#include <array>
 #include <glm/geometric.hpp>
-#include <glm/gtc/constants.hpp>
 #include <glm/gtx/normal.hpp>
 #include <glm/trigonometric.hpp>
 #include <stdexcept>
@@ -244,6 +242,14 @@ glm::ivec3 rotate_ccw(glm::ivec3 vec, size_t steps) {
   };
   // clang-format on
   return CCW_LUT[steps % 6] * vec;
+}
+
+// TODO: This function should really constexpr, however glm's matrix multiplication operators are not. Consider creating our own
+// matrix multiplier for this function, then convert all relevant uses to constexpr. Consider submitting a PR to glm.
+std::array<glm::ivec3, 6> mirror_centers(size_t radius) {
+  std::array<glm::ivec3, 6> result;
+  for (auto i = 0; i < 6; ++i) result[i] = rotate_cw({2 * radius + 1, -radius, -radius - 1}, i);
+  return result;
 }
 
 }  // namespace uinta

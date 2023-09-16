@@ -1,8 +1,7 @@
 #ifndef UINTA_HEXAGON_HPP
 #define UINTA_HEXAGON_HPP
 
-#include <uinta/types.h>
-
+#include <array>
 #include <glm/gtc/constants.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/vec2.hpp>
@@ -217,6 +216,14 @@ glm::ivec3 rotate_cw(glm::ivec3 vec, size_t steps);
  * @return The rotated vector in the cube coordinate system.
  */
 glm::ivec3 rotate_ccw(glm::ivec3 vec, size_t steps);
+
+/**
+ * @brief Calculates the center points of mirror radial hexagon grids.
+ *
+ * @param radius Radius of the radial hexagon grid.
+ * @return Collection of cube-coordinate positions defining the center points of surrounding radial hexagon grids.
+ */
+std::array<glm::ivec3, 6> mirror_centers(size_t radius);
 
 }  // namespace uinta
 
