@@ -24,7 +24,7 @@ UINTA_ERROR_FRAMEWORK(TestRunner, errorMessages);
 
 TEST(RunnerTest, file_manager_null) {
   RunnerDependencies dependencies;
-  TEST_DEPENDENCIES;
+  TEST_RUNNER_DEPENDENCIES;
   dependencies.file_manager = nullptr;
   ASSERT_DEATH({ TestRunner runner(RunnerTest_file_manager_null_Test::test_info_->name(), 0, nullptr, std::move(dependencies)); },
                "File manager must be initialized.")
@@ -33,7 +33,7 @@ TEST(RunnerTest, file_manager_null) {
 
 TEST(RunnerTest, gpu_utils_null) {
   RunnerDependencies dependencies;
-  TEST_DEPENDENCIES;
+  TEST_RUNNER_DEPENDENCIES;
   dependencies.gpu_utils = nullptr;
   ASSERT_DEATH({ TestRunner runner(RunnerTest_gpu_utils_null_Test::test_info_->name(), 0, nullptr, std::move(dependencies)); },
                "GPU Utilities must be initialized.")
@@ -42,7 +42,7 @@ TEST(RunnerTest, gpu_utils_null) {
 
 TEST(RunnerTest, createOpenGLContext_errorStopsRunner) {
   RunnerDependencies dependencies;
-  TEST_DEPENDENCIES;
+  TEST_RUNNER_DEPENDENCIES;
   TestRunner runner(RunnerTest_createOpenGLContext_errorStopsRunner_Test::test_info_->name(), 0, nullptr,
                     std::move(dependencies));
   const auto error = make_error(error::ExpectedError);
@@ -64,7 +64,7 @@ TEST(RunnerTest, createOpenGLContext_errorStopsRunner) {
 
 TEST(RunnerTest, doInit_errorStopsRunner) {
   RunnerDependencies dependencies;
-  TEST_DEPENDENCIES;
+  TEST_RUNNER_DEPENDENCIES;
   TestRunner runner(RunnerTest_doInit_errorStopsRunner_Test::test_info_->name(), 0, nullptr, std::move(dependencies));
   const auto error = make_error(error::ExpectedError);
   runner.doInit_ec = error;
@@ -85,7 +85,7 @@ TEST(RunnerTest, doInit_errorStopsRunner) {
 
 TEST(RunnerTest, advanceState) {
   RunnerDependencies dependencies;
-  TEST_DEPENDENCIES;
+  TEST_RUNNER_DEPENDENCIES;
   TestRunner runner(RunnerTest_advanceState_Test::test_info_->name(), 0, nullptr, std::move(dependencies));
 
   ASSERT_EQ(0, runner.state().tick) << "Initial `tick` count was expected to be zero.";

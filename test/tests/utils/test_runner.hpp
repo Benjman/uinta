@@ -1,14 +1,11 @@
 #ifndef UINTA_TEST_RUNNER_HPP
 #define UINTA_TEST_RUNNER_HPP
 
-#include <cmath>
 #include <uinta/runner/runner.hpp>
-
-#include "./test_file_manager.hpp"
 
 namespace uinta {
 
-#define TEST_DEPENDENCIES                                          \
+#define TEST_RUNNER_DEPENDENCIES                                   \
   dependencies.file_manager = std::make_unique<TestFileManager>(); \
   dependencies.gpu_utils = std::make_unique<TestRunnerGpuUtils>();
 
