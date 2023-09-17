@@ -7,7 +7,6 @@ add_executable(
   ./tests/formatters.cpp
   ./tests/hexagon_tests.cpp
   ./tests/runner_tests.cpp
-  ./tests/scene_tests.cpp
   ./tests/utils/test_input.cpp
 
   )

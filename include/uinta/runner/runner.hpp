@@ -9,6 +9,7 @@
 #include <uinta/input/state.hpp>
 #include <uinta/model_manager.hpp>
 #include <uinta/runner/dependencies.hpp>
+#include <uinta/runner/runner_state.hpp>
 #include <uinta/runner/window.hpp>
 #include <uinta/scene/scene.hpp>
 

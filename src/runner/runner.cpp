@@ -21,7 +21,7 @@ void processArgs(Runner* runner, i32 argc, const char** argv);
 Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDependencies dependencies) noexcept
     : m_logger(spdlog::stdout_color_mt(title)),
       m_window(title),
-      m_scene(*this, std::move(dependencies.scene)),
+      m_scene(*this),
       m_file_manager(std::move(dependencies.file_manager)),
       m_gpu_utils(std::move(dependencies.gpu_utils)) {
   assert(m_file_manager && "File manager must be initialized!");

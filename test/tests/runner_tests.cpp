@@ -6,7 +6,6 @@
 #define protected public
 #include <uinta/runner/runner.hpp>
 
-#include "./utils/test_file_manager.hpp"
 #include "./utils/test_runner.hpp"
 
 using namespace uinta;

@@ -27,17 +27,14 @@ struct RunnerDependencies final {
   std::unique_ptr<FileManager> file_manager = std::make_unique<FileManager_Desktop>();
   std::unique_ptr<RunnerGpuUtils> gpu_utils = std::make_unique<RunnerGpuUtils_OpenGL>();
 
-  SceneDependencies scene = {};
-
   RunnerDependencies(RunnerDependencies&& other) noexcept
-      : file_manager(std::move(other.file_manager)), gpu_utils(std::move(other.gpu_utils)), scene(std::move(other.scene)) {
+      : file_manager(std::move(other.file_manager)), gpu_utils(std::move(other.gpu_utils)) {
   }
 
   RunnerDependencies& operator=(RunnerDependencies&& other) noexcept {
     if (this == &other) return *this;
     file_manager = std::move(other.file_manager);
     gpu_utils = std::move(other.gpu_utils);
-    scene = std::move(other.scene);
     return *this;
   }
 
