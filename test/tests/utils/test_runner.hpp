@@ -1,18 +1,41 @@
 #ifndef UINTA_TEST_RUNNER_HPP
 #define UINTA_TEST_RUNNER_HPP
 
+#include <gtest/gtest.h>
+
 #include <uinta/runner/runner.hpp>
+
+#include "./test_file_manager.hpp"
+
+inline std::string getUniqueTestName() {
+  const auto* const test_info = ::testing::UnitTest::GetInstance()->current_test_info();
+  return std::string(test_info->test_suite_name()) + "." + test_info->name();
+}
 
 namespace uinta {
 
-#define TEST_RUNNER_DEPENDENCIES                                   \
-  dependencies.file_manager = std::make_unique<TestFileManager>(); \
-  dependencies.gpu_utils = std::make_unique<TestRunnerGpuUtils>();
+class TestRunnerGpuUtils : public RunnerGpuUtils {
+ public:
+  bool init_called = false;
+  uinta_error_code ec = SUCCESS_EC;
+  uinta_error_code init() {
+    init_called = true;
+    return ec;
+  }
+
+  bool clear_buffer_called = false;
+  std::function<void()> m_on_clear_buffer;
+  void clear_buffer(const glm::vec3& color, GLbitfield mask) {
+    if (m_on_clear_buffer) m_on_clear_buffer();
+    clear_buffer_called = true;
+  }
+};
 
 class TestRunner : public Runner {
  public:
-  TestRunner(const std::string& title = "", i32 argc = 0, const char** argv = nullptr, RunnerDependencies dependencies = {})
-      : Runner(title, argc, argv, std::move(dependencies)) {
+  TestRunner(const std::string& title,
+             RunnerDependencies dependencies = {std::make_unique<TestFileManager>(), std::make_unique<TestRunnerGpuUtils>()})
+      : Runner(title, 0, nullptr, std::move(dependencies)) {
     setFlag(Runner::RENDERING_ENABLED, false, m_flags);
   }
 
@@ -54,21 +77,6 @@ class TestRunner : public Runner {
     if (m_on_doInit) m_on_doInit();
     doInit_called = true;
     return doInit_ec;
-  }
-};
-
-class TestRunnerGpuUtils : public RunnerGpuUtils {
- public:
-  bool init_called = false;
-  uinta_error_code ec = SUCCESS_EC;
-  uinta_error_code init() {
-    init_called = true;
-    return ec;
-  }
-
-  bool clear_buffer_called = false;
-  void clear_buffer(const glm::vec3& color, GLbitfield mask) {
-    clear_buffer_called = true;
   }
 };
 
