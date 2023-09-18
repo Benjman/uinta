@@ -36,28 +36,6 @@ class uinta_error_category_t : public std::error_category {
   const std::string m_name;
 } static const uinta_error_category("uinta");
 
-class UintaException : public std::exception {
- public:
-  static std::string format_message(const std::string& message, const uinta_error_code& ec) {
-    return std::string("[") + ec.category().name() + ("] " + ec.message());
-  }
-
-  UintaException(const uinta_error_code& ec) : m_error_code(ec), m_what(format_message(ec.message(), ec)) {
-  }
-
-  const char* what() const noexcept override {
-    return m_what.c_str();
-  }
-
-  const uinta_error_code& error_code() const {
-    return m_error_code;
-  }
-
- private:
-  const uinta_error_code m_error_code;
-  const std::string m_what;
-};
-
 static uinta_error_code make_error(uinta_error_code_t e, const uinta_error_category_t& c = uinta_error_category) {
   return {e, c};
 }
