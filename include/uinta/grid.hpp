@@ -42,6 +42,10 @@ class Grid {
   uinta_error_code init(FileManager& fileManager);
   void render(const glm::mat4& projView);
 
+  const spdlog::logger* logger() const noexcept {
+    return m_logger.get();
+  }
+
   const GridRenderer& renderer() const noexcept {
     assert(m_renderer && "Renderer must be initialized!");
     return *m_renderer;

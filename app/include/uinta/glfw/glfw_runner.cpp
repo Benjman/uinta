@@ -149,7 +149,8 @@ void GlfwRunner::registerCallbacks() {
     if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) {
       if (mods & GLFW_MOD_CONTROL) {
         const size_t exit_code = 1;
-        SPDLOG_LOGGER_CRITICAL(runner->logger(), "Intentionally hard exiting the application with exit code {}.", exit_code);
+        SPDLOG_LOGGER_CRITICAL(const_cast<spdlog::logger*>(runner->logger()),
+                               "Intentionally hard exiting the application with exit code {}.", exit_code);
         exit(exit_code);
       }
       auto flags = runner->flags();

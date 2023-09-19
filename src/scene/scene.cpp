@@ -18,6 +18,7 @@ Scene::Scene(Runner& runner)
 }
 
 uinta_error_code Scene::init() {
+  SPDLOG_LOGGER_INFO(m_logger, "Initializing Scene...");
   if (auto error = m_grid->init(m_runner.file_manager()); error) return error;
   setFlag(CAMERA_ENABLED, isFlagSet(Runner::RENDERING_ENABLED, m_runner.flags()), m_flags);
   m_camera.aspect_ratio(m_runner.window().aspect_ratio);

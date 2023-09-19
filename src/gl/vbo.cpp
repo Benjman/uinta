@@ -11,7 +11,7 @@ void Vbo::size(size_t v) noexcept {
   m_size = v;
 }
 
-void Vbo::init(const std::shared_ptr<spdlog::logger> logger) {
+void Vbo::init(const spdlog::logger* logger) {
   assert(!m_id && "Cannot re-initialize VBO.");
   if (logger) m_logger = logger;
   glGenBuffers(1, &m_id);
@@ -21,7 +21,8 @@ void Vbo::init(const std::shared_ptr<spdlog::logger> logger) {
     resize(size);
   } else {
     if (m_logger)
-      SPDLOG_LOGGER_DEBUG(m_logger, "Initialized {} {}, drawing {}.", getGlEnumName(m_target), m_id, getGlEnumName(m_usage));
+      SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(m_logger), "Initialized {} {}, drawing {}.", getGlEnumName(m_target), m_id,
+                          getGlEnumName(m_usage));
   }
 }
 
@@ -38,8 +39,8 @@ void Vbo::upload(const void* const data, size_t size, size_t offset) {
   glBufferSubData(m_target, offset, size, data);
   m_size = std::max(offset + size, m_size);
   if (m_logger)
-    SPDLOG_LOGGER_DEBUG(m_logger, "Uploaded {} to {} {}, with an offset of {}.", formatMemory(size), getGlEnumName(m_target),
-                        m_id, formatMemory(offset));
+    SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(m_logger), "Uploaded {} to {} {}, with an offset of {}.", formatMemory(size),
+                        getGlEnumName(m_target), m_id, formatMemory(offset));
 }
 
 void Vbo::resize(size_t size) {
@@ -49,21 +50,23 @@ void Vbo::resize(size_t size) {
     m_size = size;
     bind();
     glBufferData(m_target, m_size, nullptr, m_usage);
-    if (m_logger) SPDLOG_LOGGER_DEBUG(m_logger, "Allocated {} for {} {}.", formatMemory(m_size), getGlEnumName(m_target), m_id);
+    if (m_logger)
+      SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(m_logger), "Allocated {} for {} {}.", formatMemory(m_size),
+                          getGlEnumName(m_target), m_id);
   } else {
     GLuint newId;
     glGenBuffers(1, &newId);
     glBindBuffer(m_target, newId);
     glBufferData(m_target, size, nullptr, m_usage);
     if (m_logger)
-      SPDLOG_LOGGER_DEBUG(m_logger, "Resized {} from {} to {}.", getGlEnumName(m_target), formatMemory(m_size),
-                          formatMemory(size));
+      SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(m_logger), "Resized {} from {} to {}.", getGlEnumName(m_target),
+                          formatMemory(m_size), formatMemory(size));
     glBindBuffer(GL_COPY_WRITE_BUFFER, newId);
     glBindBuffer(GL_COPY_READ_BUFFER, m_id);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, m_size);
     if (m_logger)
-      SPDLOG_LOGGER_DEBUG(m_logger, "Copied {} for {} from {} to {}.", formatMemory(m_size), getGlEnumName(m_target), m_id,
-                          newId);
+      SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(m_logger), "Copied {} for {} from {} to {}.", formatMemory(m_size),
+                          getGlEnumName(m_target), m_id, newId);
     glDeleteBuffers(1, &m_id);
     m_id = newId;
   }
@@ -76,7 +79,7 @@ void Vbo::unbind() const {
 
 void Vbo::destroy() {
   glDeleteBuffers(1, &m_id);
-  if (m_logger) SPDLOG_LOGGER_TRACE(m_logger, "Destroyed VBO.");
+  if (m_logger) SPDLOG_LOGGER_TRACE(const_cast<spdlog::logger*>(m_logger), "Destroyed VBO.");
 }
 
 }  // namespace uinta

@@ -3,7 +3,6 @@
 
 #include <spdlog/fwd.h>
 
-#include <memory>
 #include <uinta/error.hpp>
 #include <uinta/gl/vbo.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
@@ -28,7 +27,7 @@ class Vao {
     return m_index_buffer;
   }
 
-  void init(const std::shared_ptr<spdlog::logger> logger = nullptr);
+  void init(const spdlog::logger* logger = nullptr);
 
   void bind() const;
 
@@ -48,7 +47,7 @@ class Vao {
   u32 m_id = 0;
   std::vector<VertexAttrib> m_attributes;
   Vbo m_index_buffer = {GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW};
-  std::shared_ptr<spdlog::logger> m_logger;
+  const spdlog::logger* m_logger;
 };
 
 }  // namespace uinta

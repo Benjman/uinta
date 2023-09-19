@@ -78,8 +78,8 @@ class Runner {
     return m_state;
   }
 
-  const std::shared_ptr<spdlog::logger> logger() const noexcept {
-    return m_logger;
+  const spdlog::logger* logger() const noexcept {
+    return m_logger.get();
   }
 
  protected:

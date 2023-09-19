@@ -58,8 +58,8 @@ uinta_error_code Grid::init(FileManager& fm) {
     }
   }
 
-  m_vao.init(m_logger);
-  m_vbo.init(m_logger);
+  m_vao.init(m_logger.get());
+  m_vbo.init(m_logger.get());
   m_vbo.upload(buffer, m_renderer->m_vertex_count * 5 * sizeof(f32), 0);
   m_vao.init_attributes();
 
