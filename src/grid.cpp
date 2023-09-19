@@ -23,7 +23,7 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 UINTA_ERROR_FRAMEWORK(Grid, errorMessages);
 
 Grid::Grid(const Scene& scene, std::unique_ptr<GridRenderer> renderer)
-    : m_renderer(renderer ? std::move(renderer) : std::make_unique<GridRenderer_OpenGL>()),
+    : m_renderer(renderer ? std::move(renderer) : std::make_unique<GridRenderer_OpenGL>(*this)),
       m_logger(spdlog::stdout_color_mt(scene.runner().logger()->name() + ":Grid")) {
   assert(m_renderer && "Renderer must be initialized!");
 }
@@ -53,24 +53,22 @@ uinta_error_code Grid::init(FileManager& fm) {
       };
       // clang-format on
 
-      memcpy(&buffer[m_renderer->m_vertex_count * 5], vertices, sizeof(vertices));
-      m_renderer->m_vertex_count += 2;
+      memcpy(&buffer[m_renderer->vertex_count() * 5], vertices, sizeof(vertices));
+      m_renderer->vertex_count(m_renderer->vertex_count() + 2);
     }
   }
 
-  m_vao.init(m_logger.get());
-  m_vbo.init(m_logger.get());
-  m_vbo.upload(buffer, m_renderer->m_vertex_count * 5 * sizeof(f32), 0);
-  m_vao.init_attributes();
+  m_renderer->upload(buffer, m_renderer->vertex_count() * 5 * sizeof(f32), 0);
 
-  if (m_vao.id() == GL_ZERO || m_vbo.id() == GL_ZERO) return make_error(error::InitMesh);
   SPDLOG_LOGGER_INFO(m_logger, "Initialized grid.");
   return SUCCESS_EC;
 }
 
 void Grid::render(const glm::mat4& projView) {
-  m_vao.bind();
   m_renderer->render(projView);
+}
+
+GridRenderer::GridRenderer(const Grid& grid) : m_logger(grid.logger()) {
 }
 
 uinta_error_code GridRenderer_OpenGL::init(FileManager& fileManager) {
@@ -84,10 +82,15 @@ uinta_error_code GridRenderer_OpenGL::init(FileManager& fileManager) {
   fileManager.releaseFile({vs, fs});
 
   if (m_shader == GL_ZERO) return make_error(error::InitMesh);
+
+  m_vao.init(m_logger);
+  m_vbo.init(m_logger);
   return SUCCESS_EC;
 }
 
 void GridRenderer_OpenGL::render(const glm::mat4& projectViewMatrix) const {
+  m_vao.bind();
+  m_vbo.bind();
   static constexpr i32 GRID_RADIUS = 5;
   glUseProgram(m_shader);
   i32 currentLineWidth;
@@ -101,6 +104,13 @@ void GridRenderer_OpenGL::render(const glm::mat4& projectViewMatrix) const {
     }
   }
   if (m_line_width != currentLineWidth) glLineWidth(currentLineWidth);
+}
+
+void GridRenderer_OpenGL::upload(const f32* const buffer, size_t size, size_t offset) {
+  m_vao.bind();
+  m_vbo.bind();
+  m_vbo.upload(buffer, size, offset);
+  m_vao.init_attributes();
 }
 
 }  // namespace uinta
