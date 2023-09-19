@@ -79,11 +79,11 @@ class Scene {
 
  private:
   Runner& m_runner;
-  std::unique_ptr<Grid> m_grid;
   TargetCamera m_camera;
   Light m_diffuse_light;
-  std::shared_ptr<spdlog::logger> m_logger;
   entt::registry m_registry;
+  std::unique_ptr<Grid> m_grid;
+  std::shared_ptr<spdlog::logger> m_logger;
   flags_t m_flags = DIFFUSE_LIGHT_DIRTY | CAMERA_ENABLED | GRID_ENABLED;
 };
 
