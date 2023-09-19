@@ -6,13 +6,13 @@
 #define protected public
 #include <uinta/runner/runner.hpp>
 
-#include "./utils/test_runner.hpp"
+#include "./mock/mock_runner.hpp"
 
 using namespace uinta;
 
 #define TEST_RUNNER_DEPENDENCIES                                   \
-  dependencies.file_manager = std::make_unique<TestFileManager>(); \
-  dependencies.gpu_utils = std::make_unique<TestRunnerGpuUtils>();
+  dependencies.file_manager = std::make_unique<MockFileManager>(); \
+  dependencies.gpu_utils = std::make_unique<MockRunnerGpuUtils>();
 
 namespace uinta {
 enum class error {
@@ -29,7 +29,7 @@ TEST(RunnerTest, file_manager_null) {
   RunnerDependencies dependencies;
   TEST_RUNNER_DEPENDENCIES;
   dependencies.file_manager = nullptr;
-  ASSERT_DEATH({ TestRunner runner(getUniqueTestName(), std::move(dependencies)); }, "File manager must be initialized.")
+  ASSERT_DEATH({ MockRunner runner(getUniqueTestName(), std::move(dependencies)); }, "File manager must be initialized.")
       << "Application was expected to die.";
 }
 
@@ -37,14 +37,14 @@ TEST(RunnerTest, gpu_utils_null) {
   RunnerDependencies dependencies;
   TEST_RUNNER_DEPENDENCIES;
   dependencies.gpu_utils = nullptr;
-  ASSERT_DEATH({ TestRunner runner(getUniqueTestName(), std::move(dependencies)); }, "GPU Utilities must be initialized.")
+  ASSERT_DEATH({ MockRunner runner(getUniqueTestName(), std::move(dependencies)); }, "GPU Utilities must be initialized.")
       << "Application was expected to die.";
 }
 
 TEST(RunnerTest, doInit_errorStopsRunner) {
-  TestRunner runner(getUniqueTestName());
+  MockRunner runner;
   const auto error = make_error(error::ExpectedError);
-  runner.doInit_ec = error;
+  runner.on_doInit = [error] { return error; };
   EXPECT_THROW(
       {
         try {
@@ -52,7 +52,6 @@ TEST(RunnerTest, doInit_errorStopsRunner) {
         } catch (const UintaException& ex) {
           ASSERT_STREQ(ex.what(), UintaException::format_message(error.message(), make_error(error::ExpectedError)).c_str())
               << "Unexpected error message.";
-          ASSERT_TRUE(runner.doInit_called) << "`doInit()` was not called.";
           throw ex;
         }
       },
@@ -61,7 +60,11 @@ TEST(RunnerTest, doInit_errorStopsRunner) {
 }
 
 TEST(RunnerTest, advanceState) {
-  TestRunner runner(getUniqueTestName());
+  f32 runtime = 0;
+  f32 runtime_delta = 60.0 / 1000.0;
+
+  MockRunner runner;
+  runner.on_runtime = [&] { return runtime += runtime_delta; };
 
   ASSERT_EQ(0, runner.state().tick) << "Initial `tick` count was expected to be zero.";
   ASSERT_FLOAT_EQ(0, runner.state().delta) << "Initial `delta` count was expected to be zero.";
@@ -71,7 +74,7 @@ TEST(RunnerTest, advanceState) {
   for (u32 i = 1; i < LoopCount; ++i) {
     runner.advanceState();
     ASSERT_EQ(i, runner.state().tick) << "Unexpected tick.";
-    ASSERT_NEAR(runner.rt_delta, runner.state().delta, 0.001) << "Unexpect runtime delta.";
-    ASSERT_NEAR(runner.rt_delta * runner.state().tick, runner.state().runtime, 0.001) << "Unexpected runtime.";
+    ASSERT_NEAR(runtime_delta, runner.state().delta, 0.001) << "Unexpect runtime delta.";
+    ASSERT_NEAR(runtime, runner.state().runtime, 0.001) << "Unexpected runtime.";
   }
 }
