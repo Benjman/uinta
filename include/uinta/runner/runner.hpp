@@ -8,7 +8,6 @@
 #include <uinta/exception.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/input/state.hpp>
-#include <uinta/model_manager.hpp>
 #include <uinta/runner/dependencies.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/runner/window.hpp>
@@ -59,14 +58,6 @@ class Runner {
     return *m_scene;
   }
 
-  ModelManager& model_manager() noexcept {
-    return m_model_manager;
-  }
-
-  void model_manager(const ModelManager& v) {
-    m_model_manager = v;
-  }
-
   flags_t& flags() noexcept {
     return m_flags;
   }
@@ -103,7 +94,6 @@ class Runner {
  private:
   Window m_window;
   InputState m_input;
-  ModelManager m_model_manager;
   std::unique_ptr<FileManager> m_file_manager;
   std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
   std::unique_ptr<Scene> m_scene;
