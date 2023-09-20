@@ -10,7 +10,6 @@
 #include <string>
 #include <uinta/cfg.hpp>
 #include <uinta/fwd.hpp>
-#include <uinta/memory/memory_link.hpp>
 #include <vector>
 
 namespace uinta {
@@ -46,9 +45,34 @@ class FileManager {
   void releaseFile(const std::vector<const file_t*>& handles);
 
  protected:
+  struct MemoryLink {  // TODO: Get rid of this monstrosity
+    size_t size;
+    void* ptr;
+    MemoryLink *back, *forward;
+
+    explicit MemoryLink(void* ptr = nullptr, size_t size = 0);
+
+    MemoryLink(const MemoryLink& other);
+
+    MemoryLink& operator=(const MemoryLink& other);
+
+    bool operator==(const MemoryLink& rhs) const;
+  };
+
   virtual void loadFileBinary(const file_t* const handle) = 0;
   virtual void loadFileText(const file_t* const handle) = 0;
 
+  const spdlog::logger* logger() const noexcept {
+    return m_logger.get();
+  }
+
+  std::vector<MemoryLink>& links() noexcept {
+    return m_links;
+  }
+
+  const file_t getId(const file_t* const handle) const;
+
+ private:
   std::vector<std::string> m_searchPaths;
 
   std::vector<file_t*> m_handles;
@@ -66,8 +90,6 @@ class FileManager {
   void parseFileSearchPaths(const std::string& searchPaths, const char delim);
   std::string findPath(const std::string& path);
   void loadHandleData(const file_t* const handle);
-
-  const file_t getId(const file_t* const handle) const;
 
   void setIsActive(const file_t* const handle, const bool isActive);
   void setIsBuffered(const file_t* const handle, const bool isLoaded);

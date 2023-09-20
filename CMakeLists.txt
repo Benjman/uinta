@@ -35,7 +35,6 @@ set(UINTA_SRCS
   ./src/math/hexagon.cpp
   ./src/math/perlin.cpp
   ./src/math/running_avg.cpp
-  ./src/memory/memory_link.cpp
   ./src/mesh.cpp
   ./src/metrics.cpp
   ./src/model_manager.cpp
