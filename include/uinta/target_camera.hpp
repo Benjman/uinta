@@ -174,12 +174,8 @@ class TargetCamera {
     m_vert_offset = v;
   }
 
-  flags_t flags() const noexcept {
+  flags_t& flags() noexcept {
     return m_flags;
-  }
-
-  void flags(const flags_t v) noexcept {
-    m_flags = v;
   }
 
  private:

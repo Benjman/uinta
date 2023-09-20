@@ -66,12 +66,8 @@ class Runner {
     m_model_manager = v;
   }
 
-  const flags_t flags() const noexcept {
+  flags_t& flags() noexcept {
     return m_flags;
-  }
-
-  void flags(const flags_t v) {
-    m_flags = v;
   }
 
   const RunnerState& state() const {

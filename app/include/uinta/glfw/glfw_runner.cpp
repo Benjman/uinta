@@ -153,9 +153,7 @@ void GlfwRunner::registerCallbacks() {
                                "Intentionally hard exiting the application with exit code {}.", exit_code);
         exit(exit_code);
       }
-      auto flags = runner->flags();
-      setFlag(IS_RUNNING, false, flags);
-      runner->flags(flags);
+      setFlag(IS_RUNNING, false, runner->flags());
     }
     runner->handleKeyInput(key, scancode, action, mods);
   });

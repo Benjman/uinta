@@ -93,7 +93,7 @@ inline bool cameraTransform(TargetCamera &camera, const RunnerState &state) {
 
     auto flags = camera.flags();
     if (ImGui::CheckboxFlags("Limit dist", (u32 *)&flags, TargetCamera::CAMERA_DIST_LIMIT)) {
-      camera.flags(flags);
+      camera.flags() = flags;
       result = true;
     }
 
@@ -106,7 +106,7 @@ inline bool cameraTransform(TargetCamera &camera, const RunnerState &state) {
 
     ImGui::SameLine();
     if (ImGui::CheckboxFlags("Limit pitch", (u32 *)&flags, TargetCamera::CAMERA_PITCH_LIMIT)) {
-      camera.flags(flags);
+      camera.flags() = flags;
       result = true;
     }
 
