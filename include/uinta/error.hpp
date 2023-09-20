@@ -6,12 +6,9 @@
 #include <map>
 #include <string>
 #include <system_error>
+#include <uinta/fwd.hpp>
 
 namespace uinta {
-
-using uinta_error_code = std::error_code;  // Alias in case of future plans to change this to a bitwise handle. If this is here
-                                           // for a while without being changed, delete this comment. Comment made 2023-AUG-31
-using uinta_error_code_t = i32;
 
 class uinta_error_category_t : public std::error_category {
  public:

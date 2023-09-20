@@ -3,7 +3,7 @@
 
 #include <spdlog/fwd.h>
 
-#include <uinta/error.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/gl/vbo.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
 #include <vector>

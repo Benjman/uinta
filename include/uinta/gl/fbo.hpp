@@ -3,7 +3,7 @@
 
 #include <uinta/gl/api.h>
 
-#include <uinta/error.hpp>
+#include <uinta/fwd.hpp>
 
 namespace uinta {
 

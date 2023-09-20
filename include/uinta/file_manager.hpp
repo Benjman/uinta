@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <uinta/cfg.hpp>
-#include <uinta/error.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/memory/memory_link.hpp>
 #include <vector>

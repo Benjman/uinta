@@ -5,6 +5,7 @@
 #include <uinta/types.h>
 #include <uinta/utils/macros.h>
 
+#include <system_error>
 #include <uinta/input/fwd.hpp>
 
 namespace uinta {
@@ -17,6 +18,9 @@ class UintaException;
 struct Light;
 struct RunnerState;
 struct Window;
+
+using uinta_error_code = std::error_code;
+using uinta_error_code_t = i32;
 
 }  // namespace uinta
 

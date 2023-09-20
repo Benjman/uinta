@@ -2,7 +2,7 @@
 #define UINTA_OBJ_HPP
 
 #include <string>
-#include <uinta/error.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/mesh.hpp>
 
 namespace uinta {

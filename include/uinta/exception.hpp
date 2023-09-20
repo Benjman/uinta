@@ -3,7 +3,7 @@
 
 #include <exception>
 #include <string>
-#include <uinta/error.hpp>
+#include <uinta/fwd.hpp>
 
 namespace uinta {
 

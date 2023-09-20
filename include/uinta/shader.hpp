@@ -4,7 +4,7 @@
 #include <uinta/gl/api.h>
 
 #include <string>
-#include <uinta/error.hpp>
+#include <uinta/fwd.hpp>
 #include <vector>
 
 namespace uinta {

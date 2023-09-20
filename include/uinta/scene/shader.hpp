@@ -2,7 +2,7 @@
 #define UINTA_SCENE_SHADER_HPP
 
 #include <glm/mat4x4.hpp>
-#include <uinta/error.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/runner/runner_state.hpp>
 
 namespace uinta {
