@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <uinta/error.hpp>
+#include <uinta/gl/vao.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
