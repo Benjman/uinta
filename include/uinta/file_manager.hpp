@@ -10,12 +10,11 @@
 #include <string>
 #include <uinta/cfg.hpp>
 #include <uinta/error.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/memory/memory_link.hpp>
 #include <vector>
 
 namespace uinta {
-
-class Runner;
 
 using file_size_t = u32;
 using file_t = u32;

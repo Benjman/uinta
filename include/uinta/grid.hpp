@@ -11,10 +11,6 @@
 
 namespace uinta {
 
-class FileManager;
-class Scene;
-class Grid;
-
 class GridRenderer {
  public:
   GridRenderer(const Grid& grid);

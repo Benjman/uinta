@@ -3,16 +3,13 @@
 
 #include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/input/state.hpp>
 #include <uinta/runner/dependencies.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/runner/window.hpp>
 
 namespace uinta {
-
-class FileManager;
-class Scene;
-class UintaException;
 
 class Runner {
  public:

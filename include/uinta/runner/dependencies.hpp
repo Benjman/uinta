@@ -4,6 +4,7 @@
 #include <uinta/gl/api.h>
 
 #include <glm/fwd.hpp>
+#include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
 
 namespace uinta {

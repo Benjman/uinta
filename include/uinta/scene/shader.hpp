@@ -7,9 +7,6 @@
 
 namespace uinta {
 
-class FileManager;
-struct Light;
-
 class SceneShader {
  public:
   u32 id;

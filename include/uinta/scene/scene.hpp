@@ -12,8 +12,6 @@
 
 namespace uinta {
 
-class Runner;
-
 class Scene {
  public:
   static constexpr flag_t DIFFUSE_LIGHT_DIRTY = 1 << 0;
