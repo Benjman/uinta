@@ -54,7 +54,7 @@ bool processArg_noGrid(Runner* runner, const RunnerArg& arg) {
   if (!containsKey(arg.first.c_str(), keys)) return false;
   runner->scene().flag(Scene::GRID_ENABLED, false);
   expectNoValue(arg);
-  SPDLOG_INFO("Cartesian grid disabled via argument '{}'.", arg.first);
+  SPDLOG_INFO("Grid disabled via argument '{}'.", arg.first);
   return true;
 }
 

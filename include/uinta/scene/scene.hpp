@@ -6,9 +6,9 @@
 #include <uinta/types.h>
 
 #include <entt/entity/registry.hpp>
+#include <uinta/fwd.hpp>
 #include <uinta/scene/light.hpp>
 #include <uinta/target_camera.hpp>
-#include <uinta/utils/cartesian_grid.hpp>
 
 namespace uinta {
 
@@ -21,6 +21,8 @@ class Scene {
   static constexpr flag_t GRID_ENABLED = 1 << 2;
 
   Scene(Runner& runner);
+
+  ~Scene();
 
   uinta_error_code init();
 
@@ -67,8 +69,8 @@ class Scene {
     m_flags = v;
   }
 
-  const CartesianGrid& cartesian_grid() const noexcept {
-    return m_cartesian_grid;
+  const Grid& grid() const noexcept {
+    return *m_grid;
   }
 
   entt::registry& registry() {
@@ -77,7 +79,7 @@ class Scene {
 
  private:
   Runner& m_runner;
-  CartesianGrid m_cartesian_grid;
+  std::unique_ptr<Grid> m_grid;
   TargetCamera m_camera;
   Light m_diffuse_light;
   std::shared_ptr<spdlog::logger> m_logger;

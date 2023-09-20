@@ -1,5 +1,5 @@
-#ifndef UINTA_UTILS_CARTESIAN_GRID_HPP
-#define UINTA_UTILS_CARTESIAN_GRID_HPP
+#ifndef UINTA_GRID_HPP
+#define UINTA_GRID_HPP
 
 #include <spdlog/fwd.h>
 
@@ -8,15 +8,14 @@
 #include <uinta/error.hpp>
 #include <uinta/fwd.hpp>
 #include <uinta/gl/vao.hpp>
-#include <uinta/gl/vbo.hpp>
 
 namespace uinta {
 
 class FileManager;
 class Scene;
 
-class CartesianGridRenderer {
-  friend class CartesianGrid;
+class GridRenderer {
+  friend class Grid;
 
  public:
   virtual uinta_error_code init(FileManager& fileManager) = 0;
@@ -30,22 +29,20 @@ class CartesianGridRenderer {
 };
 
 // TODO: Move me to the Uinta OpenGL library when it's made.
-class CartesianGridRenderer_OpenGL : public CartesianGridRenderer {
+class GridRenderer_OpenGL : public GridRenderer {
  public:
   uinta_error_code init(FileManager& fileManager) override;
   void render(const glm::mat4& projectViewMatrix) const override;
 };
 
-class CartesianGrid {
-  friend void settingsGrid(Runner&);
-
+class Grid {
  public:
-  CartesianGrid(const Scene& scene, std::unique_ptr<CartesianGridRenderer> renderer = nullptr);
+  Grid(const Scene& scene, std::unique_ptr<GridRenderer> renderer = nullptr);
 
   uinta_error_code init(FileManager& fileManager);
   void render(const glm::mat4& projView);
 
-  const CartesianGridRenderer& renderer() const noexcept {
+  const GridRenderer& renderer() const noexcept {
     assert(m_renderer && "Renderer must be initialized!");
     return *m_renderer;
   }
@@ -56,10 +53,10 @@ class CartesianGrid {
       {1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 2 * sizeof(GLfloat)},
   }};
   Vbo m_vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
-  std::unique_ptr<CartesianGridRenderer> m_renderer;
+  std::unique_ptr<GridRenderer> m_renderer;
   std::shared_ptr<spdlog::logger> m_logger;
 };
 
 }  // namespace uinta
 
-#endif  // UINTA_UTILS_CARTESIAN_GRID_HPP
+#endif  // UINTA_GRID_HPP

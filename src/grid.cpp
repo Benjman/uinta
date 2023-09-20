@@ -7,7 +7,7 @@
 #include <uinta/mesh.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/shader.hpp>
-#include <uinta/utils/cartesian_grid.hpp>
+#include <uinta/grid.hpp>
 
 namespace uinta {
 
@@ -20,15 +20,15 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
     {static_cast<uinta_error_code_t>(error::InitMesh), "Failed to initialize mesh!"},
 };
 
-UINTA_ERROR_FRAMEWORK(CartesianGrid, errorMessages);
+UINTA_ERROR_FRAMEWORK(Grid, errorMessages);
 
-CartesianGrid::CartesianGrid(const Scene& scene, std::unique_ptr<CartesianGridRenderer> renderer)
-    : m_renderer(renderer ? std::move(renderer) : std::make_unique<CartesianGridRenderer_OpenGL>()),
+Grid::Grid(const Scene& scene, std::unique_ptr<GridRenderer> renderer)
+    : m_renderer(renderer ? std::move(renderer) : std::make_unique<GridRenderer_OpenGL>()),
       m_logger(spdlog::stdout_color_mt(scene.runner().logger()->name() + ":Grid")) {
   assert(m_renderer && "Renderer must be initialized!");
 }
 
-uinta_error_code CartesianGrid::init(FileManager& fm) {
+uinta_error_code Grid::init(FileManager& fm) {
   SPDLOG_LOGGER_INFO(m_logger, "Initializing grid...");
   if (auto error = m_renderer->init(fm); error) return error;
 
@@ -68,14 +68,14 @@ uinta_error_code CartesianGrid::init(FileManager& fm) {
   return SUCCESS_EC;
 }
 
-void CartesianGrid::render(const glm::mat4& projView) {
+void Grid::render(const glm::mat4& projView) {
   m_vao.bind();
   m_renderer->render(projView);
 }
 
-uinta_error_code CartesianGridRenderer_OpenGL::init(FileManager& fileManager) {
-  const auto vs = fileManager.registerFile("shader/cartesianGrid.vs");
-  const auto fs = fileManager.registerFile("shader/cartesianGrid.fs");
+uinta_error_code GridRenderer_OpenGL::init(FileManager& fileManager) {
+  const auto vs = fileManager.registerFile("shader/grid.vs");
+  const auto fs = fileManager.registerFile("shader/grid.fs");
   fileManager.loadFile({vs, fs});
 
   const std::vector<std::string> sources = {fileManager.getDataString(vs), fileManager.getDataString(fs)};
@@ -87,7 +87,7 @@ uinta_error_code CartesianGridRenderer_OpenGL::init(FileManager& fileManager) {
   return SUCCESS_EC;
 }
 
-void CartesianGridRenderer_OpenGL::render(const glm::mat4& projectViewMatrix) const {
+void GridRenderer_OpenGL::render(const glm::mat4& projectViewMatrix) const {
   static constexpr i32 GRID_RADIUS = 5;
   glUseProgram(m_shader);
   i32 currentLineWidth;

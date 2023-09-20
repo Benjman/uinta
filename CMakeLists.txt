@@ -30,6 +30,7 @@ set(UINTA_SRCS
   ./src/gl/vao.cpp
   ./src/gl/vbo.cpp
   ./src/gl/vertex_attrib.cpp
+  ./src/grid.cpp
   ./src/logging.cpp
   ./src/math/hexagon.cpp
   ./src/math/perlin.cpp
@@ -46,7 +47,6 @@ set(UINTA_SRCS
   ./src/scene/shader.cpp
   ./src/shader.cpp
   ./src/target_camera.cpp
-  ./src/utils/cartesian_grid.cpp
   ./src/utils/direction.cpp
 
   )
