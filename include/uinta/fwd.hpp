@@ -6,11 +6,18 @@
 #include <uinta/utils/macros.h>
 
 #include <uinta/input/fwd.hpp>
-#include <uinta/math/fwd.hpp>
-#include <uinta/runner/fwd.hpp>
 
 namespace uinta {
+
 class FileManager;
+class Grid;
+class Runner;
+class Scene;
+class UintaException;
+struct Light;
+struct RunnerState;
+struct Window;
+
 }  // namespace uinta
 
 #endif  // UINTA_FWD_HPP
