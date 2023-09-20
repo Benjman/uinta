@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <uinta/error.hpp>
+#include <uinta/exception.hpp>
 #include <uinta/logging.hpp>
 
 #define private public

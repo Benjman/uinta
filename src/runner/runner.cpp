@@ -9,6 +9,7 @@
 #include <glm/mat4x4.hpp>
 #include <iostream>
 #include <uinta/error.hpp>
+#include <uinta/exception.hpp>
 #include <uinta/grid.hpp>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
