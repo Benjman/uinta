@@ -6,7 +6,6 @@
 #include <uinta/utils/macros.h>
 
 #include <system_error>
-#include <uinta/input/fwd.hpp>
 
 namespace uinta {
 
@@ -18,7 +17,10 @@ class UintaException;
 struct Light;
 struct RunnerState;
 struct Window;
+struct InputState;
 
+using input_key_t = u32;
+using mouse_button_t = u32;
 using uinta_error_code = std::error_code;
 using uinta_error_code_t = i32;
 

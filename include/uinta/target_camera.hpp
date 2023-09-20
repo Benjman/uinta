@@ -2,7 +2,7 @@
 #define UINTA_TARGET_CAMERA_HPP
 
 #include <glm/fwd.hpp>
-#include <uinta/input/keys.hpp>
+#include <uinta/input.hpp>
 #include <uinta/math/smooth_vec3.hpp>
 
 namespace uinta {
