@@ -21,7 +21,8 @@ class Runner {
   static constexpr flag_t RENDERING_ENABLED = 1 << 0;
   static constexpr flag_t IS_RUNNING = 1 << 1;
 
-  Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr, RunnerDependencies dependencies = {}) noexcept;
+  Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr, std::unique_ptr<FileManager> file_manager = nullptr,
+         std::unique_ptr<RunnerGpuUtils> gpu_utils = nullptr) noexcept;
 
   ~Runner();
 

@@ -10,10 +10,6 @@
 
 using namespace uinta;
 
-#define TEST_RUNNER_DEPENDENCIES                                   \
-  dependencies.file_manager = std::make_unique<MockFileManager>(); \
-  dependencies.gpu_utils = std::make_unique<MockRunnerGpuUtils>();
-
 namespace uinta {
 enum class error {
   ExpectedError = 100,
@@ -26,18 +22,13 @@ UINTA_ERROR_FRAMEWORK(TestRunner, errorMessages);
 }  // namespace uinta
 
 TEST(RunnerTest, file_manager_null) {
-  RunnerDependencies dependencies;
-  TEST_RUNNER_DEPENDENCIES;
-  dependencies.file_manager = nullptr;
-  ASSERT_DEATH({ MockRunner runner(getUniqueTestName(), std::move(dependencies)); }, "File manager must be initialized.")
+  ASSERT_DEATH({ MockRunner runner(getUniqueTestName(), nullptr); }, "File manager must be initialized.")
       << "Application was expected to die.";
 }
 
 TEST(RunnerTest, gpu_utils_null) {
-  RunnerDependencies dependencies;
-  TEST_RUNNER_DEPENDENCIES;
-  dependencies.gpu_utils = nullptr;
-  ASSERT_DEATH({ MockRunner runner(getUniqueTestName(), std::move(dependencies)); }, "GPU Utilities must be initialized.")
+  ASSERT_DEATH({ MockRunner runner(getUniqueTestName(), std::make_unique<MockFileManager>(), nullptr); },
+               "GPU Utilities must be initialized.")
       << "Application was expected to die.";
 }
 

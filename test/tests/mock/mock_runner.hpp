@@ -31,8 +31,9 @@ class MockRunnerGpuUtils : public RunnerGpuUtils {
 class MockRunner : public Runner {
  public:
   MockRunner(const std::string& title = getUniqueTestName(),
-             RunnerDependencies dependencies = {std::make_unique<MockFileManager>(), std::make_unique<MockRunnerGpuUtils>()})
-      : Runner(title, 0, nullptr, std::move(dependencies)) {
+             std::unique_ptr<FileManager> file_manager = std::make_unique<MockFileManager>(),
+             std::unique_ptr<RunnerGpuUtils> gpu_utils = std::make_unique<MockRunnerGpuUtils>())
+      : Runner(title, 0, nullptr, std::move(file_manager), std::move(gpu_utils)) {
     setFlag(Runner::RENDERING_ENABLED, false, m_flags);
   }
 

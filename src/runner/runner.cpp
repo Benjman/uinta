@@ -19,11 +19,12 @@ namespace uinta {
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
-Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDependencies dependencies) noexcept
+Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<FileManager> file_manager,
+               std::unique_ptr<RunnerGpuUtils> gpu_utils) noexcept
     : m_logger(spdlog::stdout_color_mt(title)),
       m_window(title),
-      m_file_manager(std::move(dependencies.file_manager)),
-      m_gpu_utils(std::move(dependencies.gpu_utils)),
+      m_file_manager(std::move(file_manager)),
+      m_gpu_utils(std::move(gpu_utils)),
       m_scene(std::make_unique<Scene>(*this)) {
   assert(m_file_manager && "File manager must be initialized!");
   assert(m_gpu_utils && "GPU Utilities must be initialized!");

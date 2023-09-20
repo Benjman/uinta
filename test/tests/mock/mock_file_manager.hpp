@@ -7,6 +7,10 @@
 namespace uinta {
 
 class MockFileManager : public FileManager {
+ public:
+  MockFileManager() : FileManager(0) {
+  }
+
  protected:
   std::function<void()> on_loadFileBinary;
   void loadFileBinary(const file_t* const handle) override {

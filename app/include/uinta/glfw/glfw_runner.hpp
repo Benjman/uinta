@@ -9,7 +9,8 @@ class GlfwRunner : public Runner {
   static constexpr i32 MAX_MONITORS = 4;
 
  public:
-  explicit GlfwRunner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept : Runner(title, argc, argv) {
+  explicit GlfwRunner(const std::string& title, i32 argc = 0, const char** argv = nullptr) noexcept
+      : Runner(title, argc, argv, std::make_unique<FileManager_Desktop>(), std::make_unique<RunnerGpuUtils_OpenGL>()) {
   }
 
   ~GlfwRunner();
