@@ -38,7 +38,7 @@ uinta_error_code GlfwRunner::doInit() {
 
 void GlfwRunner::pollInput() {
   glfwPollEvents();
-  if (m_window && glfwWindowShouldClose(m_window)) setFlag(IS_RUNNING, false, m_flags);
+  if (m_window && glfwWindowShouldClose(m_window)) setFlag(IS_RUNNING, false, flags());
 }
 
 f64 GlfwRunner::runtime() {
@@ -54,7 +54,8 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
 
   constexpr i32 version_major = 3;
   constexpr i32 version_minor = 3;
-  SPDLOG_LOGGER_INFO(m_logger, "Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
+  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "Initializing GLFW v{}.{} with OpenGL Core profile...", version_major,
+                     version_minor);
   if (!glfwInit()) return make_error(error::InitError);
 
   i32 monCount;
@@ -89,16 +90,16 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   glfwSetWindowPos(m_window, target_x, target_y);
 
   window(Window(window().title, target_width, target_height));
-  SPDLOG_LOGGER_INFO(m_logger, "Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height,
-                     window().aspect_ratio);
+  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "Created window '{}' {}x{} (aspect ratio {}).", window().title,
+                     target_width, target_height, window().aspect_ratio);
 
   glfwSetWindowUserPointer(m_window, this);
   glfwMakeContextCurrent(m_window);
 
-  SPDLOG_LOGGER_INFO(m_logger, "Loading GLAD...");
+  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "Loading GLAD...");
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return make_error(error::GladError);
 
-  SPDLOG_LOGGER_INFO(m_logger, "GLFW initialization completed in {} seconds.", sw.elapsed().count());
+  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "GLFW initialization completed in {} seconds.", sw.elapsed().count());
 
   return SUCCESS_EC;
 }

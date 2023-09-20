@@ -5,7 +5,7 @@
 #include <uinta/error.hpp>
 #include <uinta/grid.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/runner.hpp>
+#include <uinta/runner/runner.hpp>
 #include <uinta/scene/scene.hpp>
 
 namespace uinta {

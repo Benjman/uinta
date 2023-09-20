@@ -1,11 +1,8 @@
 #ifndef UINTA_RUNNER_RUNNER_HPP
 #define UINTA_RUNNER_RUNNER_HPP
 
-#include <spdlog/fwd.h>
-
 #include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
-#include <uinta/file_manager.hpp>
 #include <uinta/input/state.hpp>
 #include <uinta/runner/dependencies.hpp>
 #include <uinta/runner/runner_state.hpp>
@@ -13,6 +10,7 @@
 
 namespace uinta {
 
+class FileManager;
 class Scene;
 class UintaException;
 
@@ -63,6 +61,14 @@ class Runner {
     return m_flags;
   }
 
+  GLbitfield& clear_mastk() noexcept {
+    return m_clear_mask;
+  }
+
+  glm::vec3& clear_color() noexcept {
+    return m_clear_color;
+  }
+
   const RunnerState& state() const {
     return m_state;
   }
@@ -72,12 +78,6 @@ class Runner {
   }
 
  protected:
-  RunnerState m_state;
-  const std::shared_ptr<spdlog::logger> m_logger;
-  GLbitfield clearMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-  glm::vec3 clearColor = glm::vec3(38, 70, 83) / 255.0f;
-  flags_t m_flags = RENDERING_ENABLED | IS_RUNNING;
-
   virtual uinta_error_code doInit();
   virtual void doPreTick();
   virtual void doTick();
@@ -95,9 +95,14 @@ class Runner {
  private:
   Window m_window;
   InputState m_input;
-  std::unique_ptr<FileManager> m_file_manager;
-  std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
-  std::unique_ptr<Scene> m_scene;
+  RunnerState m_state;
+  const std::shared_ptr<spdlog::logger> m_logger;
+  const std::unique_ptr<FileManager> m_file_manager;
+  const std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
+  const std::unique_ptr<Scene> m_scene;
+  glm::vec3 m_clear_color = glm::vec3(38, 70, 83) / 255.0f;
+  GLbitfield m_clear_mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+  flags_t m_flags = RENDERING_ENABLED | IS_RUNNING;
 
   void tick();
   void render();

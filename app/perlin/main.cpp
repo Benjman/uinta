@@ -43,7 +43,7 @@ class PerlinRunner : public GlfwRunner {
 
   PerlinRunner(const i32 argc, const char** argv) : GlfwRunner("Perlin", argc, argv) {
     window(Window(window().title, 800, 800));
-    clearColor = {0, 0, 0};
+    clear_color() = {0, 0, 0};
   }
 
   uinta_error_code doInit() override {

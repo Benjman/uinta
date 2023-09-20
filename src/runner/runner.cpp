@@ -22,8 +22,8 @@ void processArgs(Runner* runner, i32 argc, const char** argv);
 
 Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<FileManager> file_manager,
                std::unique_ptr<RunnerGpuUtils> gpu_utils) noexcept
-    : m_logger(spdlog::stdout_color_mt(title)),
-      m_window(title),
+    : m_window(title),
+      m_logger(spdlog::stdout_color_mt(title)),
       m_file_manager(std::move(file_manager)),
       m_gpu_utils(std::move(gpu_utils)),
       m_scene(std::make_unique<Scene>(*this)) {
@@ -51,7 +51,7 @@ i32 Runner::run() {
         pollInput();
         if (isFlagSet(RENDERING_ENABLED, m_flags)) {
           swapBuffers();
-          m_gpu_utils->clear_buffer(clearColor, clearMask);
+          m_gpu_utils->clear_buffer(m_clear_color, m_clear_mask);
           render();
         }
       } catch (const UintaException& ex) {
