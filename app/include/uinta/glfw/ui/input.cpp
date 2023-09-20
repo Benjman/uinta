@@ -5,6 +5,7 @@
 #include <glm/vec2.hpp>
 #include <uinta/math/utils.hpp>
 #include <uinta/runner/runner.hpp>
+#include <uinta/scene/scene.hpp>
 #include <uinta/utils/direction.hpp>
 
 namespace uinta {

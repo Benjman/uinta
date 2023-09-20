@@ -6,6 +6,7 @@
 #include <uinta/logging.hpp>
 #include <uinta/mesh.hpp>
 #include <uinta/runner/runner.hpp>
+#include <uinta/scene/scene.hpp>
 #include <uinta/shader.hpp>
 #include <uinta/grid.hpp>
 

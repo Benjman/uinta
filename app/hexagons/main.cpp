@@ -2,6 +2,7 @@
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/math/hexagon.hpp>
 #include <uinta/math/perlin.hpp>
+#include <uinta/scene/scene.hpp>
 
 namespace uinta {
 

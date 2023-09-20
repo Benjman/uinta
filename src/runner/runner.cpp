@@ -13,7 +13,7 @@
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
-#include <uinta/runner/runner_state.hpp>
+#include <uinta/scene/scene.hpp>
 
 namespace uinta {
 
@@ -22,9 +22,9 @@ void processArgs(Runner* runner, i32 argc, const char** argv);
 Runner::Runner(const std::string& title, i32 argc, const char** argv, RunnerDependencies dependencies) noexcept
     : m_logger(spdlog::stdout_color_mt(title)),
       m_window(title),
-      m_scene(*this),
       m_file_manager(std::move(dependencies.file_manager)),
-      m_gpu_utils(std::move(dependencies.gpu_utils)) {
+      m_gpu_utils(std::move(dependencies.gpu_utils)),
+      m_scene(std::make_unique<Scene>(*this)) {
   assert(m_file_manager && "File manager must be initialized!");
   assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);
@@ -74,7 +74,7 @@ i32 Runner::run() {
 
 uinta_error_code Runner::doInit() {
   if (auto error = m_file_manager->init(*this); error) return error;
-  if (auto error = m_scene.init(); error) return error;
+  if (auto error = m_scene->init(); error) return error;
   if (auto error = m_gpu_utils->init(); error) return error;
   return SUCCESS_EC;
 }
@@ -146,7 +146,7 @@ void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
   win.height = height;
   m_window = win;
   if (orig_width != m_window.width || orig_height != m_window.height) {
-    m_scene.onAspectRatioUpdate(m_window.aspect_ratio);
+    m_scene->onAspectRatioUpdate(m_window.aspect_ratio);
   }
 }
 
@@ -158,7 +158,7 @@ void Runner::doPreRender() {
 }
 
 void Runner::doRender() {
-  m_scene.render(m_state);
+  m_scene->render(m_state);
 }
 
 void Runner::doPostRender() {
@@ -168,15 +168,15 @@ void Runner::doShutdown() {
 }
 
 void Runner::doPreTick() {
-  m_scene.preTick(m_state, m_input);
+  m_scene->preTick(m_state, m_input);
 }
 
 void Runner::doTick() {
-  m_scene.tick(m_state, m_input);
+  m_scene->tick(m_state, m_input);
 }
 
 void Runner::doPostTick() {
-  m_scene.postTick(m_state, m_input);
+  m_scene->postTick(m_state, m_input);
 }
 
 bool Runner::handleException(const UintaException& ex) {

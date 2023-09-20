@@ -3,6 +3,7 @@
 #include <string>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
+#include <uinta/scene/scene.hpp>
 #include <vector>
 
 namespace uinta {

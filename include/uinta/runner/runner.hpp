@@ -12,9 +12,10 @@
 #include <uinta/runner/dependencies.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/runner/window.hpp>
-#include <uinta/scene/scene.hpp>
 
 namespace uinta {
+
+class Scene;
 
 class Runner {
  public:
@@ -55,7 +56,7 @@ class Runner {
   }
 
   Scene& scene() noexcept {
-    return m_scene;
+    return *m_scene;
   }
 
   ModelManager& model_manager() noexcept {
@@ -102,10 +103,10 @@ class Runner {
  private:
   Window m_window;
   InputState m_input;
-  Scene m_scene;
   ModelManager m_model_manager;
   std::unique_ptr<FileManager> m_file_manager;
   std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
+  std::unique_ptr<Scene> m_scene;
 
   void tick();
   void render();

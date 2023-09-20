@@ -7,7 +7,6 @@
 #include <memory>
 #include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
-#include <uinta/scene/scene.hpp>
 
 namespace uinta {
 

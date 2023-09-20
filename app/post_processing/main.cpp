@@ -8,6 +8,7 @@
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/mesh.hpp>
 #include <uinta/parsers/obj.hpp>
+#include <uinta/scene/scene.hpp>
 #include <uinta/shader.hpp>
 
 #include "./PostProcessingShaders.hpp"
