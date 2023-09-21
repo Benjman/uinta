@@ -30,8 +30,8 @@ struct CameraConfig {
   f32 trnsl_spd_m = 2.5;     // Translation speed for mouse input
   f32 ortho_size = 60;       // Size for the orthographic matrix boundaries
 
-  input_key_t angl_neg_k = KEY_W;   // Keyboard input for negative angle delta
-  input_key_t angl_pos_k = KEY_R;   // Keyboard input for positive angle delta
+  input_key_t angl_neg_k = KEY_R;   // Keyboard input for negative angle delta
+  input_key_t angl_pos_k = KEY_W;   // Keyboard input for positive angle delta
   input_key_t dst_dec_k = KEY_C;    // Keyboard input for decreasing distance
   input_key_t dst_inc_k = KEY_V;    // Keyboard input for increasing distance
   input_key_t pitch_neg_k = KEY_A;  // Keyboard input for negative pitch delta
