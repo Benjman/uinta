@@ -32,9 +32,12 @@ glm::mat4 TargetCamera::orthographic_matrix() const noexcept {
 }
 
 void TargetCamera::process_input(const RunnerState& state, const InputState& input) {
+  static constexpr auto FAST_MULTIPLIER = 5.0;
+  static constexpr auto SLOW_MULTIPLIER = 0.1;
+
   RunnerState state_copy = state;
-  if (isKeyDown(input, KEY_LEFT_CONTROL)) state_copy.delta *= 5.0f;
-  if (isKeyDown(input, KEY_LEFT_ALT)) state_copy.delta *= 0.1;
+  if (isKeyDown(input, KEY_LEFT_CONTROL)) state_copy.delta *= FAST_MULTIPLIER;
+  if (isKeyDown(input, KEY_LEFT_ALT)) state_copy.delta *= SLOW_MULTIPLIER;
 
   update_angle(state_copy, input);
   m_angle.update(state.delta);
@@ -49,8 +52,6 @@ void TargetCamera::process_input(const RunnerState& state, const InputState& inp
 
   update_translation(state_copy, input);
   m_target.update(state.delta);
-
-  update_position(state_copy, input);
 }
 
 void TargetCamera::update_position(const RunnerState& state, const InputState& input) noexcept {
@@ -72,29 +73,29 @@ void TargetCamera::update_position(const RunnerState& state, const InputState& i
 void TargetCamera::update_angle(const RunnerState& state, const InputState& input) noexcept {
   f32 delta = 0;
   if (isKeyDown(input, m_config.angl_neg_k)) delta += m_config.angl_spd_k;
-  if (isKeyDown(input, m_config.angl_pos_k)) delta += -m_config.angl_spd_k;
+  if (isKeyDown(input, m_config.angl_pos_k)) delta -= m_config.angl_spd_k;
   if (isMouseButtonDown(input, m_config.angke_m) && input.cursordx) delta += input.cursordx * m_config.angl_spd_m;
   m_angle += delta * state.delta;
 }
 
 void TargetCamera::update_dist(const RunnerState& state, const InputState& input) noexcept {
   f32 delta = 0;
-  if (isKeyDown(input, m_config.dst_inc_k)) delta += -m_config.dst_spd_k;
+  if (isKeyDown(input, m_config.dst_inc_k)) delta -= m_config.dst_spd_k;
   if (isKeyDown(input, m_config.dst_dec_k)) delta += m_config.dst_spd_k;
   if (isMouseScrolled(input)) delta += input.scrolldy * -m_config.dst_spd_m;
   m_dist += delta * state.delta;
   if (isFlagSet(TargetCamera::CAMERA_DIST_LIMIT, m_flags))
     m_dist = std::clamp(m_dist.target(), m_config.dst_min, m_config.dst_max);
-  if (isFlagSet(TargetCamera::CAMERA_PITCH_LIMIT, m_flags))
-    m_pitch = std::clamp(m_pitch.target(), m_config.pitch_min, m_config.pitch_max);
 }
 
 void TargetCamera::update_pitch(const RunnerState& state, const InputState& input) noexcept {
   f32 delta = 0;
   if (isKeyDown(input, m_config.pitch_pos_k)) delta += m_config.pitch_spd_k;
-  if (isKeyDown(input, m_config.pitch_neg_k)) delta += -m_config.pitch_spd_k;
+  if (isKeyDown(input, m_config.pitch_neg_k)) delta -= m_config.pitch_spd_k;
   if (isMouseButtonDown(input, m_config.pitch_m) && input.cursordy) delta += input.cursordy * m_config.pitch_spd_m;
   m_pitch += delta * state.delta;
+  if (isFlagSet(TargetCamera::CAMERA_PITCH_LIMIT, m_flags))
+    m_pitch = std::clamp(m_pitch.target(), m_config.pitch_min, m_config.pitch_max);
 }
 
 void TargetCamera::update_translation(const RunnerState& state, const InputState& input) noexcept {
@@ -106,8 +107,8 @@ void TargetCamera::update_translation(const RunnerState& state, const InputState
   if (isKeyDown(input, m_config.left_k)) delta += -glm::normalize(getRight(m_angle) * WORLD_HORIZONTAL) * m_config.trnsl_spd_k;
   if (isKeyDown(input, m_config.right_k)) delta += glm::normalize(getRight(m_angle) * WORLD_HORIZONTAL) * m_config.trnsl_spd_k;
   if (isMouseButtonDown(input, m_config.trnsl_m) && (input.cursordx || input.cursordy))
-    delta += -(glm::normalize(WORLD_HORIZONTAL * getRight(m_angle)) * input.cursordx -
-               glm::normalize(WORLD_HORIZONTAL * getForward(m_pitch, m_angle)) * input.cursordy) *
+    delta -= (glm::normalize(WORLD_HORIZONTAL * getRight(m_angle)) * input.cursordx -
+              glm::normalize(WORLD_HORIZONTAL * getForward(m_pitch, m_angle)) * input.cursordy) *
              m_config.trnsl_spd_m;
   m_target += delta * state.delta;
 }
