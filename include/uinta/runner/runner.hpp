@@ -70,7 +70,7 @@ class Runner {
     return m_state;
   }
 
-  const spdlog::logger* logger() const noexcept {
+  spdlog::logger* logger() const noexcept {
     return m_logger.get();
   }
 
@@ -93,7 +93,7 @@ class Runner {
   Window m_window;
   InputState m_input;
   RunnerState m_state;
-  const std::shared_ptr<spdlog::logger> m_logger;
+  std::shared_ptr<spdlog::logger> m_logger;
   const std::unique_ptr<FileManager> m_file_manager;
   const std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
   const std::unique_ptr<Scene> m_scene;

@@ -13,7 +13,7 @@ class Vbo {
   Vbo(gl_enum target, gl_enum usage, size_t reserve = 0) : m_target(target), m_usage(usage), m_size(reserve) {
   }
 
-  void init(const spdlog::logger* logger = nullptr);
+  void init(spdlog::logger* logger = nullptr);
 
   void bind() const;
 
@@ -53,7 +53,7 @@ class Vbo {
   gl_enum m_usage;
   size_t m_size = 0;
   size_t m_max = 0;
-  const spdlog::logger* m_logger;
+  spdlog::logger* m_logger;
 };
 
 }  // namespace uinta

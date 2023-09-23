@@ -62,7 +62,7 @@ class FileManager {
   virtual void loadFileBinary(const file_t* const handle) = 0;
   virtual void loadFileText(const file_t* const handle) = 0;
 
-  const spdlog::logger* logger() const noexcept {
+  spdlog::logger* logger() const noexcept {
     return m_logger.get();
   }
 

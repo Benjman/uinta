@@ -45,7 +45,7 @@ class PostProcessing {
   }};
   Vbo quadVbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
 
-  uinta_error_code init(const spdlog::logger* logger) {
+  uinta_error_code init(spdlog::logger* logger) {
     // clang-format off
     float quadVertices[] = {
       // positions   // uvs

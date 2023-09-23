@@ -32,8 +32,7 @@ FileManager::~FileManager() {
 
 uinta_error_code FileManager::init(const Runner& runner, const std::string& searchPaths, const char delim) {
   if (!m_logger) m_logger = spdlog::stdout_color_mt(runner.logger()->name() + ":FileManager");
-  if (isFlagSet(FILEMANAGER_INITIALIZED, m_flags))
-    SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()), "Too many calls to FileManager::init()!");
+  if (isFlagSet(FILEMANAGER_INITIALIZED, m_flags)) SPDLOG_LOGGER_WARN(logger(), "Too many calls to FileManager::init()!");
   parseFileSearchPaths(searchPaths, delim);
   setFlag(FILEMANAGER_INITIALIZED, true, m_flags);
   loadAll();
@@ -42,8 +41,7 @@ uinta_error_code FileManager::init(const Runner& runner, const std::string& sear
 
 const file_t* const FileManager::registerFile(const std::string& relativePath) {
   if (m_handles.size() >= UINTA_FILE_ID_MASK) {
-    SPDLOG_LOGGER_CRITICAL(const_cast<spdlog::logger*>(logger()), "Attempt made to exceed maximum handle size of {}",
-                           UINTA_FILE_ID_MASK);
+    SPDLOG_LOGGER_CRITICAL(logger(), "Attempt made to exceed maximum handle size of {}", UINTA_FILE_ID_MASK);
     return nullptr;
   }
   auto* handle = m_handles.emplace_back(new file_t(m_handles.size()));
@@ -53,14 +51,14 @@ const file_t* const FileManager::registerFile(const std::string& relativePath) {
   releaseFile(handle, true);
   setIsActive(handle, true);
 
-  SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(logger()), "Registered file '{}'.", relativePath);
+  SPDLOG_LOGGER_DEBUG(logger(), "Registered file '{}'.", relativePath);
   return handle;
 }
 
 void FileManager::releaseFile(const file_t* const handle, bool force) {
   if (!force && !isActive(handle)) return;
   if (isBuffered(handle)) {
-    SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(logger()), "Releasing file '{}'.", getPath(handle));
+    SPDLOG_LOGGER_DEBUG(logger(), "Releasing file '{}'.", getPath(handle));
   }
   setPath(handle, "");
   setIsBuffered(handle, false);
@@ -80,7 +78,7 @@ void FileManager::releaseFile(const std::vector<const file_t*>& handles) {
 const bool FileManager::isActive(const file_t* const handle) const {
   if (!isInitialized()) return false;
   if (handle == nullptr || getId(handle) > m_handles.size()) {
-    SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()), "Invalid handle {}!", *handle);
+    SPDLOG_LOGGER_WARN(logger(), "Invalid handle {}!", *handle);
   }
   if (m_handles.at(getId(handle)) != handle) return false;
   return *handle & UINTA_FILE_IS_ACTIVE_MASK;
@@ -94,8 +92,7 @@ const bool FileManager::isBuffered(const file_t* const handle) const {
 
 const void* FileManager::getData(const file_t* const handle) const {
   if (!isBuffered(handle)) {
-    SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()), "Data for file '{}' was requested before it has been loaded.",
-                       getPath(handle));
+    SPDLOG_LOGGER_WARN(logger(), "Data for file '{}' was requested before it has been loaded.", getPath(handle));
     return nullptr;
   }
   return m_links.at(getId(handle)).ptr;
@@ -127,8 +124,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
   auto size = std::filesystem::file_size(getPath(handle));
 
   if (m_storageSize < size) {
-    SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()), "File '{}' attempted to reserve more space than is available!",
-                       getPath(handle));
+    SPDLOG_LOGGER_WARN(logger(), "File '{}' attempted to reserve more space than is available!", getPath(handle));
     return;
   }
 
@@ -147,8 +143,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
       link.forward = firstReservedLink;
       link.ptr = m_storage;
       link.size = size;
-      SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(logger()), "Reserved {} for '{}'.", formatMemory(getSize(handle)),
-                          getPath(handle));
+      SPDLOG_LOGGER_DEBUG(logger(), "Reserved {} for '{}'.", formatMemory(getSize(handle)), getPath(handle));
       return;
     }
   }
@@ -164,8 +159,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
       auto freeSpace =
           static_cast<const char*>(m_storage) + m_storageSize - static_cast<const char*>(neighbor.ptr) - neighbor.size - 1;
       if (freeSpace < size) {  // no space at tail
-        SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()),
-                           "Insufficient space when attempting to allocate memory for file '{}'!", getPath(handle));
+        SPDLOG_LOGGER_WARN(logger(), "Insufficient space when attempting to allocate memory for file '{}'!", getPath(handle));
         hasSpace = false;
         continue;  // not enough space at tail
       }
@@ -176,8 +170,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
     link.forward = neighbor.forward;
     if (link.forward) link.forward->back = &link;
     neighbor.forward = &link;
-    SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(logger()), "Reserved {} for file '{}'.", formatMemory(getSize(handle)),
-                        getPath(handle));
+    SPDLOG_LOGGER_DEBUG(logger(), "Reserved {} for file '{}'.", formatMemory(getSize(handle)), getPath(handle));
     return;
   }
 
@@ -185,8 +178,7 @@ void FileManager::reserveSpace(const file_t* const handle) {
     // we're the first element in storage:
     link.ptr = m_storage;
     link.size = size;
-    SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(logger()), "Reserved {} for file '{}'.", formatMemory(getSize(handle)),
-                        getPath(handle));
+    SPDLOG_LOGGER_DEBUG(logger(), "Reserved {} for file '{}'.", formatMemory(getSize(handle)), getPath(handle));
   }
 }
 
@@ -201,15 +193,14 @@ void FileManager::parseFileSearchPaths(const std::string& searchPaths, const cha
     if (val.length()) {
       if (val.at(val.length() - 1) != '/') val = val + '/';
       m_searchPaths.emplace_back(std::string(val));
-      SPDLOG_LOGGER_DEBUG(const_cast<spdlog::logger*>(logger()), "File search path registered: '{}'.", val);
+      SPDLOG_LOGGER_DEBUG(logger(), "File search path registered: '{}'.", val);
     }
     start = end + 1;  // +1 for delim
   } while (end != -1);
   if (m_searchPaths.size() > 0) {
-    SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "{} file search paths registered.", m_searchPaths.size());
+    SPDLOG_LOGGER_INFO(logger(), "{} file search paths registered.", m_searchPaths.size());
   } else {
-    SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()), "Failed to parse any file search paths from input '{}'!",
-                       searchPaths);
+    SPDLOG_LOGGER_WARN(logger(), "Failed to parse any file search paths from input '{}'!", searchPaths);
   }
 }
 
@@ -223,14 +214,14 @@ void FileManager::loadFile(const file_t* const handle) {
   if (!isActive(handle) || isBuffered(handle)) return;
   auto absPath = findPath(getPath(handle));
   if (absPath.empty()) {
-    SPDLOG_LOGGER_ERROR(const_cast<spdlog::logger*>(logger()), "Failed to find file '{}'!", getPath(handle));
+    SPDLOG_LOGGER_ERROR(logger(), "Failed to find file '{}'!", getPath(handle));
     releaseFile(handle);
     return;
   }
   setPath(handle, absPath);
   reserveSpace(handle);
   if (m_links.at(getId(handle)).ptr == nullptr) {
-    SPDLOG_LOGGER_ERROR(const_cast<spdlog::logger*>(logger()), "Invalid storage pointer for '{}'!", getPath(handle));
+    SPDLOG_LOGGER_ERROR(logger(), "Invalid storage pointer for '{}'!", getPath(handle));
     return;
   }
   loadHandleData(handle);
@@ -243,8 +234,7 @@ void FileManager::loadFile(const std::vector<const file_t*>& handles) {
 
 void FileManager::loadHandleData(const file_t* const handle) {
   if (!isActive(handle)) {
-    SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()), "Attempted to load handle data on an inactive handle for '{}'.",
-                       getPath(handle));
+    SPDLOG_LOGGER_WARN(logger(), "Attempted to load handle data on an inactive handle for '{}'.", getPath(handle));
     return;
   }
   loadFileText(handle);
@@ -280,7 +270,7 @@ std::string FileManager::findPath(const std::string& path) {
 
 bool FileManager::isInitialized() const {
   if (!isFlagSet(FILEMANAGER_INITIALIZED, m_flags)) {
-    SPDLOG_LOGGER_WARN(const_cast<spdlog::logger*>(logger()), "FileManager has not been initialized!");
+    SPDLOG_LOGGER_WARN(logger(), "FileManager has not been initialized!");
     return false;
   }
   return true;
@@ -293,7 +283,7 @@ void FileManager_Desktop::loadFileText(const file_t* const handle) {
   std::ifstream stream;
   stream.open(getPath(handle));
   if (!stream) {
-    SPDLOG_LOGGER_ERROR(const_cast<spdlog::logger*>(logger()), "Failed to open file at '{}'.", getPath(handle));
+    SPDLOG_LOGGER_ERROR(logger(), "Failed to open file at '{}'.", getPath(handle));
     return;
   }
   auto& link = links().at(getId(handle));

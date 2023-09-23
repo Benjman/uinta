@@ -32,7 +32,7 @@ class GridRenderer {
   u32 m_vertex_count = 0;
   GLuint m_shader = GL_ZERO;
   f32 m_line_width = 1;
-  const spdlog::logger* m_logger;
+  spdlog::logger* m_logger;
 };
 
 class GridRenderer_OpenGL : public GridRenderer {
@@ -60,7 +60,7 @@ class Grid {
 
   void render(const glm::mat4& projView);
 
-  const spdlog::logger* logger() const noexcept {
+  spdlog::logger* logger() const noexcept {
     return m_logger.get();
   }
 

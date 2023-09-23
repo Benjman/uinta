@@ -54,8 +54,7 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
 
   constexpr i32 version_major = 3;
   constexpr i32 version_minor = 3;
-  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "Initializing GLFW v{}.{} with OpenGL Core profile...", version_major,
-                     version_minor);
+  SPDLOG_LOGGER_INFO(logger(), "Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
   if (!glfwInit()) return make_error(error::InitError);
 
   i32 monCount;
@@ -90,16 +89,16 @@ uinta_error_code GlfwRunner::createOpenGLContext() {
   glfwSetWindowPos(m_window, target_x, target_y);
 
   window(Window(window().title, target_width, target_height));
-  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "Created window '{}' {}x{} (aspect ratio {}).", window().title,
-                     target_width, target_height, window().aspect_ratio);
+  SPDLOG_LOGGER_INFO(logger(), "Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height,
+                     window().aspect_ratio);
 
   glfwSetWindowUserPointer(m_window, this);
   glfwMakeContextCurrent(m_window);
 
-  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "Loading GLAD...");
+  SPDLOG_LOGGER_INFO(logger(), "Loading GLAD...");
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return make_error(error::GladError);
 
-  SPDLOG_LOGGER_INFO(const_cast<spdlog::logger*>(logger()), "GLFW initialization completed in {} seconds.", sw.elapsed().count());
+  SPDLOG_LOGGER_INFO(logger(), "GLFW initialization completed in {} seconds.", sw.elapsed().count());
 
   return SUCCESS_EC;
 }
@@ -150,8 +149,7 @@ void GlfwRunner::registerCallbacks() {
     if (action == GLFW_PRESS && mods & GLFW_MOD_SHIFT && key == GLFW_KEY_Q) {
       if (mods & GLFW_MOD_CONTROL) {
         const size_t exit_code = 1;
-        SPDLOG_LOGGER_CRITICAL(const_cast<spdlog::logger*>(runner->logger()),
-                               "Intentionally hard exiting the application with exit code {}.", exit_code);
+        SPDLOG_LOGGER_CRITICAL(runner->logger(), "Intentionally hard exiting the application with exit code {}.", exit_code);
         exit(exit_code);
       }
       setFlag(IS_RUNNING, false, runner->flags());
