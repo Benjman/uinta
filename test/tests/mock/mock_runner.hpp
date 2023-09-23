@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <uinta/error.hpp>
 #include <uinta/runner/runner.hpp>
 
 #include "./mock_file_manager.hpp"
@@ -34,7 +35,7 @@ class MockRunner : public Runner {
              std::unique_ptr<FileManager> file_manager = std::make_unique<MockFileManager>(),
              std::unique_ptr<RunnerGpuUtils> gpu_utils = std::make_unique<MockRunnerGpuUtils>())
       : Runner(title, 0, nullptr, std::move(file_manager), std::move(gpu_utils)) {
-    setFlag(Runner::RENDERING_ENABLED, false, m_flags);
+    setFlag(Runner::RENDERING_ENABLED, false, flags());
   }
 
   std::function<uinta_error_code()> on_createOpenGLContext;
