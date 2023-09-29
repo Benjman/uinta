@@ -6,6 +6,7 @@
 #include <uinta/target_camera.hpp>
 
 namespace uinta {
+namespace ui {
 
 inline bool cameraClippingPlanes(TargetCamera &camera);
 inline bool cameraHotkeys(TargetCamera &camera);
@@ -171,4 +172,5 @@ inline bool cameraTransform(TargetCamera &camera, const RunnerState &state) {
   return result;
 }
 
+}  // namespace ui
 }  // namespace uinta
