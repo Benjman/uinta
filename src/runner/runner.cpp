@@ -5,93 +5,113 @@
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include <exception>
-#include <glm/mat4x4.hpp>
-#include <iostream>
 #include <uinta/error.hpp>
 #include <uinta/exception.hpp>
-#include <uinta/grid.hpp>
-#include <uinta/input.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
-#include <uinta/scene/scene.hpp>
+#include <uinta/scene.hpp>
 
 namespace uinta {
+
+enum class error {
+  SceneInvalid = 100,
+  SceneNotFound = 101,
+};
+static const std::map<uinta_error_code_t, std::string> errorMessages = {
+    {static_cast<uinta_error_code_t>(error::SceneInvalid), "Invalid scene."},
+    {static_cast<uinta_error_code_t>(error::SceneNotFound), "Failed to locate scene in stack."},
+};
+
+UINTA_ERROR_FRAMEWORK(Runner, errorMessages);
 
 void processArgs(Runner* runner, i32 argc, const char** argv);
 
 Runner::Runner(const std::string& title, i32 argc, const char** argv, std::unique_ptr<FileManager> file_manager,
-               std::unique_ptr<RunnerGpuUtils> gpu_utils) noexcept
+               std::unique_ptr<RunnerGpuUtils> gpu_utils)
     : m_window(title),
       m_logger(spdlog::stdout_color_mt(title)),
       m_file_manager(std::move(file_manager)),
-      m_gpu_utils(std::move(gpu_utils)),
-      m_scene(std::make_unique<Scene>(*this)) {
+      m_gpu_utils(std::move(gpu_utils)) {
   assert(m_file_manager && "File manager must be initialized!");
   assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);
   initSpdlog();
+  if (auto error = m_file_manager->init(*this); error) throw UintaException(error);
   SPDLOG_LOGGER_INFO(m_logger, "Runner started for '{}'.", title);
 }
 
-i32 Runner::run() {
+Runner::~Runner() noexcept = default;
+
+i32 Runner::run() noexcept {
   spdlog::stopwatch sw;
-  try {
-    if (auto error = doInit(); error) throw UintaException(error);
-    SPDLOG_LOGGER_INFO(m_logger, "Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
-    while (isFlagSet(IS_RUNNING, m_flags)) {
+  if (auto error = m_gpu_utils->init(*this); error) {
+    SPDLOG_LOGGER_CRITICAL(m_logger, "Error attempting to initialize GPU utilites: ", error.message());
+    return error.value();
+  }
+  for (auto itr = m_scenes.cbegin(); itr != m_scenes.cend();) {
+    auto* scene = itr->get();
+    if (auto error = scene->init(); error) {
+      SPDLOG_LOGGER_ERROR(scene->logger(), "Error in initialization: {}", error.message());
+      (void)scene->transition(Scene::State::Destroyed);
+      itr = m_scenes.erase(itr);
+    } else
+      itr++;
+  }
+  SPDLOG_LOGGER_INFO(m_logger, "Initialized in {} seconds.", sw.elapsed().count());
+  while (isFlagSet(IS_RUNNING, m_flags)) {
+    advanceState();
+    for (auto itr = m_scenes.cbegin(); itr != m_scenes.cend();) {
+      auto* scene = itr->get();
       try {
-        advanceState();
-        tick();
-        reset(m_input);
-        pollInput();
-        if (isFlagSet(RENDERING_ENABLED, m_flags)) {
-          swapBuffers();
-          m_gpu_utils->clear_buffer(m_clear_color, m_clear_mask);
-          render();
+        switch (scene->state()) {
+          case Scene::State::Created:
+            if (auto error = scene->init(); error) {
+              SPDLOG_LOGGER_ERROR(scene->logger(), "Error in initialization: {}", error.message());
+              (void)scene->transition(Scene::State::Destroyed);
+              itr = m_scenes.erase(itr);
+            } else
+              itr++;
+            continue;
+          case Scene::State::Running:
+            scene->pre_tick(m_state, m_input);
+            scene->tick(m_state, m_input);
+            scene->post_tick(m_state, m_input);
+            break;
+          case Scene::State::Destroyed:
+          case Scene::State::Paused:
+            break;
         }
+        itr++;
       } catch (const UintaException& ex) {
-        if (!handleException(ex)) throw ex;  // handle internal game errors
+        SPDLOG_LOGGER_ERROR(scene->logger(), "Exception thrown in advance stage: {}", ex.what());
       }
     }
-    shutdown();
-    return EXIT_SUCCESS;
-  } catch (const UintaException& ex) {
-    handleException(ex);  // handle system boostrap or shutdown error
-    throw ex;
-  } catch (const std::exception& ex) {
-    try {
-      shutdown();
-    } catch (const std::exception& shutdownEx) {
-      std::cerr << "Runner::shutdown() caught: " << shutdownEx.what() << "\n";
+    reset(m_input);
+    pollInput();
+    swapBuffers();
+    m_gpu_utils->clear_buffer(m_clear_color, m_clear_mask);
+    for (auto& scene : m_scenes) {
+      if (scene->state() == Scene::State::Running) {
+        try {
+          scene->pre_render(m_state);
+          scene->render(m_state);
+          scene->post_render(m_state);
+        } catch (const UintaException& ex) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "Exception thrown in render stage: {}", ex.what());
+        }
+      }
     }
-    std::cerr << "Runner::run() caught: " << ex.what() << "\n";
-    throw ex;
   }
-}
-
-uinta_error_code Runner::doInit() {
-  if (auto error = m_file_manager->init(*this); error) return error;
-  if (auto error = m_gpu_utils->init(*this); error) return error;
-  if (auto error = m_scene->init(); error) return error;
-  return SUCCESS_EC;
-}
-
-void Runner::tick() {
-  doPreTick();
-  doTick();
-  doPostTick();
-}
-
-void Runner::render() {
-  doPreRender();
-  doRender();
-  doPostRender();
-}
-
-void Runner::shutdown() {
-  SPDLOG_LOGGER_INFO(m_logger, "Shutdown requested for '{}'.", m_window.title);
-  doShutdown();
+  SPDLOG_LOGGER_INFO(m_logger, "Shutting down.");
+  for (auto& scene : m_scenes) {
+    if (Scene::State::Destroyed == scene->state()) continue;
+    try {
+      scene->shutdown();
+    } catch (const std::exception& ex) {
+      SPDLOG_LOGGER_ERROR(scene->logger(), "Exception thrown in shutdown stage: {}", ex.what());
+    }
+  }
+  return EXIT_SUCCESS;
 }
 
 void Runner::advanceState() noexcept {
@@ -129,45 +149,17 @@ void Runner::handleWindowPosChanged(const i32 xpos, const i32 ypos) noexcept {
 }
 
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) noexcept {
-  SPDLOG_LOGGER_DEBUG(m_logger, "Window size updated: {}x{}.", width, height);
-  const auto orig_width = m_window.width;
-  const auto orig_height = m_window.width;
-  auto win = window();
-  win.width = width;
-  win.height = height;
-  m_window = win;
-  if (orig_width != m_window.width || orig_height != m_window.height) {
-    m_scene->onAspectRatioUpdate(m_window.aspect_ratio);
-  }
-}
-
-Runner::~Runner() {
-  SPDLOG_LOGGER_INFO(m_logger, "Tearing down '{}'.", m_window.title);
-}
-
-void Runner::doPreRender() {
-}
-
-void Runner::doRender() {
-  m_scene->render(m_state);
-}
-
-void Runner::doPostRender() {
-}
-
-void Runner::doShutdown() {
-}
-
-void Runner::doPreTick() {
-  m_scene->preTick(m_state, m_input);
-}
-
-void Runner::doTick() {
-  m_scene->tick(m_state, m_input);
-}
-
-void Runner::doPostTick() {
-  m_scene->postTick(m_state, m_input);
+  // TODO: Once the event system is running, broadcast window size changed event
+  // SPDLOG_LOGGER_DEBUG(m_logger, "Window size updated: {}x{}.", width, height);
+  // const auto orig_width = m_window.width;
+  // const auto orig_height = m_window.height;
+  // auto win = window();
+  // win.width = width;
+  // win.height = height;
+  // m_window = win;
+  // if (orig_width != m_window.width || orig_height != m_window.height) {
+  //   m_scene->onAspectRatioUpdate(m_window.aspect_ratio);
+  // }
 }
 
 bool Runner::handleException(const UintaException& ex) noexcept {
@@ -176,6 +168,45 @@ bool Runner::handleException(const UintaException& ex) noexcept {
   // of the exception, and display it in the console.
   SPDLOG_LOGGER_CRITICAL(m_logger, ex.what());
   return false;
+}
+
+uinta_error_code Runner::add_scene(std::unique_ptr<Scene> scene) noexcept {
+  if (!scene) return make_error(error::SceneInvalid);
+  auto itr = m_scenes.begin();
+  for (; itr != m_scenes.end(); ++itr) {
+    if (itr->get()->layer() > scene->layer()) {
+      break;
+    }
+  }
+  std::lock_guard<std::mutex> lock(m_scenes_mtx);
+  itr = m_scenes.insert(itr, std::move(scene));
+  SPDLOG_LOGGER_INFO(m_logger, "{} scene '{}' added.", to_string(itr->get()->layer()), itr->get()->name());
+  return SUCCESS_EC;
+}
+
+uinta_error_code Runner::remove_scene(const Scene* scene) noexcept {
+  if (!scene) return make_error(error::SceneInvalid);
+  std::lock_guard<std::mutex> lock(m_scenes_mtx);
+  for (auto itr = m_scenes.cbegin(); itr != m_scenes.cend();) {
+    if (itr->get() == scene) {
+      if (auto error = itr->get()->transition(Scene::State::Destroyed); error) return error;
+      SPDLOG_LOGGER_INFO(m_logger, "Scene '{}' removed.", itr->get()->name());
+      m_scenes.erase(itr);
+      break;
+    } else
+      itr++;
+  }
+  return SUCCESS_EC;
+}
+
+const TargetCamera* Runner::find_camerac() const noexcept {
+  return find_camera();
+}
+
+TargetCamera* Runner::find_camera() const noexcept {
+  for (auto& scene : m_scenes)
+    if (auto* camera = scene->camera(); camera) return camera;
+  return nullptr;
 }
 
 uinta_error_code RunnerGpuUtils_OpenGL::init(Runner& runner) {

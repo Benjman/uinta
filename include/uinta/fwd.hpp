@@ -10,7 +10,7 @@
 namespace uinta {
 
 class FileManager;
-class Grid;
+class GridScene;
 class Runner;
 class Scene;
 class TargetCamera;

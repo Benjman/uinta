@@ -1,18 +1,45 @@
 #include <uinta/error.hpp>
+#include <uinta/exception.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
+#include <uinta/grid.hpp>
+#include <uinta/scene.hpp>
+#include <uinta/target_camera.hpp>
 
 namespace uinta {
 
-class DemoRunner : public GlfwRunner {
+class DemoScene : public Scene {
  public:
-  entt::entity entity;
-
-  DemoRunner(const int argc, const char** argv) : GlfwRunner("Demo", argc, argv) {
+  DemoScene(Runner& runner) : Scene("Demo", runner, Scene::Layer::Simulation) {
+    if (auto error = runner.add_scene(std::make_unique<GridScene>(runner)); error) throw UintaException(error);
+    m_camera.dist(30);
+    m_camera.pitch(15);
   }
+
+  ~DemoScene() override = default;
+
+  void tick(const RunnerState& state, const InputState& input) override {
+    Scene::tick(state, input);
+    m_camera.update(state, input);
+  }
+
+  uinta_error_code init() override {
+    m_camera.aspect_ratio(runner().window().aspect_ratio);
+    return transition(State::Running);
+  }
+
+  TargetCamera* camera() noexcept override {
+    return &m_camera;
+  }
+
+ private:
+  TargetCamera m_camera;
 };
 
 }  // namespace uinta
 
 int main(const int argc, const char** argv) {
-  return uinta::DemoRunner(argc, argv).run();
+  using namespace uinta;
+  auto runner = GlfwRunner("Demo", argc, argv);
+  if (auto error = runner.add_scene(std::make_unique<DemoScene>(runner)); error) throw UintaException(error);
+  return runner.run();
 }

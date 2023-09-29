@@ -42,8 +42,7 @@ set(UINTA_SRCS
   ./src/quadtree.cpp
   ./src/runner/args.cpp
   ./src/runner/runner.cpp
-  ./src/scene/scene.cpp
-  ./src/scene/shader.cpp
+  ./src/scene.cpp
   ./src/shader.cpp
   ./src/target_camera.cpp
   ./src/utils/direction.cpp

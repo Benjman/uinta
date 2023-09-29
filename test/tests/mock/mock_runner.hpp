@@ -8,9 +8,10 @@
 
 #include "./mock_file_manager.hpp"
 
-inline std::string getUniqueTestName() {
+inline std::string getUniqueTestName(const std::string& append = "") {
   const auto* const test_info = ::testing::UnitTest::GetInstance()->current_test_info();
-  return std::string(test_info->test_suite_name()) + "." + test_info->name();
+  return std::string(test_info->test_suite_name()) + "." + test_info->name() + ":" + std::to_string(test_info->line()) +
+         (std::empty(append) ? "" : ":" + append);
 }
 
 namespace uinta {
@@ -37,6 +38,8 @@ class MockRunner : public Runner {
       : Runner(title, 0, nullptr, std::move(file_manager), std::move(gpu_utils)) {
   }
 
+  ~MockRunner() override = default;
+
   std::function<uinta_error_code()> on_createOpenGLContext;
   virtual uinta_error_code init_gpu_context() override {
     if (on_createOpenGLContext) return on_createOpenGLContext();
@@ -57,12 +60,6 @@ class MockRunner : public Runner {
   std::function<void()> on_swapBuffers;
   virtual void swapBuffers() override {
     if (on_swapBuffers) on_swapBuffers();
-  }
-
-  std::function<uinta_error_code()> on_doInit;
-  virtual uinta_error_code doInit() override {
-    if (on_doInit) return on_doInit();
-    return SUCCESS_EC;
   }
 };
 

@@ -1,54 +1,33 @@
 #include <algorithm>
 #include <uinta/error.hpp>
+#include <uinta/exception.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/input.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/math/perlin.hpp>
+#include <uinta/scene.hpp>
 #include <uinta/shader.hpp>
 #include <uinta/utils/buffer2d.hpp>
 
 namespace uinta {
 
-class TextureShader {
+class PerlinScene : public Scene {
  public:
-  GLuint id;
+  PerlinScene(Runner& runner) : Scene("Perlin", runner, Layer::Debug) {
+  }
 
-  uinta_error_code init(FileManager& fileManager) {
-    const auto vs = fileManager.registerFile("shader/texture.vs");
-    const auto fs = fileManager.registerFile("shader/texture.fs");
-    fileManager.loadFile({vs, fs});
-    const std::vector<std::string> srcs({fileManager.getDataString(vs), fileManager.getDataString(fs)});
+  ~PerlinScene() override = default;
+
+  uinta_error_code init() override {
+    const auto vs = runner().file_manager().registerFile("shader/texture.vs");
+    const auto fs = runner().file_manager().registerFile("shader/texture.fs");
+    runner().file_manager().loadFile({vs, fs});
+    const std::vector<std::string> srcs({runner().file_manager().getDataString(vs), runner().file_manager().getDataString(fs)});
     const std::vector<GLenum> stages({GL_VERTEX_SHADER, GL_FRAGMENT_SHADER});
-    if (auto error = createShaderProgram(id, srcs, stages); error) return error;
-    fileManager.releaseFile({vs, fs});
-    SPDLOG_INFO("Initialized shader {}.", id);
-    return SUCCESS_EC;
-  }
-};
-
-class PerlinRunner : public GlfwRunner {
- public:
-  TextureShader shader;
-  Vao vao = {{
-      {0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(f32), 0},
-      {1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(f32), 2 * sizeof(f32)},
-  }};
-  Vbo vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
-  GLuint textureId;
-  u32 perlinSeed = 1;
-  f32 frequency = 1;
-  u32 octaves = 1;
-  glm::ivec2 offset = {0, 0};
-
-  PerlinRunner(const i32 argc, const char** argv) : GlfwRunner("Perlin", argc, argv) {
-    window(Window(window().title, 800, 800));
-    clear_color() = {0, 0, 0};
-  }
-
-  uinta_error_code doInit() override {
-    if (auto error = GlfwRunner::doInit(); error) return error;
-    if (auto error = shader.init(file_manager()); error) return error;
+    if (auto error = createShaderProgram(shader_id, srcs, stages); error) return error;
+    runner().file_manager().releaseFile({vs, fs});
+    SPDLOG_INFO("Initialized shader {}.", shader_id);
 
     // clang-format off
     const f32 vertices[] = {
@@ -60,13 +39,14 @@ class PerlinRunner : public GlfwRunner {
     };
     const u32 indices[] = { 0, 1, 3, 1, 2, 3 };
     // clang-format on
+
     vao.init(logger());
     vbo.init(logger());
-    vao.bind();
     vbo.upload(vertices, sizeof(vertices), 0);
-    vao.index_buffer(indices, sizeof(indices));
+    vao.index_buffer().upload(indices, sizeof(indices), 0);
+    vao.init_attributes();
 
-    glGenTextures(1, &textureId);
+    glGenTextures(1, &texture_id);
     updateTexture();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -85,71 +65,82 @@ class PerlinRunner : public GlfwRunner {
     SPDLOG_INFO("    `-----------------------------------'");
     SPDLOG_INFO("");
 
-    return SUCCESS_EC;
+    return transition(State::Running);
   }
 
-  void updateTexture() {
-    const auto width = window().width;
-    const auto height = window().height;
-    auto textureData = Buffer2d(width, height);
-    perlinNoise(textureData, siv::PerlinNoise(perlinSeed), frequency, octaves, offset);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, &textureData);
-  }
-
-  void doTick() override {
+  void tick(const RunnerState& state, const InputState& input) override {
     static constexpr i32 OFFSET_DELTA = 10;
-    if (isKeyPressed(input(), KEY_S)) {
-      perlinSeed += isShiftDown(input()) ? -1 : 1;
-      SPDLOG_INFO("Seed set to {}", perlinSeed);
+    if (isKeyPressed(input, KEY_S)) {
+      perlin_seed += isShiftDown(input) ? -1 : 1;
+      SPDLOG_INFO("Seed set to {}", perlin_seed);
       updateTexture();
     }
-    if (isKeyPressed(input(), KEY_F)) {
-      frequency = std::clamp(frequency + (isShiftDown(input()) ? -1 : 1), 0.0f, 64.0f);
+    if (isKeyPressed(input, KEY_F)) {
+      perlin_freq = std::clamp(perlin_freq + (isShiftDown(input) ? -1 : 1), 0.0f, 64.0f);
       updateTexture();
     }
-    if (isKeyPressed(input(), KEY_O)) {
-      octaves = std::clamp(static_cast<i32>(octaves + (isShiftDown(input()) ? -1 : 1)), 0, 16);
+    if (isKeyPressed(input, KEY_O)) {
+      perlin_oct = std::clamp(static_cast<i32>(perlin_oct + (isShiftDown(input) ? -1 : 1)), 0, 16);
       updateTexture();
     }
-    if (isKeyPressed(input(), KEY_LEFT)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
+    if (isKeyPressed(input, KEY_LEFT)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
       offset += glm::ivec2(-delta, 0);
       updateTexture();
     }
-    if (isKeyPressed(input(), KEY_RIGHT)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
+    if (isKeyPressed(input, KEY_RIGHT)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
       offset += glm::ivec2(delta, 0);
       updateTexture();
     }
-    if (isKeyPressed(input(), KEY_UP)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
+    if (isKeyPressed(input, KEY_UP)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
       offset += glm::ivec2(0, delta);
       updateTexture();
     }
-    if (isKeyPressed(input(), KEY_DOWN)) {
-      const auto delta = OFFSET_DELTA * (isShiftDown(input()) ? 10 : 1);
+    if (isKeyPressed(input, KEY_DOWN)) {
+      const auto delta = OFFSET_DELTA * (isShiftDown(input) ? 10 : 1);
       offset += glm::ivec2(0, -delta);
       updateTexture();
     }
   }
 
-  void doPreRender() override {
-  }
-
-  void doPostRender() override {
-  }
-
-  void doRender() override {
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glUseProgram(shader.id);
+  void render(const RunnerState& state) override {
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glUseProgram(shader_id);
     vao.bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  }
+
+ private:
+  Vao vao = {{
+      {0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(f32), 0},
+      {1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(f32), 2 * sizeof(f32)},
+  }};
+  Vbo vbo = {GL_ARRAY_BUFFER, GL_STATIC_DRAW};
+  glm::ivec2 offset = {0, 0};
+  GLuint texture_id;
+  u32 perlin_seed = 1;
+  f32 perlin_freq = 1;
+  u32 perlin_oct = 1;
+  GLuint shader_id;
+
+  void updateTexture() {
+    const auto width = runner().window().width;
+    const auto height = runner().window().height;
+    auto textureData = Buffer2d(width, height);
+    perlinNoise(textureData, siv::PerlinNoise(perlin_seed), perlin_freq, perlin_oct, offset);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, &textureData);
   }
 };
 
 }  // namespace uinta
 
 int main(const int argc, const char** argv) {
-  return uinta::PerlinRunner(argc, argv).run();
+  using namespace uinta;
+  auto runner = GlfwRunner("Perlin", argc, argv);
+  runner.window(Window(runner.window().title, 800, 800));
+  if (auto error = runner.add_scene(std::make_unique<PerlinScene>(runner)); error) throw UintaException(error);
+  return runner.run();
 }

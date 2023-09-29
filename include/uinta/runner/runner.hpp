@@ -1,8 +1,10 @@
 #ifndef UINTA_RUNNER_RUNNER_HPP
 #define UINTA_RUNNER_RUNNER_HPP
 
-#include <entt/entity/registry.hpp>
 #include <glm/vec3.hpp>
+#include <list>
+#include <memory>
+#include <mutex>
 #include <uinta/fwd.hpp>
 #include <uinta/input.hpp>
 #include <uinta/runner/dependencies.hpp>
@@ -12,16 +14,17 @@
 namespace uinta {
 
 class Runner {
+  using SceneStack = std::list<std::unique_ptr<Scene>>;
+
  public:
-  static constexpr flag_t RENDERING_ENABLED = 1 << 0;
-  static constexpr flag_t IS_RUNNING = 1 << 1;
+  static constexpr flag_t IS_RUNNING = 1 << 0;
 
   Runner(const std::string& title, i32 argc = 0, const char** argv = nullptr, std::unique_ptr<FileManager> file_manager = nullptr,
-         std::unique_ptr<RunnerGpuUtils> gpu_utils = nullptr) noexcept;
+         std::unique_ptr<RunnerGpuUtils> gpu_utils = nullptr);
 
-  ~Runner();
+  virtual ~Runner() noexcept;
 
-  i32 run();
+  i32 run() noexcept;
 
   void handleCursorPositionChanged(const f64 xpos, const f64 ypos) noexcept;
 
@@ -36,6 +39,26 @@ class Runner {
   void handleWindowSizeChanged(const i32 width, const i32 height) noexcept;
 
   virtual uinta_error_code init_gpu_context() = 0;
+
+  uinta_error_code add_scene(std::unique_ptr<Scene> scene) noexcept;
+
+  uinta_error_code remove_scene(const Scene* scene) noexcept;
+
+  template <typename T>
+  T* find_scene() const noexcept {
+    for (const auto& scene : m_scenes)
+      if (T* scene_t = dynamic_cast<T*>(scene.get())) return scene_t;
+    return nullptr;
+  }
+
+  template <typename T>
+  const T* find_scenec() const noexcept {
+    return find_scene<T>();
+  }
+
+  virtual const TargetCamera* find_camerac() const noexcept;
+
+  virtual TargetCamera* find_camera() const noexcept;
 
   const Window& window() const noexcept {
     return m_window;
@@ -52,13 +75,8 @@ class Runner {
   InputState& input() noexcept {
     return m_input;
   }
-
   void input(const InputState& v) {
     m_input = v;
-  }
-
-  Scene& scene() noexcept {
-    return *m_scene;
   }
 
   flags_t& flags() noexcept {
@@ -81,16 +99,11 @@ class Runner {
     return m_logger.get();
   }
 
- protected:
-  virtual uinta_error_code doInit();
-  virtual void doPreTick();
-  virtual void doTick();
-  virtual void doPostTick();
-  virtual void doPreRender();
-  virtual void doRender();
-  virtual void doPostRender();
-  virtual void doShutdown();
+  const SceneStack& scenes() const noexcept {
+    return m_scenes;
+  }
 
+ protected:
   virtual f64 runtime() = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;
@@ -99,17 +112,14 @@ class Runner {
   Window m_window;
   InputState m_input;
   RunnerState m_state;
+  SceneStack m_scenes;
+  std::mutex m_scenes_mtx;
   std::shared_ptr<spdlog::logger> m_logger;
   const std::unique_ptr<FileManager> m_file_manager;
   const std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
-  const std::unique_ptr<Scene> m_scene;
   glm::vec3 m_clear_color = glm::vec3(38, 70, 83) / 255.0f;
   GLbitfield m_clear_mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-  flags_t m_flags = RENDERING_ENABLED | IS_RUNNING;
-
-  void tick();
-  void render();
-  void shutdown();
+  flags_t m_flags = IS_RUNNING;
 
   void advanceState() noexcept;
 

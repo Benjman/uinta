@@ -1,18 +1,20 @@
 #include <uinta/glfw/imgui.h>
 
 #include <map>
+#include <uinta/exception.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
+#include <uinta/grid.hpp>
 
 namespace uinta {
 
 void settingsGraphics(GlfwRunner &runner);
-void settingsGrid(Scene &scene);
+void settingsGrid(GridScene *grid);  // FIXME: Scene stack victim
 void settingsPolygonMode();
 
 inline void settings(GlfwRunner &runner) {
 #ifndef IMGUI_API_DISABLED
   settingsGraphics(runner);
-  settingsGrid(runner.scene());
+  if (auto *grid = runner.find_scene<GridScene>(); grid) settingsGrid(grid);
   settingsPolygonMode();
   ImGui::Separator();
 #endif  // IMGUI_API_DISABLED
@@ -83,10 +85,11 @@ void settingsGraphics(GlfwRunner &runner) {
 #endif  // IMGUI_API_DISABLED
 }
 
-void settingsGrid(Scene &scene) {
+void settingsGrid(GridScene *grid) {
 #ifndef IMGUI_API_DISABLED
-  bool grid = isFlagSet(Scene::GRID_ENABLED, scene.flags());
-  if (ImGui::Checkbox("Grid", &grid)) scene.flag(Scene::GRID_ENABLED, grid);
+  auto enabled = grid->state() == Scene::State::Running;
+  if (ImGui::Checkbox("Grid", &enabled))
+    if (auto error = grid->transition(enabled ? Scene::State::Running : Scene::State::Paused); error) throw UintaException(error);
 #endif  // IMGUI_API_DISABLED
 }
 

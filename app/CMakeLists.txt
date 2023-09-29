@@ -1,8 +1,7 @@
 function (app name)
   add_executable(${name} ${CMAKE_CURRENT_LIST_DIR}/${name}/main.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw/glfw_input.cpp
     ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw/glfw_runner.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw/glfw_runner_ui.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw/glfw_ui_scene.cpp
     ${CMAKE_CURRENT_LIST_DIR}/include/uinta/glfw/imgui.cpp
     )
 
