@@ -23,12 +23,17 @@ class Runner {
 
   i32 run();
 
-  void handleCursorPositionChanged(const f64 xpos, const f64 ypos);
-  void handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods);
-  void handleMouseButtonInput(const i32 button, const u32 action, const i32 mods);
-  void handleScrollInput(const f64 xoffset, const f64 yoffset);
-  void handleWindowPosChanged(const i32 xpos, const i32 ypos);
-  void handleWindowSizeChanged(const i32 width, const i32 height);
+  void handleCursorPositionChanged(const f64 xpos, const f64 ypos) noexcept;
+
+  void handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods) noexcept;
+
+  void handleMouseButtonInput(const i32 button, const u32 action, const i32 mods) noexcept;
+
+  void handleScrollInput(const f64 xoffset, const f64 yoffset) noexcept;
+
+  void handleWindowPosChanged(const i32 xpos, const i32 ypos) noexcept;
+
+  void handleWindowSizeChanged(const i32 width, const i32 height) noexcept;
 
   const Window& window() const noexcept {
     return m_window;
@@ -104,9 +109,10 @@ class Runner {
   void tick();
   void render();
   void shutdown();
-  bool shouldRenderFrame(f32 dt);
-  void advanceState();
-  bool handleException(const UintaException& ex);
+
+  void advanceState() noexcept;
+
+  bool handleException(const UintaException& ex) noexcept;
 };
 
 }  // namespace uinta

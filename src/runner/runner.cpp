@@ -43,11 +43,9 @@ i32 Runner::run() {
     SPDLOG_LOGGER_INFO(m_logger, "Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
     while (isFlagSet(IS_RUNNING, m_flags)) {
       try {
-        do {
-          advanceState();
-          tick();
-          reset(m_input);
-        } while (!shouldRenderFrame(m_state.delta));
+        advanceState();
+        tick();
+        reset(m_input);
         pollInput();
         if (isFlagSet(RENDERING_ENABLED, m_flags)) {
           swapBuffers();
@@ -98,48 +96,41 @@ void Runner::shutdown() {
   doShutdown();
 }
 
-bool Runner::shouldRenderFrame(f32 dt) {
-  // TODO Runner should have a `targetFps`; this method returns true when `runtime - lastFrame >= targetFps`
-  //
-  // See https://github.com/Benjman/renderer/blob/main/src/core/src/runner.cpp#L46
-  return true;
-}
-
-void Runner::advanceState() {
+void Runner::advanceState() noexcept {
   m_state.tick++;
   m_state.delta = runtime() - m_state.runtime;
   m_state.runtime += m_state.delta;
 }
 
-void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) {
+void Runner::handleCursorPositionChanged(const f64 xpos, const f64 ypos) noexcept {
   SPDLOG_LOGGER_TRACE(m_logger, "Mouse position event x:{} y:{}", xpos, ypos);
   mouseMoved(m_input, xpos, ypos);
 }
 
-void Runner::handleScrollInput(const f64 xoffset, const f64 yoffset) {
+void Runner::handleScrollInput(const f64 xoffset, const f64 yoffset) noexcept {
   SPDLOG_LOGGER_TRACE(m_logger, "Mouse scroll event x:{} y:{}", xoffset, yoffset);
   mouseScrolled(m_input, xoffset, yoffset);
 }
 
-void Runner::handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods) {
+void Runner::handleKeyInput(const input_key_t key, const i32 scancode, const u32 action, const i32 mods) noexcept {
   SPDLOG_LOGGER_TRACE(m_logger, "Key event: {} {}{}", getActionStr(action), getModsStr(mods), getKeyStr(key));
   if (action == ACTION_PRESS) keyPressed(m_input, key, mods);
   if (action == ACTION_RELEASE) keyReleased(m_input, key, mods);
   if (action == ACTION_REPEAT) keyRepeated(m_input, key, mods);
 }
 
-void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i32 mods) {
+void Runner::handleMouseButtonInput(const i32 button, const u32 action, const i32 mods) noexcept {
   SPDLOG_LOGGER_TRACE(m_logger, "Mouse {} event: {}{}", getActionStr(action), getModsStr(mods), getMouseButtonStr(button));
   if (action == ACTION_PRESS) mouseButtonPressed(m_input, button, mods);
   if (action == ACTION_RELEASE) mouseButtonReleased(m_input, button, mods);
   m_input.platform_flags = mods;
 }
 
-void Runner::handleWindowPosChanged(const i32 xpos, const i32 ypos) {
+void Runner::handleWindowPosChanged(const i32 xpos, const i32 ypos) noexcept {
   SPDLOG_LOGGER_TRACE(m_logger, "Window position updated: {}x{}.", xpos, ypos);
 }
 
-void Runner::handleWindowSizeChanged(const i32 width, const i32 height) {
+void Runner::handleWindowSizeChanged(const i32 width, const i32 height) noexcept {
   SPDLOG_LOGGER_DEBUG(m_logger, "Window size updated: {}x{}.", width, height);
   const auto orig_width = m_window.width;
   const auto orig_height = m_window.width;
@@ -181,7 +172,7 @@ void Runner::doPostTick() {
   m_scene->postTick(m_state, m_input);
 }
 
-bool Runner::handleException(const UintaException& ex) {
+bool Runner::handleException(const UintaException& ex) noexcept {
   // TODO: Once an in-game error reporting solution is implemented, this is where we can hook in to handle non-catastrophic errors
   // while the game is running. For example, if an in-game console is developed, this is where we would hook in to get the message
   // of the exception, and display it in the console.
