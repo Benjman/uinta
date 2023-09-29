@@ -79,8 +79,6 @@ class TargetCamera {
 
   void update(const RunnerState& state, const InputState& input);
 
-  void process_input(const RunnerState& state, const InputState& input);
-
   glm::mat4 view_matrix() const noexcept;
 
   glm::mat4 perspective_matrix() const noexcept;
@@ -187,6 +185,8 @@ class TargetCamera {
   SmoothFloat m_pitch = {8, 0};
   f32 m_vert_offset = 0;
   flags_t m_flags = CAMERA_DIST_LIMIT | CAMERA_PITCH_LIMIT;
+
+  void process_input(const RunnerState& state, const InputState& input);
 
   void update_angle(const RunnerState& state, const InputState& input) noexcept;
 

@@ -13,7 +13,9 @@ class FileManager;
 class Grid;
 class Runner;
 class Scene;
+class TargetCamera;
 class UintaException;
+
 struct Light;
 struct RunnerState;
 struct Window;
