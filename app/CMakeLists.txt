@@ -19,7 +19,6 @@ function (app name)
 endfunction()
 
 app(demo)
-app(hexagons)
 app(perlin)
 
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)
