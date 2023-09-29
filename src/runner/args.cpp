@@ -3,7 +3,6 @@
 #include <string>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
-#include <uinta/scene/scene.hpp>
 #include <vector>
 
 namespace uinta {
@@ -13,15 +12,11 @@ using RunnerArg = std::pair<std::string, std::string>;
 void expectNoValue(const RunnerArg& arg);
 std::vector<RunnerArg> extractArgs(i32 argc, const char** argv);
 
-bool processArg_noGrid(Runner* runner, const RunnerArg& arg);
-bool processArg_noRendering(Runner* runner, const RunnerArg& arg);
 bool processArg_width(Runner* runner, const RunnerArg& arg);
 bool processArg_height(Runner* runner, const RunnerArg& arg);
 
 void processArgs(Runner* runner, i32 argc, const char** argv) {
   for (auto& arg : extractArgs(argc, argv)) {
-    if (processArg_noGrid(runner, arg)) continue;
-    if (processArg_noRendering(runner, arg)) continue;
     if (processArg_height(runner, arg)) continue;
     if (processArg_width(runner, arg)) continue;
     SPDLOG_WARN("Unhandled argument: '{}'", arg.first);
@@ -45,30 +40,6 @@ std::vector<RunnerArg> extractArgs(i32 argc, const char** argv) {
     }
   }
   return result;
-}
-
-bool processArg_noGrid(Runner* runner, const RunnerArg& arg) {
-  const char* keys[] = {
-      "--no-grid",
-      nullptr,
-  };
-  if (!containsKey(arg.first.c_str(), keys)) return false;
-  runner->scene().flag(Scene::GRID_ENABLED, false);
-  expectNoValue(arg);
-  SPDLOG_INFO("Grid disabled via argument '{}'.", arg.first);
-  return true;
-}
-
-bool processArg_noRendering(Runner* runner, const RunnerArg& arg) {
-  const char* keys[] = {
-      "--no-render",
-      nullptr,
-  };
-  if (!containsKey(arg.first.c_str(), keys)) return false;
-  setFlag(Runner::RENDERING_ENABLED, false, runner->flags());
-  expectNoValue(arg);
-  SPDLOG_INFO("Rendering disabled via argument '{}'.", arg.first);
-  return true;
 }
 
 bool processArg_height(Runner* runner, const RunnerArg& arg) {
