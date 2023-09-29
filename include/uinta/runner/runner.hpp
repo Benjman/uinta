@@ -8,12 +8,13 @@
 #include <uinta/fwd.hpp>
 #include <uinta/input.hpp>
 #include <uinta/runner/dependencies.hpp>
+#include <uinta/runner/events.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/runner/window.hpp>
 
 namespace uinta {
 
-class Runner {
+class Runner : public EventManager {
   using SceneStack = std::list<std::unique_ptr<Scene>>;
 
  public:
@@ -102,6 +103,13 @@ class Runner {
   const SceneStack& scenes() const noexcept {
     return m_scenes;
   }
+
+  template <typename EventType>
+  void add_event(EventType event_type, std::unique_ptr<const Event> event) noexcept {
+    add_event(static_cast<event_t>(event_type), std::move(event));
+  }
+
+  virtual void add_event(event_t event_type, std::unique_ptr<const Event> event) noexcept override;
 
  protected:
   virtual f64 runtime() = 0;

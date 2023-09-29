@@ -16,13 +16,16 @@ class Scene;
 class TargetCamera;
 class UintaException;
 
+struct Event;
+struct InputState;
 struct Light;
 struct RunnerState;
 struct Window;
-struct InputState;
 
+using event_t = u32;
 using input_key_t = u32;
 using mouse_button_t = u32;
+using subscription_t = u32;
 using uinta_error_code = std::error_code;
 using uinta_error_code_t = i32;
 

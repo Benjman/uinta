@@ -48,59 +48,90 @@ i32 Runner::run() noexcept {
     SPDLOG_LOGGER_CRITICAL(m_logger, "Error attempting to initialize GPU utilites: ", error.message());
     return error.value();
   }
-  for (auto itr = m_scenes.cbegin(); itr != m_scenes.cend();) {
-    auto* scene = itr->get();
-    if (auto error = scene->init(); error) {
-      SPDLOG_LOGGER_ERROR(scene->logger(), "Error in initialization: {}", error.message());
-      (void)scene->transition(Scene::State::Destroyed);
-      itr = m_scenes.erase(itr);
-    } else
-      itr++;
-  }
+  publish_queued_events();
   SPDLOG_LOGGER_INFO(m_logger, "Initialized in {} seconds.", sw.elapsed().count());
   while (isFlagSet(IS_RUNNING, m_flags)) {
-    advanceState();
-    for (auto itr = m_scenes.cbegin(); itr != m_scenes.cend();) {
-      auto* scene = itr->get();
-      try {
-        switch (scene->state()) {
-          case Scene::State::Created:
-            if (auto error = scene->init(); error) {
-              SPDLOG_LOGGER_ERROR(scene->logger(), "Error in initialization: {}", error.message());
-              (void)scene->transition(Scene::State::Destroyed);
-              itr = m_scenes.erase(itr);
-            } else
-              itr++;
-            continue;
-          case Scene::State::Running:
-            scene->pre_tick(m_state, m_input);
-            scene->tick(m_state, m_input);
-            scene->post_tick(m_state, m_input);
-            break;
-          case Scene::State::Destroyed:
-          case Scene::State::Paused:
-            break;
-        }
-        itr++;
-      } catch (const UintaException& ex) {
-        SPDLOG_LOGGER_ERROR(scene->logger(), "Exception thrown in advance stage: {}", ex.what());
-      }
-    }
     reset(m_input);
     pollInput();
-    swapBuffers();
-    m_gpu_utils->clear_buffer(m_clear_color, m_clear_mask);
+    advanceState();
     for (auto& scene : m_scenes) {
-      if (scene->state() == Scene::State::Running) {
-        try {
-          scene->pre_render(m_state);
-          scene->render(m_state);
-          scene->post_render(m_state);
-        } catch (const UintaException& ex) {
-          SPDLOG_LOGGER_ERROR(scene->logger(), "Exception thrown in render stage: {}", ex.what());
+      if (Scene::State::Created == scene->state()) {
+        if (auto error = scene->init(); error) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "Failed to initialize: {}", error.message());
+          (void)scene->transition(Scene::State::Destroyed);
         }
       }
     }
+    publish_queued_events();
+    for (auto& scene : m_scenes) {
+      if (Scene::State::Running == scene->state()) {
+        try {
+          scene->pre_tick(m_state, m_input);
+        } catch (const UintaException& ex) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "pre_tick exception: {}", ex.what());
+        }
+      }
+    }
+    publish_queued_events();
+    for (auto& scene : m_scenes) {
+      if (Scene::State::Running == scene->state()) {
+        try {
+          scene->tick(m_state, m_input);
+        } catch (const UintaException& ex) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "tick exception: {}", ex.what());
+        }
+      }
+    }
+    publish_queued_events();
+    for (auto& scene : m_scenes) {
+      if (Scene::State::Running == scene->state()) {
+        try {
+          scene->post_tick(m_state, m_input);
+        } catch (const UintaException& ex) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "post_tick exception: {}", ex.what());
+        }
+      }
+    }
+    publish_queued_events();
+    for (auto itr = m_scenes.cbegin(); itr != m_scenes.cend();) {
+      if (Scene::State::Destroyed == itr->get()->state()) {
+        itr = m_scenes.erase(itr);
+      } else
+        itr++;
+    }
+    publish_queued_events();
+    m_gpu_utils->clear_buffer(m_clear_color, m_clear_mask);
+    for (auto& scene : m_scenes) {
+      if (Scene::State::Running == scene->state()) {
+        try {
+          scene->pre_render(m_state);
+        } catch (const UintaException& ex) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "pre_render exception: {}", ex.what());
+        }
+      }
+    }
+    publish_queued_events();
+    for (auto& scene : m_scenes) {
+      if (Scene::State::Running == scene->state()) {
+        try {
+          scene->render(m_state);
+        } catch (const UintaException& ex) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "render exception: {}", ex.what());
+        }
+      }
+    }
+    publish_queued_events();
+    for (auto& scene : m_scenes) {
+      if (Scene::State::Running == scene->state()) {
+        try {
+          scene->post_render(m_state);
+        } catch (const UintaException& ex) {
+          SPDLOG_LOGGER_ERROR(scene->logger(), "post_render exception: {}", ex.what());
+        }
+      }
+    }
+    publish_queued_events();
+    swapBuffers();
   }
   SPDLOG_LOGGER_INFO(m_logger, "Shutting down.");
   for (auto& scene : m_scenes) {
@@ -218,6 +249,10 @@ uinta_error_code RunnerGpuUtils_OpenGL::init(Runner& runner) {
 void RunnerGpuUtils_OpenGL::clear_buffer(const glm::vec3& color, GLbitfield mask) {
   glClearColor(color.r, color.g, color.b, 1.0);
   glClear(mask);
+}
+
+void Runner::add_event(event_t event_type, std::unique_ptr<const Event> event) noexcept {
+  queue_event(event_type, std::move(event));
 }
 
 }  // namespace uinta
