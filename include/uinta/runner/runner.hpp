@@ -35,6 +35,8 @@ class Runner {
 
   void handleWindowSizeChanged(const i32 width, const i32 height) noexcept;
 
+  virtual uinta_error_code init_gpu_context() = 0;
+
   const Window& window() const noexcept {
     return m_window;
   }
@@ -89,7 +91,6 @@ class Runner {
   virtual void doPostRender();
   virtual void doShutdown();
 
-  virtual uinta_error_code createOpenGLContext() = 0;
   virtual f64 runtime() = 0;
   virtual void pollInput() = 0;
   virtual void swapBuffers() = 0;

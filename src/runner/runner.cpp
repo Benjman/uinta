@@ -37,8 +37,6 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv, std::uniqu
 i32 Runner::run() {
   spdlog::stopwatch sw;
   try {
-    if (isFlagSet(RENDERING_ENABLED, m_flags))
-      if (auto error = createOpenGLContext(); error) throw UintaException(error);
     if (auto error = doInit(); error) throw UintaException(error);
     SPDLOG_LOGGER_INFO(m_logger, "Initialized '{}' in {} seconds.", m_window.title, sw.elapsed().count());
     while (isFlagSet(IS_RUNNING, m_flags)) {
@@ -74,8 +72,8 @@ i32 Runner::run() {
 
 uinta_error_code Runner::doInit() {
   if (auto error = m_file_manager->init(*this); error) return error;
+  if (auto error = m_gpu_utils->init(*this); error) return error;
   if (auto error = m_scene->init(); error) return error;
-  if (auto error = m_gpu_utils->init(); error) return error;
   return SUCCESS_EC;
 }
 
@@ -180,7 +178,8 @@ bool Runner::handleException(const UintaException& ex) noexcept {
   return false;
 }
 
-uinta_error_code RunnerGpuUtils_OpenGL::init() {
+uinta_error_code RunnerGpuUtils_OpenGL::init(Runner& runner) {
+  if (auto error = runner.init_gpu_context(); error) throw UintaException(error);
   glEnable(GL_DEPTH_TEST);
   return SUCCESS_EC;
 }

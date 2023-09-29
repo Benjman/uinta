@@ -11,13 +11,13 @@ namespace uinta {
 
 class RunnerGpuUtils {
  public:
-  virtual uinta_error_code init() = 0;
+  virtual uinta_error_code init(Runner& runner) = 0;
   virtual void clear_buffer(const glm::vec3& color, GLbitfield mask) = 0;
 };
 
 class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
  public:
-  uinta_error_code init() override;
+  uinta_error_code init(Runner& runner) override;
   void clear_buffer(const glm::vec3& color, GLbitfield mask) override;
 };
 

@@ -18,7 +18,7 @@ namespace uinta {
 class MockRunnerGpuUtils : public RunnerGpuUtils {
  public:
   std::function<uinta_error_code()> m_on_init;
-  uinta_error_code init() {
+  uinta_error_code init(Runner& runner) {
     if (m_on_init) return m_on_init();
     return SUCCESS_EC;
   }
@@ -35,11 +35,10 @@ class MockRunner : public Runner {
              std::unique_ptr<FileManager> file_manager = std::make_unique<MockFileManager>(),
              std::unique_ptr<RunnerGpuUtils> gpu_utils = std::make_unique<MockRunnerGpuUtils>())
       : Runner(title, 0, nullptr, std::move(file_manager), std::move(gpu_utils)) {
-    setFlag(Runner::RENDERING_ENABLED, false, flags());
   }
 
   std::function<uinta_error_code()> on_createOpenGLContext;
-  virtual uinta_error_code createOpenGLContext() override {
+  virtual uinta_error_code init_gpu_context() override {
     if (on_createOpenGLContext) return on_createOpenGLContext();
     return SUCCESS_EC;
   }

@@ -49,7 +49,7 @@ void GlfwRunner::swapBuffers() {
   glfwSwapBuffers(m_window);
 }
 
-uinta_error_code GlfwRunner::createOpenGLContext() {
+uinta_error_code GlfwRunner::init_gpu_context() {
   spdlog::stopwatch sw;
 
   constexpr i32 version_major = 3;
