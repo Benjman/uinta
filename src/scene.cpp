@@ -3,6 +3,7 @@
 #include <uinta/error.hpp>
 #include <uinta/exception.hpp>
 #include <uinta/logging.hpp>
+#include <uinta/runner/events.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/scene.hpp>
 
@@ -25,6 +26,7 @@ Scene::Scene(const std::string& name, Runner& runner, Layer layer) noexcept
       m_logger(spdlog::stdout_color_mt(m_runner.logger()->name() + ":Scene:" + m_name)),
       m_state(State::Created),
       m_layer(layer) {
+  runner.add_event(RunnerEvents::SceneCreated, std::make_unique<SceneEvent>(runner.state().runtime, this));
 }
 
 Scene::~Scene() = default;
@@ -36,12 +38,15 @@ uinta_error_code Scene::transition(Scene::State state) noexcept {
   switch (state) {
     case Scene::State::Destroyed:
       on_destroyed();
+      runner().add_event(RunnerEvents::SceneDestroyed, std::make_unique<SceneEvent>(runner().state().runtime, this));
       return SUCCESS_EC;
     case Scene::State::Paused:
       on_paused();
+      runner().add_event(RunnerEvents::ScenePaused, std::make_unique<SceneEvent>(runner().state().runtime, this));
       return SUCCESS_EC;
     case Scene::State::Running:
       on_running();
+      runner().add_event(RunnerEvents::SceneRunning, std::make_unique<SceneEvent>(runner().state().runtime, this));
       return SUCCESS_EC;
     default:
       return make_error(error::InvalidStateTransition);

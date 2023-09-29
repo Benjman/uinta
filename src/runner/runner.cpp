@@ -180,25 +180,12 @@ void Runner::handleWindowPosChanged(const i32 xpos, const i32 ypos) noexcept {
 }
 
 void Runner::handleWindowSizeChanged(const i32 width, const i32 height) noexcept {
-  // TODO: Once the event system is running, broadcast window size changed event
-  // SPDLOG_LOGGER_DEBUG(m_logger, "Window size updated: {}x{}.", width, height);
-  // const auto orig_width = m_window.width;
-  // const auto orig_height = m_window.height;
-  // auto win = window();
-  // win.width = width;
-  // win.height = height;
-  // m_window = win;
-  // if (orig_width != m_window.width || orig_height != m_window.height) {
-  //   m_scene->onAspectRatioUpdate(m_window.aspect_ratio);
-  // }
-}
-
-bool Runner::handleException(const UintaException& ex) noexcept {
-  // TODO: Once an in-game error reporting solution is implemented, this is where we can hook in to handle non-catastrophic errors
-  // while the game is running. For example, if an in-game console is developed, this is where we would hook in to get the message
-  // of the exception, and display it in the console.
-  SPDLOG_LOGGER_CRITICAL(m_logger, ex.what());
-  return false;
+  auto win = window();
+  win.width = width;
+  win.height = height;
+  m_window = win;
+  publish(RunnerEvents::AspectRatioChanged, AspectRatioChangeEvent(m_state.runtime, m_window.aspect_ratio));
+  SPDLOG_LOGGER_DEBUG(m_logger, "Window size updated: {}x{}.", width, height);
 }
 
 uinta_error_code Runner::add_scene(std::unique_ptr<Scene> scene) noexcept {

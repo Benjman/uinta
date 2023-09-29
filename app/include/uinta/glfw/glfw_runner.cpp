@@ -10,6 +10,7 @@
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/glfw/glfw_ui_scene.hpp>
 #include <uinta/input.hpp>
+#include <uinta/runner/events.hpp>
 
 namespace uinta {
 
@@ -91,6 +92,7 @@ uinta_error_code GlfwRunner::init_gpu_context() {
   window(Window(window().title, target_width, target_height));
   SPDLOG_LOGGER_INFO(logger(), "Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height,
                      window().aspect_ratio);
+  publish(RunnerEvents::AspectRatioChanged, AspectRatioChangeEvent(state().runtime, window().aspect_ratio));
 
   glfwSetWindowUserPointer(m_window, this);
   glfwMakeContextCurrent(m_window);

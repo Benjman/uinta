@@ -13,6 +13,9 @@ class DemoScene : public Scene {
     if (auto error = runner.add_scene(std::make_unique<GridScene>(runner)); error) throw UintaException(error);
     m_camera.dist(30);
     m_camera.pitch(15);
+    runner.subscribe(RunnerEvents::AspectRatioChanged, [&](const Event* event) {
+      if (const auto* e = static_cast<const AspectRatioChangeEvent*>(event); e) m_camera.aspect_ratio(e->aspect_ratio);
+    });
   }
 
   ~DemoScene() override = default;
@@ -23,7 +26,6 @@ class DemoScene : public Scene {
   }
 
   uinta_error_code init() override {
-    m_camera.aspect_ratio(runner().window().aspect_ratio);
     return transition(State::Running);
   }
 
