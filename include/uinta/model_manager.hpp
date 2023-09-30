@@ -15,9 +15,9 @@ class ModelManager {
 
   uinta_error_code load(model_t& ref, const file_t* const file, const FileManager& fm,
                         const std::unordered_map<MeshAttribType, MeshAttrib>& attribs = {
-                            {MeshAttribType_Position, {9, 0}},
-                            {MeshAttribType_Normal, {9, 3}},
-                            {MeshAttribType_Color, {9, 6}},
+                            {MeshAttribType::Position, {9, 0}},
+                            {MeshAttribType::Normal, {9, 3}},
+                            {MeshAttribType::Color, {9, 6}},
                         });
 
   Model model(const model_t handle) const;

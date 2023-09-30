@@ -80,18 +80,18 @@ uinta_error_code uinta::loadObj(const std::string& objBuffer, f32* const vbuf, u
   std::vector<objface> faceData;
   processFaces(faceLines, faceData, ibuf, ioff);
 
-  if (hasMeshAttrib(MeshAttribType_Normal, attribs)) {
-    packNormals(findMeshAttrib(MeshAttribType_Normal, attribs), vbuf, vcount, faceData, normals);
+  if (hasMeshAttrib(MeshAttribType::Normal, attribs)) {
+    packNormals(findMeshAttrib(MeshAttribType::Normal, attribs), vbuf, vcount, faceData, normals);
   }
-  if (hasMeshAttrib(MeshAttribType_UV, attribs)) {
-    packUVs(findMeshAttrib(MeshAttribType_UV, attribs), vbuf, vcount, faceData, uvs);
+  if (hasMeshAttrib(MeshAttribType::UV, attribs)) {
+    packUVs(findMeshAttrib(MeshAttribType::UV, attribs), vbuf, vcount, faceData, uvs);
   }
-  if (hasMeshAttrib(MeshAttribType_Position, attribs)) {
-    packVertices(findMeshAttrib(MeshAttribType_Position, attribs), vbuf, vcount, faceData, vertices, hasColor);
+  if (hasMeshAttrib(MeshAttribType::Position, attribs)) {
+    packVertices(findMeshAttrib(MeshAttribType::Position, attribs), vbuf, vcount, faceData, vertices, hasColor);
   }
-  if (hasMeshAttrib(MeshAttribType_Color, attribs)) {
+  if (hasMeshAttrib(MeshAttribType::Color, attribs)) {
     if (!hasColor) return make_error(error::ColorsMissing);
-    packColors(findMeshAttrib(MeshAttribType_Color, attribs), vbuf, vcount, faceData, vertices);
+    packColors(findMeshAttrib(MeshAttribType::Color, attribs), vbuf, vcount, faceData, vertices);
   }
   return SUCCESS_EC;
 }
