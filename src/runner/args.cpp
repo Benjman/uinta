@@ -1,5 +1,3 @@
-#include <uinta/utils/string_utils.h>
-
 #include <string>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
@@ -14,6 +12,7 @@ std::vector<RunnerArg> extractArgs(i32 argc, const char** argv);
 
 bool processArg_width(Runner* runner, const RunnerArg& arg);
 bool processArg_height(Runner* runner, const RunnerArg& arg);
+bool containsKey(const char* const key, const char** const keys);
 
 void processArgs(Runner* runner, i32 argc, const char** argv) {
   for (auto& arg : extractArgs(argc, argv)) {
@@ -68,6 +67,16 @@ bool processArg_width(Runner* runner, const RunnerArg& arg) {
 
 void expectNoValue(const RunnerArg& arg) {
   if (!arg.second.empty()) SPDLOG_WARN("Argument '{}' provided an unexpected value.", arg.first);
+}
+
+bool containsKey(const char* const key, const char** const keys) {
+  for (int i = 0; keys[i]; i++) {
+    if (strcmp(key, keys[i]) == 0) return true;
+#ifdef UINTA_DEBUG
+    if (i >= 100 && i % 100 == 0) SPDLOG_WARN("`containsKey()` has looped {} times without encountering a nullptr.", i);
+#endif
+  }
+  return false;
 }
 
 }  // namespace uinta
