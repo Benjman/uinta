@@ -39,7 +39,6 @@ set(UINTA_SRCS
   ./src/metrics.cpp
   ./src/model_manager.cpp
   ./src/parsers/obj.cpp
-  ./src/quadtree.cpp
   ./src/runner/args.cpp
   ./src/runner/runner.cpp
   ./src/scene.cpp
