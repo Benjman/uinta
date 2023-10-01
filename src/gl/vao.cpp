@@ -1,9 +1,15 @@
+#include <uinta/gl/api.h>
+
 #include <uinta/error.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/gl/vertex_attrib.hpp>
 #include <uinta/logging.hpp>
 
 namespace uinta {
+
+Vao::Vao(const std::vector<VertexAttrib>& attributes)
+    : m_attributes(attributes), m_index_buffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW) {
+}
 
 void Vao::init(spdlog::logger* logger) {
   if (logger) m_logger = logger;

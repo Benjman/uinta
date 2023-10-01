@@ -84,7 +84,7 @@ class Runner : public EventManager {
     return m_flags;
   }
 
-  GLbitfield& clear_mastk() noexcept {
+  u32& clear_mastk() noexcept {
     return m_clear_mask;
   }
 
@@ -126,7 +126,7 @@ class Runner : public EventManager {
   const std::unique_ptr<FileManager> m_file_manager;
   const std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
   glm::vec3 m_clear_color = glm::vec3(38, 70, 83) / 255.0f;
-  GLbitfield m_clear_mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+  u32 m_clear_mask;
   flags_t m_flags = IS_RUNNING;
 
   void advanceState() noexcept;

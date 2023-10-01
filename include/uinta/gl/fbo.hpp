@@ -1,21 +1,19 @@
 #ifndef UINTA_FBO_HPP
 #define UINTA_FBO_HPP
 
-#include <uinta/gl/api.h>
-
 #include <uinta/fwd.hpp>
 
 namespace uinta {
 
 struct Fbo {
-  GLuint id = 0;
+  u32 id = 0;
 
-  GLuint renderTexture = 0;
-  GLuint depthBuffer;
-  GLuint height = 0;
-  GLuint width = 0;
+  u32 renderTexture = 0;
+  u32 depthBuffer;
+  u32 height = 0;
+  u32 width = 0;
 
-  Fbo(GLuint width = 0, GLuint height = 0) : height(height), width(width) {
+  Fbo(u32 width = 0, u32 height = 0) : height(height), width(width) {
   }
 };
 

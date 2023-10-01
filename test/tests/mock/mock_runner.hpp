@@ -25,7 +25,7 @@ class MockRunnerGpuUtils : public RunnerGpuUtils {
   }
 
   std::function<void()> m_on_clear_buffer;
-  void clear_buffer(const glm::vec3& color, GLbitfield mask) {
+  void clear_buffer(const glm::vec3& color, u32 mask) {
     if (m_on_clear_buffer) m_on_clear_buffer();
   }
 };

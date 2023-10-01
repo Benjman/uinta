@@ -12,8 +12,7 @@ namespace uinta {
 
 class Vao {
  public:
-  Vao(const std::vector<VertexAttrib>& attributes) : m_attributes(attributes) {
-  }
+  Vao(const std::vector<VertexAttrib>& attributes);
 
   u32 id() const noexcept {
     return m_id;
@@ -46,7 +45,7 @@ class Vao {
  private:
   u32 m_id = 0;
   std::vector<VertexAttrib> m_attributes;
-  Vbo m_index_buffer = {GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW};
+  Vbo m_index_buffer;
   spdlog::logger* m_logger;
 };
 

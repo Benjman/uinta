@@ -1,3 +1,5 @@
+#include <uinta/gl/api.h>
+
 #include <uinta/error.hpp>
 #include <uinta/gl/utils/type_utils.hpp>
 #include <uinta/gl/vbo.hpp>

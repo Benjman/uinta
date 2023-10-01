@@ -2,15 +2,13 @@
 #define UINTA_VBO_HPP
 
 #include <spdlog/fwd.h>
-#include <uinta/gl/types.h>
-
-#include <memory>
+#include <uinta/types.h>
 
 namespace uinta {
 
 class Vbo {
  public:
-  Vbo(gl_enum target, gl_enum usage, size_t reserve = 0) : m_target(target), m_usage(usage), m_size(reserve) {
+  Vbo(u32 target, u32 usage, size_t reserve = 0) : m_target(target), m_usage(usage), m_size(reserve) {
   }
 
   void init(spdlog::logger* logger = nullptr);
@@ -29,11 +27,11 @@ class Vbo {
     return m_id;
   }
 
-  gl_enum target() const noexcept {
+  u32 target() const noexcept {
     return m_target;
   }
 
-  gl_enum usage() const noexcept {
+  u32 usage() const noexcept {
     return m_usage;
   }
 
@@ -49,8 +47,8 @@ class Vbo {
 
  private:
   u32 m_id = 0;
-  gl_enum m_target;
-  gl_enum m_usage;
+  u32 m_target;
+  u32 m_usage;
   size_t m_size = 0;
   size_t m_max = 0;
   spdlog::logger* m_logger;

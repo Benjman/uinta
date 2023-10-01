@@ -1,4 +1,4 @@
-#include <uinta/gl.h>
+#include <uinta/gl/api.h>
 #include <uinta/utils/macros.h>
 
 #include <cstdio>
@@ -43,8 +43,8 @@ uinta_error_code checkCompileErrors(GLuint shader, GLenum type) {
   return SUCCESS_EC;
 }
 
-uinta_error_code createShaderProgram(GLuint& ref, const std::vector<std::string>& sources, const std::vector<GLenum>& stages,
-                                     const std::vector<std::string>& uniformNames, const std::vector<GLuint*>& uniformLocations) {
+uinta_error_code createShaderProgram(u32& ref, const std::vector<std::string>& sources, const std::vector<u32>& stages,
+                                     const std::vector<std::string>& uniformNames, const std::vector<u32*>& uniformLocations) {
   ref = GL_ZERO;
 
   if (sources.size() != stages.size()) return make_error(error::StageError);

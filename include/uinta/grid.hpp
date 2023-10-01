@@ -28,9 +28,9 @@ class GridRenderer {
   }
 
  protected:
-  GLuint m_u_mvp = GL_ZERO;
+  u32 m_u_mvp = 0;
   u32 m_vertex_count = 0;
-  GLuint m_shader = GL_ZERO;
+  u32 m_shader = 0;
   f32 m_line_width = 1;
 };
 

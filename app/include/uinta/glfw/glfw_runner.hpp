@@ -1,6 +1,8 @@
 #ifndef UINTA_GLFW_RUNNER_HPP
 #define UINTA_GLFW_RUNNER_HPP
 
+#include <GLFW/glfw3.h>
+
 #include <array>
 #include <uinta/runner.hpp>
 #include <uinta/runner/monitor.hpp>

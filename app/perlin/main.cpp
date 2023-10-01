@@ -1,3 +1,5 @@
+#include <uinta/gl/api.h>
+
 #include <algorithm>
 #include <uinta/error.hpp>
 #include <uinta/exception.hpp>

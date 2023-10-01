@@ -1,5 +1,3 @@
-#include <uinta/gl/api.h>
-
 #include <uinta/input.hpp>
 
 namespace uinta {

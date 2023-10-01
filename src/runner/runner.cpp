@@ -4,6 +4,7 @@
 // clang-format on
 
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <uinta/gl/api.h>
 
 #include <uinta/error.hpp>
 #include <uinta/exception.hpp>
@@ -31,7 +32,8 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv, std::uniqu
     : m_window(title),
       m_logger(spdlog::stdout_color_mt(title)),
       m_file_manager(std::move(file_manager)),
-      m_gpu_utils(std::move(gpu_utils)) {
+      m_gpu_utils(std::move(gpu_utils)),
+      m_clear_mask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) {
   assert(m_file_manager && "File manager must be initialized!");
   assert(m_gpu_utils && "GPU Utilities must be initialized!");
   processArgs(this, argc, argv);

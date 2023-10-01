@@ -1,3 +1,5 @@
+#include <uinta/gl/api.h>
+
 #include <uinta/gl/utils/type_utils.hpp>
 #include <unordered_map>
 
