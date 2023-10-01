@@ -2,7 +2,7 @@
 #include <uinta/glfw/ui/limits.h>
 
 #include <uinta/math/utils.hpp>
-#include <uinta/runner/runner_state.hpp>
+#include <uinta/runner_state.hpp>
 #include <uinta/target_camera.hpp>
 
 namespace uinta {

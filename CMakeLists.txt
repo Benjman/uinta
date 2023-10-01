@@ -23,6 +23,7 @@ set(UINTA_RES_PATHS       ${CMAKE_CURRENT_LIST_DIR}/res)
 
 set(UINTA_SRCS
 
+  ./src/args.cpp
   ./src/file_manager.cpp
   ./src/font.cpp
   ./src/gl/fbo.cpp
@@ -39,8 +40,7 @@ set(UINTA_SRCS
   ./src/metrics.cpp
   ./src/model_manager.cpp
   ./src/parsers/obj.cpp
-  ./src/runner/args.cpp
-  ./src/runner/runner.cpp
+  ./src/runner.cpp
   ./src/scene.cpp
   ./src/shader.cpp
   ./src/target_camera.cpp

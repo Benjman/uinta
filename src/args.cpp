@@ -1,7 +1,7 @@
-#include <string>
+#include <uinta/types.h>
+
 #include <uinta/logging.hpp>
-#include <uinta/runner/runner.hpp>
-#include <vector>
+#include <uinta/runner.hpp>
 
 namespace uinta {
 

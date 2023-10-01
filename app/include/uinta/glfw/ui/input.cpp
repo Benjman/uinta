@@ -4,7 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <uinta/math/utils.hpp>
-#include <uinta/runner/runner.hpp>
+#include <uinta/runner.hpp>
 #include <uinta/target_camera.hpp>
 #include <uinta/utils/direction.hpp>
 

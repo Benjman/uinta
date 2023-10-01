@@ -3,8 +3,7 @@
 #include <uinta/error.hpp>
 #include <uinta/exception.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/runner/events.hpp>
-#include <uinta/runner/runner.hpp>
+#include <uinta/runner.hpp>
 #include <uinta/scene.hpp>
 
 namespace uinta {

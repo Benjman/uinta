@@ -5,7 +5,7 @@
 #include <uinta/error.hpp>
 #include <uinta/file_manager.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/runner/runner.hpp>
+#include <uinta/runner.hpp>
 #include <uinta/utils/formatters.hpp>
 
 namespace uinta {

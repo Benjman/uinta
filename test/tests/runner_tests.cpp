@@ -6,7 +6,7 @@
 
 #define private public
 #define protected public
-#include <uinta/runner/runner.hpp>
+#include <uinta/runner.hpp>
 
 #include "./mock/mock_runner.hpp"
 #include "./mock/mock_scene.hpp"

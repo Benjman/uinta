@@ -4,9 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <uinta/error.hpp>
-#include <uinta/runner/runner.hpp>
-
-#include "./mock_file_manager.hpp"
+#include <uinta/runner.hpp>
 
 inline std::string getUniqueTestName(const std::string& append = "") {
   const auto* const test_info = ::testing::UnitTest::GetInstance()->current_test_info();

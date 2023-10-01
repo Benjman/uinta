@@ -11,7 +11,6 @@
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/glfw/glfw_ui_scene.hpp>
 #include <uinta/input.hpp>
-#include <uinta/runner/events.hpp>
 
 namespace uinta {
 
@@ -79,13 +78,13 @@ uinta_error_code GlfwRunner::init_gpu_context() {
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif
 
-  auto* const target_mon = window().fullscreen ? m_monitors[0].ptr : NULL;
+  GLFWmonitor* const target_mon = window().fullscreen ? static_cast<GLFWmonitor*>(m_monitors[0].ptr) : NULL;
   const auto target_width = window().width ? window().width : m_monitors[0].width;
   const auto target_height = window().height ? window().height : m_monitors[0].height;
   m_window = glfwCreateWindow(target_width, target_height, window().title.c_str(), target_mon, NULL);
   if (!m_window) return make_error(error::WindowError);
 
-  const auto* const view = glfwGetVideoMode(m_monitors[0].ptr);
+  const auto* const view = glfwGetVideoMode(static_cast<GLFWmonitor*>(m_monitors[0].ptr));
   const auto target_x = view ? view->width / 2.0 - target_width / 2.0 : 0;
   const auto target_y = view ? view->height / 2.0 - target_height / 2.0 : 0;
   glfwSetWindowPos(m_window, target_x, target_y);

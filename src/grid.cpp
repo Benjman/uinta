@@ -7,7 +7,7 @@
 #include <uinta/grid.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/mesh.hpp>
-#include <uinta/runner/runner.hpp>
+#include <uinta/runner.hpp>
 #include <uinta/shader.hpp>
 #include <uinta/target_camera.hpp>
 

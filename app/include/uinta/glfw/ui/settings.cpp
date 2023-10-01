@@ -72,8 +72,8 @@ void settingsGraphics(GlfwRunner &runner) {
     monitors.at(0).refreshRate = refreshRate;
     runner.monitors(monitors);
     GLFWmonitor *mon = nullptr;
-    if (runner.window().fullscreen) mon = runner.monitors().at(0).ptr;
-    const auto *const view = glfwGetVideoMode(runner.monitors().at(0).ptr);
+    if (runner.window().fullscreen) mon = static_cast<GLFWmonitor *>(runner.monitors().at(0).ptr);
+    const auto *const view = glfwGetVideoMode(static_cast<GLFWmonitor *>(runner.monitors().at(0).ptr));
     int x = view ? view->width / 2.0 + window.width / 2.0 : 0;
     int y = view ? view->height / 2.0 + window.height / 2.0 : 0;
     glfwSetWindowMonitor(runner.glfwWindow(), mon, x, y, runner.window().width, runner.window().height,

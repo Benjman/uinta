@@ -4,8 +4,8 @@
 #include <GLFW/glfw3.h>
 
 #include <array>
+#include <uinta/monitor.hpp>
 #include <uinta/runner.hpp>
-#include <uinta/runner/monitor.hpp>
 
 namespace uinta {
 
@@ -25,12 +25,12 @@ class GlfwRunner : public Runner {
     m_window = v;
   }
 
-  const std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> monitors() const noexcept {
+  const std::array<Monitor, MAX_MONITORS> monitors() const noexcept {
     return m_monitors;
   }
 
-  void monitors(const std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> v) {
-    m_monitors = v;
+  void monitors(const std::array<Monitor, MAX_MONITORS> monitors) {
+    m_monitors = monitors;
   }
 
  protected:
@@ -43,7 +43,7 @@ class GlfwRunner : public Runner {
 
  private:
   GLFWwindow* m_window = nullptr;
-  std::array<Monitor<GLFWmonitor*>, MAX_MONITORS> m_monitors;
+  std::array<Monitor, MAX_MONITORS> m_monitors;
 };
 
 }  // namespace uinta
