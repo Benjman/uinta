@@ -1,18 +1,21 @@
 #ifndef UINTA_RUNNER_RUNNER_HPP
 #define UINTA_RUNNER_RUNNER_HPP
 
+#include <spdlog/fwd.h>
+
 #include <glm/vec3.hpp>
 #include <list>
 #include <memory>
 #include <mutex>
 #include <uinta/fwd.hpp>
 #include <uinta/input.hpp>
-#include <uinta/runner/dependencies.hpp>
 #include <uinta/runner/events.hpp>
 #include <uinta/runner/runner_state.hpp>
 #include <uinta/runner/window.hpp>
 
 namespace uinta {
+
+class RunnerGpuUtils;
 
 class Runner : public EventManager {
   using SceneStack = std::list<std::unique_ptr<Scene>>;
@@ -132,6 +135,18 @@ class Runner : public EventManager {
   void advanceState() noexcept;
 
   bool handleException(const UintaException& ex) noexcept;
+};
+
+class RunnerGpuUtils {
+ public:
+  virtual uinta_error_code init(Runner& runner) = 0;
+  virtual void clear_buffer(const glm::vec3& color, u32 mask) = 0;
+};
+
+class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
+ public:
+  uinta_error_code init(Runner& runner) override;
+  void clear_buffer(const glm::vec3& color, u32 mask) override;
 };
 
 }  // namespace uinta

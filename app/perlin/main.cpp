@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <uinta/error.hpp>
 #include <uinta/exception.hpp>
+#include <uinta/file_manager.hpp>
 #include <uinta/gl/vao.hpp>
 #include <uinta/glfw/glfw_runner.hpp>
 #include <uinta/input.hpp>

@@ -8,6 +8,7 @@
 
 #include <uinta/error.hpp>
 #include <uinta/exception.hpp>
+#include <uinta/file_manager.hpp>
 #include <uinta/logging.hpp>
 #include <uinta/runner/runner.hpp>
 #include <uinta/scene.hpp>
