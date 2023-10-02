@@ -6,6 +6,8 @@
 #include <uinta/error.hpp>
 #include <uinta/runner.hpp>
 
+#include "./mock_file_manager.hpp"
+
 inline std::string getUniqueTestName(const std::string& append = "") {
   const auto* const test_info = ::testing::UnitTest::GetInstance()->current_test_info();
   return std::string(test_info->test_suite_name()) + "." + test_info->name() + ":" + std::to_string(test_info->line()) +
