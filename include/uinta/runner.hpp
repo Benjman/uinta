@@ -130,7 +130,7 @@ class Runner : public EventManager {
   const std::unique_ptr<RunnerGpuUtils> m_gpu_utils;
   glm::vec3 m_clear_color = glm::vec3(38, 70, 83) / 255.0f;
   u32 m_clear_mask;
-  flags_t m_flags = IS_RUNNING;
+  flags_t m_flags = 0;
 
   void advanceState() noexcept;
 

@@ -53,6 +53,7 @@ i32 Runner::run() noexcept {
   }
   publish_queued_events();
   SPDLOG_LOGGER_INFO(m_logger, "Initialized in {} seconds.", sw.elapsed().count());
+  setFlag(IS_RUNNING, true, m_flags);
   while (isFlagSet(IS_RUNNING, m_flags)) {
     reset(m_input);
     pollInput();
