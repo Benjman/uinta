@@ -30,15 +30,15 @@ bool hasMeshAttrib(MeshAttribType, const std::unordered_map<MeshAttribType, Mesh
 inline std::string to_string(MeshAttribType type) {
   switch (type) {
     case MeshAttribType::Color:
-      return "MeshAttribType_Color";
+      return "Color";
     case MeshAttribType::Normal:
-      return "MeshAttribType_Normal";
+      return "Normal";
     case MeshAttribType::Position:
-      return "MeshAttribType_Position";
+      return "Position";
     case MeshAttribType::UV:
-      return "MeshAttribType_UV";
+      return "UV";
     default:
-      return "UNKNOWN MeshAttribType";
+      return "Unknown";
   }
 }
 
