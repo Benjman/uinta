@@ -13,22 +13,6 @@
 
 namespace uinta {
 
-class GridRenderer_OpenGL : public GridRenderer {
- public:
-  GridRenderer_OpenGL() = default;
-
-  uinta_error_code init(FileManager& fileManager, spdlog::logger* logger) override;
-  void render(const glm::mat4& projectViewMatrix) const override;
-  void upload(const f32* const buffer, size_t size, size_t offset) override;
-
- private:
-  Vao m_vao{{
-      {0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0},
-      {1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 2 * sizeof(GLfloat)},
-  }};
-  Vbo m_vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
-};
-
 enum class error {
   InitShader = 100,
   InitMesh = 200,
@@ -42,47 +26,61 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(Grid, errorMessages);
 
-uinta_error_code GridRenderer_OpenGL::init(FileManager& fileManager, spdlog::logger* logger) {
-  const auto vs = fileManager.registerFile("shader/grid.vs");
-  const auto fs = fileManager.registerFile("shader/grid.fs");
-  fileManager.loadFile({vs, fs});
+// TODO: Move me once appropriate OpenGL separate is created.
+class GridRenderer_OpenGL : public GridRenderer {
+ public:
+  GridRenderer_OpenGL() = default;
 
-  const std::vector<std::string> sources = {fileManager.getDataString(vs), fileManager.getDataString(fs)};
-  const std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-  if (auto error = createShaderProgram(m_shader, sources, stages, {"u_mvp"}, {&m_u_mvp}); error) return error;
-  fileManager.releaseFile({vs, fs});
+  uinta_error_code init(FileManager& fileManager, spdlog::logger* logger) noexcept override {
+    const auto vs = fileManager.registerFile("shader/grid.vs");
+    const auto fs = fileManager.registerFile("shader/grid.fs");
+    fileManager.loadFile({vs, fs});
 
-  if (m_shader == GL_ZERO) return make_error(error::InitMesh);
+    const std::vector<std::string> sources = {fileManager.getDataString(vs), fileManager.getDataString(fs)};
+    const std::vector<GLenum> stages = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+    if (auto error = createShaderProgram(m_shader, sources, stages, {"u_mvp"}, {&m_u_mvp}); error) return error;
+    fileManager.releaseFile({vs, fs});
 
-  m_vao.init(logger);
-  m_vbo.init(logger);
-  return SUCCESS_EC;
-}
+    if (m_shader == GL_ZERO) return make_error(error::InitMesh);
 
-void GridRenderer_OpenGL::render(const glm::mat4& projectViewMatrix) const {
-  m_vao.bind();
-  m_vbo.bind();
-  static constexpr i32 GRID_RADIUS = 5;
-  glUseProgram(m_shader);
-  i32 currentLineWidth;
-  glGetIntegerv(GL_LINE_WIDTH, &currentLineWidth);
-  if (m_line_width != currentLineWidth) glLineWidth(m_line_width);
-  for (i32 z = -GRID_RADIUS; z <= GRID_RADIUS; z++) {
-    for (i32 x = -GRID_RADIUS; x <= GRID_RADIUS; x++) {
-      glUniformMatrix4fv(m_u_mvp, 1, GL_FALSE,
-                         glm::value_ptr(projectViewMatrix * glm::translate(glm::mat4(1), {x * 10, 0, z * 10})));
-      glDrawArrays(GL_LINES, 0, m_vertex_count);
-    }
+    m_vao.init(logger);
+    m_vbo.init(logger);
+    return SUCCESS_EC;
   }
-  if (m_line_width != currentLineWidth) glLineWidth(currentLineWidth);
-}
 
-void GridRenderer_OpenGL::upload(const f32* const buffer, size_t size, size_t offset) {
-  m_vao.bind();
-  m_vbo.bind();
-  m_vbo.upload(buffer, size, offset);
-  m_vao.init_attributes();
-}
+  RenderState render() noexcept override {
+    m_vao.bind();
+    m_vbo.bind();
+    static constexpr i32 GRID_RADIUS = 5;
+    glUseProgram(m_shader);
+    i32 currentLineWidth;
+    glGetIntegerv(GL_LINE_WIDTH, &currentLineWidth);
+    if (m_line_width != currentLineWidth) glLineWidth(m_line_width);
+    for (i32 z = -GRID_RADIUS; z <= GRID_RADIUS; z++) {
+      for (i32 x = -GRID_RADIUS; x <= GRID_RADIUS; x++) {
+        glUniformMatrix4fv(m_u_mvp, 1, GL_FALSE,
+                           glm::value_ptr(m_projection_view * glm::translate(glm::mat4(1), {x * 10, 0, z * 10})));
+        glDrawArrays(GL_LINES, 0, m_info.vertex_count);
+      }
+    }
+    if (m_line_width != currentLineWidth) glLineWidth(currentLineWidth);
+    return m_info;
+  }
+
+  void upload(const f32* const buffer, size_t size, size_t offset) override {
+    m_vao.bind();
+    m_vbo.bind();
+    m_vbo.upload(buffer, size, offset);
+    m_vao.init_attributes();
+  }
+
+ private:
+  Vao m_vao{{
+      {0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0},
+      {1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 2 * sizeof(GLfloat)},
+  }};
+  Vbo m_vbo{GL_ARRAY_BUFFER, GL_STATIC_DRAW};
+};
 
 GridScene::GridScene(Runner& runner, std::unique_ptr<GridRenderer> renderer)
     : Scene("Grid", runner, Scene::Layer::Simulation),
@@ -113,12 +111,12 @@ uinta_error_code GridScene::init() {
           v0.x, v0.y, color.r, color.g, color.b, v1.x, v1.y, color.r, color.g, color.b,
       };
 
-      memcpy(&buffer[m_renderer->vertex_count() * 5], vertices, sizeof(vertices));
-      m_renderer->vertex_count(m_renderer->vertex_count() + 2);
+      memcpy(&buffer[m_renderer->info().vertex_count * 5], vertices, sizeof(vertices));
+      m_renderer->vertex_count(m_renderer->info().vertex_count + 2);
     }
   }
 
-  m_renderer->upload(buffer, m_renderer->vertex_count() * 5 * sizeof(f32), 0);
+  m_renderer->upload(buffer, m_renderer->info().vertex_count * 5 * sizeof(f32), 0);
   SPDLOG_LOGGER_INFO(logger(), "Initialized grid.");
 
   return transition(State::Running);
@@ -126,7 +124,8 @@ uinta_error_code GridScene::init() {
 
 void GridScene::render(const RunnerState& state) {
   Scene::render(state);
-  m_renderer->render(m_camera->perspective_matrix() * m_camera->view_matrix());
+  m_renderer->projection_view(m_camera->perspective_matrix() * m_camera->view_matrix());
+  m_renderer->render();
 }
 
 }  // namespace uinta

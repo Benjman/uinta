@@ -4,35 +4,16 @@
 #include <spdlog/fwd.h>
 
 #include <glm/fwd.hpp>
+#include <glm/mat4x4.hpp>
 #include <memory>
 #include <uinta/fwd.hpp>
 #include <uinta/gl/vao.hpp>
+#include <uinta/renderer.hpp>
 #include <uinta/scene.hpp>
 
 namespace uinta {
 
-class GridRenderer {
- public:
-  GridRenderer() = default;
-
-  virtual uinta_error_code init(FileManager& fileManager, spdlog::logger* logger) = 0;
-  virtual void render(const glm::mat4& projectViewMatrix) const = 0;
-  virtual void upload(const f32* const buffer, size_t size, size_t offset) = 0;
-
-  u32 vertex_count() const noexcept {
-    return m_vertex_count;
-  }
-
-  void vertex_count(u32 count) noexcept {
-    m_vertex_count = count;
-  }
-
- protected:
-  u32 m_u_mvp = 0;
-  u32 m_vertex_count = 0;
-  u32 m_shader = 0;
-  f32 m_line_width = 1;
-};
+class GridRenderer;
 
 class GridScene : public Scene {
  public:
@@ -45,6 +26,31 @@ class GridScene : public Scene {
  private:
   std::unique_ptr<GridRenderer> m_renderer;
   const TargetCamera* m_camera;
+};
+
+class GridRenderer : public Renderer {
+ public:
+  GridRenderer() = default;
+
+  virtual uinta_error_code init(FileManager& fileManager, spdlog::logger* logger) noexcept override = 0;
+
+  virtual RenderState render() noexcept override = 0;
+
+  virtual void upload(const f32* const buffer, size_t size, size_t offset) = 0;
+
+  const glm::mat4& projection_view() const noexcept {
+    return m_projection_view;
+  }
+
+  void projection_view(const glm::mat4& projection_view) noexcept {
+    m_projection_view = projection_view;
+  }
+
+ protected:
+  u32 m_u_mvp = 0;
+  u32 m_shader = 0;
+  f32 m_line_width = 1;
+  glm::mat4 m_projection_view = glm::mat4(1);
 };
 
 }  // namespace uinta
