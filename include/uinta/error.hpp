@@ -46,7 +46,7 @@ static const uinta_error_code SUCCESS_EC = make_error(uinta_error_category_t::SU
     }                                                                                 \
   } static const error_##NAME##_category;                                             \
   namespace error_##NAME##_ns {                                                       \
-    uinta_error_code make_error(error e) {                                            \
+    inline uinta_error_code make_error(error e) {                                     \
       return make_error(static_cast<uinta_error_code_t>(e), error_##NAME##_category); \
     }                                                                                 \
   }                                                                                   \
