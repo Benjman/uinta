@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <string>
+#include <uinta/error.hpp>
 #include <uinta/fwd.hpp>
 
 namespace uinta {
@@ -74,6 +75,17 @@ class UintaException : public std::exception {
    * @brief Stores the formatted error message string created in the constructor.
    */
   const std::string m_what;
+};
+
+/**
+ * @class UnimplementedException
+ * @brief To be used in situations where a function or method was called when it wasn't intended to be.
+ *
+ */
+class UnimplementedException : public UintaException {
+ public:
+  UnimplementedException() : UintaException(std::error_code(1, std::generic_category())) {
+  }
 };
 
 }  // namespace uinta
