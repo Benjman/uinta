@@ -144,17 +144,17 @@ class RunnerGpuUtils {
 };
 
 enum class RunnerEvents : event_t {
-  AspectRatioChanged,
+  WindowSizeChanged,
   SceneCreated,
   SceneDestroyed,
   ScenePaused,
   SceneRunning,
 };
 
-struct AspectRatioChangeEvent : Event {
-  const f64 aspect_ratio;
+struct WindowEvent : Event {
+  const Window& window;
 
-  AspectRatioChangeEvent(f64 at, f32 aspect_ratio) : Event(at), aspect_ratio(aspect_ratio) {
+  WindowEvent(f64 at, const Window& window) : Event(at), window(window) {
   }
 };
 

@@ -188,7 +188,7 @@ void Runner::handleWindowSizeChanged(const i32 width, const i32 height) noexcept
   win.width = width;
   win.height = height;
   m_window = win;
-  publish(RunnerEvents::AspectRatioChanged, AspectRatioChangeEvent(m_state.runtime, m_window.aspect_ratio));
+  publish(RunnerEvents::WindowSizeChanged, WindowEvent(m_state.runtime, m_window));
   SPDLOG_LOGGER_DEBUG(m_logger, "Window size updated: {}x{}.", width, height);
 }
 

@@ -110,7 +110,7 @@ uinta_error_code GlfwRunner::init_gpu_context() {
   window(Window(window().title, target_width, target_height));
   SPDLOG_LOGGER_INFO(logger(), "Created window '{}' {}x{} (aspect ratio {}).", window().title, target_width, target_height,
                      window().aspect_ratio);
-  publish(RunnerEvents::AspectRatioChanged, AspectRatioChangeEvent(state().runtime, window().aspect_ratio));
+  publish(RunnerEvents::WindowSizeChanged, WindowEvent(state().runtime, window()));
 
   glfwSetWindowUserPointer(m_window, this);
   glfwMakeContextCurrent(m_window);

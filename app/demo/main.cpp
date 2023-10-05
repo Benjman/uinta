@@ -13,8 +13,8 @@ class DemoScene : public Scene {
     if (auto error = runner.add_scene(std::make_unique<GridScene>(runner)); error) throw UintaException(error);
     m_camera.dist(30);
     m_camera.pitch(15);
-    runner.subscribe(RunnerEvents::AspectRatioChanged, [&](const Event* event) {
-      if (const auto* e = static_cast<const AspectRatioChangeEvent*>(event); e) m_camera.aspect_ratio(e->aspect_ratio);
+    runner.subscribe(RunnerEvents::WindowSizeChanged, [&](const Event* event) {
+      if (const auto* e = static_cast<const WindowEvent*>(event); e) m_camera.aspect_ratio(e->window.aspect_ratio);
     });
   }
 
