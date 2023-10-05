@@ -6,10 +6,11 @@
 #include <memory>
 #include <string>
 #include <uinta/fwd.hpp>
+#include <uinta/runner_lifecycle.hpp>
 
 namespace uinta {
 
-class Scene {
+class Scene : public RunnerLifecycle {
  public:
   enum class Layer {
     Simulation = 0,
@@ -28,27 +29,27 @@ class Scene {
 
   virtual ~Scene();
 
-  virtual uinta_error_code init() = 0;
+  uinta_error_code init() override = 0;
 
-  virtual void pre_tick(const RunnerState& state, const InputState& input) {
+  void pre_tick(const RunnerState& state, const InputState& input) override {
   }
 
-  virtual void tick(const RunnerState& state, const InputState& input) {
+  void tick(const RunnerState& state, const InputState& input) override {
   }
 
-  virtual void post_tick(const RunnerState& state, const InputState& input) {
+  void post_tick(const RunnerState& state, const InputState& input) override {
   }
 
-  virtual void pre_render(const RunnerState& state) {
+  void pre_render(const RunnerState& state) override {
   }
 
-  virtual void render(const RunnerState& state) {
+  void render(const RunnerState& state) override {
   }
 
-  virtual void post_render(const RunnerState& state) {
+  void post_render(const RunnerState& state) override {
   }
 
-  virtual void shutdown();
+  void shutdown() override;
 
   virtual const TargetCamera* camerac() noexcept {
     return camera();
