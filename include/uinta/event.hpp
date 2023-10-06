@@ -24,11 +24,11 @@ struct Event {
 class EventManager {
  public:
   template <typename EventType>
-  const subscription_t subscribe(EventType event_type, std::function<void(const Event*)> callback) noexcept {
+  subscription_t subscribe(EventType event_type, std::function<void(const Event*)> callback) noexcept {
     return subscribe(static_cast<event_t>(event_type), std::move(callback));
   }
 
-  const subscription_t subscribe(event_t event_type, std::function<void(const Event*)> callback) noexcept {
+  subscription_t subscribe(event_t event_type, std::function<void(const Event*)> callback) noexcept {
     std::lock_guard<std::mutex> lock(m_mtx);
     m_event_subscribers[event_type][++m_subscriber_index] = callback;
     return m_subscriber_index;
