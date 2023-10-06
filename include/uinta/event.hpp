@@ -73,10 +73,16 @@ class EventManager {
   }
 
   void publish_queued_events() noexcept {
-    for (auto& queue : m_queue) {
-      while (!queue.second.empty()) {
-        publish(queue.first, *queue.second.front());
-        queue.second.pop();
+    bool has_events =
+        std::any_of(m_queue.begin(), m_queue.end(), [](const auto& queuePair) { return !queuePair.second.empty(); });
+    while (has_events) {
+      has_events = false;
+      for (auto& queue : m_queue) {
+        while (!queue.second.empty()) {
+          publish(queue.first, *queue.second.front());
+          queue.second.pop();
+          has_events = true;
+        }
       }
     }
   }
