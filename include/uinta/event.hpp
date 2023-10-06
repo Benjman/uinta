@@ -67,7 +67,7 @@ class EventManager {
   void publish(event_t event_type, const Event& event) noexcept {
     if (m_event_subscribers.find(static_cast<event_t>(event_type)) != m_event_subscribers.end()) {
       for (const auto& subscriber : m_event_subscribers[static_cast<event_t>(event_type)]) {
-        subscriber.second(&event);
+        if (subscriber.second) subscriber.second(&event);
       }
     }
   }
