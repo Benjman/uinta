@@ -77,11 +77,11 @@ class Scene : public RunnerLifecycle {
     return m_logger.get();
   }
 
- protected:
   Runner& runner() const noexcept {
     return m_runner;
   }
 
+ protected:
   virtual void on_destroyed() noexcept {
   }
 
