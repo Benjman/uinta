@@ -12,8 +12,8 @@ namespace uinta {
 
 inline void inputUi(Runner& runner) {
 #ifndef IMGUI_API_DISABLED
-  if (ImGui::TreeNode("Cursor info")) {
-    if (const auto* ccamera = runner.find_camerac(); ccamera) {
+  if (const auto* ccamera = runner.find_camerac(); ccamera) {
+    if (ImGui::TreeNode("Cursor info")) {
       const auto& camera = *ccamera;
       auto view = camera.view_matrix();
       auto proj = camera.perspective_matrix();
