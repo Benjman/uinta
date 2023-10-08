@@ -1,9 +1,7 @@
 #ifndef UINTA_HEXAGON_HPP
 #define UINTA_HEXAGON_HPP
 
-#include <array>
 #include <glm/gtc/constants.hpp>
-#include <glm/mat3x3.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <uinta/utils/buffer2d.hpp>

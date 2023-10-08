@@ -1,8 +1,4 @@
-#include <algorithm>
-#include <glm/geometric.hpp>
 #include <glm/gtx/normal.hpp>
-#include <glm/trigonometric.hpp>
-#include <stdexcept>
 #include <uinta/logging.hpp>
 #include <uinta/math/fwd.hpp>
 #include <uinta/math/hexagon.hpp>

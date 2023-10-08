@@ -3,7 +3,7 @@
 #define IS_UINTA_DEBUG UINTA_DEBUG
 #undef UINTA_DEBUG
 
-#include <uinta/gl.h>
+#include <uinta/gl/api.h>
 #include <uinta/glfw/imgui.h>
 
 #ifdef IS_UINTA_DEBUG
