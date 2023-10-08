@@ -26,7 +26,6 @@ set(UINTA_SRCS
   ./src/args.cpp
   ./src/file_manager.cpp
   ./src/font.cpp
-  ./src/gl/fbo.cpp
   ./src/gl/type_utils.cpp
   ./src/gl/vao.cpp
   ./src/gl/vbo.cpp
