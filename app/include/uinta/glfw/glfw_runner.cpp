@@ -27,6 +27,24 @@ static const std::map<uinta_error_code_t, std::string> errorMessages = {
 
 UINTA_ERROR_FRAMEWORK(GLFWRunner, errorMessages);
 
+// TODO: Move me once appropriate OpenGL separate is created.
+class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
+ public:
+  uinta_error_code init(Runner& runner) override;
+  void clear_buffer(const glm::vec3& color, u32 mask) override;
+};
+
+uinta_error_code RunnerGpuUtils_OpenGL::init(Runner& runner) {
+  if (auto error = runner.init_gpu_context(); error) throw UintaException(error);
+  glEnable(GL_DEPTH_TEST);
+  return SUCCESS_EC;
+}
+
+void RunnerGpuUtils_OpenGL::clear_buffer(const glm::vec3& color, GLbitfield mask) {
+  glClearColor(color.r, color.g, color.b, 1.0);
+  glClear(mask);
+}
+
 GlfwRunner::GlfwRunner(const std::string& title, i32 argc, const char** argv)
     : Runner(title, argc, argv, std::make_unique<FileManager_Desktop>(), std::make_unique<RunnerGpuUtils_OpenGL>()) {
   if (auto error = add_scene(std::make_unique<GlfwRunnerUi>(*this)); error) throw UintaException(error);

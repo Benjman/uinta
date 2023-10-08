@@ -231,17 +231,6 @@ TargetCamera* Runner::find_camera() const noexcept {
   return nullptr;
 }
 
-uinta_error_code RunnerGpuUtils_OpenGL::init(Runner& runner) {
-  if (auto error = runner.init_gpu_context(); error) throw UintaException(error);
-  glEnable(GL_DEPTH_TEST);
-  return SUCCESS_EC;
-}
-
-void RunnerGpuUtils_OpenGL::clear_buffer(const glm::vec3& color, GLbitfield mask) {
-  glClearColor(color.r, color.g, color.b, 1.0);
-  glClear(mask);
-}
-
 void Runner::add_event(event_t event_type, std::unique_ptr<const Event> event) noexcept {
   queue_event(event_type, std::move(event));
 }

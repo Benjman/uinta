@@ -143,12 +143,6 @@ class RunnerGpuUtils {
   virtual void clear_buffer(const glm::vec3& color, u32 mask) = 0;
 };
 
-class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
- public:
-  uinta_error_code init(Runner& runner) override;
-  void clear_buffer(const glm::vec3& color, u32 mask) override;
-};
-
 enum class RunnerEvents : event_t {
   AspectRatioChanged,
   SceneCreated,
