@@ -1,10 +1,9 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <uinta/input.hpp>
-#include <uinta/math/utils.hpp>
+#include <uinta/math/direction.hpp>
 #include <uinta/runner_state.hpp>
 #include <uinta/target_camera.hpp>
-#include <uinta/utils/direction.hpp>
 #include <uinta/window.hpp>
 
 namespace uinta {

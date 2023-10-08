@@ -1,9 +1,7 @@
 #include <glm/gtx/normal.hpp>
 #include <uinta/logging.hpp>
-#include <uinta/math/fwd.hpp>
 #include <uinta/math/hexagon.hpp>
 #include <uinta/math/interpolation.hpp>
-#include <uinta/utils/direction.hpp>
 
 namespace uinta {
 

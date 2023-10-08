@@ -1,7 +1,7 @@
 #include <uinta/glfw/imgui.h>
 #include <uinta/glfw/ui/limits.h>
 
-#include <uinta/math/utils.hpp>
+#include <uinta/math/direction.hpp>
 #include <uinta/runner_state.hpp>
 #include <uinta/target_camera.hpp>
 
