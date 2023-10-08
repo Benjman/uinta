@@ -8,8 +8,8 @@
 
 namespace uinta {
 
-enum class error {
-  InvalidStateTransition = 100,
+enum class error : u8 {
+  InvalidStateTransition = 10,
 };
 static const std::map<uinta_error_code_t, std::string> errorMessages = {
     {static_cast<uinta_error_code_t>(error::InvalidStateTransition), "Invalid state transition!"},

@@ -15,9 +15,9 @@
 
 namespace uinta {
 
-enum class error {
-  SceneInvalid = 100,
-  SceneNotFound = 101,
+enum class error : u8 {
+  SceneInvalid = 10,
+  SceneNotFound = 10,
 };
 static const std::map<uinta_error_code_t, std::string> errorMessages = {
     {static_cast<uinta_error_code_t>(error::SceneInvalid), "Invalid scene."},

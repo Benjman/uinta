@@ -15,7 +15,14 @@ static constexpr u32 IndicesPerHex = 18;
 /// Each hexagon has its six outer points, along with an additional center point to allow for triangle mesh generation.
 static constexpr u32 VerticesPerHex = 7;
 
-enum class hex_direction { East = 0, NorthEast = 1, NorthWest = 2, West = 3, SouthWest = 4, SouthEast = 5 };
+enum class hex_direction : u8 {
+  East = 0,
+  NorthEast = 1,
+  NorthWest = 2,
+  West = 3,
+  SouthWest = 4,
+  SouthEast = 5,
+};
 
 /**
  * @brief Precalculated collection of all directions for a hexagon.

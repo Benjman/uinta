@@ -12,13 +12,13 @@ namespace uinta {
 
 class Scene : public RunnerLifecycle {
  public:
-  enum class Layer {
+  enum class Layer : u8 {
     Simulation = 0,
     UI = 1,
     Debug = 2,
   };
 
-  enum class State {
+  enum class State : u8 {
     Created,
     Running,
     Paused,

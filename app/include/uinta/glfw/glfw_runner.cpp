@@ -14,10 +14,10 @@
 
 namespace uinta {
 
-enum class error {
-  InitError = 100,
-  WindowError = 200,
-  GladError = 300,
+enum class error : u8 {
+  InitError = 10,
+  WindowError = 20,
+  GladError = 30,
 };
 static const std::map<uinta_error_code_t, std::string> errorMessages = {
     {static_cast<uinta_error_code_t>(error::InitError), "Failed to initialize GLFW!"},

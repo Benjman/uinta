@@ -8,7 +8,7 @@
 
 namespace uinta {
 
-enum class MeshAttribType {
+enum class MeshAttribType : u8 {
   Color,
   Normal,
   Position,

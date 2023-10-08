@@ -9,9 +9,9 @@
 
 namespace uinta {
 
-enum class error {
-  LinkError = 100,
-  StageError = 200,
+enum class error : u8 {
+  LinkError = 10,
+  StageError = 20,
 };
 static const std::map<uinta_error_code_t, std::string> errorMessages = {
     {static_cast<uinta_error_code_t>(error::LinkError), "OpenGL encountered an error attempting to link a shader program!"},

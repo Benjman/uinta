@@ -8,7 +8,7 @@
 namespace uinta {
 
 struct Monitor {
-  enum class Connection {
+  enum class Connection : u8 {
     Disconnected = 0,
     Connected = 1,
   };

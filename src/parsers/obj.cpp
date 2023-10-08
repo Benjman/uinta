@@ -12,9 +12,9 @@ using namespace uinta;
 
 namespace uinta {
 
-enum class error {
-  AttribsMissing = 100,
-  ColorsMissing = 110,
+enum class error : u8 {
+  AttribsMissing = 10,
+  ColorsMissing = 11,
 };
 static const std::map<uinta_error_code_t, std::string> errorMessages = {
     {static_cast<uinta_error_code_t>(error::AttribsMissing), "No attributes provided!"},

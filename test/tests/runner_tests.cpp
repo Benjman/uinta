@@ -14,7 +14,7 @@
 using namespace uinta;
 
 namespace uinta {
-enum class error {
+enum class error : u8 {
   ExpectedError = 100,
 };
 static const std::map<uinta_error_code_t, std::string> errorMessages = {
