@@ -1,6 +1,6 @@
 #include <uinta/gl/api.h>
 
-#include <uinta/gl/utils/type_utils.hpp>
+#include <uinta/gl/utils.hpp>
 #include <unordered_map>
 
 #define GL_ENUM_LIST                                                   \
