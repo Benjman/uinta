@@ -33,7 +33,6 @@ set(UINTA_SRCS
   ./src/grid.cpp
   ./src/logging.cpp
   ./src/math/hexagon.cpp
-  ./src/math/running_avg.cpp
   ./src/mesh.cpp
   ./src/metrics.cpp
   ./src/model_manager.cpp

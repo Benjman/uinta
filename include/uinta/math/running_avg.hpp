@@ -6,24 +6,48 @@
 namespace uinta {
 struct RunningAvg final {
  public:
-  u32 count;
+  explicit RunningAvg(const u32 sample_size) noexcept {
+    buffer = new f32[sample_size];
+    mavg = 0.0;
+    dirty = false;
+    position = 0u;
+    count = sample_size;
+  }
 
-  explicit RunningAvg(const u32) noexcept;
-  RunningAvg(const RunningAvg&) noexcept;
-  RunningAvg& operator=(const RunningAvg&) noexcept;
+  void operator+=(const f32 v) noexcept {
+    add(v);
+  }
 
-  void operator+=(const f32) noexcept;
+  ~RunningAvg() {
+    delete[] buffer;
+  }
 
-  ~RunningAvg();
+  void add(f32 v) noexcept {
+    buffer[position % count] = v;
+    dirty = true;
+    position++;
+    // TODO check for cursor violating u32 max
+  }
 
-  void add(f32) noexcept;
-
-  f32 avg() noexcept;
+  f32 avg() noexcept {
+    if (!position) return 0.0;
+    if (dirty) {
+      f32 sum = 0.0;
+      u32 len = std::min(position, count);
+      for (u32 i = 0u; i < len; i++) {
+        sum += buffer[i];
+      }
+      mavg = sum / (f32)len;
+      dirty = false;
+    }
+    return mavg;
+  }
 
  private:
   f32* buffer;
-  f32 mavg;
+  u32 count;
   bool dirty;
+  f32 mavg;
   u32 position;
 };
 }  // namespace uinta
