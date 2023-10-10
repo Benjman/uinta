@@ -19,5 +19,6 @@ endfunction()
 
 app(demo)
 app(perlin)
+app(ui)
 
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)

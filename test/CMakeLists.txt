@@ -4,10 +4,13 @@ add_executable(
   tests
 
   ./main.cpp
+
+  ./tests/font_tests.cpp
   ./tests/formatters.cpp
   ./tests/hexagon_tests.cpp
   ./tests/input_impl.cpp
   ./tests/runner_tests.cpp
+  ./tests/ui_tests.cpp
 
   )
 

@@ -14,6 +14,9 @@ class GridScene;
 class Runner;
 class Scene;
 class TargetCamera;
+class UiElement;
+class UiManager;
+class UiPane;
 class UintaException;
 
 struct Event;

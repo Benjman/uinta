@@ -42,6 +42,10 @@ set(UINTA_SRCS
   ./src/shader.cpp
   ./src/target_camera.cpp
   ./src/text.cpp
+  ./src/ui/ui_element.cpp
+  ./src/ui/ui_manager.cpp
+  ./src/ui/ui_pane.cpp
+  ./src/ui/ui_renderer.cpp
 
   )
 
