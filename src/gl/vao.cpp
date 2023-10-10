@@ -17,12 +17,15 @@ void Vao::init(spdlog::logger* logger) {
   glGenVertexArrays(1, &m_id);
   if (m_logger) SPDLOG_LOGGER_DEBUG(m_logger, "Initialized VAO {}.", m_id);
   bind();
-  m_index_buffer.init(m_logger);
 }
 
 void Vao::bind() const {
   assert(m_id && "Cannot bind an unitialized VAO.");
   glBindVertexArray(m_id);
+}
+
+void Vao::index_buffer(const std::span<u32> data) {
+  index_buffer(data.data(), data.size() * sizeof(u32));
 }
 
 void Vao::index_buffer(const u32* const data, u32 size) {

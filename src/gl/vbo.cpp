@@ -33,6 +33,15 @@ void Vbo::bind() const {
   if (m_logger) SPDLOG_LOGGER_TRACE(m_logger, "Bound VBO.");
 }
 
+void Vbo::upload(const std::span<u32> data, size_t offset) {
+  upload(data.data(), data.size() * sizeof(u32), offset);
+}
+
+void Vbo::upload(const std::span<f32> data, size_t offset) {
+  // TODO: Convert all calls to `upload` calls to use span
+  upload(data.data(), data.size() * sizeof(f32), offset);
+}
+
 void Vbo::upload(const void* const data, size_t size, size_t offset) {
   assert(m_id && "Cannot upload to an uninitialized VBO.");
   if (offset + size > m_max) resize(offset + size);

@@ -4,6 +4,8 @@
 #include <spdlog/fwd.h>
 #include <uinta/types.h>
 
+#include <span>
+
 namespace uinta {
 
 class Vbo {
@@ -14,6 +16,10 @@ class Vbo {
   void init(spdlog::logger* logger = nullptr);
 
   void bind() const;
+
+  void upload(const std::span<u32> data, size_t offset = 0);
+
+  void upload(const std::span<f32> data, size_t offset = 0);
 
   void upload(const void* const data, size_t size, size_t offset);
 

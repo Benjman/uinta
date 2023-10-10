@@ -30,6 +30,8 @@ class Vao {
 
   void bind() const;
 
+  void index_buffer(const std::span<u32> data);
+
   void index_buffer(const u32* const data, u32 size);
 
   void init_attributes() const;
