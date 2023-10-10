@@ -8,6 +8,30 @@
 
 namespace uinta {
 
+enum class MeshAttribute : u8 {
+  Color,
+  Normal,
+  Position,
+  UV,
+  None,
+};
+
+struct MeshLocation {
+  u32 stride;
+  u32 offset;
+};
+
+inline bool location(MeshLocation& ref, MeshAttribute attribute,
+                     const std::unordered_map<MeshAttribute, MeshLocation>& collection) {
+  if (collection.find(attribute) == collection.end()) return false;
+  ref = collection.at(attribute);
+  return true;
+}
+
+using MeshLayout = std::unordered_map<MeshAttribute, MeshLocation>;
+
+// TODO: Below needs to be entirely refactored.
+
 enum class MeshAttribType : u8 {
   Color,
   Normal,
