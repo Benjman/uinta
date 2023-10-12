@@ -20,6 +20,7 @@ FileManager::FileManager(const size_t storageSize) : m_storageSize(storageSize),
 }
 
 FileManager::~FileManager() {
+  if (m_logger) spdlog::drop(m_logger->name());
   for (auto* handle : m_handles) {
     releaseFile(handle);
     delete handle;

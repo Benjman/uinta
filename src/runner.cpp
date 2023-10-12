@@ -43,7 +43,9 @@ Runner::Runner(const std::string& title, i32 argc, const char** argv, std::uniqu
   SPDLOG_LOGGER_INFO(m_logger, "Runner started for '{}'.", title);
 }
 
-Runner::~Runner() noexcept = default;
+Runner::~Runner() noexcept {
+  if (m_logger) spdlog::drop(m_logger->name());
+}
 
 i32 Runner::run() noexcept {
   spdlog::stopwatch sw;

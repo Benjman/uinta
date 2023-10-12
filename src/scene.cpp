@@ -28,7 +28,9 @@ Scene::Scene(const std::string& name, Runner& runner, Layer layer) noexcept
   runner.add_event(RunnerEvents::SceneCreated, std::make_unique<SceneEvent>(runner.state().runtime, this));
 }
 
-Scene::~Scene() = default;
+Scene::~Scene() {
+  if (m_logger) spdlog::drop(m_logger->name());
+}
 
 uinta_error_code Scene::transition(Scene::State state) noexcept {
   if (auto error = validate_transition(*this, state); error) return error;
