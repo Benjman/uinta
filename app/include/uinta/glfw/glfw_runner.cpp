@@ -71,6 +71,8 @@ void GlfwRunner::swapBuffers() {
 uinta_error_code GlfwRunner::init_gpu_context() {
   spdlog::stopwatch sw;
 
+  glfwSetErrorCallback([](int code, const char* description) { SPDLOG_ERROR("{} (Error {})", description, code); });
+
   constexpr i32 version_major = 3;
   constexpr i32 version_minor = 3;
   SPDLOG_LOGGER_INFO(logger(), "Initializing GLFW v{}.{} with OpenGL Core profile...", version_major, version_minor);
