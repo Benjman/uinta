@@ -20,9 +20,9 @@ enum class error : u8 {
   GladError = 30,
 };
 static const std::map<uinta_error_code_t, std::string> errorMessages = {
-    {static_cast<uinta_error_code_t>(error::InitError), "Failed to initialize GLFW!"},
+    {static_cast<uinta_error_code_t>(error::InitError), "Call to `glfwInit()` failed."},
     {static_cast<uinta_error_code_t>(error::WindowError), "Failed to create GLFW window!"},
-    {static_cast<uinta_error_code_t>(error::GladError), "Failed to load GLAD!"},
+    {static_cast<uinta_error_code_t>(error::GladError), "Call to `gladLoadGLLoader()` failed."},
 };
 
 UINTA_ERROR_FRAMEWORK(GLFWRunner, errorMessages);
@@ -35,7 +35,7 @@ class RunnerGpuUtils_OpenGL : public RunnerGpuUtils {
 };
 
 uinta_error_code RunnerGpuUtils_OpenGL::init(Runner& runner) {
-  if (auto error = runner.init_gpu_context(); error) throw UintaException(error);
+  if (auto error = runner.init_gpu_context(); error) return error;
   glEnable(GL_DEPTH_TEST);
   return SUCCESS_EC;
 }
