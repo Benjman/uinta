@@ -50,7 +50,7 @@ Runner::~Runner() noexcept {
 i32 Runner::run() noexcept {
   spdlog::stopwatch sw;
   if (auto error = m_gpu_utils->init(*this); error) {
-    SPDLOG_LOGGER_CRITICAL(m_logger, "Error attempting to initialize GPU utilites: ", error.message());
+    SPDLOG_LOGGER_CRITICAL(m_logger, "Error initializing GPU utilites: {}", error.message());
     return error.value();
   }
   publish_queued_events();
