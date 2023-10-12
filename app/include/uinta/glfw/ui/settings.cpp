@@ -8,7 +8,7 @@
 namespace uinta {
 
 void settingsGraphics(GlfwRunner &runner);
-void settingsGrid(GridScene *grid);  // FIXME: Scene stack victim
+void settingsGrid(GridScene *grid);
 void settingsPolygonMode();
 
 inline void settings(GlfwRunner &runner) {
