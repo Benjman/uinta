@@ -65,6 +65,8 @@ i32 Runner::run() noexcept {
         if (auto error = scene->init(); error) {
           SPDLOG_LOGGER_ERROR(scene->logger(), "Failed to initialize: {}", error.message());
           (void)scene->transition(Scene::State::Destroyed);
+        } else if (Scene::State::Created == scene->state()) {
+          (void)scene->transition(Scene::State::Running);
         }
       }
     }
