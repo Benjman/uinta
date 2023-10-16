@@ -39,6 +39,8 @@ static uinta_error_code make_error(uinta_error_code_t e, const uinta_error_categ
 
 static const uinta_error_code SUCCESS_EC = make_error(uinta_error_category_t::SUCCESS);
 
+using error_t = u8;
+
 #define UINTA_ERROR_FRAMEWORK(NAME, MESSAGES)                                         \
   class error_category_##NAME##_t : public uinta_error_category_t {                   \
    public:                                                                            \
