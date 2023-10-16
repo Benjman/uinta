@@ -48,7 +48,7 @@ void Vbo::upload(const void* const data, size_t size, size_t offset) {
   bind();
   glBufferSubData(m_target, offset, size, data);
   m_size = std::max(offset + size, m_size);
-  if (m_logger)
+  if (size && m_logger)
     SPDLOG_LOGGER_DEBUG(m_logger, "Uploaded {} to {} {}, with an offset of {}.", formatMemory(size), getGlEnumName(m_target),
                         m_id, formatMemory(offset));
 }
