@@ -41,6 +41,7 @@ set(UINTA_SRCS
   ./src/scene.cpp
   ./src/shader.cpp
   ./src/target_camera.cpp
+  ./src/text.cpp
 
   )
 
