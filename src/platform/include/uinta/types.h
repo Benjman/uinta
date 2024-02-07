@@ -1,0 +1,33 @@
+#ifndef SRC_PLATFORM_INCLUDE_UINTA_TYPES_H_
+#define SRC_PLATFORM_INCLUDE_UINTA_TYPES_H_
+
+#include <cstdint>
+
+namespace uinta {
+
+// Signed integer types
+using i8 = std::int8_t;
+using i16 = std::int16_t;
+using i32 = std::int32_t;
+using i64 = std::int64_t;
+
+// Unsigned integer types
+using u8 = std::uint8_t;
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
+
+// Floating point types
+using f32 = float;
+using f64 = double;
+
+// Bitflags types
+using bitflag8 = u8;
+using bitflag16 = u16;
+using bitflag32 = u32;
+using bitflag64 = u64;
+using bitflag = bitflag32;
+
+}  // namespace uinta
+
+#endif  // SRC_PLATFORM_INCLUDE_UINTA_TYPES_H_
