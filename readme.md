@@ -1,15 +1,21 @@
 # Getting started
+
 ## Cloning
-This repo uses git submodules, so it must be cloned with --recursive:
+
+The Uinta Engine uses submodules, so it should be cloned with --recursive:
+
 ```sh
 git clone --recurse-submodules --shallow-submodules git@github.com:Benjman/uinta.git
 ```
+
 ## Build project
+
 ```sh
-cmake -B build .     ## Configure the build directory
-cmake --build build  ## Build the program in the build directory
+cmake -B build . && make -j${nproc} --directory build
 ```
+
 ## Run the programs
+
 ```sh
-./build/demo
+./build/src/app/app
 ```
