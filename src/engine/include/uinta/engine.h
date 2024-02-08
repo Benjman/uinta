@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "uinta/absl/status.h"
+
 namespace uinta {
 
 class Engine {
@@ -15,7 +17,7 @@ class Engine {
   Engine(Engine&&) noexcept;
   Engine& operator=(Engine&&) noexcept;
 
-  const std::string Message() const noexcept;
+  const StatusOr<const std::string> Message() const noexcept;
 };
 
 }  // namespace uinta
