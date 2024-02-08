@@ -20,4 +20,7 @@ else()
   endif()
 endif()
 
+list(APPEND UINTA_ABSL absl::status)
+list(APPEND UINTA_ABSL absl::statusor)
+
 list(APPEND UINTA_LIBS ${UINTA_ABSL})
