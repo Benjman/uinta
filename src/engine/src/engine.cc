@@ -2,7 +2,7 @@
 
 namespace uinta {
 
-const std::string Engine::Message() const noexcept {
+const StatusOr<const std::string> Engine::Message() const noexcept {
   return "Hello from Uinta Engine\n";
 }
 
