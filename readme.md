@@ -14,6 +14,7 @@ The following libraries are recommended to have been installed and available on
 your system's path:
 
 * [Abseil](https://github.com/abseil/abseil-cpp)
+* [GLFW](https://github.com/glfw/glfw)
 
 Any missing library not found on the path will be automatically downloaded and
 linked to the project. Having the libraries on your path greatly reduces build
