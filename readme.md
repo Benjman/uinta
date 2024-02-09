@@ -16,6 +16,7 @@ downloaded and linked to the project. However, having the libraries on your path
 can greatly speed up the build times.
 
 * [Abseil](https://github.com/abseil/abseil-cpp)
+* [GLFW](https://github.com/glfw/glfw)
 
 ## Build project
 
