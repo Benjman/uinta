@@ -13,6 +13,7 @@ git clone --recurse-submodules --shallow-submodules git@github.com:Benjman/uinta
 It's recommended to include these libraries in your system's path, although it's not mandatory. If a library isn't found on the path, it will be automatically downloaded and linked to the project. However, having the libraries on your path can greatly speed up the build times.
 
 * [Abseil](https://github.com/abseil/abseil-cpp)
+* [GLFW](https://github.com/glfw/glfw)
 
 ## Build project
 
