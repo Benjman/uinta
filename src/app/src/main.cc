@@ -1,12 +1,21 @@
-#include <iostream>
-
+#include "absl/log/log.h"
+#include "uinta/desktop_platform.h"
 #include "uinta/engine.h"
 
 int main() {
-  const auto message = uinta::Engine().Message();
-  if (!message.ok())
-    std::cerr << message.status();
-  else
-    std::cout << message;
-  return 0;
+  uinta::WindowConfig cfg;
+  uinta::DesktopPlatform platform(cfg);
+
+  if (!platform.status().ok())
+    LOG(FATAL) << absl::StrFormat("Failed to initialize `DesktopPlatform`: %s",
+                                  platform.status().message());
+
+  uinta::Engine engine(&platform);
+
+  if (!engine.status().ok())
+    LOG(FATAL) << absl::StrFormat("Engine failure: %s",
+                                  engine.status().message());
+
+  LOG(INFO) << "Exiting";
+  return EXIT_SUCCESS;
 }
