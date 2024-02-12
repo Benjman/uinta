@@ -1,4 +1,9 @@
+list(APPEND PLATFORM_SRCS src/desktop_platform.cc)
+list(APPEND PLATFORM_SRCS src/desktop_window.cc)
 list(APPEND PLATFORM_SRCS src/gl.cc)
+list(APPEND PLATFORM_SRCS src/glfw_platform_api.cc)
+list(APPEND PLATFORM_SRCS src/monitor.cc)
+list(APPEND PLATFORM_SRCS src/window.cc)
 
 add_library(platform STATIC ${PLATFORM_SRCS})
 add_library(uinta::platform ALIAS platform)
