@@ -18,3 +18,8 @@ list(APPEND UINTA_RES_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/res")
 set(UINTA_RES_PATHS
     ${UINTA_RES_PATHS}
     PARENT_SCOPE)
+
+find_package(GTest)
+if(GTest_FOUND)
+  add_subdirectory(test)
+endif()

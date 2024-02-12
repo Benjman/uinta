@@ -24,6 +24,11 @@ using f64 = double;
 using time_t = f64;
 using count_t = u64;
 
+void logError(const char*) noexcept;
+void logFatal(const char*) noexcept;
+void logInfo(const char*) noexcept;
+void logWarning(const char*) noexcept;
+
 }  // namespace uinta
 
 #endif  // SRC_PLATFORM_INCLUDE_UINTA_TYPES_H_
