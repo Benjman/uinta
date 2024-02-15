@@ -15,6 +15,8 @@ not mandatory. If a library isn't found on the path, it will be automatically
 downloaded and linked to the project. However, having the libraries on your path
 can greatly speed up the build times.
 
+* [Abseil](https://github.com/abseil/abseil-cpp)
+
 ## Build project
 
 ```sh
