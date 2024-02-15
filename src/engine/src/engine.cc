@@ -1,8 +1,11 @@
 #include "uinta/engine/engine.h"
 
+#include "absl/log/log.h"
+
 namespace uinta {
 
-const std::string Engine::Message() const noexcept {
+const StatusOr<const std::string> Engine::Message() const noexcept {
+  LOG(INFO) << "Message request recieved.";
   return "Hello from Uinta Engine\n";
 }
 

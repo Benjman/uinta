@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "uinta/status.h"
+
 namespace uinta {
 
 class Engine {
@@ -15,7 +17,7 @@ class Engine {
   Engine(const Engine&&) noexcept = delete;
   Engine& operator=(const Engine&&) noexcept = delete;
 
-  const std::string Message() const noexcept;
+  const StatusOr<const std::string> Message() const noexcept;
 };
 
 }  // namespace uinta

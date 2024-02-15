@@ -3,6 +3,10 @@
 #include "uinta/engine/engine.h"
 
 int main() {
-  std::cout << uinta::Engine().Message();
+  const auto message = uinta::Engine().Message();
+  if (!message.ok())
+    std::cerr << message.status();
+  else
+    std::cout << message;
   return 0;
 }
