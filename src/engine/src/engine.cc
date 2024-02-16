@@ -4,6 +4,10 @@
 
 #include "absl/log/log.h"
 #include "uinta/lib/absl/strings.h"
+#include "uinta/shader.h"
+#include "uinta/uniform.h"
+#include "uinta/vao.h"
+#include "uinta/vbo.h"
 
 namespace uinta {
 
@@ -65,6 +69,34 @@ void Engine::run() noexcept {
   time_t start;
   time_t runtime;
 
+  Shader shader({{GL_VERTEX_SHADER, "shader.vs.glsl"},
+                 {GL_FRAGMENT_SHADER, "shader.fs.glsl"}},
+                gl_);
+
+  UniformMatrix4fv projection("uProjection", &shader);
+
+  addListener<EngineEvent::ViewportSizeChange>([&](const auto& event) {
+    ShaderGuard guard(&shader);
+    projection = glm::perspective<f32>(45, event.aspect(), 0.1, 2);
+  });
+
+  Vbo vbo(GL_ARRAY_BUFFER, 0, gl_);
+  std::vector<f32> vertices = {
+      0.5f,  0.5f,   // top right
+      0.5f,  -0.5f,  // bottom right
+      -0.5f, -0.5f,  // bottom left
+      -0.5f, 0.5f,   // top left
+  };
+  VboGuard vbg(&vbo);
+  vbo.bufferData(vertices.data(), vertices.size() * sizeof(f32),
+                 GL_STATIC_DRAW);
+
+  Vao vao(gl_);
+  std::vector<u32> idxBuffer = {0, 1, 3, 1, 2, 3};
+  VaoGuard vag(&vao);
+  vao.ebo(idxBuffer);
+  vao.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0});
+
   while (!state_.isClosing() && status_.ok()) {
     if (status_ = platform_->pollEvents(); !status_.ok()) {
       LOG(ERROR) << "`Platform::pollEvents()` failed: " << status_.message();
@@ -90,6 +122,10 @@ void Engine::run() noexcept {
     advance<EngineStage::PreRender>();
     advance<EngineStage::Render>();
     advance<EngineStage::PostRender>();
+
+    ShaderGuard shaderGuard(&shader);
+    VaoGuard vaoGuard(&vao);
+    gl_->drawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     state_.isNewFrame(false);
     runtime = getRuntime();
