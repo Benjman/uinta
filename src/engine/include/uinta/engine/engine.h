@@ -4,6 +4,7 @@
 #include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
+#include "uinta/file.h"
 #include "uinta/gl.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
@@ -17,6 +18,7 @@ class Engine : public RuntimeGetter {
   struct Params final {
     Platform* platform;
     const OpenGLApi* gl = OpenGLApiImpl::Instance();
+    FileSystem* fileSystem = FileSystemImpl::Instance();
   };
 
   explicit Engine(Params) noexcept;
@@ -28,6 +30,10 @@ class Engine : public RuntimeGetter {
   Engine& operator=(const Engine&&) noexcept = delete;
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
+
+  const FileSystem* fileSystem() const noexcept { return fileSystem_; }
+
+  FileSystem* fileSystem() noexcept { return fileSystem_; }
 
   const OpenGLApi* gl() const noexcept { return gl_; }
 
@@ -59,6 +65,7 @@ class Engine : public RuntimeGetter {
   EngineDispatchers dispatchers_;
   Status status_;
 
+  FileSystem* fileSystem_;
   const OpenGLApi* gl_;
   Platform* platform_;
 
