@@ -89,6 +89,54 @@ struct OpenGLApi {
    */
   virtual void attachShader(GLuint program, GLuint shader) const noexcept = 0;
 
+  /*! `glBindBuffer` — bind a named buffer object
+   *
+   *  @brief `glBindBuffer` binds a buffer object to the specified buffer
+   * binding point.
+   *
+   *  @param `target` Specifies the target to which the buffer object is bound.
+   *  @param `buffer` Specifies the name of a buffer object.
+   */
+  virtual void bindBuffer(GLenum target, GLuint buffer) const noexcept = 0;
+
+  /*! `glBufferData`, `glNamedBufferData` — creates and initializes a buffer
+   * object's data store
+   *
+   *  @brief `glBufferData` and `glNamedBufferData` create a new data store for
+   * a buffer object.
+   *
+   *  @param `target` Specifies the target to which the buffer object is bound
+   * for `glBufferData`.
+   *  @param `size` Specifies the size in bytes of the buffer object's new data
+   * store.
+   *  @param `data` Specifies a pointer to data that will be copied into the
+   * data store for initialization, or NULL if no data is to be copied.
+   *  @param `usage` Specifies the expected usage pattern of the data store. The
+   * symbolic constant must be `GL_STREAM_DRAW`, `GL_STREAM_READ`,
+   * `GL_STREAM_COPY`, `GL_STATIC_DRAW`, `GL_STATIC_READ`, `GL_STATIC_COPY`,
+   * `GL_DYNAMIC_DRAW`, `GL_DYNAMIC_READ`, or `GL_DYNAMIC_COPY`.
+   */
+  virtual void bufferData(GLenum target, GLsizeiptr size, const void* data,
+                          GLenum usage) const noexcept = 0;
+
+  /*! `glBufferSubData`, `glNamedBufferSubData` — updates a subset of a buffer
+   * object's data store
+   *
+   *  @brief `glBufferSubData` and `glNamedBufferSubData` redefine some or all
+   * of the data store for the specified buffer object.
+   *
+   *  @param `target` Specifies the target to which the buffer object is bound
+   * for `glBufferSubData`
+   *  @param `offset` Specifies the offset into the buffer object's data store
+   * where data replacement will begin, measured in bytes.
+   *  @param `size` Specifies the size in bytes of the data store region being
+   * replaced.
+   *  @param `data` Specifies a pointer to the new data that will be copied into
+   * the data store.
+   */
+  virtual void bufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,
+                             const void* data) const noexcept = 0;
+
   /*! `glClear` — clear buffers to preset values
    *
    *  @brief `glClear `sets the bitplane area of the window to values previously
@@ -129,6 +177,54 @@ struct OpenGLApi {
    */
   virtual void compileShader(GLuint shader) const noexcept = 0;
 
+  /*! `glCopyBufferSubData`, `glCopyNamedBufferSubData` — copy all or part of
+   * the data store of a buffer object to the data store of another buffer
+   * object
+   *
+   *  @brief `glCopyBufferSubData` and `glCopyNamedBufferSubData` copy part of
+   * the data store attached to a source buffer object to the data store
+   * attached to a destination buffer object.
+   *
+   *  @param `readTarget` Specifies the target to which the source buffer object
+   * is bound for `glCopyBufferSubData`
+   *  @param `writeTarget` Specifies the target to which the destination buffer
+   * object is bound for `glCopyBufferSubData`.
+   *  @param `readOffset` Specifies the offset, in basic machine units, within
+   * the data store of the source buffer object at which data will be read.
+   *  @param `writeOffset` Specifies the offset, in basic machine units, within
+   * the data store of the destination buffer object at which data will be
+   * written.
+   *  @param `size` Specifies the size, in basic machine units, of the data to
+   * be copied from the source buffer object to the destination buffer object.
+   */
+  virtual void copyBufferSubData(GLenum readTarget, GLenum writeTarget,
+                                 GLintptr readOffset, GLintptr writeOffset,
+                                 GLsizeiptr size) const noexcept = 0;
+
+  /*! `glCopyBufferSubData`, `glCopyNamedBufferSubData` — copy all or part of
+   * the data store of a buffer object to the data store of another buffer
+   * object
+   *
+   *  @brief `glCopyBufferSubData` and `glCopyNamedBufferSubData` copy part of
+   * the data store attached to a source buffer object to the data store
+   * attached to a destination buffer object.
+   *
+   *  @param `readBuffer` Specifies the name of the source buffer object for
+   * `glCopyNamedBufferSubData`.
+   *  @param `writeBuffer` Specifies the name of the destination buffer object
+   * for `glCopyNamedBufferSubData`.
+   *  @param `readOffset` Specifies the offset, in basic machine units, within
+   * the data store of the source buffer object at which data will be read.
+   *  @param `writeOffset` Specifies the offset, in basic machine units, within
+   * the data store of the destination buffer object at which data will be
+   * written.
+   *  @param `size` Specifies the size, in basic machine units, of the data to
+   * be copied from the source buffer object to the destination buffer object.
+   */
+  virtual void copyNamedBufferSubData(GLuint readBuffer, GLuint writeBuffer,
+                                      GLintptr readOffset, GLintptr writeOffset,
+                                      GLsizeiptr size) const noexcept = 0;
+
   /*! `glCreateProgram` — Creates a program object
    *
    *  @brief `glCreateProgram` creates an empty program object and returns a
@@ -150,6 +246,16 @@ struct OpenGLApi {
    *  @return A non-zero value by which it can be referenced.
    */
   virtual GLuint createShader(GLuint shaderType) const noexcept = 0;
+
+  /*! `glDeleteBuffers` — delete named buffer objects
+   *
+   *  @brief `glDeleteBuffers` deletes n buffer objects named by the elements of
+   * the array buffers.
+   *
+   *  @param `n` Specifies the number of buffer objects to be deleted.
+   *  @param `buffers` Specifies an array of buffer objects to be deleted.
+   */
+  virtual void deleteBuffers(GLsizei n, GLuint* buffers) const noexcept = 0;
 
   /*! `glDeleteProgram` — Deletes a program object
    *
@@ -291,6 +397,16 @@ struct OpenGLApi {
    *  @returns The string out of memory.
    */
   virtual const GLubyte* errorString(GLenum error) const noexcept = 0;
+
+  /*! `glGenBuffers` — generate buffer object names
+   *
+   *  @brief `glGenBuffers` returns n buffer object names in buffers.
+   *
+   *  @param `n` Specifies the number of buffer object names to be generated.
+   *  @param `buffers` Specifies an array in which the generated buffer object
+   * names are stored.
+   */
+  virtual void genBuffers(GLsizei n, GLuint* buffers) const noexcept = 0;
 
   /*! `glGet` — return the value or values of a selected parameter
    *
@@ -506,6 +622,25 @@ struct OpenGLApi {
    */
   virtual void linkProgram(GLuint program) const noexcept = 0;
 
+  /*! `glBufferSubData`, `glNamedBufferSubData` — updates a subset of a buffer
+   * object's data store
+   *
+   *  @brief `glBufferSubData` and `glNamedBufferSubData` redefine some or all
+   * of the data store for the specified buffer object.
+   *
+   *  @param `buffer` Specifies the name of the buffer object for
+   * `glNamedBufferSubData`.
+   *  @param `offset` Specifies the offset into the buffer object's data store
+   * where data replacement will begin, measured in bytes.
+   *  @param `size` Specifies the size in bytes of the data store region being
+   * replaced.
+   *  @param `data` Specifies a pointer to the new data that will be copied into
+   * the data store.
+   */
+  virtual void namedBufferSubData(GLuint buffer, GLintptr offset,
+                                  GLsizeiptr size,
+                                  const void* data) const noexcept = 0;
+
   /*! `glPointSize` — specify the diameter of rasterized points
    *
    *  @brief `glPointSize` specifies the rasterized diameter of points.
@@ -574,6 +709,33 @@ struct OpenGLApiImpl : OpenGLApi {
     glAttachShader(program, shader);
   }
 
+  inline void bindBuffer(GLenum target, GLuint id) const noexcept override {
+    glBindBuffer(target, id);
+  }
+
+  inline void bufferData(GLenum target, GLsizeiptr size, const void* data,
+                         GLenum usage) const noexcept override {
+    glBufferData(target, size, data, usage);
+  }
+
+  inline void bufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,
+                            const void* data) const noexcept override {
+    glBufferSubData(target, offset, size, data);
+  }
+
+  inline void copyBufferSubData(GLenum readTarget, GLenum writeTarget,
+                                GLintptr readOffset, GLintptr writeOffset,
+                                GLsizeiptr size) const noexcept override {
+    glCopyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
+  }
+
+  inline void copyNamedBufferSubData(GLuint readBuffer, GLuint writeBuffer,
+                                     GLintptr readOffset, GLintptr writeOffset,
+                                     GLsizeiptr size) const noexcept override {
+    glCopyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset,
+                             size);
+  }
+
   inline void clear(GLbitfield mask) const noexcept override { glClear(mask); }
 
   inline void clearColor(GLfloat r, GLfloat g, GLfloat b,
@@ -591,6 +753,11 @@ struct OpenGLApiImpl : OpenGLApi {
 
   inline GLuint createShader(GLenum stage) const noexcept override {
     return glCreateShader(stage);
+  }
+
+  inline void deleteBuffers(GLsizei count,
+                            GLuint* ptr) const noexcept override {
+    glDeleteBuffers(count, ptr);
   }
 
   inline void deleteProgram(GLuint program) const noexcept override {
@@ -638,6 +805,10 @@ struct OpenGLApiImpl : OpenGLApi {
   inline const GLubyte* errorString(GLenum error) const noexcept override {
     auto str = gluErrorString(error);
     return str;
+  }
+
+  inline void genBuffers(GLsizei count, GLuint* ptr) const noexcept override {
+    glGenBuffers(count, ptr);
   }
 
   inline void getShaderiv(GLuint shader, GLenum pname,
@@ -715,6 +886,12 @@ struct OpenGLApiImpl : OpenGLApi {
     glLinkProgram(program);
   }
 
+  inline void namedBufferSubData(GLuint buffer, GLintptr offset,
+                                 GLsizeiptr size,
+                                 const void* data) const noexcept override {
+    glNamedBufferSubData(buffer, offset, size, data);
+  }
+
   inline void pointSize(GLfloat size) const noexcept override {
     glPointSize(size);
   }
@@ -735,6 +912,11 @@ struct OpenGLApiImpl : OpenGLApi {
 
  private:
   OpenGLApiImpl() noexcept = default;
+};
+
+struct BufferSegment {
+  GLsizeiptr offset = 0;
+  GLsizeiptr size = 0;
 };
 
 }  // namespace uinta
