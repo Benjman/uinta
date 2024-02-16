@@ -21,6 +21,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(abseil-cpp)
 include(entt)
+include(stb)
 
 set(UINTA_GENERATED_DIR "${CMAKE_BINARY_DIR}/generated")
 list(APPEND UINTA_INCLUDES "${UINTA_GENERATED_DIR}")
