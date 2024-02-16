@@ -1,0 +1,5 @@
+set(STB_DIR "${UINTA_LIB_DIR}/stb")
+if(NOT EXISTS "${STB_DIR}")
+  message(FATAL_ERROR "stb library not found. Likely missing git submodules.")
+endif()
+list(APPEND UINTA_INCLUDES "${STB_DIR}")
