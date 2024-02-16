@@ -4,3 +4,6 @@
 [submodule "src/platform/lib/eventpp"]
 	path = src/platform/lib/eventpp
 	url = https://github.com/wqking/eventpp
+[submodule "lib/stb/stb"]
+	path = lib/stb/stb
+	url = https://github.com/nothings/stb.git
