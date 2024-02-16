@@ -58,6 +58,7 @@ list(INSERT UINTA_RES_PATHS 0 "${UINTA_DATA_HOME}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(glm)
+include(stb)
 include(yaml-cpp)
 
 set(CMAKE_CXX_FLAGS_DEBUG
