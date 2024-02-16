@@ -4,6 +4,7 @@
 #include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
+#include "uinta/file.h"
 #include "uinta/gl.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
