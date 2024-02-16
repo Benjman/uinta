@@ -1,3 +1,6 @@
 [submodule "src/platform/lib/glfw"]
 	path = src/platform/lib/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "lib/stb/stb"]
+	path = lib/stb/stb
+	url = https://github.com/nothings/stb.git
