@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "uinta/engine/engine.h"
+#include "uinta/mock/mock_file_system.h"
 #include "uinta/mock/mock_gl.h"
 
 namespace uinta {
@@ -11,9 +12,10 @@ namespace uinta {
 class UintaTestF : public ::testing::Test {
  protected:
   MockOpenGLApi gl;
+  MockFileSystem fileSystem;
 
   Engine makeEngine(Platform* platform) noexcept {
-    return Engine({platform, &gl});
+    return Engine({platform, &gl, &fileSystem});
   }
 };
 
