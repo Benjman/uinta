@@ -4,6 +4,7 @@ project(engine)
 set(CMAKE_CXX_STANDARD 23)
 
 list(APPEND ENGINE_SRCS src/engine.cc)
+list(APPEND ENGINE_SRCS src/file.cc)
 
 add_library(engine STATIC ${ENGINE_SRCS})
 add_library(uinta::engine ALIAS engine)
