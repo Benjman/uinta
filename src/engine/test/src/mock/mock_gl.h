@@ -14,6 +14,25 @@ class MockOpenGLApi : public OpenGLApi {
     onAttachShader(program, shader);
   }
 
+  std::function<void(GLenum, GLuint)> onBindBuffer = [](auto, auto) {};
+  void bindBuffer(GLenum target, GLuint id) const noexcept override {
+    onBindBuffer(target, id);
+  }
+
+  std::function<void(GLenum, GLsizeiptr, const void*, GLenum)> onBufferData =
+      [](auto, auto, const auto*, auto) {};
+  void bufferData(GLenum target, GLsizeiptr size, const void* data,
+                  GLenum usage) const noexcept override {
+    onBufferData(target, size, data, usage);
+  }
+
+  std::function<void(GLenum, GLintptr, GLsizeiptr, const void*)>
+      onBufferSubData = [](auto, auto, auto, const auto*) {};
+  void bufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,
+                     const void* data) const noexcept override {
+    onBufferSubData(target, offset, size, data);
+  }
+
   std::function<void(GLbitfield)> onClear = [](auto) {};
   void clear(GLbitfield mask) const noexcept override { onClear(mask); }
 
@@ -22,6 +41,23 @@ class MockOpenGLApi : public OpenGLApi {
   void clearColor(GLfloat r, GLfloat g, GLfloat b,
                   GLfloat a) const noexcept override {
     onClearColor(r, g, b, a);
+  }
+
+  std::function<void(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr)>
+      onCopyBufferSubData = [](auto, auto, auto, auto, auto) {};
+  void copyBufferSubData(GLenum readTarget, GLenum writeTarget,
+                         GLintptr readOffset, GLintptr writeOffset,
+                         GLsizeiptr size) const noexcept override {
+    onCopyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
+  }
+
+  std::function<void(GLuint, GLuint, GLintptr, GLintptr, GLsizeiptr)>
+      onCopyNamedBufferSubData = [](auto, auto, auto, auto, auto) {};
+  void copyNamedBufferSubData(GLuint readBuffer, GLuint writeBuffer,
+                              GLintptr readOffset, GLintptr writeOffset,
+                              GLsizeiptr size) const noexcept override {
+    onCopyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset,
+                             size);
   }
 
   std::function<void(GLuint)> onCompileShader = [](auto) {};
@@ -37,6 +73,11 @@ class MockOpenGLApi : public OpenGLApi {
   };
   GLuint createShader(GLenum stage) const noexcept override {
     return onCreateShader(stage);
+  }
+
+  std::function<void(GLsizei, GLuint*)> onDeleteBuffers = [](auto, auto*) {};
+  void deleteBuffers(GLsizei count, GLuint* ptr) const noexcept override {
+    onDeleteBuffers(count, ptr);
   }
 
   std::function<void(GLuint)> onDeleteProgram = [](auto) {};
@@ -101,6 +142,11 @@ class MockOpenGLApi : public OpenGLApi {
   };
   const GLubyte* errorString(GLenum error) const noexcept override {
     return onErrorString(error);
+  }
+
+  std::function<void(GLsizei, GLuint*)> onGenBuffers = [](auto, auto*) {};
+  void genBuffers(GLsizei count, GLuint* ptr) const noexcept override {
+    onGenBuffers(count, ptr);
   }
 
   std::function<void(GLuint, GLenum, GLint*)> onGetShaderiv =
@@ -193,6 +239,13 @@ class MockOpenGLApi : public OpenGLApi {
   std::function<void(GLuint)> onLinkProgram = [](auto) {};
   void linkProgram(GLuint program) const noexcept override {
     onLinkProgram(program);
+  }
+
+  std::function<void(GLuint, GLintptr, GLsizeiptr, const void*)>
+      onNamedBufferSubData = [](auto, auto, auto, const auto*) {};
+  void namedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size,
+                          const void* data) const noexcept override {
+    onNamedBufferSubData(buffer, offset, size, data);
   }
 
   std::function<void(GLuint, GLsizei, const GLchar**, const GLint*)>
