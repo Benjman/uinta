@@ -8,8 +8,12 @@
 #include "uinta/gl.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
+#include "uinta/shader.h"
 #include "uinta/status.h"
 #include "uinta/types.h"
+#include "uinta/uniform.h"
+#include "uinta/vao.h"
+#include "uinta/vbo.h"
 
 namespace uinta {
 
@@ -74,6 +78,12 @@ class Engine : public RuntimeGetter {
   FileSystem* fileSystem_;
   const OpenGLApi* gl_;
   Platform* platform_;
+
+  Shader shader_;
+  UniformMatrix4fv uProjection_;
+  Uniform4fv uColor_;
+  Vao vao_;
+  Vbo vbo_;
 
   time_t getRuntime() noexcept {
     if (auto status = platform_->runtime(); status.ok()) {
