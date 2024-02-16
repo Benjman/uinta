@@ -6,6 +6,9 @@
 #include "uinta/gl.h"
 #include "uinta/lib/absl/strings.h"
 #include "uinta/platform.h"
+#include "uinta/shader.h"
+#include "uinta/vao.h"
+#include "uinta/vbo.h"
 
 namespace uinta {
 
@@ -14,6 +17,26 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
   assert(platform_ && "`Platform*` cannot be null.");
 
   setCallbacks();
+
+  Shader shader({{GL_VERTEX_SHADER, "shader.vs.glsl"},
+                 {GL_FRAGMENT_SHADER, "shader.fs.glsl"}});
+
+  Vbo vbo(GL_ARRAY_BUFFER);
+  std::vector<f32> vertices = {
+      0.5f,  0.5f,   // top right
+      0.5f,  -0.5f,  // bottom right
+      -0.5f, -0.5f,  // bottom left
+      -0.5f, 0.5f,   // top left
+  };
+  VboGuard vbg(&vbo);
+  vbo.bufferData(vertices.data(), vertices.size() * sizeof(f32),
+                 GL_STATIC_DRAW);
+
+  Vao vao;
+  std::vector<u32> idxBuffer = {0, 1, 3, 1, 2, 3};
+  VaoGuard vag(&vao);
+  vao.ebo(idxBuffer);
+  vao.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0});
 
   onViewportChange(platform_->window()->width(), platform_->window()->height());
 
@@ -30,6 +53,10 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
     if (!status_.ok()) return;
 
     newFrame();
+
+    ShaderGuard shaderGuard(&shader);
+    VaoGuard vaoGuard(&vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   }
 }
 
