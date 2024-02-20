@@ -1449,6 +1449,35 @@ class OpenGLApiImpl : public OpenGLApi {
   OpenGLApiImpl() noexcept = default;
 };
 
+class CapabilityGuard {
+ public:
+  CapabilityGuard(GLenum capability, bool initiallyActive = true,
+                  const OpenGLApi* gl = OpenGLApiImpl::GetInstance()) noexcept
+      : gl_(gl),
+        capability_(capability),
+        wasEnabled_(gl_->isEnabled(capability_)),
+        isActive_(initiallyActive) {
+    if (isActive_ && !wasEnabled_) gl_->enable(capability_);
+  }
+
+  virtual ~CapabilityGuard() noexcept {
+    if (isActive_ && !wasEnabled_) gl_->disable(capability_);
+  }
+
+  void activate() noexcept {
+    if (!isActive_) {
+      gl_->enable(capability_);
+      isActive_ = true;
+    }
+  }
+
+ protected:
+  const OpenGLApi* gl_;
+  const GLenum capability_;
+  const GLboolean wasEnabled_;
+  bool isActive_;
+};
+
 }  // namespace uinta
 
 #endif  // SRC_PLATFORM_INCLUDE_UINTA_GL_H_
