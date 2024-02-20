@@ -17,6 +17,7 @@ can greatly speed up the build times.
 
 * [Abseil](https://github.com/abseil/abseil-cpp)
 * [GLFW](https://github.com/glfw/glfw)
+* [glm](https://github.com/g-truc/glm)
 
 ## Build project
 
