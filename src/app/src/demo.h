@@ -1,12 +1,13 @@
 #ifndef SRC_APP_SRC_DEMO_H_
 #define SRC_APP_SRC_DEMO_H_
 
-#include <vector>
-
-#include "absl/log/log.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "uinta/engine_signal.h"
+#include "uinta/engine_state.h"
+#include "uinta/gl.h"
+#include "uinta/primitive.h"
 #include "uinta/scene.h"
 #include "uinta/shaders/primitive.h"
-#include "uinta/texture.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
 
@@ -15,40 +16,46 @@ namespace uinta {
 class DemoScene : public Scene {
  public:
   DemoScene() noexcept : Scene(Layer::Simulation) {
-    std::vector<f32> vertices = {
-        // positions  // uv coords
-        0.5f,  0.5f,  1.0f, 1.0f,  // top right
-        0.5f,  -0.5f, 1.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
-        -0.5f, 0.5f,  0.0f, 1.0f   // top left
-    };
-    vbo_.bufferData(vertices.data(), vertices.size(), GL_STATIC_DRAW);
+    auto cube = Primitive::Cube();
+    std::for_each(cube.vertices().begin(), cube.vertices().end(),
+                  [](auto& vertex) { vertex.color = glm::vec3(1); });
+    vbo_.bufferData(cube.vertices().data(),
+                    cube.vertices().size() * Vertex::ElementCount,
+                    GL_STATIC_DRAW);
+    vao_.indexBuffer(cube.indices());
+    indexCount_ = cube.indexCount();
 
-    std::array<u32, 6> indexBuffer = {0, 1, 3, 1, 2, 3};
-    vao_.indexBuffer(indexBuffer);
-    vao_.linkAttribute({&vbo_, 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
-                        reinterpret_cast<void*>(0)});
-    vao_.linkAttribute({&vbo_, 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
-                        reinterpret_cast<void*>(2 * sizeof(GLfloat))});
+    vao_.linkAttribute(Primitive::PositionAttribute(&vbo_));
+    vao_.linkAttribute(Primitive::NormalAttribute(&vbo_));
+    vao_.linkAttribute(Primitive::ColorAttribute(&vbo_));
 
-    if (auto status = texture_.fromFile("wall.jpg"); !status.ok()) {
-      LOG(FATAL) << status.message();
-      return;
-    }
+    ShaderGuard sg(&shader_);
+    shader_.view = glm::translate(glm::mat4(1), glm::vec3(0, 0, -1));
   }
 
-  void render(const EngineState&) noexcept override {
+  void render(const EngineState& state) noexcept override {
+    DepthTestGuard dtg;
+    CullFaceGuard cfg;
+
     ShaderGuard shaderGuard(&shader_);
+    auto model = glm::rotate(glm::mat4(1), glm::radians(state.runtime() * 30),
+                             glm::normalize(glm::vec3(.25, 1, 0)));
+    shader_.model = glm::scale(model, glm::vec3(0.5));
+
     VaoGuard vaoGuard(&vao_);
-    TextureGuard textureGuard(&texture_);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indexCount_, GL_UNSIGNED_INT, 0);
+  }
+
+  void onViewportSizeChange(const ViewportSizeChange& event) noexcept override {
+    ShaderGuard shaderGuard(&shader_);
+    shader_.projection = glm::perspective(45.0f, event.aspect(), 0.01f, 1.0f);
   }
 
  private:
-  Texture texture_;
   PrimitiveShader shader_;
   Vao vao_;
   Vbo vbo_ = GL_ARRAY_BUFFER;
+  size_t indexCount_;
 };
 
 }  // namespace uinta
