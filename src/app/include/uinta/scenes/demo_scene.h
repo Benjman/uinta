@@ -4,8 +4,8 @@
 #include "uinta/debug/debug_scene.h"
 #include "uinta/engine/engine.h"
 #include "uinta/scene/scene.h"
+#include "uinta/scenes/cube_scene.h"
 #include "uinta/scenes/demo_palette.h"
-#include "uinta/scenes/texture_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -22,7 +22,7 @@ class DemoScene : public Scene {
     addSystem<BasicShaderManager>(this);
 
     addScene<DebugScene>();
-    addScene<TextureScene>();
+    addScene<CubeScene>();
   }
 };
 
