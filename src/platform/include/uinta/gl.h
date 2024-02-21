@@ -277,6 +277,17 @@ struct OpenGLApi {
    */
   virtual GLuint createShader(GLuint shaderType) const noexcept = 0;
 
+  /*! `glCullFace` — specify whether front- or back-facing facets can be culled
+   *
+   *  @brief `glCullFace` specifies whether front- or back-facing facets are
+   * culled (as specified by mode) when facet culling is enabled.
+   *
+   *  @param `mode` Specifies whether front- or back-facing facets are
+   * candidates for culling. Symbolic constants `GL_FRONT`, `GL_BACK`, and
+   * `GL_FRONT_AND_BACK` are accepted. The initial value is `GL_BACK`.
+   */
+  virtual void cullFace(GLenum mode) const noexcept = 0;
+
   /*! `glDeleteBuffers` — delete named buffer objects
    *
    *  @brief `glDeleteBuffers` deletes n buffer objects named by the elements of
@@ -2010,6 +2021,10 @@ struct OpenGLApiImpl : OpenGLApi {
     return glCreateShader(stage);
   }
 
+  inline void cullFace(GLenum mode) const noexcept override {
+    glCullFace(mode);
+  }
+
   inline void deleteBuffers(GLsizei count,
                             GLuint* ptr) const noexcept override {
     glDeleteBuffers(count, ptr);
@@ -2504,6 +2519,39 @@ class DepthTestGuard : public CapabilityGuard {
   DepthTestGuard& operator=(const DepthTestGuard&) noexcept = delete;
   DepthTestGuard(DepthTestGuard&&) noexcept = delete;
   DepthTestGuard& operator=(DepthTestGuard&&) noexcept = delete;
+};
+
+class CullFaceGuard : public CapabilityGuard {
+ public:
+  CullFaceGuard(GLenum mode = GL_BACK, bool isActive = true,
+                const OpenGLApi* gl = OpenGLApiImpl::Instance())
+      : CapabilityGuard(GL_CULL_FACE, isActive, gl), mode_(mode) {
+    GLint prevMode;
+    gl_->getIntegerv(GL_CULL_FACE_MODE, &prevMode);
+    prevMode_ = static_cast<GLenum>(prevMode);
+    if (isActive_ && prevMode_ != mode_) gl_->cullFace(mode_);
+  }
+
+  ~CullFaceGuard() noexcept {
+    if (prevMode_ != mode_) gl_->cullFace(prevMode_);
+  }
+
+  CullFaceGuard(const CullFaceGuard&) noexcept = delete;
+  CullFaceGuard& operator=(const CullFaceGuard&) noexcept = delete;
+  CullFaceGuard(CullFaceGuard&&) noexcept = delete;
+  CullFaceGuard& operator=(CullFaceGuard&&) noexcept = delete;
+
+  void activate() noexcept override {
+    CapabilityGuard::activate();
+    if (!isActive_) {
+      gl_->cullFace(mode_);
+      isActive_ = true;
+    }
+  }
+
+ private:
+  GLenum mode_;
+  GLenum prevMode_;
 };
 
 }  // namespace uinta

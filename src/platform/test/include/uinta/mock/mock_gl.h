@@ -89,6 +89,9 @@ struct MockOpenGLApi : OpenGLApi {
     return onCreateShader(stage);
   }
 
+  std::function<void(GLenum)> onCullFace = [](auto) {};
+  void cullFace(GLenum mode) const noexcept override { onCullFace(mode); }
+
   std::function<void(GLsizei, GLuint*)> onDeleteBuffers = [](auto, auto*) {};
   void deleteBuffers(GLsizei count, GLuint* ptr) const noexcept override {
     onDeleteBuffers(count, ptr);
