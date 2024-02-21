@@ -1518,6 +1518,19 @@ class CapabilityGuard {
   bool isActive_ = false;
 };
 
+class DepthTestGuard : public CapabilityGuard {
+ public:
+  explicit DepthTestGuard(bool isActive = true,
+                          const OpenGLApi* gl = OpenGLApiImpl::GetInstance())
+      : CapabilityGuard(GL_DEPTH_TEST, isActive, gl) {}
+
+  ~DepthTestGuard() noexcept = default;
+  DepthTestGuard(const DepthTestGuard&) noexcept = delete;
+  DepthTestGuard& operator=(const DepthTestGuard&) noexcept = delete;
+  DepthTestGuard(DepthTestGuard&&) noexcept = delete;
+  DepthTestGuard& operator=(DepthTestGuard&&) noexcept = delete;
+};
+
 }  // namespace uinta
 
 #endif  // SRC_PLATFORM_INCLUDE_UINTA_GL_H_
