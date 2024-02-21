@@ -12,6 +12,7 @@ list(APPEND ENGINE_SRCS src/mesh.cc)
 list(APPEND ENGINE_SRCS src/scene.cc)
 list(APPEND ENGINE_SRCS src/shader.cc)
 list(APPEND ENGINE_SRCS src/texture.cc)
+list(APPEND ENGINE_SRCS src/utils/fbx.cc)
 list(APPEND ENGINE_SRCS src/utils/frame_manager.cc)
 list(APPEND ENGINE_SRCS src/vbo.cc)
 
