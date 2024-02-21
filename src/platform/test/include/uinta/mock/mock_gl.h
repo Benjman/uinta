@@ -294,6 +294,230 @@ struct MockOpenGLApi : OpenGLApi {
     onShaderSource(shader, count, source, length);
   }
 
+  std::function<void(GLint, GLfloat)> onUniform1f = [](auto, auto) {};
+  void uniform1f(GLint location, GLfloat v0) const noexcept override {
+    onUniform1f(location, v0);
+  }
+
+  std::function<void(GLint, GLsizei, const GLfloat*)> onUniform1fv =
+      [](auto, auto, const auto*) {};
+  void uniform1fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    onUniform1fv(location, count, value);
+  }
+
+  std::function<void(GLint, GLint)> onUniform1i = [](auto, auto) {};
+  void uniform1i(GLint location, GLint v0) const noexcept override {
+    onUniform1i(location, v0);
+  }
+
+  std::function<void(GLint, GLsizei, const GLint*)> onUniform1iv =
+      [](auto, auto, const auto*) {};
+  void uniform1iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    onUniform1iv(location, count, value);
+  }
+
+  std::function<void(GLint, GLuint)> onUniform1ui = [](auto, auto) {};
+  void uniform1ui(GLint location, GLuint v0) const noexcept override {
+    onUniform1ui(location, v0);
+  }
+
+  std::function<void(GLint, GLsizei, const GLuint*)> onUniform1uiv =
+      [](auto, auto, const auto*) {};
+  void uniform1uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    onUniform1uiv(location, count, value);
+  }
+
+  std::function<void(GLint, GLfloat, GLfloat)> onUniform2f = [](auto, auto,
+                                                                auto) {};
+  void uniform2f(GLint location, GLfloat v0,
+                 GLfloat v1) const noexcept override {
+    onUniform2f(location, v0, v1);
+  }
+
+  std::function<void(GLint, GLsizei, const GLfloat*)> onUniform2fv =
+      [](auto, auto, const auto*) {};
+  void uniform2fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    onUniform2fv(location, count, value);
+  }
+
+  std::function<void(GLint, GLint, GLint)> onUniform2i = [](auto, auto, auto) {
+  };
+  void uniform2i(GLint location, GLint v0, GLint v1) const noexcept override {
+    onUniform2i(location, v0, v1);
+  }
+
+  std::function<void(GLint, GLsizei, const GLint*)> onUniform2iv =
+      [](auto, auto, const auto*) {};
+  void uniform2iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    onUniform2iv(location, count, value);
+  }
+
+  std::function<void(GLint, GLuint, GLuint)> onUniform2ui = [](auto, auto,
+                                                               auto) {};
+  void uniform2ui(GLint location, GLuint v0,
+                  GLuint v1) const noexcept override {
+    onUniform2ui(location, v0, v1);
+  }
+
+  std::function<void(GLint, GLsizei, const GLuint*)> onUniform2uiv =
+      [](auto, auto, const auto*) {};
+  void uniform2uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    onUniform2uiv(location, count, value);
+  }
+
+  std::function<void(GLint, GLfloat, GLfloat, GLfloat)> onUniform3f =
+      [](auto, auto, auto, auto) {};
+  void uniform3f(GLint location, GLfloat v0, GLfloat v1,
+                 GLfloat v2) const noexcept override {
+    onUniform3f(location, v0, v1, v2);
+  }
+
+  std::function<void(GLint, GLsizei, const GLfloat*)> onUniform3fv =
+      [](auto, auto, const auto*) {};
+  void uniform3fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    onUniform3fv(location, count, value);
+  }
+
+  std::function<void(GLint, GLint, GLint, GLint)> onUniform3i =
+      [](auto, auto, auto, auto) {};
+  void uniform3i(GLint location, GLint v0, GLint v1,
+                 GLint v2) const noexcept override {
+    onUniform3i(location, v0, v1, v2);
+  }
+
+  std::function<void(GLint, GLsizei, const GLint*)> onUniform3iv =
+      [](auto, auto, const auto*) {};
+  void uniform3iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    onUniform3iv(location, count, value);
+  }
+
+  std::function<void(GLint, GLuint, GLuint, GLuint)> onUniform3ui =
+      [](auto, auto, auto, auto) {};
+  void uniform3ui(GLint location, GLuint v0, GLuint v1,
+                  GLuint v2) const noexcept override {
+    onUniform3ui(location, v0, v1, v2);
+  }
+
+  std::function<void(GLint, GLsizei, const GLuint*)> onUniform3uiv =
+      [](auto, auto, const auto*) {};
+  void uniform3uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    onUniform3uiv(location, count, value);
+  }
+
+  std::function<void(GLint, GLfloat, GLfloat, GLfloat, GLfloat)> onUniform4f =
+      [](auto, auto, auto, auto, auto) {};
+  void uniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2,
+                 GLfloat v3) const noexcept override {
+    onUniform4f(location, v0, v1, v2, v3);
+  }
+
+  std::function<void(GLint, GLsizei, const GLfloat*)> onUniform4fv =
+      [](auto, auto, const auto*) {};
+  void uniform4fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    onUniform4fv(location, count, value);
+  }
+
+  std::function<void(GLint, GLint, GLint, GLint, GLint)> onUniform4i =
+      [](auto, auto, auto, auto, auto) {};
+  void uniform4i(GLint location, GLint v0, GLint v1, GLint v2,
+                 GLint v3) const noexcept override {
+    onUniform4i(location, v0, v1, v2, v3);
+  }
+
+  std::function<void(GLint, GLsizei, const GLint*)> onUniform4iv =
+      [](auto, auto, const auto*) {};
+  void uniform4iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    onUniform4iv(location, count, value);
+  }
+
+  std::function<void(GLint, GLuint, GLuint, GLuint, GLuint)> onUniform4ui =
+      [](auto, auto, auto, auto, auto) {};
+  void uniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2,
+                  GLuint v3) const noexcept override {
+    onUniform4ui(location, v0, v1, v2, v3);
+  }
+
+  std::function<void(GLint, GLsizei, const GLuint*)> onUniform4uiv =
+      [](auto, auto, const auto*) {};
+  void uniform4uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    onUniform4uiv(location, count, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix2fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,
+                        const GLfloat* value) const noexcept override {
+    onUniformMatrix2fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix2x3fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    onUniformMatrix2x3fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix2x4fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    onUniformMatrix2x4fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix3fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,
+                        const GLfloat* value) const noexcept override {
+    onUniformMatrix3fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix3x2fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    onUniformMatrix3x2fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix3x4fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    onUniformMatrix3x4fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix4fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,
+                        const GLfloat* value) const noexcept override {
+    onUniformMatrix4fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix4x2fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    onUniformMatrix4x2fv(location, count, transpose, value);
+  }
+
+  std::function<void(GLint, GLsizei, GLboolean, const GLfloat*)>
+      onUniformMatrix4x3fv = [](auto, auto, auto, const auto*) {};
+  void uniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    onUniformMatrix4x3fv(location, count, transpose, value);
+  }
+
   std::function<void(GLuint)> onUseProgram = [](auto) {};
   void useProgram(GLuint program) const noexcept override {
     onUseProgram(program);
