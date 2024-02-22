@@ -47,6 +47,12 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
 
   platform_->onFramebufferSize(
       [&](u32 width, u32 height) { onViewportChange(width, height); });
+
+  if (status_ = platform_->registerInputHandlers(&state_.input());
+      !status_.ok()) {
+    LOG(ERROR) << status_.message();
+    return;
+  }
 }
 
 void updateSceneViewport(Scene*, const ViewportSizeChange&) noexcept;
@@ -63,6 +69,7 @@ void Engine::runScene(std::unique_ptr<Scene> scene) noexcept {
   }
 
   while (!state_.isClosing() && status_.ok()) {
+    state_.input().reset();
     status_ = platform_->pollEvents();
     if (!status_.ok()) return;
 

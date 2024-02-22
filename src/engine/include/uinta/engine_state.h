@@ -2,6 +2,7 @@
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_STATE_H_
 
 #include "uinta/engine_stage.h"
+#include "uinta/input.h"
 
 namespace uinta {
 
@@ -59,6 +60,38 @@ class EngineState {
     flags_ |= static_cast<EngineStateFlags>(stage) << StageShift;
   }
 
+  const Input& input() const noexcept { return input_; }
+
+  Input& input() noexcept { return input_; }
+
+  bool isKeyDown(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyDown(key, mask);
+  }
+
+  bool isKeyPressed(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyPressed(key, mask);
+  }
+
+  bool isKeyReleased(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyReleased(key, mask);
+  }
+
+  bool isKeyRepeated(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyRepeated(key, mask);
+  }
+
+  bool isMouseDown(MouseButton button, InputMod mask = 0) const noexcept {
+    return input_.isMouseDown(button, mask);
+  }
+
+  bool isMousePressed(MouseButton button, InputMod mask = 0) const noexcept {
+    return input_.isMousePressed(button, mask);
+  }
+
+  bool isMouseReleased(MouseButton button, InputMod mask = 0) const noexcept {
+    return input_.isMouseReleased(button, mask);
+  }
+
  private:
   static constexpr EngineStateFlags NewFrameMask = 1 << 0;
   static constexpr EngineStateFlags ClosingMask = 1 << 1;
@@ -66,6 +99,7 @@ class EngineState {
   static constexpr EngineStateFlags StageShift = 2;
   static constexpr EngineStateFlags StageMask = 0x7 << StageShift;
 
+  Input input_;
   f32 delta_ = 0;
   f32 lastFrameRuntime_ = 0;
   f64 runtime_ = 0;

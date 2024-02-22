@@ -7,6 +7,7 @@
 
 #include "uinta/debug/debug_scene.h"
 #include "uinta/debug/ui/engine_state_ui.h"
+#include "uinta/debug/ui/input_capture_watcher.h"
 #include "uinta/engine.h"
 #include "uinta/platform.h"
 #include "uinta/scene.h"
@@ -28,6 +29,7 @@ class DebugSceneUi : public Scene {
             params.engine->platform()->window()->userData()),
         true);
     ImGui_ImplOpenGL3_Init();
+    addSystem<InputCaptureWatcher>(&params.engine->state().input());
   }
 
   void preRender(const EngineState&) noexcept override {

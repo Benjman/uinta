@@ -12,6 +12,8 @@
 
 namespace uinta {
 
+class Input;
+
 class Platform {
  public:
   Platform() noexcept = default;
@@ -50,6 +52,8 @@ class Platform {
   virtual Status swapBuffers() const noexcept = 0;
 
   const Status& status() const noexcept { return status_; }
+
+  virtual Status registerInputHandlers(Input*) const noexcept = 0;
 
  protected:
   std::vector<Monitor> monitors_;
