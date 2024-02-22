@@ -13,6 +13,7 @@
 #include "uinta/engine/engine_state.h"
 #include "uinta/file.h"
 #include "uinta/gl.h"
+#include "uinta/input/input.h"
 #include "uinta/platform.h"
 #include "uinta/reflect.h"
 #include "uinta/runtime_getter.h"
@@ -113,6 +114,10 @@ class Engine : public RuntimeGetter {
 
   const OpenGLApi* gl() const noexcept { return gl_; }
 
+  const Input* input() const noexcept { return &input_; }
+
+  Input* input() noexcept { return &input_; }
+
   const Platform* platform() const noexcept { return platform_; }
 
   Platform* platform() noexcept { return platform_; }
@@ -151,6 +156,7 @@ class Engine : public RuntimeGetter {
   EngineState state_;
   EngineDispatchers dispatchers_;
   FrameManager frame_;
+  Input input_;
   std::queue<std::unique_ptr<Scene>> sceneQueue_;
   std::vector<Scene*> renderOrder_;
   Status status_;

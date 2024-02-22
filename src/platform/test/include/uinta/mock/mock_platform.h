@@ -64,6 +64,13 @@ struct MockPlatform : Platform {
     return onSetWindowPosition(window, x, y);
   }
 
+  std::function<Status(Input*)> onRegisterInputHandlers = [](Input*) -> Status {
+    return OkStatus();
+  };
+  Status registerInputHandlers(Input* input) const noexcept override {
+    return onRegisterInputHandlers(input);
+  }
+
   std::function<void(bool, const Window*, const Monitor*)> onMakeFullscreen =
       [](bool, const Window*, const Monitor*) {};
   void makeFullscreen(bool makeFullscreen, Window* window,

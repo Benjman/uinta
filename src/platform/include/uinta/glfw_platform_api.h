@@ -9,6 +9,7 @@
 
 namespace uinta {
 
+class Input;
 class Monitor;
 class Platform;
 
@@ -49,12 +50,15 @@ class GlfwPlatformApi final : public DesktopPlatformApi {
 
   Status swapBuffers(const Window*) const noexcept override;
 
+  Status registerInputHandlers(const Window*, Input*) noexcept override;
+
  private:
   GlfwPlatformApi() noexcept = default;
 
   struct WindowData final {
     Platform* platform = nullptr;
     Window* window = nullptr;
+    Input* input = nullptr;
   } windowData_;
 };
 

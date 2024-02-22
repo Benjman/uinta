@@ -10,6 +10,7 @@
 #include "uinta/debug/ui/basic_shader_ui.h"
 #include "uinta/debug/ui/engine_ui.h"
 #include "uinta/debug/ui/imgui_ui.h"
+#include "uinta/debug/ui/input_ui.h"
 #include "uinta/debug/ui/platform_ui.h"
 #include "uinta/debug/ui/scene_ui.h"
 #include "uinta/engine/engine.h"
@@ -35,7 +36,8 @@ DebugSceneUi::DebugSceneUi(Scene* scene) noexcept
 
 DebugSceneUi::DebugSceneUi(Engine* engine) noexcept
     : Scene(engine, SCENE_NAME, SceneLayer::Debug),
-      shader_(findSystem<BasicShaderManager>().value_or(nullptr)) {
+      shader_(findSystem<BasicShaderManager>().value_or(nullptr)),
+      input_(engine->input()) {
   static time_t prevRenderComplete = 0;
   engineUiInfo_.engine = engine;
   engine->dispatchers()->addListener<EngineEvent::RenderComplete>(
@@ -105,6 +107,13 @@ DebugSceneUi::DebugSceneUi(Engine* engine) noexcept
   addComponent<FpsCounter>(&engineUiInfo_.fps);
 }
 
+void DebugSceneUi::preTick(time_t) noexcept {
+  if (flags_.isImGuiDeinitialized()) return;
+  auto& io = ImGui::GetIO();
+  if (io.WantCaptureMouse) engine()->input()->resetMouse();
+  if (io.WantCaptureKeyboard) engine()->input()->resetKeyboard();
+}
+
 void DebugSceneUi::render(time_t) noexcept {
   if (flags_.isImGuiNewFrame() && flags_.isImGuiDeinitialized()) return;
 
@@ -124,6 +133,7 @@ void DebugSceneUi::render(time_t) noexcept {
 
   RenderEngineUi(engineUiInfo_);
   RenderImGuiUi(engine()->platform()->window());
+  RenderInputUi(input_, engine()->platform()->window());
   RenderPlatformUi(engine()->platform());
   RenderSceneUi(engine());
 

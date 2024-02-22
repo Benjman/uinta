@@ -16,6 +16,7 @@ namespace uinta {
 
 class ArgsProcessor;
 class Engine;
+class Input;
 
 class Platform {
  public:
@@ -55,6 +56,8 @@ class Platform {
   }
 
   virtual void getAndUpdateWindowSize(i32* w, i32* h) const noexcept = 0;
+
+  virtual Status registerInputHandlers(Input*) const noexcept = 0;
 
   virtual Status pollEvents() const noexcept = 0;
 

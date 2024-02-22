@@ -1,0 +1,6 @@
+#ifndef SRC_PLATFORM_INCLUDE_UINTA_INPUT_H_
+#define SRC_PLATFORM_INCLUDE_UINTA_INPUT_H_
+
+#include "uinta/input/input.h"
+
+#endif  // SRC_PLATFORM_INCLUDE_UINTA_INPUT_H_
