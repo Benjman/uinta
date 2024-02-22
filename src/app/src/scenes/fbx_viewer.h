@@ -8,7 +8,6 @@
 #include "uinta/scene.h"
 #include "uinta/shader.h"
 #include "uinta/shaders/primitive.h"
-#include "uinta/utils/viewport_change.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
 
@@ -16,8 +15,8 @@ namespace uinta {
 
 class FbxViewerScene : public Scene {
  public:
-  explicit FbxViewerScene(std::string fbxPath) noexcept
-      : Scene(Layer::Simulation) {
+  explicit FbxViewerScene(std::string fbxPath, PrimitiveShader* shader) noexcept
+      : Scene(Layer::Simulation), shader_(shader) {
     auto mesh = fbx(fbxPath)->at(0);
 
     VboGuard vbg(&vbo_);
@@ -29,29 +28,25 @@ class FbxViewerScene : public Scene {
     vao_.ebo(mesh.elements());
     indexCount_ = mesh.elements().size();
 
-    ShaderGuard sg(&shader_);
-    shader_.linkAttributes(&vao_);
-    shader_.view = glm::translate(glm::mat4(1), glm::vec3(0, 0, -1));
-    shader_.model = glm::scale(glm::mat4(1), glm::vec3(0.0005));
+    ShaderGuard sg(shader_);
+    shader_->linkAttributes(&vao_);
+    shader_->view = glm::translate(glm::mat4(1), glm::vec3(0, 0, -1));
+    shader_->model = glm::scale(glm::mat4(1), glm::vec3(0.001));
   }
 
   void render(const EngineState&) noexcept override {
     DepthTestGuard dtg;
     CullFaceGuard cfg;
-    ShaderGuard sg(&shader_);
+    ShaderGuard sg(shader_);
     VaoGuard vg(&vao_);
+    shader_->model = glm::scale(glm::mat4(1), glm::vec3(0.001));
+    shader_->sway(false);
 
     glDrawElements(GL_TRIANGLES, indexCount_, GL_UNSIGNED_INT, 0);
   }
 
-  void onViewportSizeChange(const ViewportSizeChange& event) noexcept override {
-    Scene::onViewportSizeChange(event);
-    ShaderGuard sg(&shader_);
-    shader_.projection = glm::perspective(45.0f, event.aspect(), 0.01f, 1.0f);
-  }
-
  private:
-  PrimitiveShader shader_;
+  PrimitiveShader* shader_;
   Vao vao_;
   Vbo vbo_ = GL_ARRAY_BUFFER;
   size_t indexCount_;

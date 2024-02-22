@@ -2,14 +2,14 @@
 #define SRC_APP_SRC_DEMO_H_
 
 #include "./scenes/fbx_viewer.h"
-#include "uinta/scene.h"
+#include "uinta/scenes/debug.h"
 
 namespace uinta {
 
-class DemoScene : public Scene {
+class DemoScene : public DebugScene {
  public:
-  DemoScene() noexcept : Scene(Layer::Simulation) {
-    addScene<FbxViewerScene>("pawn.fbx");
+  DemoScene() noexcept : DebugScene(Layer::Simulation) {
+    addScene<FbxViewerScene>("pawn.fbx", &shader_);
   }
 };
 
