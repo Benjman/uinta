@@ -10,7 +10,6 @@
 namespace uinta {
 
 class Input;
-
 class Monitor;
 
 class GlfwPlatformApi final : public DesktopPlatformApi {
@@ -47,6 +46,8 @@ class GlfwPlatformApi final : public DesktopPlatformApi {
 
   Status swapBuffers(const Window*) const noexcept override;
 
+  Status registerInputHandlers(const Window*, Input*) noexcept override;
+
  private:
   GlfwPlatformApi() noexcept = default;
   ~GlfwPlatformApi() noexcept = default;
@@ -60,6 +61,7 @@ class GlfwPlatformApi final : public DesktopPlatformApi {
     DebugMessageFunc onDebugMessage;
     ErrorFunc onError;
     FramebufferSizeFunc onFramebufferSize;
+    Input* input;
   } windowData_;
 };
 

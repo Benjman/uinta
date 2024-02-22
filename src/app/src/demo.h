@@ -5,6 +5,7 @@
 #include "uinta/engine_signal.h"
 #include "uinta/engine_state.h"
 #include "uinta/gl.h"
+#include "uinta/input.h"
 #include "uinta/mesh.h"
 #include "uinta/scene.h"
 #include "uinta/shaders/primitive.h"
@@ -33,7 +34,7 @@ class DemoScene : public Scene {
     shader_.view = glm::translate(glm::mat4(1), glm::vec3(0, 0, -1));
   }
 
-  void render(const EngineState&) noexcept override {
+  void render(const EngineState&, const Input&) noexcept override {
     DepthTestGuard dtg;
     CullFaceGuard cfg;
 

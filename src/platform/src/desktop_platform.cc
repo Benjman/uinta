@@ -65,6 +65,10 @@ Status DesktopPlatform::destroy(const Window* window) const noexcept {
   return api_->destroy(window);
 }
 
+Status DesktopPlatform::registerInputHandlers(Input* input) const noexcept {
+  return api_->registerInputHandlers(window_.get(), input);
+}
+
 Status DesktopPlatform::setWindowPosition(void* window, f32 x,
                                           f32 y) const noexcept {
   return api_->setWindowPosition(window, x, y);

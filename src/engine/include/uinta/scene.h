@@ -15,6 +15,7 @@ namespace uinta {
 
 class Engine;
 class EngineState;
+class Input;
 struct ViewportSizeChange;
 
 class Scene {
@@ -75,13 +76,13 @@ class Scene {
   Scene(Scene&&) noexcept;
   Scene& operator=(Scene&&) noexcept;
 
-  virtual void preTick(const EngineState&) noexcept {}
-  virtual void tick(const EngineState&) noexcept {}
-  virtual void postTick(const EngineState&) noexcept {}
+  virtual void preTick(const EngineState&, const Input&) noexcept {}
+  virtual void tick(const EngineState&, const Input&) noexcept {}
+  virtual void postTick(const EngineState&, const Input&) noexcept {}
 
-  virtual void preRender(const EngineState&) noexcept {}
-  virtual void render(const EngineState&) noexcept {}
-  virtual void postRender(const EngineState&) noexcept {}
+  virtual void preRender(const EngineState&, const Input&) noexcept {}
+  virtual void render(const EngineState&, const Input&) noexcept {}
+  virtual void postRender(const EngineState&, const Input&) noexcept {}
 
   virtual void onViewportSizeChange(const ViewportSizeChange&) noexcept {}
 

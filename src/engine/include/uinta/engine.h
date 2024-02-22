@@ -9,6 +9,7 @@
 
 namespace uinta {
 
+class Input;
 class Platform;
 class Scene;
 
@@ -44,8 +45,8 @@ class Engine {
   Platform* platform_;
   Scene* scene_;
 
-  void newFrame() noexcept;
-  void setCallbacks() noexcept;
+  void newFrame(const Input&) noexcept;
+  void setCallbacks(Input&) noexcept;
 };
 
 }  // namespace uinta

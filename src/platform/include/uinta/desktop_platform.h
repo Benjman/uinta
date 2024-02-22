@@ -43,6 +43,8 @@ class DesktopPlatformApi {
   virtual Status setWindowPosition(void*, f32, f32) const noexcept = 0;
 
   virtual Status swapBuffers(const Window*) const noexcept = 0;
+
+  virtual Status registerInputHandlers(const Window*, Input*) noexcept = 0;
 };
 
 class DesktopPlatform : public Platform {
@@ -79,6 +81,8 @@ class DesktopPlatform : public Platform {
   Status setWindowPosition(void* window, f32 x, f32 y) const noexcept;
 
   const Status& status() const noexcept { return status_; }
+
+  Status registerInputHandlers(Input*) const noexcept override;
 
  private:
   GlfwPlatformApi* api_;
