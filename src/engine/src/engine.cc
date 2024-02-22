@@ -31,6 +31,7 @@ Engine::Engine(Platform* platform, Scene* scene, const OpenGLApi* gl) noexcept
   const auto startRuntime = status_.ok() ? runtime.value() : 0;
 
   while (!state_.isClosing() && status_.ok()) {
+    state_.input().reset();
     status_ = platform_->pollEvents();
     if (!status_.ok()) return;
 
@@ -101,6 +102,12 @@ void Engine::setCallbacks() noexcept {
 
   platform_->onFramebufferSize(
       [&](u32 width, u32 height) { onViewportChange(width, height); });
+
+  if (status_ = platform_->registerInputHandlers(&state_.input());
+      !status_.ok()) {
+    LOG(ERROR) << status_.message();
+    return;
+  }
 }
 
 void updateSceneViewport(Scene*, const ViewportSizeChange&) noexcept;

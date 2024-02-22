@@ -2,6 +2,7 @@ list(APPEND PLATFORM_SRCS src/desktop_platform.cc)
 list(APPEND PLATFORM_SRCS src/desktop_window.cc)
 list(APPEND PLATFORM_SRCS src/gl.cc)
 list(APPEND PLATFORM_SRCS src/glfw_platform_api.cc)
+list(APPEND PLATFORM_SRCS src/input.cc)
 list(APPEND PLATFORM_SRCS src/monitor.cc)
 list(APPEND PLATFORM_SRCS src/window.cc)
 
@@ -21,3 +22,8 @@ target_include_directories(
   platform
   PUBLIC include
   PRIVATE ${UINTA_INCLUDES})
+
+find_package(GTest)
+if(GTest_FOUND)
+  add_subdirectory(test)
+endif()
