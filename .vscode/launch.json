@@ -38,6 +38,25 @@
       "logging": {
         "engineLogging": true
       }
+    },
+    {
+      "name": "Launch Uinta Platform Tests",
+      "type": "codelldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/src/platform/test/platform_test",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "preLaunchTask": "build",
+      "postDebugTask": "",
+      "sourceLanguages": ["cpp"],
+      "stopOnEntry": false,
+      "externalConsole": false,
+      "initCommands": [
+      ],
+      "logging": {
+        "engineLogging": true
+      }
     }
   ]
 }

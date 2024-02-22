@@ -65,6 +65,12 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
 
   gl_->clearColor(0.1, 0.1, 0.1, 1.0);
 
+  if (status_ = platform_->registerInputHandlers(&state_.input());
+      !status_.ok()) {
+    LOG(ERROR) << status_.message();
+    return;
+  }
+
   state_.update(getRuntime(), 0);
 }
 
@@ -176,6 +182,8 @@ void Engine::run() noexcept {
     }
 
     gl_->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    state_.input().reset();
   }
 }
 

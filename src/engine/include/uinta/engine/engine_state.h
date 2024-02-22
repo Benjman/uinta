@@ -4,6 +4,7 @@
 #include <atomic>
 
 #include "uinta/flags.h"
+#include "uinta/input.h"
 #include "uinta/types.h"
 
 namespace uinta {
@@ -41,6 +42,38 @@ class EngineState {
 
   void isClosing(bool v) noexcept { flags_.isClosing(v); }
 
+  const Input& input() const noexcept { return input_; }
+
+  Input& input() noexcept { return input_; }
+
+  bool isKeyDown(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyDown(key, mask);
+  }
+
+  bool isKeyPressed(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyPressed(key, mask);
+  }
+
+  bool isKeyReleased(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyReleased(key, mask);
+  }
+
+  bool isKeyRepeated(InputKey key, InputMod mask = 0) const noexcept {
+    return input_.isKeyRepeated(key, mask);
+  }
+
+  bool isMouseDown(MouseButton button, InputMod mask = 0) const noexcept {
+    return input_.isMouseDown(button, mask);
+  }
+
+  bool isMousePressed(MouseButton button, InputMod mask = 0) const noexcept {
+    return input_.isMousePressed(button, mask);
+  }
+
+  bool isMouseReleased(MouseButton button, InputMod mask = 0) const noexcept {
+    return input_.isMouseReleased(button, mask);
+  }
+
  private:
   struct Flags final {
     using value_type = u8;
@@ -66,6 +99,7 @@ class EngineState {
     std::atomic<value_type> flags_;
   } flags_;
 
+  Input input_;
   time_t lastRuntime_ = 0;
   time_t lastFrameRuntime_ = -1;
   time_t runtime_ = 0;

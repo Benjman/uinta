@@ -65,6 +65,13 @@ class MockPlatform : public Platform {
   Status setWindowPosition(void* window, f32 x, f32 y) const noexcept {
     return onSetWindowPosition(window, x, y);
   }
+
+  std::function<Status(Input*)> onRegisterInputHandlers = [](Input*) -> Status {
+    return OkStatus();
+  };
+  Status registerInputHandlers(Input* input) const noexcept override {
+    return onRegisterInputHandlers(input);
+  }
 };
 
 }  // namespace uinta

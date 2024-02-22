@@ -50,6 +50,10 @@ class DesktopPlatform : public Platform {
     return api_->setWindowPosition(window, x, y);
   }
 
+  Status registerInputHandlers(Input* input) const noexcept override {
+    return api_->registerInputHandlers(window_.get(), input);
+  }
+
  private:
   DesktopPlatformApi* api_;
 };
