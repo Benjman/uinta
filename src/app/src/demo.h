@@ -2,21 +2,18 @@
 #define SRC_APP_SRC_DEMO_H_
 
 #include "glm/ext/matrix_transform.hpp"
-#include "uinta/engine_signal.h"
 #include "uinta/engine_state.h"
-#include "uinta/gl.h"
 #include "uinta/input.h"
 #include "uinta/mesh.h"
-#include "uinta/scene.h"
-#include "uinta/shaders/primitive.h"
+#include "uinta/scenes/debug.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
 
 namespace uinta {
 
-class DemoScene : public Scene {
+class DemoScene : public DebugScene {
  public:
-  DemoScene() noexcept : Scene(Layer::Simulation) {
+  DemoScene() noexcept : DebugScene(Layer::Simulation) {
     auto mesh = fbx("pawn.fbx");
     std::for_each(mesh->at(0).vertices().begin(), mesh->at(0).vertices().end(),
                   [](auto& vertex) { vertex.color = glm::vec3(1); });
@@ -29,12 +26,11 @@ class DemoScene : public Scene {
     vao_.linkAttribute(Primitive::PositionAttribute(&vbo_));
     vao_.linkAttribute(Primitive::NormalAttribute(&vbo_));
     vao_.linkAttribute(Primitive::ColorAttribute(&vbo_));
-
-    ShaderGuard sg(&shader_);
-    shader_.view = glm::translate(glm::mat4(1), glm::vec3(0, 0, -1));
   }
 
-  void render(const EngineState&, const Input&) noexcept override {
+  void render(const EngineState& state, const Input& input) noexcept override {
+    DebugScene::render(state, input);
+
     DepthTestGuard dtg;
     CullFaceGuard cfg;
 
@@ -48,13 +44,7 @@ class DemoScene : public Scene {
     glDrawElements(GL_TRIANGLES, indexCount_, GL_UNSIGNED_INT, 0);
   }
 
-  void onViewportSizeChange(const ViewportSizeChange& event) noexcept override {
-    ShaderGuard shaderGuard(&shader_);
-    shader_.projection = glm::perspective(45.0f, event.aspect(), 0.01f, 1.0f);
-  }
-
  private:
-  PrimitiveShader shader_;
   Vao vao_;
   Vbo vbo_ = GL_ARRAY_BUFFER;
   size_t indexCount_;
