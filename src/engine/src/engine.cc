@@ -73,6 +73,11 @@ Engine::Engine(Params params) noexcept
 
   platform_->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { frame_ = FrameManager(event.monitor); });
+
+  if (auto status = platform_->registerInputHandlers(&input_); !status_.ok()) {
+    setStatusError(status);
+    return;
+  }
 }
 
 void Engine::run() noexcept {
@@ -99,8 +104,9 @@ void Engine::run() noexcept {
       scene->removeStaleScenes();
     }
 
-    if (status_ = platform_->pollEvents(); !status_.ok()) {
-      LOG(ERROR) << "`Platform::pollEvents()` failed: " << status_.message();
+    input_.reset();
+    if (auto status = platform_->pollEvents(); !status_.ok()) {
+      setStatusError(status);
       break;
     }
 
