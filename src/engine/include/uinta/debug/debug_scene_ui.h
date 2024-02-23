@@ -5,6 +5,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include "uinta/camera/camera_ui.h"
 #include "uinta/debug/debug_scene.h"
 #include "uinta/debug/ui/engine_state_ui.h"
 #include "uinta/debug/ui/input_capture_watcher.h"
@@ -18,8 +19,10 @@ class DebugSceneUi : public Scene {
   using Flags = u32;
 
  public:
-  explicit DebugSceneUi(Scene* parent, const DebugSceneParams& params) noexcept
-      : Scene(parent, Layer::Debug), engineStateUi_() {
+  DebugSceneUi(Scene* parent, const DebugSceneParams& params) noexcept
+      : Scene(parent, Layer::Debug),
+        engineStateUi_(),
+        cameraUi_(params.camera) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -39,6 +42,10 @@ class DebugSceneUi : public Scene {
   }
 
   void render(const EngineState& state) noexcept override {
+    if (ImGui::TreeNode("Camera")) {
+      cameraUi_.render(state);
+      ImGui::TreePop();
+    }
     if (ImGui::TreeNode("Engine state")) {
       engineStateUi_.render(state);
       ImGui::TreePop();
@@ -58,6 +65,7 @@ class DebugSceneUi : public Scene {
 
  private:
   EngineStateUi engineStateUi_;
+  CameraUi cameraUi_;
 };
 
 }  // namespace uinta

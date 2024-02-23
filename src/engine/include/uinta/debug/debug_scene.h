@@ -7,9 +7,12 @@
 
 namespace uinta {
 
+class Camera;
+
 class DebugScene : public Scene {
  public:
   struct Params final {
+    Camera* camera;
     Engine* engine;
     PrimitiveShader* shader;
     const OpenGLApi* gl;
@@ -26,7 +29,12 @@ class DebugScene : public Scene {
   void render(const EngineState& state) noexcept override;
   PrimitiveShader* shader() noexcept { return &shader_; }
 
+  Camera* camera() noexcept { return camera_; }
+
+  glm::vec3 cursorToWorldPoint(const Input& input) const noexcept;
+
  protected:
+  Camera* camera_ = nullptr;
   PrimitiveShader shader_;
   const OpenGLApi* gl_;
   Params params_;

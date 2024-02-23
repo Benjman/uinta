@@ -8,7 +8,6 @@
 #include "uinta/scene.h"
 #include "uinta/shaders/primitive.h"
 #include "uinta/utils/fbx.h"
-#include "uinta/utils/viewport_change.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
 
@@ -36,23 +35,15 @@ class FbxViewerScene : public Scene {
     shader_->model = glm::scale(glm::mat4(1), glm::vec3(0.001));
   }
 
-  void render(const EngineState& state) noexcept override {
+  void render(const EngineState&) noexcept override {
     DepthTestGuard dtg;
     CullFaceGuard cfg;
     ShaderGuard sg(shader_);
     VaoGuard vg(&vao_);
-    glm::mat4 model = glm::scale(glm::mat4(1), glm::vec3(0.0001));
-    model = glm::rotate(model, static_cast<f32>(state.runtime()),
-                        glm::vec3(0, 1, 0));
-    shader_->model = model;
+    shader_->model = glm::scale(glm::mat4(1), glm::vec3(0.001));
     shader_->sway(false);
 
     glDrawElements(GL_TRIANGLES, indexCount_, GL_UNSIGNED_INT, 0);
-  }
-
-  void onViewportSizeChange(const ViewportSizeChange& event) noexcept override {
-    ShaderGuard sg(shader_);
-    shader_->projection = glm::perspective(45.0f, event.aspect(), 0.01f, 1.0f);
   }
 
  private:
