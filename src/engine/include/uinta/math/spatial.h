@@ -5,6 +5,7 @@
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "glm/trigonometric.hpp"
+#include "uinta/camera/camera.h"
 #include "uinta/math/defs.h"
 #include "uinta/math/direction.h"
 #include "uinta/types.h"
@@ -42,6 +43,19 @@ inline glm::vec3 getWorldRay(const glm::vec2& cursorPos,
 inline glm::vec3 getWorldPoint(glm::vec2 viewport, glm::vec2 cursor,
                                glm::vec3 origin, glm::mat4 view, glm::mat4 proj,
                                glm::vec3 plane = glm::vec3(0)) noexcept;
+
+inline glm::vec3 getWorldPoint(const Camera& camera, glm::vec2 viewport,
+                               glm::vec2 cursor,
+                               glm::vec3 plane = glm::vec3(0)) noexcept {
+  assert((viewport.y != 0 && viewport.x != 0) &&
+         "Invalid viewport dimensions.");
+  glm::vec3 ndc((2 * cursor.x) / viewport.x - 1,
+                1 - (2 * cursor.y) / viewport.y, 1);
+  f32 aspect = viewport.x / viewport.y;
+  auto view = camera.viewMatrix();
+  auto proj = camera.perspectiveMatrix(aspect);
+  return getWorldPoint(viewport, cursor, camera.position(), view, proj, plane);
+}
 
 inline glm::vec3 getForward(f32 pitch, f32 yaw) noexcept {
   auto pitchRad = glm::radians(pitch);

@@ -1,6 +1,7 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_SHADERS_PRIMITIVE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_SHADERS_PRIMITIVE_H_
 
+#include "uinta/camera/camera_manager.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/mesh.h"
 #include "uinta/shader.h"
@@ -139,14 +140,20 @@ class PrimitiveShader : public Shader {
 class PrimitiveShaderManager : public System {
  public:
   explicit PrimitiveShaderManager(PrimitiveShader* shader,
-                                  EngineDispatchers* engine) noexcept
-      : shader_(shader) {
+                                  EngineDispatchers* engine,
+                                  CameraManager* camera) noexcept
+      : shader_(shader), camera_(camera->camera()) {
     engine->addListener<EngineEvent::ViewportSizeChange>(
-        [this](const auto& event) {
+        [&](const auto& event) {
+          auto projection = camera_->perspectiveMatrix(event.aspect());
           ShaderGuard guard(shader_);
-          shader_->projection = glm::perspective(
-              glm::radians(45.0), static_cast<f64>(event.aspect()), 0.01, 2.0);
+          shader_->projection = projection;
         });
+
+    camera->addListener<CameraEvent::ViewMatrixUpdated>([&](const auto& event) {
+      ShaderGuard guard(shader_);
+      shader_->view = event.view;
+    });
   }
 
   void onNewFrame(const EngineState& state) noexcept override {
@@ -157,6 +164,7 @@ class PrimitiveShaderManager : public System {
 
  private:
   PrimitiveShader* shader_;
+  const Camera* camera_;
 };
 
 }  // namespace uinta

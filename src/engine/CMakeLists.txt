@@ -3,6 +3,7 @@ project(engine)
 
 set(CMAKE_CXX_STANDARD 23)
 
+list(APPEND ENGINE_SRCS src/camera/camera.cc)
 list(APPEND ENGINE_SRCS src/engine.cc)
 list(APPEND ENGINE_SRCS src/file.cc)
 list(APPEND ENGINE_SRCS src/mesh.cc)
