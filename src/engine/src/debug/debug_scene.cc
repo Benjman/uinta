@@ -7,6 +7,7 @@
 #include "uinta/math/spatial.h"
 #include "uinta/platform.h"
 #include "uinta/scenes/axis_viewer.h"
+#include "uinta/scenes/grid.h"
 #include "uinta/system.h"
 #include "uinta/utils/viewport_change.h"
 
@@ -57,6 +58,7 @@ DebugScene::DebugScene(Params params, Layer layer) noexcept
   params_.shader = &shader_;
   addScene<AxisViewerScene>(this, camera_, gl_);
   addScene<DebugSceneUi>(this, params_);
+  addScene<GridScene>(this, 15, camera_, gl_);
 }
 
 glm::vec3 DebugScene::cursorToWorldPoint(const Input& input) const noexcept {
