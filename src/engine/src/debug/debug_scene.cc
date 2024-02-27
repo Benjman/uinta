@@ -5,6 +5,9 @@
 #include "uinta/debug/debug_scene_ui.h"
 #include "uinta/engine.h"
 #include "uinta/math/spatial.h"
+#include "uinta/platform.h"
+#include "uinta/scenes/axis_viewer.h"
+#include "uinta/system.h"
 #include "uinta/utils/viewport_change.h"
 
 namespace uinta {
@@ -52,6 +55,7 @@ DebugScene::DebugScene(Params params, Layer layer) noexcept
       params_(params) {
   params_.camera = camera_;
   params_.shader = &shader_;
+  addScene<AxisViewerScene>(this, camera_, gl_);
   addScene<DebugSceneUi>(this, params_);
 }
 
