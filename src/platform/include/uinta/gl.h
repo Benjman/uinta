@@ -129,6 +129,129 @@ struct OpenGLApi {
    */
   virtual void bindVertexArray(GLuint array) const noexcept = 0;
 
+  /*! `glBlendColor` — set the blend color
+   *
+   *  @brief The `GL_BLEND_COLOR` may be used to calculate the source and
+   * destination blending factors.
+   *
+   *  @param `red` pecify the components of `GL_BLEND_COLOR`
+   *  @param `green` pecify the components of `GL_BLEND_COLOR`
+   *  @param `blue` pecify the components of `GL_BLEND_COLOR`
+   *  @param `alph` pecify the components of `GL_BLEND_COLOR`
+   */
+  virtual void blendColor(GLfloat red, GLfloat green, GLfloat blue,
+                          GLfloat alpha) const noexcept = 0;
+
+  /*! `glBlendEquation` — specify the equation used for both the RGB blend
+   * equation and the Alpha blend equation
+   *
+   *  @brief The blend equations determine how a new pixel (the "source" color)
+   * is combined with a pixel already in the framebuffer (the "destination"
+   * color).
+   *
+   *  @param `mode` specifies how source and destination colors are combined. It
+   * must be `GL_FUNC_ADD`, `GL_FUNC_SUBTRACT`, `GL_FUNC_REVERSE_SUBTRACT`,
+   * `GL_MIN`, `GL_MAX`.
+   */
+  virtual void blendEquation(GLenum mode) const noexcept = 0;
+
+  /*! `glBlendEquation` — specify the equation used for both the RGB blend
+   * equation and the Alpha blend equation
+   *
+   *  @brief The blend equations determine how a new pixel (the "source" color)
+   * is combined with a pixel already in the framebuffer (the "destination"
+   * color).
+   *
+   *  @param `buf` for `glBlendEquationi`, specifies the index of the draw
+   * buffer for which to set the blend equation.
+   *  @param `mode` specifies how source and destination colors are combined. It
+   * must be `GL_FUNC_ADD`, `GL_FUNC_SUBTRACT`, `GL_FUNC_REVERSE_SUBTRACT`,
+   * `GL_MIN`, `GL_MAX`.
+   */
+  virtual void blendEquationi(GLuint buf, GLenum mode) const noexcept = 0;
+
+  /*! `glBlendFunc` — specify pixel arithmetic
+   *
+   *  @brief Pixels can be drawn using a function that blends the incoming
+   * (source) RGBA values with the RGBA values that are already in the frame
+   * buffer (the destination values).
+   *
+   *  @param `buf` For `glBlendFunci`, specifies the index of the draw buffer
+   * for which to set the blend function.
+   *  @param `sfactor` Specifies how the red, green, blue, and alpha source
+   * blending factors are computed. The initial value is `GL_ONE`.
+   *  @param `dfactor` Specifies how the red, green, blue, and alpha destination
+   * blending factors are computed. The following symbolic constants are
+   * accepted: `GL_ZERO`, `GL_ONE`, `GL_SRC_COLOR`, `GL_ONE_MINUS_SRC_COLOR`,
+   * `GL_DST_COLOR`, `GL_ONE_MINUS_DST_COLOR`, `GL_SRC_ALPHA`,
+   * `GL_ONE_MINUS_SRC_ALPHA`, `GL_DST_ALPHA`, `GL_ONE_MINUS_DST_ALPHA`.
+   * `GL_CONSTANT_COLOR`, `GL_ONE_MINUS_CONSTANT_COLOR`, `GL_CONSTANT_ALPHA`,
+   * and `GL_ONE_MINUS_CONSTANT_ALPHA`. The initial value is `GL_ZERO`.
+   */
+  virtual void blendFunc(GLenum sfactor, GLenum dfactor) const noexcept = 0;
+
+  /*! `glBlendFuncSeparate` — specify pixel arithmetic for RGB and alpha
+   * components separately
+   *
+   *  @brief Pixels can be drawn using a function that blends the incoming
+   * (source) RGBA values with the RGBA values that are already in the frame
+   * buffer (the destination values).
+   *
+   *  @param `srcRGB` Specifies how the red, green, and blue blending factors
+   * are computed. The initial value is `GL_ONE`.
+   *  @param `dstRGB` Specifies how the red, green, and blue destination
+   * blending factors are computed. The initial value is `GL_ZERO`.
+   *  @param `srcAlpha` Specified how the alpha source blending factor is
+   * computed. The initial value is `GL_ONE`.
+   *  @param `dstAlpha` Specified how the alpha destination blending factor is
+   * computed. The initial value is `GL_ZERO`.
+   */
+  virtual void blendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha,
+                                 GLenum dstAlpha) const noexcept = 0;
+
+  /*! `glBlendFuncSeparate` — specify pixel arithmetic for RGB and alpha
+   * components separately
+   *
+   *  @brief Pixels can be drawn using a function that blends the incoming
+   * (source) RGBA values with the RGBA values that are already in the frame
+   * buffer (the destination values).
+   *
+   *  @param `buf` For `glBlendFuncSeparatei`, specifies the index of the draw
+   * buffer for which to set the blend functions.
+   *  @param `srcRGB` Specifies how the red, green, and blue blending factors
+   * are computed. The initial value is `GL_ONE`.
+   *  @param `dstRGB` Specifies how the red, green, and blue destination
+   * blending factors are computed. The initial value is `GL_ZERO`.
+   *  @param `srcAlpha` Specified how the alpha source blending factor is
+   * computed. The initial value is `GL_ONE`.
+   *  @param `dstAlpha` Specified how the alpha destination blending factor is
+   * computed. The initial value is `GL_ZERO`.
+   */
+  virtual void blendFuncSeparatei(GLuint buf, GLenum srcRGB, GLenum dstRGB,
+                                  GLenum srcAlpha,
+                                  GLenum dstAlpha) const noexcept = 0;
+
+  /*! `glBlendFunc` — specify pixel arithmetic
+   *
+   *  @brief Pixels can be drawn using a function that blends the incoming
+   * (source) RGBA values with the RGBA values that are already in the frame
+   * buffer (the destination values).
+   *
+   *  @param `buf` For `glBlendFunci`, specifies the index of the draw buffer
+   * for which to set the blend function.
+   *  @param `sfactor` Specifies how the red, green, blue, and alpha source
+   * blending factors are computed. The initial value is `GL_ONE`.
+   *  @param `dfactor` Specifies how the red, green, blue, and alpha destination
+   * blending factors are computed. The following symbolic constants are
+   * accepted: `GL_ZERO`, `GL_ONE`, `GL_SRC_COLOR`, `GL_ONE_MINUS_SRC_COLOR`,
+   * `GL_DST_COLOR`, `GL_ONE_MINUS_DST_COLOR`, `GL_SRC_ALPHA`,
+   * `GL_ONE_MINUS_SRC_ALPHA`, `GL_DST_ALPHA`, `GL_ONE_MINUS_DST_ALPHA`.
+   * `GL_CONSTANT_COLOR`, `GL_ONE_MINUS_CONSTANT_COLOR`, `GL_CONSTANT_ALPHA`,
+   * and `GL_ONE_MINUS_CONSTANT_ALPHA`. The initial value is `GL_ZERO`.
+   */
+  virtual void blendFunci(GLuint buf, GLenum sfactor,
+                          GLenum dfactor) const noexcept = 0;
+
   /*! `glBufferData`, `glNamedBufferData` — creates and initializes a buffer
    * object's data store
    *
@@ -1992,6 +2115,40 @@ struct OpenGLApiImpl : OpenGLApi {
     glBindVertexArray(id);
   }
 
+  inline void blendColor(GLfloat red, GLfloat green, GLfloat blue,
+                         GLfloat alpha) const noexcept override {
+    glBlendColor(red, green, blue, alpha);
+  }
+
+  inline void blendEquation(GLenum mode) const noexcept override {
+    glBlendEquation(mode);
+  }
+
+  inline void blendEquationi(GLuint buf, GLenum mode) const noexcept override {
+    glBlendEquationi(buf, mode);
+  }
+
+  inline void blendFunc(GLenum sfactor,
+                        GLenum dfactor) const noexcept override {
+    glBlendFunc(sfactor, dfactor);
+  }
+
+  inline void blendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha,
+                                GLenum dstAlpha) const noexcept override {
+    glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+  }
+
+  inline void blendFuncSeparatei(GLuint buf, GLenum srcRGB, GLenum dstRGB,
+                                 GLenum srcAlpha,
+                                 GLenum dstAlpha) const noexcept override {
+    glBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+  }
+
+  inline void blendFunci(GLuint buf, GLenum sfactor,
+                         GLenum dfactor) const noexcept override {
+    glBlendFunci(buf, sfactor, dfactor);
+  }
+
   inline void bufferData(GLenum target, GLsizeiptr size, const void* data,
                          GLenum usage) const noexcept override {
     glBufferData(target, size, data, usage);
@@ -2588,6 +2745,42 @@ class PolygonMode {
 
  private:
   const OpenGLApi* gl_;
+};
+
+class BlendGuard : public CapabilityGuard {
+ public:
+  BlendGuard(GLenum sfactor = GL_SRC_ALPHA,
+             GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA, bool isActive = true,
+             const OpenGLApi* gl = OpenGLApiImpl::Instance()) noexcept
+      : CapabilityGuard(GL_BLEND, isActive, gl),
+        sfactor_(sfactor),
+        dfactor_(dfactor) {
+    glGetIntegerv(GL_BLEND_SRC, &prevSfactor_);
+    glGetIntegerv(GL_BLEND_DST, &prevDfactor_);
+    if (isActive) activate();
+  }
+
+  ~BlendGuard() noexcept {
+    if (isActive_ && !wasEnabled_) {
+      gl_->blendFunc(prevSfactor_, prevDfactor_);
+    }
+  }
+
+  BlendGuard(const BlendGuard&) noexcept = delete;
+  BlendGuard& operator=(const BlendGuard&) noexcept = delete;
+  BlendGuard(BlendGuard&&) noexcept = delete;
+  BlendGuard& operator=(BlendGuard&&) noexcept = delete;
+
+  void activate() noexcept override {
+    CapabilityGuard::activate();
+    gl_->blendFunc(sfactor_, dfactor_);
+  }
+
+ private:
+  GLenum sfactor_;
+  GLenum dfactor_;
+  GLint prevSfactor_;
+  GLint prevDfactor_;
 };
 
 }  // namespace uinta
