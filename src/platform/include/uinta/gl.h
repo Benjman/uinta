@@ -924,6 +924,19 @@ class OpenGLApi {
                                         GLenum internalformat, GLsizei width,
                                         GLsizei height) const noexcept = 0;
 
+  /*! `glPolygonMode` — select a polygon rasterization mode
+   *
+   *  @brief `glPolygonMode` controls the interpretation of polygons for
+   * rasterization.
+   *
+   *  @param `face` Specifies the polygons that mode applies to. Must be
+   * `GL_FRONT_AND_BACK` for front- and back-facing polygons.
+   *  @param `mode` Specifies how polygons will be rasterized. Accepted values
+   * are `GL_POINT`, `GL_LINE`, and `GL_FILL`. The initial value is `GL_FILL`
+   * for both front- and back-facing polygons.
+   */
+  virtual void polygonMode(GLenum face, GLenum mode) const noexcept = 0;
+
   /*! `glRenderbufferStorage`, `glNamedRenderbufferStorage` — establish data
    * storage, format and dimensions of a renderbuffer object's image
    *
@@ -2437,6 +2450,10 @@ class OpenGLApiImpl : public OpenGLApi {
     glNamedRenderbufferStorage(renderbuffer, internalformat, width, height);
   }
 
+  inline void polygonMode(GLenum face, GLenum mode) const noexcept override {
+    glPolygonMode(face, mode);
+  }
+
   inline void renderbufferStorage(GLenum target, GLenum internalformat,
                                   GLsizei width,
                                   GLsizei height) const noexcept override {
@@ -2793,6 +2810,41 @@ class CullFaceGuard : public CapabilityGuard {
  private:
   GLenum mode_;
   GLenum prevMode_;
+};
+
+class PolygonMode {
+ public:
+  PolygonMode(GLenum mode = GL_FILL, GLenum face = GL_FRONT_AND_BACK,
+              bool initiallyActive = true,
+              const OpenGLApi* gl = OpenGLApiImpl::GetInstance())
+      : mode_(mode), face_(face), gl_(gl), isActive_(initiallyActive) {
+    if (isActive_ && mode != static_cast<GLenum>(gpuVal_)) {
+      gl_->polygonMode(face, mode);
+      gpuVal_ = mode;
+    }
+  }
+
+  ~PolygonMode() noexcept = default;
+
+  void activate() noexcept {
+    if (!isActive_) {
+      gl_->polygonMode(face_, mode_);
+      gpuVal_ = mode_;
+      isActive_ = true;
+    }
+  }
+
+  PolygonMode(const PolygonMode&) noexcept = delete;
+  PolygonMode& operator=(const PolygonMode&) noexcept = delete;
+  PolygonMode(PolygonMode&&) noexcept = delete;
+  PolygonMode& operator=(PolygonMode&&) noexcept = delete;
+
+ private:
+  static GLenum gpuVal_;
+  const GLenum mode_;
+  const GLenum face_;
+  const OpenGLApi* gl_;
+  bool isActive_;
 };
 
 }  // namespace uinta
