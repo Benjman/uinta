@@ -772,6 +772,19 @@ struct OpenGLApi {
    */
   virtual void pointSize(GLfloat size) const noexcept = 0;
 
+  /*! `glPolygonMode` — select a polygon rasterization mode
+   *
+   *  @brief `glPolygonMode` controls the interpretation of polygons for
+   * rasterization.
+   *
+   *  @param `face` Specifies the polygons that mode applies to. Must be
+   * `GL_FRONT_AND_BACK` for front- and back-facing polygons.
+   *  @param `mode` Specifies how polygons will be rasterized. Accepted values
+   * are `GL_POINT`, `GL_LINE`, and `GL_FILL`. The initial value is `GL_FILL`
+   * for both front- and back-facing polygons.
+   */
+  virtual void polygonMode(GLenum face, GLenum mode) const noexcept = 0;
+
   /*! `glShaderSource` — Replaces the source code in a shader object
    *
    *  @brief `glShaderSource` sets the source code in shader to the source code
@@ -2198,6 +2211,10 @@ struct OpenGLApiImpl : OpenGLApi {
     glPointSize(size);
   }
 
+  inline void polygonMode(GLenum face, GLenum mode) const noexcept override {
+    glPolygonMode(face, mode);
+  }
+
   inline void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
                            const GLint* length) const noexcept override {
     glShaderSource(shader, count, source, length);
@@ -2552,6 +2569,25 @@ class CullFaceGuard : public CapabilityGuard {
  private:
   GLenum mode_;
   GLenum prevMode_;
+};
+
+class PolygonMode {
+ public:
+  PolygonMode(GLenum mode = GL_FILL,
+              const OpenGLApi* gl = OpenGLApiImpl::Instance())
+      : gl_(gl) {
+    gl_->polygonMode(GL_FRONT_AND_BACK, mode);
+  }
+
+  ~PolygonMode() noexcept { gl_->polygonMode(GL_FRONT_AND_BACK, GL_FILL); }
+
+  PolygonMode(const PolygonMode&) noexcept = delete;
+  PolygonMode& operator=(const PolygonMode&) noexcept = delete;
+  PolygonMode(PolygonMode&&) noexcept = delete;
+  PolygonMode& operator=(PolygonMode&&) noexcept = delete;
+
+ private:
+  const OpenGLApi* gl_;
 };
 
 }  // namespace uinta

@@ -320,6 +320,11 @@ struct MockOpenGLApi : OpenGLApi {
   std::function<void(GLfloat)> onPointSize = [](auto) {};
   void pointSize(GLfloat size) const noexcept override { onPointSize(size); }
 
+  std::function<void(GLenum, GLenum)> onPolygonMode = [](auto, auto) {};
+  void polygonMode(GLenum face, GLenum mode) const noexcept override {
+    onPolygonMode(face, mode);
+  }
+
   std::function<void(GLuint, GLsizei, const GLchar**, const GLint*)>
       onShaderSource = [](auto, auto, const auto**, const auto*) {};
   void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
