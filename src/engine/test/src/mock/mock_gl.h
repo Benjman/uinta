@@ -306,6 +306,11 @@ class MockOpenGLApi : public OpenGLApi {
     onNamedBufferSubData(buffer, offset, size, data);
   }
 
+  std::function<void(GLenum, GLenum)> onPolygonMode = [](auto, auto) {};
+  void polygonMode(GLenum face, GLenum mode) const noexcept override {
+    onPolygonMode(face, mode);
+  }
+
   std::function<void(GLuint, GLsizei, const GLchar**, const GLint*)>
       onShaderSource = [](auto, auto, const auto**, const auto*) {};
   void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
