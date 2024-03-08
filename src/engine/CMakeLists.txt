@@ -1,6 +1,7 @@
 list(APPEND ENGINE_SRCS src/engine.cc)
 list(APPEND ENGINE_SRCS src/file.cc)
 list(APPEND ENGINE_SRCS src/shader.cc)
+list(APPEND ENGINE_SRCS src/texture.cc)
 list(APPEND ENGINE_SRCS src/vbo.cc)
 
 add_library(engine STATIC ${ENGINE_SRCS})
