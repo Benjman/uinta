@@ -38,6 +38,30 @@ class OpenGLApi {
    */
   virtual void bindBuffer(GLenum target, GLuint buffer) const noexcept = 0;
 
+  /*! `glBindFramebuffer` — bind a framebuffer to a framebuffer target
+   *
+   *  @brief `glBindFramebuffer` binds the framebuffer object with name
+   * framebuffer to the framebuffer target specified by target.
+   *
+   *  @param `target` Specifies the framebuffer target of the binding operation.
+   *  @param `framebuffer` Specifies the name of the framebuffer object to bind.
+   */
+  virtual void bindFramebuffer(GLenum target,
+                               GLuint framebuffer) const noexcept = 0;
+
+  /*! `glBindRenderbuffer` — bind a renderbuffer to a renderbuffer target
+   *
+   *  @brief `glBindRenderbuffer` binds the renderbuffer object with name
+   * renderbuffer to the renderbuffer target specified by target.
+   *
+   *  @param `target` Specifies the renderbuffer target of the binding
+   * operation. target must be `GL_RENDERBUFFER`.
+   *  @param `renderbuffer` Specifies the name of the renderbuffer object to
+   * bind.
+   */
+  virtual void bindRenderbuffer(GLenum target,
+                                GLuint renderbuffer) const noexcept = 0;
+
   /*! `glBindTexture` — bind a named texture to a texturing target
    *
    *  @brief `glBindTexture` lets you create or use a named texture.
@@ -96,6 +120,41 @@ class OpenGLApi {
    */
   virtual void bufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,
                              const void* data) const noexcept = 0;
+
+  /*! `glCheckFramebufferStatus`, `glCheckNamedFramebufferStatus` — check the
+   * completeness status of a framebuffer
+   *
+   *  @brief `glCheckFramebufferStatus` and `glCheckNamedFramebufferStatus`
+   * return the completeness status of a framebuffer object when treated as a
+   * read or draw framebuffer, depending on the value of target.
+   *
+   *  @param `target` Specify the target to which the framebuffer is bound for
+   * `glCheckFramebufferStatus`, and the target against which framebuffer
+   * completeness of framebuffer is checked for `glCheckNamedFramebufferStatus`.
+   *
+   *  @returns The completeness status of a framebuffer object when treated as a
+   * read or draw framebuffer, depending on the value of target.
+   */
+  virtual GLenum checkFramebufferStatus(GLenum target) const noexcept = 0;
+
+  /*! `glCheckFramebufferStatus`, `glCheckNamedFramebufferStatus` — check the
+   * completeness status of a framebuffer
+   *
+   *  @brief `glCheckFramebufferStatus` and `glCheckNamedFramebufferStatus`
+   * return the completeness status of a framebuffer object when treated as a
+   * read or draw framebuffer, depending on the value of target.
+   *
+   *  @param `target` Specify the target to which the framebuffer is bound for
+   * `glCheckFramebufferStatus`, and the target against which framebuffer
+   * completeness of framebuffer is checked for `glCheckNamedFramebufferStatus`.
+   *  @param `framebuffer` Specifies the name of the framebuffer object for
+   * `glCheckNamedFramebufferStatus`
+   *
+   *  @returns The completeness status of a framebuffer object when treated as a
+   * read or draw framebuffer, depending on the value of target.
+   */
+  virtual GLenum checkNamedFramebufferStatus(GLuint framebuffer,
+                                             GLenum target) const noexcept = 0;
 
   /*! `glCompileShader` — Compiles a shader object
    *
@@ -197,6 +256,18 @@ class OpenGLApi {
    */
   virtual void deleteBuffers(GLsizei n, GLuint* buffers) const noexcept = 0;
 
+  /*! `glDeleteFramebuffers` — delete framebuffer objects
+   *
+   *  @brief `glDeleteFramebuffers` deletes the n framebuffer objects whose
+   * names are stored in the array addressed by framebuffers.
+   *
+   *  @param `n` Specifies the number of framebuffer objects to be deleted.
+   *  @param `framebuffers` A pointer to an array containing n framebuffer
+   * objects to be deleted.
+   */
+  virtual void deleteFramebuffers(GLsizei n,
+                                  GLuint* framebuffers) const noexcept = 0;
+
   /*! `glDeleteProgram` — Deletes a program object
    *
    *  @brief `glDeleteProgram` frees the memory and invalidates the name
@@ -205,6 +276,17 @@ class OpenGLApi {
    *  @param `program` Specifies the program object to be deleted
    */
   virtual void deleteProgram(GLuint program) const noexcept = 0;
+
+  /*! `glDeleteRenderbuffers` — delete renderbuffer objects
+   *
+   *  @brief `glDeleteRenderbuffers` deletes the n renderbuffer objects whose
+   * names are stored in the array addressed by renderbuffers.
+   *
+   *  @param `n` Specifies the number of renderbuffer objects to be deleted.
+   *  @param `renderbuffers` A pointer to an array containing n renderbuffer
+   * objects to be deleted.
+   */
+  virtual void deleteRenderbuffers(GLsizei, GLuint*) const noexcept = 0;
 
   /*! `glDeleteShader` — Deletes a shader object
    *
@@ -375,6 +457,107 @@ class OpenGLApi {
    */
   virtual void enablei(GLenum cap, GLuint index) const noexcept = 0;
 
+  /*! `glFramebufferRenderbuffer`, `glNamedFramebufferRenderbuffer` — attach a
+   * renderbuffer as a logical buffer of a framebuffer object
+   *
+   *  @brief `glFramebufferRenderbuffer` and `glNamedFramebufferRenderbuffer`
+   * attaches a renderbuffer as one of the logical buffers of the specified
+   * framebuffer object.
+   *
+   *  @param `target` Specifies the target to which the framebuffer is bound for
+   * `glFramebufferRenderbuffer`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `renderbuffertarget` Specifies the renderbuffer target. Must be
+   * `GL_RENDERBUFFER`.
+   *  @param `renderbuffer` Specifies the name of an existing renderbuffer
+   * object of type renderbuffertarget to attach.
+   */
+  virtual void framebufferRenderbuffer(GLenum target, GLenum attachment,
+                                       GLenum renderbuffertarget,
+                                       GLuint renderbuffer) const noexcept = 0;
+
+  /*! `glFramebufferTexture` — attach a level of a texture object as a logical
+   * buffer of a framebuffer object
+   *
+   *  @brief These commands attach a selected mipmap level or image of a texture
+   * object as one of the logical buffers of the specified framebuffer object.
+   *
+   *  @param `target` Specifies the target to which the framebuffer is bound for
+   * all commands except `glNamedFramebufferTexture`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `texture` Specifies the name of an existing texture object to
+   * attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   */
+  virtual void framebufferTexture(GLenum target, GLenum attachment,
+                                  GLuint texture,
+                                  GLint level) const noexcept = 0;
+
+  /*! `glFramebufferTexture` — attach a level of a texture object as a logical
+   * buffer of a framebuffer object
+   *
+   *  @brief These commands attach a selected mipmap level or image of a texture
+   * object as one of the logical buffers of the specified framebuffer object.
+   *
+   *  @param `target` Specifies the target to which the framebuffer is bound for
+   * all commands except `glNamedFramebufferTexture`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `textarget` For `glFramebufferTexture1D`, `glFramebufferTexture2D`
+   * and `glFramebufferTexture3D`, specifies what type of texture is expected in
+   * the texture parameter, or for cube map textures, which face is to be
+   * attached.
+   *  @param `texture` Specifies the name of an existing texture object to
+   * attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   */
+  virtual void framebufferTexture1D(GLenum target, GLenum attachment,
+                                    GLenum textarget, GLuint texture,
+                                    GLint level) const noexcept = 0;
+
+  /*! `glFramebufferTexture` — attach a level of a texture object as a logical
+   * buffer of a framebuffer object
+   *
+   *  @brief These commands attach a selected mipmap level or image of a texture
+   * object as one of the logical buffers of the specified framebuffer object.
+   *
+   *  @param `target` Specifies the target to which the framebuffer is bound for
+   * all commands except `glNamedFramebufferTexture`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `textarget` For `glFramebufferTexture1D`, `glFramebufferTexture2D`
+   * and `glFramebufferTexture3D`, specifies what type of texture is expected in
+   * the texture parameter, or for cube map textures, which face is to be
+   * attached.
+   *  @param `texture` Specifies the name of an existing texture object to
+   * attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   */
+  virtual void framebufferTexture2D(GLenum target, GLenum attachment,
+                                    GLenum textarget, GLuint texture,
+                                    GLint level) const noexcept = 0;
+
+  /*! `glFramebufferTexture` — attach a level of a texture object as a logical
+   * buffer of a framebuffer object
+   *
+   *  @brief These commands attach a selected mipmap level or image of a texture
+   * object as one of the logical buffers of the specified framebuffer object.
+   *
+   *  @param `target` Specifies the target to which the framebuffer is bound for
+   * all commands except `glNamedFramebufferTexture`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `textarget` For `glFramebufferTexture1D`, `glFramebufferTexture2D`
+   * and `glFramebufferTexture3D`, specifies what type of texture is expected in
+   * the texture parameter, or for cube map textures, which face is to be
+   * attached.
+   *  @param `texture` Specifies the name of an existing texture object to
+   * attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   */
+  virtual void framebufferTexture3D(GLenum target, GLenum attachment,
+                                    GLenum textarget, GLuint texture,
+                                    GLint level,
+                                    GLint layer) const noexcept = 0;
+
   /*! `glGenBuffers` — generate buffer object names
    *
    *  @brief `glGenBuffers` returns n buffer object names in buffers.
@@ -384,6 +567,28 @@ class OpenGLApi {
    * names are stored.
    */
   virtual void genBuffers(GLsizei n, GLuint* buffers) const noexcept = 0;
+
+  /*! `glGenFramebuffers` — generate framebuffer object names
+   *
+   *  @brief `glGenFramebuffers` returns n framebuffer object names in ids.
+   *
+   *  @param `n` Specifies the number of framebuffer object names to generate.
+   *  @param `ids` Specifies an array in which the generated framebuffer object
+   * names are stored.
+   */
+  virtual void genFramebuffers(GLsizei n, GLuint* ids) const noexcept = 0;
+
+  /*! `glGenRenderbuffers` — generate renderbuffer object names
+   *
+   *  @brief `glGenRenderbuffers` returns n renderbuffer object names in
+   * renderbuffers.
+   *
+   *  @param `n` Specifies the number of renderbuffer object names to generate.
+   *  @param `renderbuffers` Specifies an array in which the generated
+   * renderbuffer object names are stored.
+   */
+  virtual void genRenderbuffers(GLsizei n,
+                                GLuint* renderbuffers) const noexcept = 0;
 
   /*! `glGenTextures` — generate texture names
    *
@@ -640,6 +845,103 @@ class OpenGLApi {
   virtual void namedBufferSubData(GLuint buffer, GLintptr offset,
                                   GLsizeiptr size,
                                   const void* data) const noexcept = 0;
+
+  /*! `glFramebufferRenderbuffer`, `glNamedFramebufferRenderbuffer` — attach a
+   * renderbuffer as a logical buffer of a framebuffer object
+   *
+   *  @brief `glFramebufferRenderbuffer` and `glNamedFramebufferRenderbuffer`
+   * attaches a renderbuffer as one of the logical buffers of the specified
+   * framebuffer object.
+   *
+   *  @param `framebuffer` Specifies the name of the framebuffer object for
+   * `glNamedFramebufferRenderbuffer`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `renderbuffertarget` Specifies the renderbuffer target. Must be
+   * `GL_RENDERBUFFER`.
+   *  @param `renderbuffer` Specifies the name of an existing renderbuffer
+   * object of type renderbuffertarget to attach.
+   */
+  virtual void namedFramebufferRenderbuffer(
+      GLuint framebuffer, GLenum attachment, GLenum renderbuffertarget,
+      GLuint renderbuffer) const noexcept = 0;
+
+  /*! `glFramebufferTexture` — attach a level of a texture object as a logical
+   * buffer of a framebuffer object
+   *
+   *  @brief These commands attach a selected mipmap level or image of a texture
+   * object as one of the logical buffers of the specified framebuffer object.
+   *
+   *  @param `target` Specifies the target to which the framebuffer is bound for
+   * all commands except `glNamedFramebufferTexture`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `textarget` For `glFramebufferTexture1D`, `glFramebufferTexture2D`
+   * and `glFramebufferTexture3D`, specifies what type of texture is expected in
+   * the texture parameter, or for cube map textures, which face is to be
+   * attached.
+   *  @param `texture` Specifies the name of an existing texture object to
+   * attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   */
+  void namedFramebufferTexture(GLuint framebuffer, GLenum attachment,
+                               GLuint texture, GLint level);
+
+  /*! `glFramebufferTexture` — attach a level of a texture object as a logical
+   * buffer of a framebuffer object
+   *
+   *  @brief These commands attach a selected mipmap level or image of a texture
+   * object as one of the logical buffers of the specified framebuffer object.
+   *
+   *  @param `framebuffer` Specifies the name of the framebuffer object for
+   * `glNamedFramebufferTexture`.
+   *  @param `attachment` Specifies the attachment point of the framebuffer.
+   *  @param `texture` Specifies the name of an existing texture object to
+   * attach.
+   *  @param `level` Specifies the mipmap level of the texture object to attach.
+   */
+  virtual void namedFramebufferTexture(GLuint framebuffer, GLenum attachment,
+                                       GLuint texture,
+                                       GLint level) const noexcept = 0;
+
+  /*! `glRenderbufferStorage`, `glNamedRenderbufferStorage` — establish data
+   * storage, format and dimensions of a renderbuffer object's image
+   *
+   *  @brief `glRenderbufferStorage` is equivalent to calling
+   * `glRenderbufferStorageMultisample` with the samples set to zero, and
+   * `glNamedRenderbufferStorage` is equivalent to calling
+   * `glNamedRenderbufferStorageMultisample` with the samples set to zero.
+   *
+   *  @param `target` Specifies a binding target of the allocation for
+   * `glRenderbufferStorage` function. Must be `GL_RENDERBUFFER`.
+   *  @param `renderbuffer` Specifies the name of the renderbuffer object for
+   * `glNamedRenderbufferStorage` function.
+   *  @param `internalformat` Specifies the internal format to use for the
+   * renderbuffer object's image.
+   *  @param `width` Specifies the width of the renderbuffer, in pixels.
+   *  @param `height` Specifies the height of the renderbuffer, in pixels.
+   */
+  virtual void namedRenderbufferStorage(GLuint renderbuffer,
+                                        GLenum internalformat, GLsizei width,
+                                        GLsizei height) const noexcept = 0;
+
+  /*! `glRenderbufferStorage`, `glNamedRenderbufferStorage` — establish data
+   * storage, format and dimensions of a renderbuffer object's image
+   *
+   *  @brief `glRenderbufferStorage` is equivalent to calling
+   * `glRenderbufferStorageMultisample` with the samples set to zero, and
+   * `glNamedRenderbufferStorage` is equivalent to calling
+   * `glNamedRenderbufferStorageMultisample` with the samples set to zero.
+   *
+   *  @param `target` Specifies a binding target of the allocation for
+   * `glRenderbufferStorage` function. Must be `GL_RENDERBUFFER`.
+   *  @param `internalformat` Specifies the internal format to use for the
+   * renderbuffer object's image.
+   *  @param `width` Specifies the width of the renderbuffer, in pixels.
+   *  @param `height` Specifies the height of the renderbuffer, in pixels.
+   */
+  virtual void renderbufferStorage(GLenum target, GLenum internalformat,
+                                   GLsizei width,
+                                   GLsizei height) const noexcept = 0;
 
   /*! `glShaderSource` — Replaces the source code in a shader object
    *
@@ -1837,6 +2139,16 @@ class OpenGLApiImpl : public OpenGLApi {
     glBindBuffer(target, id);
   }
 
+  inline void bindFramebuffer(GLenum target,
+                              GLuint id) const noexcept override {
+    glBindFramebuffer(target, id);
+  }
+
+  inline void bindRenderbuffer(GLenum target,
+                               GLuint id) const noexcept override {
+    glBindRenderbuffer(target, id);
+  }
+
   inline void bindTexture(GLenum target, GLuint id) const noexcept override {
     glBindTexture(target, id);
   }
@@ -1853,6 +2165,15 @@ class OpenGLApiImpl : public OpenGLApi {
   inline void bufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,
                             const void* data) const noexcept override {
     glBufferSubData(target, offset, size, data);
+  }
+
+  inline GLenum checkFramebufferStatus(GLenum target) const noexcept override {
+    return glCheckFramebufferStatus(target);
+  }
+
+  inline GLenum checkNamedFramebufferStatus(
+      GLuint framebuffer, GLenum target) const noexcept override {
+    return glCheckNamedFramebufferStatus(framebuffer, target);
   }
 
   inline void copyBufferSubData(GLenum readTarget, GLenum writeTarget,
@@ -1889,8 +2210,18 @@ class OpenGLApiImpl : public OpenGLApi {
     glDeleteBuffers(count, ptr);
   }
 
+  inline void deleteFramebuffers(GLsizei count,
+                                 GLuint* ptr) const noexcept override {
+    glDeleteFramebuffers(count, ptr);
+  }
+
   inline void deleteProgram(GLuint program) const noexcept override {
     glDeleteProgram(program);
+  }
+
+  inline void deleteRenderbuffers(GLsizei count,
+                                  GLuint* ptr) const noexcept override {
+    glDeleteRenderbuffers(count, ptr);
   }
 
   inline void deleteShader(GLuint program) const noexcept override {
@@ -1950,12 +2281,55 @@ class OpenGLApiImpl : public OpenGLApi {
     glEnableVertexArrayAttrib(vaobj, index);
   }
 
+  inline void framebufferTexture(GLenum target, GLenum attachment,
+                                 GLuint texture,
+                                 GLint level) const noexcept override {
+    glFramebufferTexture(target, attachment, texture, level);
+  }
+
+  inline void framebufferTexture1D(GLenum target, GLenum attachment,
+                                   GLenum textarget, GLuint texture,
+                                   GLint level) const noexcept override {
+    glFramebufferTexture1D(target, attachment, textarget, texture, level);
+  }
+
+  inline void framebufferTexture2D(GLenum target, GLenum attachment,
+                                   GLenum textarget, GLuint texture,
+                                   GLint level) const noexcept override {
+    glFramebufferTexture2D(target, attachment, textarget, texture, level);
+  }
+
+  inline void framebufferTexture3D(GLenum target, GLenum attachment,
+                                   GLenum textarget, GLuint texture,
+                                   GLint level,
+                                   GLint layer) const noexcept override {
+    glFramebufferTexture3D(target, attachment, textarget, texture, level,
+                           layer);
+  }
+
+  inline void framebufferRenderbuffer(
+      GLenum target, GLenum attachment, GLenum renderbuffertarget,
+      GLuint renderbuffer) const noexcept override {
+    glFramebufferRenderbuffer(target, attachment, renderbuffertarget,
+                              renderbuffer);
+  }
+
   inline void genBuffers(GLsizei count, GLuint* ptr) const noexcept override {
     glGenBuffers(count, ptr);
   }
 
   inline void generateMipmap(GLenum target) const noexcept override {
     glGenerateMipmap(target);
+  }
+
+  inline void genFramebuffers(GLsizei count,
+                              GLuint* ptr) const noexcept override {
+    glGenFramebuffers(count, ptr);
+  }
+
+  inline void genRenderbuffers(GLsizei count,
+                               GLuint* ptr) const noexcept override {
+    glGenRenderbuffers(count, ptr);
   }
 
   inline void genTextures(GLsizei count, GLuint* ptr) const noexcept override {
@@ -2042,6 +2416,31 @@ class OpenGLApiImpl : public OpenGLApi {
                                  GLsizeiptr size,
                                  const void* data) const noexcept override {
     glNamedBufferSubData(buffer, offset, size, data);
+  }
+
+  inline void namedFramebufferTexture(GLuint framebuffer, GLenum attachment,
+                                      GLuint texture,
+                                      GLint level) const noexcept override {
+    glNamedFramebufferTexture(framebuffer, attachment, texture, level);
+  }
+
+  inline void namedFramebufferRenderbuffer(
+      GLuint framebuffer, GLenum attachment, GLenum renderbuffertarget,
+      GLuint renderbuffer) const noexcept override {
+    glNamedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget,
+                                   renderbuffer);
+  }
+
+  inline void namedRenderbufferStorage(GLuint renderbuffer,
+                                       GLenum internalformat, GLsizei width,
+                                       GLsizei height) const noexcept override {
+    glNamedRenderbufferStorage(renderbuffer, internalformat, width, height);
+  }
+
+  inline void renderbufferStorage(GLenum target, GLenum internalformat,
+                                  GLsizei width,
+                                  GLsizei height) const noexcept override {
+    glRenderbufferStorage(target, internalformat, width, height);
   }
 
   inline void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
