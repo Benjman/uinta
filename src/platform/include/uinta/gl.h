@@ -78,6 +78,15 @@ struct OpenGLApi {
     }
   }
 
+  /*! `glActivateTexture` — Select active texture unit
+   *
+   *  @brief In order to create a complete shader program, there must be a way
+   * to specify the list of things that will be linked together.
+   *
+   *  @param `texture` Specifies which texture unit to make active.
+   */
+  virtual void activeTexture(GLenum) const noexcept = 0;
+
   /*! `glAttachShader` — Attaches a shader object to a program object
    *
    *  @brief In order to create a complete shader program, there must be a way
@@ -98,6 +107,19 @@ struct OpenGLApi {
    *  @param `buffer` Specifies the name of a buffer object.
    */
   virtual void bindBuffer(GLenum target, GLuint buffer) const noexcept = 0;
+
+  /*! `glBindTexture` — bind a named texture to a texturing target
+   *
+   *  @brief `glBindTexture` lets you create or use a named texture.
+   *
+   *  @param `target` Specifies the target to which the texture is bound. Must
+   * be one of `GL_TEXTURE_1D`, `GL_TEXTURE_2D`, `GL_TEXTURE_3D`,
+   * `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D_ARRAY`, `GL_TEXTURE_RECTANGLE`,
+   * `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, `GL_TEXTURE_BUFFER`,
+   * `GL_TEXTURE_2D_MULTISAMPLE` or `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`.
+   *  @param `texture` Specifies the name of a texture.
+   */
+  virtual void bindTexture(GLenum target, GLuint texture) const noexcept = 0;
 
   /*! `glBindVertexArray` — bind a vertex array object
    *
@@ -283,6 +305,17 @@ struct OpenGLApi {
    */
   virtual void deleteShader(GLuint) const noexcept = 0;
 
+  /*! `glDeleteTextures` — delete named textures
+   *
+   *  @brief `glDeleteTextures` deletes n textures named by the elements of the
+   * array textures.
+   *
+   *  @param `n` Specifies the number of textures to be deleted.
+   *  @param `textures` Specifies an array of textures to be deleted.
+   */
+  virtual void deleteTextures(GLsizei n,
+                              const GLuint* textures) const noexcept = 0;
+
   /*! glDeleteVertexArrays — delete vertex array objects
    *
    *  @brief `glDeleteVertexArrays` deletes n vertex array objects whose names
@@ -453,6 +486,16 @@ struct OpenGLApi {
    */
   virtual void genBuffers(GLsizei n, GLuint* buffers) const noexcept = 0;
 
+  /*! `glGenTextures` — generate texture names
+   *
+   *  @brief `glGenTextures` returns n texture names in textures.
+   *
+   *  @param `n` Specifies the number of texture names to be generated.
+   *  @param `textures` Specifies an array in which the generated texture names
+   * are stored.
+   */
+  virtual void genTextures(GLsizei n, GLuint* textures) const noexcept = 0;
+
   /*! `glGenVertexArrays` — generate vertex array object names
    *
    *  @brief `glGenVertexArrays` returns n vertex array object names in arrays.
@@ -462,6 +505,19 @@ struct OpenGLApi {
    * object names are stored.
    */
   virtual void genVertexArrays(GLsizei n, GLuint* arrays) const noexcept = 0;
+
+  /*! `glGenerateMipmap`, `glGenerateTextureMipmap` — generate mipmaps for a
+   * specified texture object
+   *
+   *  @brief `glGenerateMipmap` and `glGenerateTextureMipmap` generates mipmaps
+   * for the specified texture object.
+   *
+   *  @param `target` Specifies the target to which the texture object is bound
+   * for `glGenerateMipmap`. Must be one of `GL_TEXTURE_1D`, `GL_TEXTURE_2D`,
+   * `GL_TEXTURE_3D`, `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D_ARRAY`,
+   * `GL_TEXTURE_CUBE_MAP`, or `GL_TEXTURE_CUBE_MAP_ARRAY`.
+   */
+  virtual void generateMipmap(GLenum target) const noexcept = 0;
 
   /*! `glGet` — return the value or values of a selected parameter
    *
@@ -720,6 +776,353 @@ struct OpenGLApi {
    */
   virtual void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
                             const GLint* length) const noexcept = 0;
+
+  /*! `glTexImage2D` — specify a two-dimensional texture image
+   *
+   *  @brief Texturing allows elements of an image array to be read by shaders.
+   *
+   *  @param `target` Specifies the target texture. Must be `GL_TEXTURE_2D`,
+   * `GL_PROXY_TEXTURE_2D`, `GL_TEXTURE_1D_ARRAY`, `GL_PROXY_TEXTURE_1D_ARRAY`,
+   * `GL_TEXTURE_RECTANGLE`, `GL_PROXY_TEXTURE_RECTANGLE`,
+   * `GL_TEXTURE_CUBE_MAP_POSITIVE_X`, `GL_TEXTURE_CUBE_MAP_NEGATIVE_X`,
+   * `GL_TEXTURE_CUBE_MAP_POSITIVE_Y`, `GL_TEXTURE_CUBE_MAP_NEGATIVE_Y`,
+   * `GL_TEXTURE_CUBE_MAP_POSITIVE_Z`, `GL_TEXTURE_CUBE_MAP_NEGATIVE_Z`, or
+   * `GL_PROXY_TEXTURE_CUBE_MAP`.
+   *  @param `level` Specifies the level-of-detail number. Level 0 is the base
+   * image level. Level n is the nth mipmap reduction image. If target is
+   * `GL_TEXTURE_RECTANGLE` or `GL_PROXY_TEXTURE_RECTANGLE`, level must be 0.
+   *  @param `internalformat` Specifies the number of color components in the
+   * texture. Must be one of base internal formats given in Table 1, one of the
+   * sized internal formats given in Table 2, or one of the compressed internal
+   * formats given in Table 3, below.
+   *  @param `width` Specifies the width of the texture image. All
+   * implementations support texture images that are at least 1024 texels wide.
+   *  @param `height` Specifies the height of the texture image, or the number
+   * of layers in a texture array, in the case of the `GL_TEXTURE_1D_ARRAY` and
+   * `GL_PROXY_TEXTURE_1D_ARRAY` targets. All implementations support 2D texture
+   * images that are at least 1024 texels high, and texture arrays that are at
+   * least 256 layers deep.
+   *  @param `border` This value must be 0.
+   *  @param `format` Specifies the format of the pixel data. The following
+   * symbolic values are accepted: `GL_RED`, `GL_RG`, `GL_RGB`, `GL_BGR`,
+   * `GL_RGBA`, `GL_BGRA`, `GL_RED_INTEGER`, `GL_RG_INTEGER`, `GL_RGB_INTEGER`,
+   * `GL_BGR_INTEGER`, `GL_RGBA_INTEGER`, `GL_BGRA_INTEGER`, `GL_STENCIL_INDEX`,
+   * `GL_DEPTH_COMPONENT`, `GL_DEPTH_STENCIL`.
+   *  @param `type` Specifies the data type of the pixel data. The following
+   * symbolic values are accepted: `GL_UNSIGNED_BYTE`, `GL_BYTE`,
+   * `GL_UNSIGNED_SHORT`, `GL_SHORT`, `GL_UNSIGNED_INT`, `GL_INT`,
+   * `GL_HALF_FLOAT`, `GL_FLOAT`, `GL_UNSIGNED_BYTE_3_3_2`,
+   * `GL_UNSIGNED_BYTE_2_3_3_REV`, `GL_UNSIGNED_SHORT_5_6_5`,
+   * `GL_UNSIGNED_SHORT_5_6_5_REV`, `GL_UNSIGNED_SHORT_4_4_4_4`,
+   * `GL_UNSIGNED_SHORT_4_4_4_4_REV`, `GL_UNSIGNED_SHORT_5_5_5_1`,
+   * `GL_UNSIGNED_SHORT_1_5_5_5_REV`, `GL_UNSIGNED_INT_8_8_8_8`,
+   * `GL_UNSIGNED_INT_8_8_8_8_REV`, `GL_UNSIGNED_INT_10_10_10_2`, and
+   * `GL_UNSIGNED_INT_2_10_10_10_REV`.
+   *  @param `data` Specifies a pointer to the image data in memory.
+   */
+  virtual void texImage2D(GLenum target, GLint level, GLint internalformat,
+                          GLsizei width, GLsizei height, GLint border,
+                          GLenum format, GLenum type,
+                          const void* data) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `target` Specifies the target to which the texture is bound for
+   * `glTexParameter` functions. Must be one of `GL_TEXTURE_1D`,
+   * `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`,
+   * `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`,
+   * `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or
+   * `GL_TEXTURE_RECTANGLE`.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void texParameterIiv(GLenum target, GLenum pname,
+                               const GLint* params) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `target` Specifies the target to which the texture is bound for
+   * `glTexParameter` functions. Must be one of `GL_TEXTURE_1D`,
+   * `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`,
+   * `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`,
+   * `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or
+   * `GL_TEXTURE_RECTANGLE`.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void texParameterIuiv(GLenum target, GLenum pname,
+                                const GLuint* params) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `target` Specifies the target to which the texture is bound for
+   * `glTexParameter` functions. Must be one of `GL_TEXTURE_1D`,
+   * `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`,
+   * `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`,
+   * `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or
+   * `GL_TEXTURE_RECTANGLE`.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `param` For the scalar commands, specifies the value of pname.
+   */
+  virtual void texParameterf(GLenum target, GLenum pname,
+                             GLfloat param) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `target` Specifies the target to which the texture is bound for
+   * `glTexParameter` functions. Must be one of `GL_TEXTURE_1D`,
+   * `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`,
+   * `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`,
+   * `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or
+   * `GL_TEXTURE_RECTANGLE`.
+   *  @param `texture` Specifies the texture object name for
+   * `glTextureParameter` functions.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `param` For the scalar commands, specifies the value of pname.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void texParameterfv(GLenum target, GLenum pname,
+                              const GLfloat* params) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `target` Specifies the target to which the texture is bound for
+   * `glTexParameter` functions. Must be one of `GL_TEXTURE_1D`,
+   * `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`,
+   * `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`,
+   * `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or
+   * `GL_TEXTURE_RECTANGLE`.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `param` For the scalar commands, specifies the value of pname.
+   */
+  virtual void texParameteri(GLenum target, GLenum pname,
+                             GLint param) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `target` Specifies the target to which the texture is bound for
+   * `glTexParameter` functions. Must be one of `GL_TEXTURE_1D`,
+   * `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`,
+   * `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`,
+   * `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or
+   * `GL_TEXTURE_RECTANGLE`.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void texParameteriv(GLenum target, GLenum pname,
+                              const GLint* params) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `texture` Specifies the texture object name for
+   * `glTextureParameter` functions.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void textureParameterIiv(GLuint texture, GLenum pname,
+                                   const GLint* params) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `texture` Specifies the texture object name for
+   * `glTextureParameter` functions.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void textureParameterIuiv(GLuint texture, GLenum pname,
+                                    const GLuint* params) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `texture` Specifies the texture object name for
+   * `glTextureParameter` functions.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `param` For the scalar commands, specifies the value of pname.
+   */
+  virtual void textureParameterf(GLuint texture, GLenum pname,
+                                 GLfloat param) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `texture` Specifies the texture object name for
+   * `glTextureParameter` functions.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void textureParameterfv(GLuint texture, GLenum pname,
+                                  const GLfloat* params) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `texture` Specifies the texture object name for
+   * `glTextureParameter` functions.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `param` For the scalar commands, specifies the value of pname.
+   */
+  virtual void textureParameteri(GLuint texture, GLenum pname,
+                                 GLint param) const noexcept = 0;
+
+  /*! `glTexParameter`, `glTextureParameter` — set texture parameters
+   *
+   *  @brief `glTexParameter` and `glTextureParameter` assign the value or
+   * values in params to the texture parameter specified as pname.
+   *
+   *  @param `texture` Specifies the texture object name for
+   * `glTextureParameter` functions.
+   *  @param `pname` Specifies the symbolic name of a sin`gle`-valued texture
+   * parameter. pname can be one of the following:
+   * `GL_DEPTH_STENCIL_TEXTURE_MODE`, `GL_TEXTURE_BASE_LEVEL`,
+   * `GL_TEXTURE_COMPARE_FUNC`, `GL_TEXTURE_COMPARE_MODE`,
+   * `GL_TEXTURE_LOD_BIAS`, `GL_TEXTURE_MIN_FILTER`, `GL_TEXTURE_MAG_FILTER`,
+   * `GL_TEXTURE_MIN_LOD`, `GL_TEXTURE_MAX_LOD`, `GL_TEXTURE_MAX_LEVEL`,
+   * `GL_TEXTURE_SWIZZLE_R`, `GL_TEXTURE_SWIZZLE_G`, `GL_TEXTURE_SWIZZLE_B`,
+   * `GL_TEXTURE_SWIZZLE_A`, `GL_TEXTURE_WRAP_S`, `GL_TEXTURE_WRAP_T`, or
+   * `GL_TEXTURE_WRAP_R`. For the vector commands (`glTexParameter`*v), pname
+   * can also be one of `GL_TEXTURE_BORDER_COLOR` or `GL_TEXTURE_SWIZZLE_RGBA`.
+   *  @param `params` For the vector commands, specifies a pointer to an array
+   * where the value or values of pname are stored.
+   */
+  virtual void textureParameteriv(GLuint texture, GLenum pname,
+                                  const GLint* params) const noexcept = 0;
 
   /*! `glUniform` — Specify the value of a uniform variable for the current
    * program object
@@ -1544,6 +1947,10 @@ struct OpenGLApiImpl : OpenGLApi {
   OpenGLApiImpl(OpenGLApiImpl&&) noexcept = delete;
   OpenGLApiImpl& operator=(OpenGLApiImpl&&) noexcept = delete;
 
+  inline void activeTexture(GLenum texture) const noexcept override {
+    glActiveTexture(texture);
+  }
+
   inline void attachShader(GLuint program,
                            GLuint shader) const noexcept override {
     glAttachShader(program, shader);
@@ -1551,6 +1958,10 @@ struct OpenGLApiImpl : OpenGLApi {
 
   inline void bindBuffer(GLenum target, GLuint id) const noexcept override {
     glBindBuffer(target, id);
+  }
+
+  inline void bindTexture(GLenum target, GLuint id) const noexcept override {
+    glBindTexture(target, id);
   }
 
   inline void bindVertexArray(GLuint id) const noexcept override {
@@ -1612,6 +2023,11 @@ struct OpenGLApiImpl : OpenGLApi {
     glDeleteShader(program);
   }
 
+  inline void deleteTextures(GLsizei count,
+                             const GLuint* ptr) const noexcept override {
+    glDeleteTextures(count, ptr);
+  }
+
   inline void disable(GLenum cap) const noexcept override { glDisable(cap); }
 
   inline void disablei(GLenum cap, GLuint index) const noexcept override {
@@ -1667,6 +2083,14 @@ struct OpenGLApiImpl : OpenGLApi {
 
   inline void genBuffers(GLsizei count, GLuint* ptr) const noexcept override {
     glGenBuffers(count, ptr);
+  }
+
+  inline void generateMipmap(GLenum target) const noexcept override {
+    glGenerateMipmap(target);
+  }
+
+  inline void genTextures(GLsizei count, GLuint* ptr) const noexcept override {
+    glGenTextures(count, ptr);
   }
 
   inline void getShaderiv(GLuint shader, GLenum pname,
@@ -1762,6 +2186,76 @@ struct OpenGLApiImpl : OpenGLApi {
   inline void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
                            const GLint* length) const noexcept override {
     glShaderSource(shader, count, source, length);
+  }
+
+  inline void texImage2D(GLenum target, GLint level, GLint internalformat,
+                         GLsizei width, GLsizei height, GLint border,
+                         GLenum format, GLenum type,
+                         const void* data) const noexcept override {
+    glTexImage2D(target, level, internalformat, width, height, border, format,
+                 type, data);
+  }
+
+  inline void texParameterf(GLenum target, GLenum pname,
+                            GLfloat param) const noexcept override {
+    glTexParameterf(target, pname, param);
+  }
+
+  inline void texParameteri(GLenum target, GLenum pname,
+                            GLint param) const noexcept override {
+    glTexParameteri(target, pname, param);
+  }
+
+  inline void textureParameterf(GLuint texture, GLenum pname,
+                                GLfloat param) const noexcept override {
+    glTextureParameterf(texture, pname, param);
+  }
+
+  inline void textureParameteri(GLuint texture, GLenum pname,
+                                GLint param) const noexcept override {
+    glTextureParameteri(texture, pname, param);
+  }
+
+  inline void texParameterfv(GLenum target, GLenum pname,
+                             const GLfloat* params) const noexcept override {
+    glTexParameterfv(target, pname, params);
+  }
+
+  inline void texParameteriv(GLenum target, GLenum pname,
+                             const GLint* params) const noexcept override {
+    glTexParameteriv(target, pname, params);
+  }
+
+  inline void texParameterIiv(GLenum target, GLenum pname,
+                              const GLint* params) const noexcept override {
+    glTexParameterIiv(target, pname, params);
+  }
+
+  inline void texParameterIuiv(GLenum target, GLenum pname,
+                               const GLuint* params) const noexcept override {
+    glTexParameterIuiv(target, pname, params);
+  }
+
+  inline void textureParameterfv(
+      GLuint texture, GLenum pname,
+      const GLfloat* params) const noexcept override {
+    glTextureParameterfv(texture, pname, params);
+  }
+
+  inline void textureParameteriv(GLuint texture, GLenum pname,
+                                 const GLint* params) const noexcept override {
+    glTextureParameteriv(texture, pname, params);
+  }
+
+  inline void textureParameterIiv(GLuint texture, GLenum pname,
+                                  const GLint* params) const noexcept override {
+    glTextureParameterIiv(texture, pname, params);
+  }
+
+  inline void textureParameterIuiv(
+      GLuint texture, GLenum pname,
+      const GLuint* params) const noexcept override {
+    glTextureParameterIuiv(texture, pname, params);
   }
 
   inline void uniform1f(GLint location, GLfloat v0) const noexcept override {
