@@ -9,6 +9,11 @@ namespace uinta {
 
 class MockOpenGLApi : public OpenGLApi {
  public:
+  std::function<void(GLenum)> onActiveTexture = [](auto) {};
+  void activeTexture(GLenum texture) const noexcept override {
+    onActiveTexture(texture);
+  }
+
   std::function<void(GLuint, GLuint)> onAttachShader = [](auto, auto) {};
   void attachShader(GLuint program, GLuint shader) const noexcept override {
     onAttachShader(program, shader);
@@ -17,6 +22,11 @@ class MockOpenGLApi : public OpenGLApi {
   std::function<void(GLenum, GLuint)> onBindBuffer = [](auto, auto) {};
   void bindBuffer(GLenum target, GLuint id) const noexcept override {
     onBindBuffer(target, id);
+  }
+
+  std::function<void(GLenum, GLuint)> onBindTexture = [](auto, auto) {};
+  void bindTexture(GLenum target, GLuint id) const noexcept override {
+    onBindTexture(target, id);
   }
 
   std::function<void(GLuint)> onBindVertexArray = [](auto) {};
@@ -95,6 +105,13 @@ class MockOpenGLApi : public OpenGLApi {
     onDeleteShader(program);
   }
 
+  std::function<void(GLsizei, const GLuint*)> onDeleteTextures =
+      [](auto, const auto*) {};
+  void deleteTextures(GLsizei count,
+                      const GLuint* ptr) const noexcept override {
+    onDeleteTextures(count, ptr);
+  }
+
   std::function<void(GLenum)> onDisable = [](auto) {};
   void disable(GLenum cap) const noexcept override { onDisable(cap); }
 
@@ -170,6 +187,16 @@ class MockOpenGLApi : public OpenGLApi {
   std::function<void(GLsizei, GLuint*)> onGenBuffers = [](auto, auto*) {};
   void genBuffers(GLsizei count, GLuint* ptr) const noexcept override {
     onGenBuffers(count, ptr);
+  }
+
+  std::function<void(GLenum)> onGenerateMipmap = [](auto) {};
+  void generateMipmap(GLenum target) const noexcept override {
+    onGenerateMipmap(target);
+  }
+
+  std::function<void(GLsizei, GLuint*)> onGenTextures = [](auto, auto*) {};
+  void genTextures(GLsizei count, GLuint* ptr) const noexcept override {
+    onGenTextures(count, ptr);
   }
 
   std::function<void(GLuint, GLenum, GLint*)> onGetShaderiv =
@@ -281,6 +308,101 @@ class MockOpenGLApi : public OpenGLApi {
   void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
                     const GLint* length) const noexcept override {
     onShaderSource(shader, count, source, length);
+  }
+
+  std::function<void(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum,
+                     GLenum, const void*)>
+      onTexImage2D = [](GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum,
+                        GLenum, const void*) {};
+  void texImage2D(GLenum target, GLint level, GLint internalformat,
+                  GLsizei width, GLsizei height, GLint border, GLenum format,
+                  GLenum type, const void* data) const noexcept override {
+    onTexImage2D(target, level, internalformat, width, height, border, format,
+                 type, data);
+  }
+
+  std::function<void(GLenum, GLenum, GLfloat)> onTexParameterf = [](auto, auto,
+                                                                    auto) {};
+  void texParameterf(GLenum target, GLenum pname,
+                     GLfloat param) const noexcept override {
+    onTexParameterf(target, pname, param);
+  }
+
+  std::function<void(GLenum, GLenum, GLint)> onTexParameteri = [](auto, auto,
+                                                                  auto) {};
+  void texParameteri(GLenum target, GLenum pname,
+                     GLint param) const noexcept override {
+    onTexParameteri(target, pname, param);
+  }
+
+  std::function<void(GLuint, GLenum, GLfloat)> onTextureParameterf =
+      [](auto, auto, auto) {};
+  void textureParameterf(GLuint texture, GLenum pname,
+                         GLfloat param) const noexcept override {
+    onTextureParameterf(texture, pname, param);
+  }
+
+  std::function<void(GLuint, GLenum, GLint)> onTextureParameteri =
+      [](auto, auto, auto) {};
+  void textureParameteri(GLuint texture, GLenum pname,
+                         GLint param) const noexcept override {
+    onTextureParameteri(texture, pname, param);
+  }
+
+  std::function<void(GLenum, GLenum, const GLfloat*)> onTexParameterfv =
+      [](auto, auto, const auto*) {};
+  void texParameterfv(GLenum target, GLenum pname,
+                      const GLfloat* params) const noexcept override {
+    onTexParameterfv(target, pname, params);
+  }
+
+  std::function<void(GLenum, GLenum, const GLint*)> onTexParameteriv =
+      [](auto, auto, const auto*) {};
+  void texParameteriv(GLenum target, GLenum pname,
+                      const GLint* params) const noexcept override {
+    onTexParameteriv(target, pname, params);
+  }
+
+  std::function<void(GLenum, GLenum, const GLint*)> onTexParameterIiv =
+      [](auto, auto, const auto*) {};
+  void texParameterIiv(GLenum target, GLenum pname,
+                       const GLint* params) const noexcept override {
+    onTexParameterIiv(target, pname, params);
+  }
+
+  std::function<void(GLenum, GLenum, const GLuint*)> onTexParameterIuiv =
+      [](auto, auto, const auto*) {};
+  void texParameterIuiv(GLenum target, GLenum pname,
+                        const GLuint* params) const noexcept override {
+    onTexParameterIuiv(target, pname, params);
+  }
+
+  std::function<void(GLuint, GLenum, const GLfloat*)> onTextureParameterfv =
+      [](auto, auto, const auto*) {};
+  void textureParameterfv(GLuint texture, GLenum pname,
+                          const GLfloat* params) const noexcept override {
+    onTextureParameterfv(texture, pname, params);
+  }
+
+  std::function<void(GLuint, GLenum, const GLint*)> onTextureParameteriv =
+      [](auto, auto, const auto*) {};
+  void textureParameteriv(GLuint texture, GLenum pname,
+                          const GLint* params) const noexcept override {
+    onTextureParameteriv(texture, pname, params);
+  }
+
+  std::function<void(GLuint, GLenum, const GLint*)> onTextureParameterIiv =
+      [](auto, auto, const auto*) {};
+  void textureParameterIiv(GLuint texture, GLenum pname,
+                           const GLint* params) const noexcept override {
+    onTextureParameterIiv(texture, pname, params);
+  }
+
+  std::function<void(GLuint, GLenum, const GLuint*)> onTextureParameterIuiv =
+      [](auto, auto, const auto*) {};
+  void textureParameterIuiv(GLuint texture, GLenum pname,
+                            const GLuint* params) const noexcept override {
+    onTextureParameterIuiv(texture, pname, params);
   }
 
   std::function<void(GLint, GLfloat)> onUniform1f = [](auto, auto) {};
