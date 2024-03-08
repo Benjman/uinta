@@ -8,6 +8,11 @@
 namespace uinta {
 
 struct MockOpenGLApi : OpenGLApi {
+  std::function<void(GLuint, GLuint)> onAttachShader = [](auto, auto) {};
+  void attachShader(GLuint program, GLuint shader) const noexcept override {
+    onAttachShader(program, shader);
+  }
+
   std::function<void(GLbitfield)> onClear = [](auto) {};
   void clear(GLbitfield mask) const noexcept override { onClear(mask); }
 
@@ -16,6 +21,31 @@ struct MockOpenGLApi : OpenGLApi {
   void clearColor(GLfloat r, GLfloat g, GLfloat b,
                   GLfloat a) const noexcept override {
     onClearColor(r, g, b, a);
+  }
+
+  std::function<void(GLuint)> onCompileShader = [](auto) {};
+  void compileShader(GLuint shader) const noexcept override {
+    onCompileShader(shader);
+  }
+
+  std::function<GLuint()> onCreateProgram = []() -> GLuint { return 1; };
+  GLuint createProgram() const noexcept override { return onCreateProgram(); }
+
+  std::function<GLuint(GLenum)> onCreateShader = [](auto) -> GLuint {
+    return GL_ONE;
+  };
+  GLuint createShader(GLenum stage) const noexcept override {
+    return onCreateShader(stage);
+  }
+
+  std::function<void(GLuint)> onDeleteProgram = [](auto) {};
+  void deleteProgram(GLuint program) const noexcept override {
+    onDeleteProgram(program);
+  }
+
+  std::function<void(GLuint)> onDeleteShader = [](auto) {};
+  void deleteShader(GLuint program) const noexcept override {
+    onDeleteShader(program);
   }
 
   std::function<void(GLenum)> onDisable = [](auto) {};
@@ -70,6 +100,41 @@ struct MockOpenGLApi : OpenGLApi {
   };
   const GLubyte* errorString(GLenum error) const noexcept override {
     return onErrorString(error);
+  }
+
+  std::function<void(GLuint, GLenum, GLint*)> onGetShaderiv =
+      [](auto, auto, GLint* params) { *params = 1; };
+  void getShaderiv(GLuint shader, GLenum pname,
+                   GLint* params) const noexcept override {
+    onGetShaderiv(shader, pname, params);
+  }
+
+  std::function<void(GLuint, GLenum, GLint*)> onGetProgramiv =
+      [](auto, auto, auto* params) { *params = 1; };
+  void getProgramiv(GLuint program, GLenum pname,
+                    GLint* params) const noexcept override {
+    onGetProgramiv(program, pname, params);
+  }
+
+  std::function<void(GLuint, GLsizei, GLsizei*, GLchar*)> onGetProgramInfoLog =
+      [](auto, auto, auto*, auto*) {};
+  void getProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei* length,
+                         GLchar* infoLog) const noexcept override {
+    onGetProgramInfoLog(program, maxLength, length, infoLog);
+  }
+
+  std::function<void(GLuint, GLsizei, GLsizei*, GLchar*)> onGetShaderInfoLog =
+      [](auto, auto, auto*, auto*) {};
+  void getShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei* length,
+                        GLchar* infoLog) const noexcept override {
+    onGetShaderInfoLog(shader, maxLength, length, infoLog);
+  }
+
+  std::function<GLint(GLuint, const GLchar*)> onGetUniformLocation =
+      [](auto, const auto*) -> GLint { return 1; };
+  GLint getUniformLocation(GLuint program,
+                           const GLchar* name) const noexcept override {
+    return onGetUniformLocation(program, name);
   }
 
   std::function<void(GLenum, GLboolean*)> onGetBooleanv = [](auto, auto*) {};
@@ -127,8 +192,25 @@ struct MockOpenGLApi : OpenGLApi {
   std::function<void(GLfloat)> onLineWidth = [](auto) {};
   void lineWidth(GLfloat width) const noexcept override { onLineWidth(width); }
 
+  std::function<void(GLuint)> onLinkProgram = [](auto) {};
+  void linkProgram(GLuint program) const noexcept override {
+    onLinkProgram(program);
+  }
+
   std::function<void(GLfloat)> onPointSize = [](auto) {};
   void pointSize(GLfloat size) const noexcept override { onPointSize(size); }
+
+  std::function<void(GLuint, GLsizei, const GLchar**, const GLint*)>
+      onShaderSource = [](auto, auto, const auto**, const auto*) {};
+  void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
+                    const GLint* length) const noexcept override {
+    onShaderSource(shader, count, source, length);
+  }
+
+  std::function<void(GLuint)> onUseProgram = [](auto) {};
+  void useProgram(GLuint program) const noexcept override {
+    onUseProgram(program);
+  }
 
   std::function<void(GLuint, GLuint, GLuint, GLuint)> onViewport =
       [](auto, auto, auto, auto) {};
