@@ -78,6 +78,17 @@ struct OpenGLApi {
     }
   }
 
+  /*! `glAttachShader` — Attaches a shader object to a program object
+   *
+   *  @brief In order to create a complete shader program, there must be a way
+   * to specify the list of things that will be linked together.
+   *
+   *  @param `program` Specifies the program object to which a shader object
+   * will be attached.
+   *  @param `shader` Specifies the shader object that is to be attached.
+   */
+  virtual void attachShader(GLuint program, GLuint shader) const noexcept = 0;
+
   /*! `glClear` — clear buffers to preset values
    *
    *  @brief `glClear `sets the bitplane area of the window to values previously
@@ -108,6 +119,55 @@ struct OpenGLApi {
    */
   virtual void clearColor(GLfloat r, GLfloat g, GLfloat b,
                           GLfloat a) const noexcept = 0;
+
+  /*! `glCompileShader` — Compiles a shader object
+   *
+   *  @brief `glCompileShader` compiles the source code strings that have been
+   * stored in the shader object specified by shader.
+   *
+   *  @param `shader` Specifies the shader object to be compiled.
+   */
+  virtual void compileShader(GLuint shader) const noexcept = 0;
+
+  /*! `glCreateProgram` — Creates a program object
+   *
+   *  @brief `glCreateProgram` creates an empty program object and returns a
+   * non-zero value by which it can be referenced.
+   *
+   *  @return A non-zero value by which it can be referenced.
+   */
+  virtual GLuint createProgram() const noexcept = 0;
+
+  /*! `glCreateShader` — Creates a shader object
+   *
+   *  @brief `glCreateShader` creates an empty shader object and returns a
+   * non-zero value by which it can be referenced.
+   *
+   *  @param `shaderType` Specifies the type of shader to be created. Must be
+   * one of `GL_COMPUTE_SHADER`, `GL_VERTEX_SHADER`, `GL_TESS_CONTROL_SHADER`,
+   * `GL_TESS_EVALUATION_SHADER`, `GL_GEOMETRY_SHADER`, or `GL_FRAGMENT_SHADER`.
+   *
+   *  @return A non-zero value by which it can be referenced.
+   */
+  virtual GLuint createShader(GLuint shaderType) const noexcept = 0;
+
+  /*! `glDeleteProgram` — Deletes a program object
+   *
+   *  @brief `glDeleteProgram` frees the memory and invalidates the name
+   * associated with the program object specified by program.
+   *
+   *  @param `program` Specifies the program object to be deleted
+   */
+  virtual void deleteProgram(GLuint program) const noexcept = 0;
+
+  /*! `glDeleteShader` — Deletes a shader object
+   *
+   *  @brief `glDeleteShader` frees the memory and invalidates the name
+   * associated with the shader object specified by shader.
+   *
+   *  @param `shader` Species the shader object to be deleted.
+   */
+  virtual void deleteShader(GLuint) const noexcept = 0;
 
   /*! `glDisable` — disable server-side GL capabilities
    *
@@ -243,6 +303,91 @@ struct OpenGLApi {
    */
   virtual void getBooleanv(GLenum pname, GLboolean* data) const noexcept = 0;
 
+  /*! `glGetProgramInfoLog` — Returns the information log for a program object
+   *
+   *  @brief `glGetProgramInfoLog` returns the information log for the specified
+   * program object.
+   *
+   *  @param `program` Specifies the program object whose information log is to
+   * be queried.
+   *  @param `maxLength` Specifies the size of the character buffer for storing
+   * the returned information log.
+   *  @param `length` Returns the length of the string returned in infoLog
+   * (excluding the null terminator).
+   *  @param `infoLog` Specifies an array of characters that is used to return
+   * the information log.
+   */
+  virtual void getProgramInfoLog(GLuint, GLsizei, GLsizei*,
+                                 GLchar*) const noexcept = 0;
+
+  /*! `glGetProgramiv` — Returns a parameter from a program object
+   *
+   *  @brief `glGetProgram` returns in params the value of a parameter for a
+   * specific program object.
+   *
+   *  @param `program` Specifies the program object to be queried.
+   *  @param `pname` Specifies the object parameter. Accepted symbolic names are
+   * `GL_DELETE_STATUS`, `GL_LINK_STATUS`, `GL_VALIDATE_STATUS`,
+   * `GL_INFO_LOG_LENGTH`, `GL_ATTACHED_SHADERS`,
+   * `GL_ACTIVE_ATOMIC_COUNTER_BUFFERS`, `GL_ACTIVE_ATTRIBUTES`,
+   * `GL_ACTIVE_ATTRIBUTE_MAX_LENGTH`, `GL_ACTIVE_UNIFORMS`,
+   * `GL_ACTIVE_UNIFORM_BLOCKS`, `GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH`,
+   * `GL_ACTIVE_UNIFORM_MAX_LENGTH`, `GL_COMPUTE_WORK_GROUP_SIZE`,
+   * `GL_PROGRAM_BINARY_LENGTH`, `GL_TRANSFORM_FEEDBACK_BUFFER_MODE`,
+   * `GL_TRANSFORM_FEEDBACK_VARYINGS`,
+   * `GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH`, `GL_GEOMETRY_VERTICES_OUT`,
+   * `GL_GEOMETRY_INPUT_TYPE`, and `GL_GEOMETRY_OUTPUT_TYPE`.
+   *  @param `params` Returns the requested object parameter.
+   */
+  virtual void getProgramiv(GLuint program, GLenum pname,
+                            GLint* params) const noexcept = 0;
+
+  /*! `glGetShaderInfoLog` — Returns the information log for a shader object
+   *
+   *  @brief `glGetShaderInfoLog` returns the information log for the specified
+   * shader object.
+   *
+   *  @param `shader` Specifies the shader object whose information log is to be
+   * queried.
+   *  @param `maxLength` Specifies the size of the character buffer for storing
+   * the returned information log.
+   *  @param `length` Returns the length of the string returned in infoLog
+   * (excluding the null terminator).
+   *  @param `infoLog` Specifies an array of characters that is used to return
+   * the information log.
+   */
+  virtual void getShaderInfoLog(GLuint shader, GLsizei maxLength,
+                                GLsizei* length,
+                                GLchar* infoLog) const noexcept = 0;
+
+  /*! `glGetShaderiv` — Returns a parameter from a shader object
+   *
+   *  @brief `glGetShader` returns in params the value of a parameter for a
+   * specific shader object.
+   *
+   *  @param `shader` Specifies the shader object to be queried.
+   *  @param `pname` Specifies the object parameter. Accepted symbolic names are
+   * `GL_SHADER_TYPE`, `GL_DELETE_STATUS`, `GL_COMPILE_STATUS`,
+   * `GL_INFO_LOG_LENGTH`, `GL_SHADER_SOURCE_LENGTH`.
+   *  @param `params` Returns the requested object parameter.
+   */
+  virtual void getShaderiv(GLuint shader, GLenum pname,
+                           GLint* params) const noexcept = 0;
+
+  /*! `glGetUniformLocation` — Returns the location of a uniform variable
+   *
+   *  @brief `glGetUniformLocation` returns an integer that represents the
+   * location of a specific uniform variable within a program object.
+   *
+   *  @param `program` Specifies the program object to be queried.
+   *  @param `name` Points to a null terminated string containing the name of
+   * the uniform variable whose location is to be queried.
+   *
+   *  @returns An integer that represents the location of a specific uniform
+   * variable within a program object.
+   */
+  virtual GLint getUniformLocation(GLuint, const GLchar*) const noexcept = 0;
+
   /*! `glGet` — return the value or values of a selected parameter
    *
    *  @brief These commands return values for simple state variables in GL.
@@ -353,6 +498,14 @@ struct OpenGLApi {
    */
   virtual void lineWidth(GLfloat width) const noexcept = 0;
 
+  /*! `glLinkProgram` — Links a program object
+   *
+   *  @brief `glLinkProgram` links the program object specified by program.
+   *
+   *  @param `program` Specifies the handle of the program object to be linked.
+   */
+  virtual void linkProgram(GLuint program) const noexcept = 0;
+
   /*! `glPointSize` — specify the diameter of rasterized points
    *
    *  @brief `glPointSize` specifies the rasterized diameter of points.
@@ -361,6 +514,33 @@ struct OpenGLApi {
    * value is 1.
    */
   virtual void pointSize(GLfloat size) const noexcept = 0;
+
+  /*! `glShaderSource` — Replaces the source code in a shader object
+   *
+   *  @brief `glShaderSource` sets the source code in shader to the source code
+   * in the array of strings specified by string.
+   *
+   *  @param `shader` Specifies the handle of the shader object whose source
+   * code is to be replaced.
+   *  @param `count` Specifies the number of elements in the string and length
+   * arrays.
+   *  @param `string` Specifies an array of pointers to strings containing the
+   * source code to be loaded into the shader.
+   *  @param `length` Specifies an array of string lengths.
+   */
+  virtual void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
+                            const GLint* length) const noexcept = 0;
+
+  /*! `glUseProgram` — Installs a program object as part of current rendering
+   * state
+   *
+   *  @brief `glUseProgram` installs the program object specified by program as
+   * part of current rendering state.
+   *
+   *  @param `program` Specifies the handle of the program object whose
+   * executables are to be used as part of current rendering state.
+   */
+  virtual void useProgram(GLuint program) const noexcept = 0;
 
   /*! glViewport - set the viewport
    *
@@ -389,11 +569,36 @@ struct OpenGLApiImpl : OpenGLApi {
   OpenGLApiImpl(OpenGLApiImpl&&) noexcept = delete;
   OpenGLApiImpl& operator=(OpenGLApiImpl&&) noexcept = delete;
 
+  inline void attachShader(GLuint program,
+                           GLuint shader) const noexcept override {
+    glAttachShader(program, shader);
+  }
+
   inline void clear(GLbitfield mask) const noexcept override { glClear(mask); }
 
   inline void clearColor(GLfloat r, GLfloat g, GLfloat b,
                          GLfloat a) const noexcept override {
     glClearColor(r, g, b, a);
+  }
+
+  inline void compileShader(GLuint shader) const noexcept override {
+    glCompileShader(shader);
+  }
+
+  inline GLuint createProgram() const noexcept override {
+    return glCreateProgram();
+  }
+
+  inline GLuint createShader(GLenum stage) const noexcept override {
+    return glCreateShader(stage);
+  }
+
+  inline void deleteProgram(GLuint program) const noexcept override {
+    glDeleteProgram(program);
+  }
+
+  inline void deleteShader(GLuint program) const noexcept override {
+    glDeleteShader(program);
   }
 
   inline void disable(GLenum cap) const noexcept override { glDisable(cap); }
@@ -433,6 +638,33 @@ struct OpenGLApiImpl : OpenGLApi {
   inline const GLubyte* errorString(GLenum error) const noexcept override {
     auto str = gluErrorString(error);
     return str;
+  }
+
+  inline void getShaderiv(GLuint shader, GLenum pname,
+                          GLint* params) const noexcept override {
+    glGetShaderiv(shader, pname, params);
+  }
+
+  inline void getProgramiv(GLuint program, GLenum pname,
+                           GLint* params) const noexcept override {
+    glGetProgramiv(program, pname, params);
+  }
+
+  inline void getProgramInfoLog(GLuint program, GLsizei maxLength,
+                                GLsizei* length,
+                                GLchar* infoLog) const noexcept override {
+    glGetProgramInfoLog(program, maxLength, length, infoLog);
+  }
+
+  inline void getShaderInfoLog(GLuint shader, GLsizei maxLength,
+                               GLsizei* length,
+                               GLchar* infoLog) const noexcept override {
+    glGetShaderInfoLog(shader, maxLength, length, infoLog);
+  }
+
+  inline GLint getUniformLocation(GLuint program,
+                                  const GLchar* name) const noexcept override {
+    return glGetUniformLocation(program, name);
   }
 
   inline void getBooleanv(GLenum pname,
@@ -479,8 +711,21 @@ struct OpenGLApiImpl : OpenGLApi {
     glLineWidth(width);
   }
 
+  inline void linkProgram(GLuint program) const noexcept override {
+    glLinkProgram(program);
+  }
+
   inline void pointSize(GLfloat size) const noexcept override {
     glPointSize(size);
+  }
+
+  inline void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
+                           const GLint* length) const noexcept override {
+    glShaderSource(shader, count, source, length);
+  }
+
+  inline void useProgram(GLuint program) const noexcept override {
+    glUseProgram(program);
   }
 
   inline void viewport(GLint x, GLint y, GLsizei width,
