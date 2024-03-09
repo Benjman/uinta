@@ -1,48 +1,32 @@
 #include "uinta/engine.h"
 
+#include <algorithm>
 #include <cassert>
 
+#include "uinta/engine_signal.h"
 #include "uinta/engine_state.h"
 #include "uinta/lib/absl/strings.h"
 #include "uinta/platform.h"
-#include "uinta/shader.h"
-#include "uinta/texture.h"
-#include "uinta/vao.h"
-#include "uinta/vbo.h"
+#include "uinta/scene.h"
 
 namespace uinta {
 
-Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
-    : gl_(gl), platform_(platform) {
+void updateSceneViewport(Scene* scene, const ViewportSizeChange&) noexcept;
+
+void preTick(Scene*, const EngineState&) noexcept;
+void tick(Scene*, const EngineState&) noexcept;
+void postTick(Scene*, const EngineState&) noexcept;
+void newFrame(Scene*, const EngineState&) noexcept;
+void preRender(Scene*, const EngineState&) noexcept;
+void render(Scene*, const EngineState&) noexcept;
+void postRender(Scene*, const EngineState&) noexcept;
+
+Engine::Engine(Platform* platform, Scene* scene, const OpenGLApi* gl) noexcept
+    : gl_(gl), platform_(platform), scene_(scene) {
   assert(platform_ && "`Platform*` cannot be null.");
+  assert(scene_ && "`Scene*` cannot be null.");
 
   setCallbacks();
-
-  Shader shader({{GL_VERTEX_SHADER, "shader.vs.glsl"},
-                 {GL_FRAGMENT_SHADER, "shader.fs.glsl"}});
-
-  Vbo vbo(GL_ARRAY_BUFFER);
-  std::vector<f32> vertices = {
-      // positions  // uv coords
-      0.5f,  0.5f,  1.0f, 1.0f,  // top right
-      0.5f,  -0.5f, 1.0f, 0.0f,  // bottom right
-      -0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
-      -0.5f, 0.5f,  0.0f, 1.0f   // top left
-  };
-  vbo.bufferData(vertices.data(), vertices.size() * 3, GL_STATIC_DRAW);
-
-  Vao vao;
-  std::vector<u32> idxBuffer = {0, 1, 3, 1, 2, 3};
-  vao.indexBuffer(idxBuffer);
-  vao.linkAttribute({&vbo, 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
-                     reinterpret_cast<void*>(0)});
-  vao.linkAttribute({&vbo, 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
-                     reinterpret_cast<void*>(2 * sizeof(GLfloat))});
-
-  Texture texture;
-  if (status_ = texture.fromFile("wall.jpg"); !status_.ok()) {
-    return;
-  }
 
   onViewportChange(platform_->window()->width(), platform_->window()->height());
 
@@ -57,12 +41,15 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
     status_ = platform_->pollEvents();
     if (!status_.ok()) return;
 
-    newFrame();
+    preTick(scene, state_);
+    tick(scene, state_);
+    postTick(scene, state_);
+    state_.isNewFrame(false);
 
-    ShaderGuard shaderGuard(&shader);
-    VaoGuard vaoGuard(&vao);
-    TextureGuard textureGuard(&texture);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    newFrame();
+    preRender(scene, state_);
+    render(scene, state_);
+    postRender(scene, state_);
   }
 }
 
@@ -70,7 +57,8 @@ Engine::Engine(Engine&& other) noexcept
     : status_(other.status_),
       state_(std::move(other.state_)),
       components_(std::move(other.components_)),
-      platform_(std::move(other.platform_)) {}
+      platform_(std::move(other.platform_)),
+      scene_(other.scene_) {}
 
 Engine& Engine::operator=(Engine&& other) noexcept {
   if (this != &other) {
@@ -78,6 +66,7 @@ Engine& Engine::operator=(Engine&& other) noexcept {
     state_ = std::move(other.state_);
     components_ = std::move(other.components_);
     platform_ = std::move(other.platform_);
+    scene_ = other.scene_;
   }
   return *this;
 }
@@ -92,6 +81,7 @@ void Engine::newFrame() noexcept {
   if (!status_.ok()) return;
   state_.isNewFrame(true);
   components_.update(Component::Stage::NewFrame, state_);
+  uinta::newFrame(scene_, state_);
 }
 
 void Engine::setCallbacks() noexcept {
@@ -114,6 +104,70 @@ void Engine::setCallbacks() noexcept {
 
 void Engine::onViewportChange(u32 width, u32 height) noexcept {
   gl_->viewport(0, 0, width, height);
+  updateSceneViewport(scene_, {width, height});
+}
+
+void updateSceneViewport(Scene* scene,
+                         const ViewportSizeChange& event) noexcept {
+  scene->onViewportSizeChange(event);
+  std::for_each(
+      scene->scenes().begin(), scene->scenes().end(),
+      [&event](auto& scene) { updateSceneViewport(scene.get(), event); });
+}
+
+void newFrame(Scene* scene, const EngineState& state) noexcept {
+  scene->components().update(Component::Stage::NewFrame, state);
+  std::for_each(scene->scenes().begin(), scene->scenes().end(),
+                [&state](auto& scene) { newFrame(scene.get(), state); });
+}
+
+void preTick(Scene* scene, const EngineState& state) noexcept {
+  scene->components().update(Component::Stage::PreTick, state);
+  scene->preTick(state);
+  std::for_each(scene->scenes().begin(), scene->scenes().end(),
+                [&state](auto& scene) { preTick(scene.get(), state); });
+}
+
+void tick(Scene* scene, const EngineState& state) noexcept {
+  scene->components().update(Component::Stage::Tick, state);
+  scene->tick(state);
+  std::for_each(scene->scenes().begin(), scene->scenes().end(),
+                [&state](auto& scene) { tick(scene.get(), state); });
+}
+
+void postTick(Scene* scene, const EngineState& state) noexcept {
+  scene->components().update(Component::Stage::PostTick, state);
+  scene->postTick(state);
+  std::for_each(scene->scenes().begin(), scene->scenes().end(),
+                [&state](auto& scene) { postTick(scene.get(), state); });
+}
+
+void preRender(Scene* scene, const EngineState& state) noexcept {
+  scene->components().update(Component::Stage::PreRender, state);
+  scene->preRender(state);
+  std::for_each(scene->scenes().begin(), scene->scenes().end(),
+                [&state](auto& scene) { preRender(scene.get(), state); });
+}
+
+void render(Scene* scene, const EngineState& state) noexcept {
+  scene->components().update(Component::Stage::Render, state);
+  scene->render(state);
+  std::for_each(Scene::RenderOrder.begin(), Scene::RenderOrder.end(),
+                [&scene, &state](auto layer) {
+                  std::for_each(scene->scenes().begin(), scene->scenes().end(),
+                                [layer, &state](auto& scene) {
+                                  if (scene->layer() == layer) {
+                                    render(scene.get(), state);
+                                  }
+                                });
+                });
+}
+
+void postRender(Scene* scene, const EngineState& state) noexcept {
+  scene->components().update(Component::Stage::PostRender, state);
+  scene->postRender(state);
+  std::for_each(scene->scenes().begin(), scene->scenes().end(),
+                [&state](auto& scene) { postRender(scene.get(), state); });
 }
 
 }  // namespace uinta
