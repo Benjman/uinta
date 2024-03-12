@@ -99,6 +99,14 @@ struct OpenGLApi {
    */
   virtual void bindBuffer(GLenum target, GLuint buffer) const noexcept = 0;
 
+  /*! `glBindVertexArray` — bind a vertex array object
+   *
+   *  @brief `glBindVertexArray` binds the vertex array object with name array.
+   *
+   *  @param `array` Specifies the name of the vertex array to bind.
+   */
+  virtual void bindVertexArray(GLuint array) const noexcept = 0;
+
   /*! `glBufferData`, `glNamedBufferData` — creates and initializes a buffer
    * object's data store
    *
@@ -275,6 +283,18 @@ struct OpenGLApi {
    */
   virtual void deleteShader(GLuint) const noexcept = 0;
 
+  /*! glDeleteVertexArrays — delete vertex array objects
+   *
+   *  @brief `glDeleteVertexArrays` deletes n vertex array objects whose names
+   * are stored in the array addressed by arrays.
+   *
+   *  @param `n` Specifies the number of vertex array object names to be
+   * deleted.
+   *  @param `arrays` Specifies the address of an array containing the n names
+   * of the objects to be deleted.
+   */
+  virtual void deleteVertexArrays(GLsizei, GLuint*) const noexcept = 0;
+
   /*! `glDisable` — disable server-side GL capabilities
    *
    *  @brief `glDisable` disable various capabilities.
@@ -377,6 +397,31 @@ struct OpenGLApi {
    */
   virtual void enable(GLenum cap) const noexcept = 0;
 
+  /*! `glEnableVertexAttribArray` — Enable or disable a generic vertex attribute
+   * array
+   *
+   *  @brief `glEnableVertexAttribArray` and `glEnableVertexArrayAttrib` enable
+   * the generic vertex attribute array specified by index.
+   *
+   *  @param `index` Specifies the index of the generic vertex attribute to be
+   * enabled or disabled.
+   */
+  virtual void enableVertexAttribArray(GLuint index) const noexcept = 0;
+
+  /*! `glEnableVertexAttribArray` — Enable or disable a generic vertex attribute
+   * array
+   *
+   *  @brief `glEnableVertexAttribArray` and `glEnableVertexArrayAttrib` enable
+   * the generic vertex attribute array specified by index.
+   *
+   *  @param `index` Specifies the index of the generic vertex attribute to be
+   * enabled or disabled.
+   *  @param `vaobj` Specifies the name of the vertex array object for
+   * `glDisableVertexArrayAttrib` and `glEnableVertexArrayAttrib` functions
+   */
+  virtual void enableVertexArrayAttrib(GLuint vaobj,
+                                       GLuint index) const noexcept = 0;
+
   /*! `glEnablei` — enable or disable server-side GL capabilities
    *
    *  @brief `glDisable` enable and disable various capabilities.
@@ -407,6 +452,16 @@ struct OpenGLApi {
    * names are stored.
    */
   virtual void genBuffers(GLsizei n, GLuint* buffers) const noexcept = 0;
+
+  /*! `glGenVertexArrays` — generate vertex array object names
+   *
+   *  @brief `glGenVertexArrays` returns n vertex array object names in arrays.
+   *
+   *  @param `n` Specifies the number of vertex array object names to generate.
+   *  @param `arrays` Specifies an array in which the generated vertex array
+   * object names are stored.
+   */
+  virtual void genVertexArrays(GLsizei n, GLuint* arrays) const noexcept = 0;
 
   /*! `glGet` — return the value or values of a selected parameter
    *
@@ -677,6 +732,105 @@ struct OpenGLApi {
    */
   virtual void useProgram(GLuint program) const noexcept = 0;
 
+  /*! `glVertexAttribPointer` — define an array of generic vertex attribute data
+   *
+   *  @brief `glVertexAttribPointer`, `glVertexAttribIPointer` and
+   * `glVertexAttribLPointer` specify the location and data format of the array
+   * of generic vertex attributes at index index to use when rendering.
+   *
+   *  @param `index` Specifies the index of the generic vertex attribute to be
+   * modified.
+   *  @param `size` Specifies the number of components per generic vertex
+   * attribute. Must be 1, 2, 3, 4. Additionally, the symbolic constant
+   * `GL_BGRA` is accepted by `glVertexAttribPointer`. The initial value is 4.
+   *  @param `type` Specifies the data type of each component in the array. The
+   * symbolic constants `GL_BYTE`, `GL_UNSIGNED_BYTE`, `GL_SHORT`,
+   * `GL_UNSIGNED_SHORT`, `GL_INT`, and `GL_UNSIGNED_INT` are accepted by
+   * `glVertexAttribPointer` and `glVertexAttribIPointer`. Additionally
+   * `GL_HALF_FLOAT`, `GL_FLOAT`, `GL_DOUBLE`, `GL_FIXED`,
+   * `GL_INT_2_10_10_10_REV`, `GL_UNSIGNED_INT_2_10_10_10_REV` and
+   * `GL_UNSIGNED_INT_10F_11F_11F_REV` are accepted by `glVertexAttribPointer`.
+   * `GL_DOUBLE` is also accepted by `glVertexAttribLPointer` and is the only
+   * token accepted by the type parameter for that function. The initial value
+   * is `GL_FLOAT`.
+   *  @param `normalized` For `glVertexAttribPointer`, specifies whether
+   * fixed-point data values should be normalized (`GL_TRUE`) or converted
+   * directly as fixed-point values (`GL_FALSE`) when they are accessed.
+   *  @param `stride` Specifies the byte offset between consecutive generic
+   * vertex attributes. If stride is 0, the generic vertex attributes are
+   * understood to be tightly packed in the array. The initial value is 0.
+   *  @param `pointer` Specifies a offset of the first component of the first
+   * generic vertex attribute in the array in the data store of the buffer
+   * currently bound to the `GL_ARRAY_BUFFER` target. The initial value is 00.
+   */
+  virtual void vertexAttribPointer(GLuint index, GLint size, GLenum type,
+                                   GLboolean normalized, GLsizei stride,
+                                   const void* pointer) const noexcept = 0;
+
+  /*! `glVertexAttribPointer` — define an array of generic vertex attribute data
+   *
+   *  @brief `glVertexAttribPointer`, `glVertexAttribIPointer` and
+   * `glVertexAttribLPointer` specify the location and data format of the array
+   * of generic vertex attributes at index index to use when rendering.
+   *
+   *  @param `index` Specifies the index of the generic vertex attribute to be
+   * modified.
+   *  @param `size` Specifies the number of components per generic vertex
+   * attribute. Must be 1, 2, 3, 4. Additionally, the symbolic constant
+   * `GL_BGRA` is accepted by `glVertexAttribPointer`. The initial value is 4.
+   *  @param `type` Specifies the data type of each component in the array. The
+   * symbolic constants `GL_BYTE`, `GL_UNSIGNED_BYTE`, `GL_SHORT`,
+   * `GL_UNSIGNED_SHORT`, `GL_INT`, and `GL_UNSIGNED_INT` are accepted by
+   * `glVertexAttribPointer` and `glVertexAttribIPointer`. Additionally
+   * `GL_HALF_FLOAT`, `GL_FLOAT`, `GL_DOUBLE`, `GL_FIXED`,
+   * `GL_INT_2_10_10_10_REV`, `GL_UNSIGNED_INT_2_10_10_10_REV` and
+   * `GL_UNSIGNED_INT_10F_11F_11F_REV` are accepted by `glVertexAttribPointer`.
+   * `GL_DOUBLE` is also accepted by `glVertexAttribLPointer` and is the only
+   * token accepted by the type parameter for that function. The initial value
+   * is `GL_FLOAT`.
+   *  @param `stride` Specifies the byte offset between consecutive generic
+   * vertex attributes. If stride is 0, the generic vertex attributes are
+   * understood to be tightly packed in the array. The initial value is 0.
+   *  @param `pointer` Specifies a offset of the first component of the first
+   * generic vertex attribute in the array in the data store of the buffer
+   * currently bound to the `GL_ARRAY_BUFFER` target. The initial value is 00.
+   */
+  virtual void vertexAttribIPointer(GLuint index, GLint size, GLenum type,
+                                    GLsizei stride,
+                                    const void* pointer) const noexcept = 0;
+
+  /*! `glVertexAttribPointer` — define an array of generic vertex attribute data
+   *
+   *  @brief `glVertexAttribPointer`, `glVertexAttribIPointer` and
+   * `glVertexAttribLPointer` specify the location and data format of the array
+   * of generic vertex attributes at index index to use when rendering.
+   *
+   *  @param `index` Specifies the index of the generic vertex attribute to be
+   * modified.
+   *  @param `size` Specifies the number of components per generic vertex
+   * attribute. Must be 1, 2, 3, 4. Additionally, the symbolic constant
+   * `GL_BGRA` is accepted by `glVertexAttribPointer`. The initial value is 4.
+   *  @param `type` Specifies the data type of each component in the array. The
+   * symbolic constants `GL_BYTE`, `GL_UNSIGNED_BYTE`, `GL_SHORT`,
+   * `GL_UNSIGNED_SHORT`, `GL_INT`, and `GL_UNSIGNED_INT` are accepted by
+   * `glVertexAttribPointer` and `glVertexAttribIPointer`. Additionally
+   * `GL_HALF_FLOAT`, `GL_FLOAT`, `GL_DOUBLE`, `GL_FIXED`,
+   * `GL_INT_2_10_10_10_REV`, `GL_UNSIGNED_INT_2_10_10_10_REV` and
+   * `GL_UNSIGNED_INT_10F_11F_11F_REV` are accepted by `glVertexAttribPointer`.
+   * `GL_DOUBLE` is also accepted by `glVertexAttribLPointer` and is the only
+   * token accepted by the type parameter for that function. The initial value
+   * is `GL_FLOAT`.
+   *  @param `stride` Specifies the byte offset between consecutive generic
+   * vertex attributes. If stride is 0, the generic vertex attributes are
+   * understood to be tightly packed in the array. The initial value is 0.
+   *  @param `pointer` Specifies a offset of the first component of the first
+   * generic vertex attribute in the array in the data store of the buffer
+   * currently bound to the `GL_ARRAY_BUFFER` target. The initial value is 00.
+   */
+  virtual void vertexAttribLPointer(GLuint index, GLint size, GLenum type,
+                                    GLsizei stride,
+                                    const void* pointer) const noexcept = 0;
+
   /*! glViewport - set the viewport
    *
    *  @brief glViewport specifies the affine transformation of x and y from
@@ -711,6 +865,10 @@ struct OpenGLApiImpl : OpenGLApi {
 
   inline void bindBuffer(GLenum target, GLuint id) const noexcept override {
     glBindBuffer(target, id);
+  }
+
+  inline void bindVertexArray(GLuint id) const noexcept override {
+    glBindVertexArray(id);
   }
 
   inline void bufferData(GLenum target, GLsizeiptr size, const void* data,
@@ -807,6 +965,20 @@ struct OpenGLApiImpl : OpenGLApi {
     return str;
   }
 
+  inline void deleteVertexArrays(GLsizei count,
+                                 GLuint* ptr) const noexcept override {
+    glDeleteVertexArrays(count, ptr);
+  }
+
+  inline void enableVertexAttribArray(GLuint index) const noexcept override {
+    glEnableVertexAttribArray(index);
+  }
+
+  inline void enableVertexArrayAttrib(GLuint vaobj,
+                                      GLuint index) const noexcept override {
+    glEnableVertexArrayAttrib(vaobj, index);
+  }
+
   inline void genBuffers(GLsizei count, GLuint* ptr) const noexcept override {
     glGenBuffers(count, ptr);
   }
@@ -882,6 +1054,11 @@ struct OpenGLApiImpl : OpenGLApi {
     glLineWidth(width);
   }
 
+  inline void genVertexArrays(GLsizei count,
+                              GLuint* ptr) const noexcept override {
+    glGenVertexArrays(count, ptr);
+  }
+
   inline void linkProgram(GLuint program) const noexcept override {
     glLinkProgram(program);
   }
@@ -903,6 +1080,24 @@ struct OpenGLApiImpl : OpenGLApi {
 
   inline void useProgram(GLuint program) const noexcept override {
     glUseProgram(program);
+  }
+
+  inline void vertexAttribPointer(GLuint index, GLint size, GLenum type,
+                                  GLboolean normalized, GLsizei stride,
+                                  const void* pointer) const noexcept override {
+    glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+  }
+
+  inline void vertexAttribIPointer(
+      GLuint index, GLint size, GLenum type, GLsizei stride,
+      const void* pointer) const noexcept override {
+    glVertexAttribIPointer(index, size, type, stride, pointer);
+  }
+
+  inline void vertexAttribLPointer(
+      GLuint index, GLint size, GLenum type, GLsizei stride,
+      const void* pointer) const noexcept override {
+    glVertexAttribLPointer(index, size, type, stride, pointer);
   }
 
   inline void viewport(GLint x, GLint y, GLsizei width,
