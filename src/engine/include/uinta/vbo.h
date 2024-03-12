@@ -23,6 +23,7 @@ class VboGuard {
 };
 
 class Vbo {
+  friend class Vao;
   friend class VboGuard;
 
  public:
