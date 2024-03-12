@@ -18,6 +18,11 @@ struct MockOpenGLApi : OpenGLApi {
     onBindBuffer(target, id);
   }
 
+  std::function<void(GLuint)> onBindVertexArray = [](auto) {};
+  void bindVertexArray(GLuint id) const noexcept override {
+    onBindVertexArray(id);
+  }
+
   std::function<void(GLenum, GLsizeiptr, const void*, GLenum)> onBufferData =
       [](auto, auto, const auto*, auto) {};
   void bufferData(GLenum target, GLsizeiptr size, const void* data,
@@ -129,6 +134,13 @@ struct MockOpenGLApi : OpenGLApi {
   std::function<void(GLenum)> onEnable = [](auto) {};
   void enable(GLenum cap) const noexcept override { onEnable(cap); }
 
+  std::function<void(GLuint, GLuint)> onEnableVertexArrayAttrib = [](auto,
+                                                                     auto) {};
+  void enableVertexArrayAttrib(GLuint vaobj,
+                               GLuint index) const noexcept override {
+    onEnableVertexArrayAttrib(vaobj, index);
+  }
+
   std::function<void(GLenum, GLuint)> onEnablei = [](auto, auto) {};
   void enablei(GLenum cap, GLuint index) const noexcept override {
     onEnablei(cap, index);
@@ -141,6 +153,17 @@ struct MockOpenGLApi : OpenGLApi {
   };
   const GLubyte* errorString(GLenum error) const noexcept override {
     return onErrorString(error);
+  }
+
+  std::function<void(GLsizei, GLuint*)> onDeleteVertexArrays = [](auto, auto*) {
+  };
+  void deleteVertexArrays(GLsizei count, GLuint* ptr) const noexcept override {
+    onDeleteVertexArrays(count, ptr);
+  }
+
+  std::function<void(GLuint)> onEnableVertexAttribArray = [](auto) {};
+  void enableVertexAttribArray(GLuint index) const noexcept override {
+    onEnableVertexAttribArray(index);
   }
 
   std::function<void(GLsizei, GLuint*)> onGenBuffers = [](auto count,
@@ -241,6 +264,14 @@ struct MockOpenGLApi : OpenGLApi {
   std::function<void(GLfloat)> onLineWidth = [](auto) {};
   void lineWidth(GLfloat width) const noexcept override { onLineWidth(width); }
 
+  std::function<void(GLsizei, GLuint*)> onGenVertexArrays = [](auto count,
+                                                               auto* idPtrs) {
+    for (auto i = 0; i < count; i++) *idPtrs = i + 1;
+  };
+  void genVertexArrays(GLsizei count, GLuint* ptr) const noexcept override {
+    onGenVertexArrays(count, ptr);
+  }
+
   std::function<void(GLuint)> onLinkProgram = [](auto) {};
   void linkProgram(GLuint program) const noexcept override {
     onLinkProgram(program);
@@ -266,6 +297,30 @@ struct MockOpenGLApi : OpenGLApi {
   std::function<void(GLuint)> onUseProgram = [](auto) {};
   void useProgram(GLuint program) const noexcept override {
     onUseProgram(program);
+  }
+
+  std::function<void(GLuint, GLint, GLenum, GLboolean, GLsizei, const void*)>
+      onVertexAttribPointer = [](auto, auto, auto, auto, auto, const auto*) {};
+  void vertexAttribPointer(GLuint index, GLint size, GLenum type,
+                           GLboolean normalized, GLsizei stride,
+                           const void* pointer) const noexcept override {
+    onVertexAttribPointer(index, size, type, normalized, stride, pointer);
+  }
+
+  std::function<void(GLuint, GLint, GLenum, GLsizei, const void*)>
+      onVertexAttribIPointer = [](auto, auto, auto, auto, const auto*) {};
+  void vertexAttribIPointer(GLuint index, GLint size, GLenum type,
+                            GLsizei stride,
+                            const void* pointer) const noexcept override {
+    onVertexAttribIPointer(index, size, type, stride, pointer);
+  }
+
+  std::function<void(GLuint, GLint, GLenum, GLsizei, const void*)>
+      onVertexAttribLPointer = [](auto, auto, auto, auto, const auto*) {};
+  void vertexAttribLPointer(GLuint index, GLint size, GLenum type,
+                            GLsizei stride,
+                            const void* pointer) const noexcept override {
+    onVertexAttribLPointer(index, size, type, stride, pointer);
   }
 
   std::function<void(GLuint, GLuint, GLuint, GLuint)> onViewport =
