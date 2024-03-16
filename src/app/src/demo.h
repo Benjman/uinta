@@ -1,13 +1,13 @@
 #ifndef SRC_APP_SRC_DEMO_H_
 #define SRC_APP_SRC_DEMO_H_
 
-#include <unordered_map>
-#include <vector>
-
 #include "absl/log/log.h"
+#include "uinta/mesh.h"
 #include "uinta/scene.h"
 #include "uinta/shader.h"
+#include "uinta/shaders/primitive.h"
 #include "uinta/texture.h"
+#include "uinta/utils/viewport_change.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
 
@@ -19,46 +19,55 @@ class DemoScene : public Scene {
  public:
   explicit DemoScene(const Engine* engine) noexcept
       : Scene(engine, Layer::Simulation) {
-    std::vector<f32> vertices = {
-        // positions  // uv coords
-        0.5f,  0.5f,  1.0f, 1.0f,  // top right
-        0.5f,  -0.5f, 1.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
-        -0.5f, 0.5f,  0.0f, 1.0f   // top left
+    std::array<Vertex, 4> vertices = {
+        Vertex({0.5f, 0.5f, -1.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 1.0},
+               {1.0f, 1.0f}),
+        Vertex({0.5f, -0.5f, -1.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 1.0},
+               {1.0f, 0.0f}),
+        Vertex({-0.5f, -0.5f, -1.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 1.0},
+               {0.0f, 0.0f}),
+        Vertex({-0.5f, 0.5f, -1.0}, {0.0, 0.0, 1.0}, {1.0, 1.0, 1.0},
+               {0.0f, 1.0f}),
     };
     VboGuard vbg(&vbo_);
     vbo_.bufferData(vertices.data(), vertices.size() * sizeof(f32),
                     GL_STATIC_DRAW);
+    std::array<u32, 6> indices = {0, 1, 3, 1, 2, 3};
+    Mesh mesh(vertices, indices);
 
-    std::array<u32, 6> indexBuffer = {0, 1, 3, 1, 2, 3};
+    auto vsize = mesh.vertices().size() * Vertex::ElementCount * sizeof(f32);
     VaoGuard vag(&vao_);
-    vao_.ebo(indexBuffer);
-    vao_.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0});
-    vao_.linkAttribute(
-        {1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat)});
+    vbo_.bufferData(mesh.vertices().data(), vsize, GL_STATIC_DRAW);
+    vao_.ebo(mesh.elements());
 
     if (auto status = texture_.fromFile("wall.jpg"); !status.ok()) {
       LOG(FATAL) << status.message();
       return;
     }
+
+    ShaderGuard sg(&shader_);
+    shader_.linkAttributes(&vao_);
+    shader_.lightDir = glm::vec3(0, 0, -1);
+    shader_.uv();
   }
 
-  void render(const EngineState&) noexcept override {
-    ShaderGuard shaderGuard(&shader_);
-    VaoGuard vaoGuard(&vao_);
-    TextureGuard textureGuard(&texture_);
+  void render(const EngineState& state) noexcept override {
+    Scene::render(state);
+    VaoGuard vg(&vao_);
+    ShaderGuard sg(&shader_);
+    TextureGuard tg(&texture_);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   }
 
+  void onViewportSizeChange(const ViewportSizeChange& event) noexcept override {
+    Scene::onViewportSizeChange(event);
+    ShaderGuard sg(&shader_);
+    shader_.projection = glm::perspective(45.0f, event.aspect(), 0.01f, 1.0f);
+  }
+
  private:
-  struct DemoShader : Shader {
-    DemoShader() noexcept
-        : Shader({
-              {GL_VERTEX_SHADER, "shader.vs.glsl"},
-              {GL_FRAGMENT_SHADER, "shader.fs.glsl"},
-          }) {}
-  } shader_;
   Texture texture_;
+  PrimitiveShader shader_;
   Vao vao_;
   Vbo vbo_ = GL_ARRAY_BUFFER;
 };
