@@ -1,5 +1,6 @@
 list(APPEND ENGINE_SRCS src/engine.cc)
 list(APPEND ENGINE_SRCS src/file.cc)
+list(APPEND ENGINE_SRCS src/primitive.cc)
 list(APPEND ENGINE_SRCS src/scene.cc)
 list(APPEND ENGINE_SRCS src/shader.cc)
 list(APPEND ENGINE_SRCS src/texture.cc)
