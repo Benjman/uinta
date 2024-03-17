@@ -1,12 +1,11 @@
 #ifndef SRC_APP_SRC_DEMO_H_
 #define SRC_APP_SRC_DEMO_H_
 
-#include <unordered_map>
 #include <vector>
 
 #include "absl/log/log.h"
 #include "uinta/scene.h"
-#include "uinta/shader.h"
+#include "uinta/shaders/primitive.h"
 #include "uinta/texture.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
@@ -46,14 +45,8 @@ class DemoScene : public Scene {
   }
 
  private:
-  struct DemoShader : Shader {
-    DemoShader() noexcept
-        : Shader({
-              {GL_VERTEX_SHADER, "shader.vs.glsl"},
-              {GL_FRAGMENT_SHADER, "shader.fs.glsl"},
-          }) {}
-  } shader_;
   Texture texture_;
+  PrimitiveShader shader_;
   Vao vao_;
   Vbo vbo_ = GL_ARRAY_BUFFER;
 };
