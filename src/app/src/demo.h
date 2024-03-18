@@ -3,14 +3,16 @@
 
 #include "uinta/debug/debug_scene.h"
 #include "uinta/engine.h"
-#include "uinta/scene.h"
+#include "uinta/scenes/fbx_viewer.h"
 
 namespace uinta {
 
 class DemoScene : public DebugScene {
  public:
   explicit DemoScene(Engine* engine) noexcept
-      : DebugScene({engine, OpenGLApiImpl::Instance()}, Layer::Simulation) {}
+      : DebugScene({engine, OpenGLApiImpl::Instance()}, Layer::Simulation) {
+    addScene<FbxViewerScene>(this, params());
+  }
 };
 
 }  // namespace uinta
