@@ -5,7 +5,7 @@
 #include "uinta/engine_signal.h"
 #include "uinta/engine_state.h"
 #include "uinta/gl.h"
-#include "uinta/primitive.h"
+#include "uinta/mesh.h"
 #include "uinta/scene.h"
 #include "uinta/shaders/primitive.h"
 #include "uinta/vao.h"
@@ -16,14 +16,14 @@ namespace uinta {
 class DemoScene : public Scene {
  public:
   DemoScene() noexcept : Scene(Layer::Simulation) {
-    auto cube = Primitive::Cube();
-    std::for_each(cube.vertices().begin(), cube.vertices().end(),
+    auto mesh = fbx("pawn.fbx");
+    std::for_each(mesh->at(0).vertices().begin(), mesh->at(0).vertices().end(),
                   [](auto& vertex) { vertex.color = glm::vec3(1); });
-    vbo_.bufferData(cube.vertices().data(),
-                    cube.vertices().size() * Vertex::ElementCount,
+    vbo_.bufferData(mesh->at(0).vertices().data(),
+                    mesh->at(0).vertices().size() * Vertex::ElementCount,
                     GL_STATIC_DRAW);
-    vao_.indexBuffer(cube.indices());
-    indexCount_ = cube.indexCount();
+    vao_.indexBuffer(mesh->at(0).indices());
+    indexCount_ = mesh->at(0).indices().size();
 
     vao_.linkAttribute(Primitive::PositionAttribute(&vbo_));
     vao_.linkAttribute(Primitive::NormalAttribute(&vbo_));
@@ -33,14 +33,15 @@ class DemoScene : public Scene {
     shader_.view = glm::translate(glm::mat4(1), glm::vec3(0, 0, -1));
   }
 
-  void render(const EngineState& state) noexcept override {
+  void render(const EngineState&) noexcept override {
     DepthTestGuard dtg;
     CullFaceGuard cfg;
 
+    auto model = glm::translate(glm::mat4(1), glm::vec3(0, 0, 0));
+    model = glm::scale(model, glm::vec3(0.001));
+
     ShaderGuard shaderGuard(&shader_);
-    auto model = glm::rotate(glm::mat4(1), glm::radians(state.runtime() * 30),
-                             glm::normalize(glm::vec3(.25, 1, 0)));
-    shader_.model = glm::scale(model, glm::vec3(0.5));
+    shader_.model = model;
 
     VaoGuard vaoGuard(&vao_);
     glDrawElements(GL_TRIANGLES, indexCount_, GL_UNSIGNED_INT, 0);
