@@ -2,6 +2,7 @@
 
 #include "uinta/component.h"
 #include "uinta/scenes/axis_viewer.h"
+#include "uinta/scenes/grid.h"
 
 namespace uinta {
 
@@ -41,6 +42,7 @@ class ViewMatrixUpdater : public NewFrameComponent {
 DebugScene::DebugScene(Layer layer, const OpenGLApi* gl) noexcept
     : Scene(layer), shader_(gl), gl_(gl) {
   addScene<AxisViewer>(&camera_);
+  addScene<Grid>(15, &camera_);
   components().add<ViewMatrixUpdater>(this);
 }
 
