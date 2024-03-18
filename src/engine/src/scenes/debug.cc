@@ -40,6 +40,7 @@ class ViewMatrixUpdater : public NewFrameComponent {
 
 DebugScene::DebugScene(Layer layer, const OpenGLApi* gl) noexcept
     : Scene(layer), shader_(gl), gl_(gl) {
+  addScene<AxisViewer>(&camera_);
   components().add<ViewMatrixUpdater>(this);
 }
 
