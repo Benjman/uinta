@@ -18,6 +18,7 @@ can greatly speed up the build times.
 * [Abseil](https://github.com/abseil/abseil-cpp)
 * [assimp](https://github.com/assimp/assimp)
 * [Dear ImGui](https://github.com/ocornut/imgui)
+* [EnTT](https://github.com/skypjack/entt)
 * [GLFW](https://github.com/glfw/glfw)
 * [glm](https://github.com/g-truc/glm)
 
