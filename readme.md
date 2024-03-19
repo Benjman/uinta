@@ -14,6 +14,7 @@ It's recommended to include these libraries in your system's path, although it's
 
 * [Abseil](https://github.com/abseil/abseil-cpp)
 * [assimp](https://github.com/assimp/assimp)
+* [EnTT](https://github.com/skypjack/entt)
 * [GLFW](https://github.com/glfw/glfw)
 * [glm](https://github.com/g-truc/glm)
 
