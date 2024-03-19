@@ -20,6 +20,7 @@ set(UINTA_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(abseil-cpp)
+include(assimp)
 include(glm)
 include(stb)
 
