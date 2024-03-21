@@ -4,10 +4,13 @@
 #include <array>
 #include <utility>
 
+#include "absl/random/random.h"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/quaternion_geometric.hpp"
 #include "glm/trigonometric.hpp"
+#include "uinta/color.h"
+#include "uinta/math/defs.h"
 
 namespace uinta {
 
@@ -129,6 +132,113 @@ Primitive Primitive::Plane(size_t* idxOffset) noexcept {
                 [idxOffset](auto& i) { i += *idxOffset; });
   *idxOffset += 4;
   return plane;
+}
+
+namespace tree {
+Primitive canopy(size_t* idxOffset, const glm::mat4& transform) noexcept;
+Primitive trunk(size_t* idxOffset, const glm::mat4& transform) noexcept;
+}  // namespace tree
+
+Primitive Primitive::Environment::Tree(size_t* idxOffset,
+                                       glm::mat4 transform) noexcept {
+  assert(idxOffset && "`*idxOffset` cannot be null.");
+  std::array<Primitive, 2> primitives = {tree::canopy(idxOffset, transform),
+                                         tree::trunk(idxOffset, transform)};
+  return Primitive(primitives);
+}
+
+void displacePositions(Primitive*, const glm::vec3&);
+void displaceRotation(Primitive*, f32 deg, const glm::vec3& axis);
+
+Primitive tree::canopy(size_t* idxOffset, const glm::mat4& transform) noexcept {
+  size_t origOffset = *idxOffset;
+  auto cube = Primitive::Cube(idxOffset);
+  displaceRotation(&cube, 15, glm::vec3(0, 1, 0));
+  displacePositions(&cube, glm::vec3(0.075));
+  std::for_each(cube.vertices().begin(), cube.vertices().end(),
+                [&transform](auto& vertex) {
+                  auto local = glm::scale(transform, glm::vec3(0.75, 1, 0.75));
+                  local = glm::translate(local, glm::vec3(0, 1.1, 0));
+                  vertex.position = local * glm::vec4(vertex.position, 1.0);
+                  vertex.color = color::Green600;
+                });
+  cube.recalculateNormals(origOffset);
+  return cube;
+}
+
+Primitive tree::trunk(size_t* idxOffset, const glm::mat4& transform) noexcept {
+  size_t origOffset = *idxOffset;
+  auto cube = Primitive::Cube(idxOffset);
+  displaceRotation(&cube, 45, glm::vec3(0, 1, 0));
+  std::for_each(cube.vertices().begin(), cube.vertices().end(),
+                [&transform](auto& vertex) {
+                  auto local = glm::scale(transform, glm::vec3(0.25, 1, 0.25));
+                  local = glm::rotate(local, 0.f, glm::vec3(0, 1, 0));
+                  local = glm::translate(local, glm::vec3(0, 0.5, 0));
+                  vertex.position = local * glm::vec4(vertex.position, 1);
+                  vertex.color = color::Brown500;
+                });
+  cube.recalculateNormals(origOffset);
+  return cube;
+}
+
+using Distribution = absl::uniform_real_distribution<f32>;
+
+void displacePositions(Primitive* primitive, const glm::vec3& range) {
+  absl::BitGen bitgen;
+  Distribution displacement_x(-range.x, range.x);
+  Distribution displacement_y(-range.y, range.y);
+  Distribution displacement_z(-range.z, range.z);
+  std::vector<std::pair<glm::vec3, glm::vec3>> map;
+  for (auto& vertex : primitive->vertices()) {
+    auto& position = vertex.position;
+    if (std::find_if(map.begin(), map.end(), [&position](auto& kvp) {
+          return glm::length(kvp.first - position) < epsilon_f;
+        }) == map.end()) {
+      map.push_back(
+          {position, glm::vec3(displacement_x(bitgen), displacement_y(bitgen),
+                               displacement_z(bitgen))});
+    }
+  }
+  std::for_each(
+      primitive->vertices().begin(), primitive->vertices().end(),
+      [&map](auto& vertex) {
+        auto rand = std::find_if(map.begin(), map.end(), [&vertex](auto& kvp) {
+          return glm::length(kvp.first - vertex.position) < epsilon_f;
+        });
+        vertex.position = glm::translate(glm::mat4(1), rand->second) *
+                          glm::vec4(vertex.position, 1);
+      });
+}
+
+void displaceRotation(Primitive* p, f32 deg, const glm::vec3& axis) {
+  absl::BitGen bitgen;
+  Distribution displacement(-deg, deg);
+  std::vector<std::pair<glm::vec3, glm::vec3>> map;
+  for (auto& vertex : p->vertices()) {
+    auto& rotation = vertex.position;
+    if (std::find_if(map.begin(), map.end(), [&rotation](auto& kvp) {
+          return glm::length(kvp.first - rotation) < epsilon_f;
+        }) == map.end()) {
+      map.push_back(
+          {rotation, glm::vec3(displacement(bitgen), displacement(bitgen),
+                               displacement(bitgen)) *
+                         axis});
+    }
+  }
+  std::for_each(
+      p->vertices().begin(), p->vertices().end(), [&map](auto& vertex) {
+        auto rand = std::find_if(map.begin(), map.end(), [&vertex](auto& kvp) {
+          return glm::length(kvp.first - vertex.position) < epsilon_f;
+        });
+        auto rotation = glm::rotate(glm::mat4(1), glm::radians(rand->second.x),
+                                    glm::vec3(1, 0, 0));
+        rotation = glm::rotate(rotation, glm::radians(rand->second.y),
+                               glm::vec3(0, 1, 0));
+        rotation = glm::rotate(rotation, glm::radians(rand->second.z),
+                               glm::vec3(0, 0, 1));
+        vertex.position = rotation * glm::vec4(vertex.position, 1.0);
+      });
 }
 
 }  // namespace uinta

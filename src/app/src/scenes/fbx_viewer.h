@@ -28,10 +28,7 @@ class FbxViewerScene : public Scene {
     vao_.ebo(mesh.elements());
     indexCount_ = mesh.elements().size();
 
-    ShaderGuard sg(shader_);
     shader_->linkAttributes(&vao_);
-    shader_->view = glm::translate(glm::mat4(1), glm::vec3(0, 0, -1));
-    shader_->model = glm::scale(glm::mat4(1), glm::vec3(0.001));
   }
 
   void render(const EngineState&) noexcept override {

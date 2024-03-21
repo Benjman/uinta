@@ -4,6 +4,7 @@
 #include <span>
 #include <vector>
 
+#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "uinta/types.h"
@@ -90,6 +91,11 @@ class Primitive {
   std::span<u32> elements() noexcept { return elements_; }
 
   void recalculateNormals(size_t idxOffset = 0) noexcept;
+
+  struct Environment {
+    static Primitive Tree(size_t* idxOffset,
+                          glm::mat4 transform = glm::mat4(1)) noexcept;
+  };
 
  private:
   std::vector<Vertex> vertices_;
