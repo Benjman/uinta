@@ -128,6 +128,11 @@ class Mesh {
 
   void transformPositions(glm::mat4 transform) noexcept;
 
+  struct Environment final {
+    static Mesh Tree(idx_t* idxOffset,
+                     glm::mat4 transform = glm::mat4(1)) noexcept;
+  };
+
  private:
   std::vector<Vertex> vertices_;
   std::vector<idx_t> elements_;
