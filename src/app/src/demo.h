@@ -10,6 +10,7 @@
 #include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
 #include "uinta/scenes/fbx_viewer.h"
+#include "uinta/scenes/trees.h"
 #include "uinta/shaders/primitive.h"
 
 namespace uinta {
@@ -35,6 +36,7 @@ class DemoScene : public Scene {
     DebugSceneParams params(&camera_, &shader_);
     addScene<DebugScene>(&params);
     addScene<FbxViewerScene>(&params);
+    addScene<TreeScene>(&params);
   }
 
   std::string name() const noexcept override { return "DemoScene"; }

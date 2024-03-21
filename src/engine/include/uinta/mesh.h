@@ -105,6 +105,11 @@ class Mesh {
   void translate(glm::vec3 translation,
                  glm::mat4 transform = glm::mat4(1)) noexcept;
 
+  struct Environment {
+    static Mesh Tree(size_t* idxOffset,
+                     glm::mat4 transform = glm::mat4(1)) noexcept;
+  };
+
  private:
   std::vector<Vertex> vertices_;
   std::vector<u32> elements_;
