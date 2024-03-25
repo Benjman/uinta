@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "./utils.h"
+#include "uinta/mock/mock_component.h"
 #include "uinta/mock/mock_platform.h"
 
 namespace uinta {
@@ -157,6 +158,110 @@ TEST_F(EngineTest, EventOnMonitorChange) {
       OnMonitorChangeEvent(&secondMon));
   auto secondMonExpectedAdvance = 1.0 / secondMon.hz();
   ASSERT_FLOAT_EQ(secondMonExpectedAdvance, engine.frameManager().frequency);
+}
+
+TEST_F(EngineTest, AddComponent) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  auto* component = engine.addComponent<MockComponent<PreTickComponent>>();
+  auto expected = engine.components()->preTickComponents().end();
+  auto itr = std::find_if(
+      engine.components()->preTickComponents().begin(),
+      engine.components()->preTickComponents().end(),
+      [component](const auto& ptr) { return ptr.get() == component; });
+  ASSERT_NE(expected, itr);
+}
+
+TEST_F(EngineTest, RemoveComponent) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  auto* component = engine.addComponent<MockComponent<PreTickComponent>>();
+  engine.removeComponent(component);
+  auto expected = engine.components()->preTickComponents().end();
+  auto itr = std::find_if(
+      engine.components()->preTickComponents().begin(),
+      engine.components()->preTickComponents().end(),
+      [component](const auto& ptr) { return ptr.get() == component; });
+  ASSERT_EQ(expected, itr);
+}
+
+TEST_F(EngineTest, ComponentNewFrame) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* component = engine.addComponent<MockComponent<PreTickComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  ASSERT_EQ(0, engine.state().tick());
+  engine.run();
+  ASSERT_TRUE(component->updateCalled);
+  ASSERT_NE(0, engine.state().tick());
+}
+
+TEST_F(EngineTest, ComponentPostRender) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* component = engine.addComponent<MockComponent<PostRenderComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  engine.run();
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST_F(EngineTest, ComponentPostTick) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* component = engine.addComponent<MockComponent<PostTickComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  engine.run();
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST_F(EngineTest, ComponentPreRender) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* component = engine.addComponent<MockComponent<PreRenderComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  engine.run();
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST_F(EngineTest, ComponentPreTick) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* component = engine.addComponent<MockComponent<PreTickComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  engine.run();
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST_F(EngineTest, ComponentRender) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* component = engine.addComponent<MockComponent<RenderComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  engine.run();
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST_F(EngineTest, ComponentTick) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* component = engine.addComponent<MockComponent<TickComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  engine.run();
+  ASSERT_TRUE(component->updateCalled);
 }
 
 }  // namespace uinta

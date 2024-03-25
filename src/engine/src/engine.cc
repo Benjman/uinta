@@ -21,7 +21,8 @@ constexpr std::array<glm::vec4, 5> theGrassIsAlwaysGreener = {
 constexpr auto palette = theGrassIsAlwaysGreener;
 
 Engine::Engine(Params params) noexcept
-    : frame_(params.platform->primaryMonitor().value_or(nullptr)),
+    : components_(this),
+      frame_(params.platform->primaryMonitor().value_or(nullptr)),
       appConfig_(params.appConfig),
       fileSystem_(params.fileSystem),
       gl_(params.gl),
