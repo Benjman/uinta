@@ -1,6 +1,9 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 
+#include <utility>
+
+#include "uinta/component.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
@@ -40,6 +43,20 @@ class Engine : public RuntimeGetter {
 
   AppConfig* appConfig() noexcept { return appConfig_; }
 
+  const ComponentManager* components() const noexcept { return &components_; }
+
+  ComponentManager* components() noexcept { return &components_; }
+
+  template <typename T, typename... Args>
+  T* addComponent(Args&&... args) noexcept {
+    return components_.add<T>(std::forward<Args>(args)...);
+  }
+
+  template <typename T>
+  void removeComponent(T* component) noexcept {
+    components_.remove(component);
+  }
+
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
   const FileSystem* fileSystem() const noexcept { return fileSystem_; }
@@ -76,6 +93,7 @@ class Engine : public RuntimeGetter {
   }
 
  private:
+  ComponentManager components_;
   EngineState state_;
   EngineDispatchers dispatchers_;
   FrameManager frame_;
@@ -111,6 +129,10 @@ class Engine : public RuntimeGetter {
 
   template <EngineStage S>
   void advance() noexcept {
+    auto delta = state_.delta();
+
+    components_.update<S>(delta);
+
     if constexpr (S == EngineStage::PreTick) {
       preTick();
     } else if constexpr (S == EngineStage::Tick) {
