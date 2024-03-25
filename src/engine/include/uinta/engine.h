@@ -1,6 +1,7 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_H_
 
+#include "uinta/component.h"
 #include "uinta/engine_state.h"
 #include "uinta/gl.h"
 #include "uinta/lib/absl/status.h"
@@ -29,9 +30,12 @@ class Engine {
 
   const EngineState& state() const noexcept { return state_; }
 
+  ComponentList& components() noexcept { return components_; }
+
  private:
   Status status_;
   EngineState state_;
+  ComponentList components_;
 
   const OpenGLApi* gl_;
   Platform* platform_;

@@ -69,12 +69,14 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
 Engine::Engine(Engine&& other) noexcept
     : status_(other.status_),
       state_(std::move(other.state_)),
+      components_(std::move(other.components_)),
       platform_(std::move(other.platform_)) {}
 
 Engine& Engine::operator=(Engine&& other) noexcept {
   if (this != &other) {
     status_ = other.status_;
     state_ = std::move(other.state_);
+    components_ = std::move(other.components_);
     platform_ = std::move(other.platform_);
   }
   return *this;
@@ -89,6 +91,7 @@ void Engine::newFrame() noexcept {
 
   if (!status_.ok()) return;
   state_.isNewFrame(true);
+  components_.update(Component::Stage::NewFrame, state_);
 }
 
 void Engine::setCallbacks() noexcept {
