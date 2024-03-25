@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "uinta/component.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
@@ -46,10 +47,26 @@ class Engine : public RuntimeGetter {
   Engine(const Engine&&) noexcept = delete;
   Engine& operator=(const Engine&&) noexcept = delete;
 
+  template <typename T, typename... Args>
+  T* addComponent(Args&&... args) noexcept {
+    static_assert(std::is_base_of_v<Component, T>);
+    return components_.add<T>(std::forward<Args>(args)...);
+  }
+
+  template <typename T>
+  void removeComponent(T* component) noexcept {
+    static_assert(std::is_base_of_v<Component, T>);
+    components_.remove(component);
+  }
+
   template <EngineEvent E, typename... Args>
   void addListener(Args&&... args) noexcept {
     dispatchers_.template addListener<E>(std::forward<Args>(args)...);
   }
+
+  const ComponentManager* components() const noexcept { return &components_; }
+
+  ComponentManager* components() noexcept { return &components_; }
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
@@ -80,6 +97,7 @@ class Engine : public RuntimeGetter {
   Status& status() noexcept { return status_; }
 
  private:
+  ComponentManager components_;
   EngineState state_;
   EngineDispatchers dispatchers_;
   FrameManager frame_;

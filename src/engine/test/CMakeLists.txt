@@ -1,3 +1,4 @@
+list(APPEND ENGINE_TEST_SRCS src/component_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/engine_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/ring_buffer_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/running_average_test.cc)

@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include "./mock/mock_component.h"
 #include "./mock/mock_gl.h"
 #include "./mock/mock_platform.h"
 #include "absl/log/log.h"
@@ -231,6 +232,105 @@ TEST(Engine, EventOnMonitorChange) {
   auto secondMonExpectedAdvance = 1.0 / secondMon.hz();
   ASSERT_FLOAT_EQ(secondMonExpectedAdvance,
                   engine.frameManager().nextFrameAdvance);
+}
+
+TEST(Engine, AddComponent) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<NewFrameComponent>>();
+  auto expected = engine.components()->newFrameComponents().end();
+  auto itr = std::find_if(
+      engine.components()->newFrameComponents().begin(),
+      engine.components()->newFrameComponents().end(),
+      [component](const auto& ptr) { return ptr.get() == component; });
+  ASSERT_NE(expected, itr);
+}
+
+TEST(Engine, RemoveComponent) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<NewFrameComponent>>();
+  engine.removeComponent(component);
+  auto expected = engine.components()->newFrameComponents().end();
+  auto itr = std::find_if(
+      engine.components()->newFrameComponents().begin(),
+      engine.components()->newFrameComponents().end(),
+      [component](const auto& ptr) { return ptr.get() == component; });
+  ASSERT_EQ(expected, itr);
+}
+
+TEST(Engine, ComponentNewFrame) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<NewFrameComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  ASSERT_EQ(0, engine.state().tick());
+  runThenClose(&engine, [&component]() { return component->updateCalled; });
+  ASSERT_TRUE(component->updateCalled);
+  ASSERT_NE(0, engine.state().tick());
+}
+
+TEST(Engine, ComponentPostRender) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<PostRenderComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  runThenClose(&engine, [&component]() { return component->updateCalled; });
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST(Engine, ComponentPostTick) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<PostTickComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  runThenClose(&engine, [&component]() { return component->updateCalled; });
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST(Engine, ComponentPreRender) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<PreRenderComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  runThenClose(&engine, [&component]() { return component->updateCalled; });
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST(Engine, ComponentPreTick) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<PreTickComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  runThenClose(&engine, [&component]() { return component->updateCalled; });
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST(Engine, ComponentRender) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<RenderComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  runThenClose(&engine, [&component]() { return component->updateCalled; });
+  ASSERT_TRUE(component->updateCalled);
+}
+
+TEST(Engine, ComponentTick) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* component = engine.addComponent<MockComponent<TickComponent>>();
+  ASSERT_FALSE(component->updateCalled);
+  runThenClose(&engine, [&component]() { return component->updateCalled; });
+  ASSERT_TRUE(component->updateCalled);
 }
 
 }  // namespace uinta

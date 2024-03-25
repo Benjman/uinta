@@ -14,7 +14,7 @@
 namespace uinta {
 
 Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
-    : frame_(platform), gl_(gl), platform_(platform) {
+    : components_(this), frame_(platform), gl_(gl), platform_(platform) {
   assert(platform_ && "`Platform*` cannot be null.");
 
   platform_->addListener<PlatformEvent::OnCloseRequest>(
@@ -121,21 +121,35 @@ void Engine::run() noexcept {
       start = runtime;
       state_.isNewFrame(runtime >= frame_.nextFrame);
       state_.update(runtime, 1);
+
+      components_.update<EngineStage::PreTick>(state_);
       advance<EngineStage::PreTick>();
+
+      components_.update<EngineStage::Tick>(state_);
       advance<EngineStage::Tick>();
+
+      components_.update<EngineStage::PostTick>(state_);
       advance<EngineStage::PostTick>();
+
       runtime = getRuntime();
       dispatch<EngineEvent::TickComplete>(
           TickComplete(&state_, runtime - start));
     } while (!state_.isNewFrame());
+
+    components_.update<ComponentType::NewFrame>(state_);
 
     runtime = getRuntime();
     start = runtime;
     frame_.nextFrame =
         runtime + (flags_.isFixedTickRate() ? 0 : frame_.nextFrameAdvance);
 
+    components_.update<EngineStage::PreRender>(state_);
     advance<EngineStage::PreRender>();
+
+    components_.update<EngineStage::Render>(state_);
     advance<EngineStage::Render>();
+
+    components_.update<EngineStage::PostRender>(state_);
     advance<EngineStage::PostRender>();
 
     ShaderGuard shaderGuard(&shader);
