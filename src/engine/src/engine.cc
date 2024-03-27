@@ -6,10 +6,6 @@
 #include "uinta/gl.h"
 #include "uinta/lib/absl/strings.h"
 #include "uinta/platform.h"
-#include "uinta/shader.h"
-#include "uinta/texture.h"
-#include "uinta/vao.h"
-#include "uinta/vbo.h"
 
 namespace uinta {
 
@@ -18,34 +14,6 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
   assert(platform_ && "`Platform*` cannot be null.");
 
   setCallbacks();
-
-  Shader shader({{GL_VERTEX_SHADER, "shader.vs.glsl"},
-                 {GL_FRAGMENT_SHADER, "shader.fs.glsl"}});
-
-  Vbo vbo(GL_ARRAY_BUFFER);
-  std::vector<f32> vertices = {
-      // positions  // uv coords
-      0.5f,  0.5f,  1.0f, 1.0f,  // top right
-      0.5f,  -0.5f, 1.0f, 0.0f,  // bottom right
-      -0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
-      -0.5f, 0.5f,  0.0f, 1.0f   // top left
-  };
-  VboGuard vbg(&vbo);
-  vbo.bufferData(vertices.data(), vertices.size() * sizeof(f32),
-                 GL_STATIC_DRAW);
-
-  Vao vao;
-  std::vector<u32> idxBuffer = {0, 1, 3, 1, 2, 3};
-  VaoGuard vag(&vao);
-  vao.ebo(idxBuffer);
-  vao.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0});
-  vao.linkAttribute(
-      {1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat)});
-
-  Texture texture;
-  if (status_ = texture.fromFile("wall.jpg"); !status_.ok()) {
-    return;
-  }
 
   onViewportChange(platform_->window()->width(), platform_->window()->height());
 
@@ -65,11 +33,6 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
     if (!status_.ok()) return;
 
     newFrame();
-
-    ShaderGuard shaderGuard(&shader);
-    VaoGuard vaoGuard(&vao);
-    TextureGuard textureGuard(&texture);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   }
 }
 
