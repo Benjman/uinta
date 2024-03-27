@@ -3,8 +3,10 @@
 #include <cassert>
 
 #include "absl/log/log.h"
+#include "uinta/gl.h"
 #include "uinta/lib/absl/strings.h"
 #include "uinta/shader.h"
+#include "uinta/texture.h"
 #include "uinta/uniform.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
@@ -82,10 +84,11 @@ void Engine::run() noexcept {
 
   Vbo vbo(GL_ARRAY_BUFFER, 0, gl_);
   std::vector<f32> vertices = {
-      0.5f,  0.5f,   // top right
-      0.5f,  -0.5f,  // bottom right
-      -0.5f, -0.5f,  // bottom left
-      -0.5f, 0.5f,   // top left
+      // positions  // uv coords
+      0.5f,  0.5f,  1.0f, 1.0f,  // top right
+      0.5f,  -0.5f, 1.0f, 0.0f,  // bottom right
+      -0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
+      -0.5f, 0.5f,  0.0f, 1.0f   // top left
   };
   VboGuard vbg(&vbo);
   vbo.bufferData(vertices.data(), vertices.size() * sizeof(f32),
@@ -95,7 +98,14 @@ void Engine::run() noexcept {
   std::vector<u32> idxBuffer = {0, 1, 3, 1, 2, 3};
   VaoGuard vag(&vao);
   vao.ebo(idxBuffer);
-  vao.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0});
+  vao.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0});
+  vao.linkAttribute(
+      {1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat)});
+
+  Texture texture(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gl_);
+  if (status_ = texture.fromFile("wall.jpg"); !status_.ok()) {
+    return;
+  }
 
   while (!state_.isClosing() && status_.ok()) {
     if (status_ = platform_->pollEvents(); !status_.ok()) {
@@ -125,6 +135,7 @@ void Engine::run() noexcept {
 
     ShaderGuard shaderGuard(&shader);
     VaoGuard vaoGuard(&vao);
+    TextureGuard textureGuard(&texture);
     gl_->drawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     state_.isNewFrame(false);
