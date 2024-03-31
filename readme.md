@@ -21,6 +21,12 @@ Any missing library not found on the path will be automatically downloaded and
 linked to the project. Having the libraries on your path greatly reduces build
 times.
 
+### Required libraries
+
+The following libraries are required to be available on your path prior to building:
+
+* Platform appropriate OpenGL headers
+
 ## Build project
 
 ```sh
