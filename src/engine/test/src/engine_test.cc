@@ -264,4 +264,73 @@ TEST_F(EngineTest, ComponentTick) {
   ASSERT_TRUE(component->updateCalled);
 }
 
+TEST_F(EngineTest, SystemExecuting) {
+  class TestSystem : public System {
+   public:
+    bool onPreTickCalled = false;
+    void onPreTick(time_t) noexcept override {
+      if (onPreTickCalled) return;
+      onPreTickCalled = true;
+      ASSERT_EQ(0, callIndex);
+      callIndex++;
+    }
+
+    bool onTickCalled = false;
+    void onTick(time_t) noexcept override {
+      if (onTickCalled) return;
+      onTickCalled = true;
+      ASSERT_EQ(1, callIndex);
+      callIndex++;
+    }
+
+    bool onPostTickCalled = false;
+    void onPostTick(time_t) noexcept override {
+      if (onPostTickCalled) return;
+      onPostTickCalled = true;
+      ASSERT_EQ(2, callIndex);
+      callIndex++;
+    }
+
+    bool onPreRenderCalled = false;
+    void onPreRender(time_t) noexcept override {
+      if (onPreRenderCalled) return;
+      onPreRenderCalled = true;
+      ASSERT_EQ(3, callIndex);
+      callIndex++;
+    }
+
+    bool onRenderCalled = false;
+    void onRender(time_t) noexcept override {
+      if (onRenderCalled) return;
+      onRenderCalled = true;
+      ASSERT_EQ(4, callIndex);
+      callIndex++;
+    }
+
+    bool onPostRenderCalled = false;
+    void onPostRender(time_t) noexcept override {
+      if (onPostRenderCalled) return;
+      onPostRenderCalled = true;
+      ASSERT_EQ(5, callIndex);
+      callIndex++;
+    }
+
+    size_t callIndex = 0;
+  };
+
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  engine.dispatchers()->addListener<EngineEvent::RenderComplete>(
+      [&](const auto&) { engine.state().isClosing(true); });
+  auto* system = engine.addSystem<TestSystem>();
+  engine.run();
+
+  ASSERT_TRUE(system->onPreTickCalled);
+  ASSERT_TRUE(system->onTickCalled);
+  ASSERT_TRUE(system->onPostTickCalled);
+  ASSERT_TRUE(system->onPreRenderCalled);
+  ASSERT_TRUE(system->onRenderCalled);
+  ASSERT_TRUE(system->onPostRenderCalled);
+}
+
 }  // namespace uinta

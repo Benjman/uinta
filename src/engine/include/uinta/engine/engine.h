@@ -1,6 +1,7 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 
+#include <optional>
 #include <utility>
 
 #include "uinta/component.h"
@@ -10,9 +11,11 @@
 #include "uinta/file.h"
 #include "uinta/gl.h"
 #include "uinta/platform.h"
+#include "uinta/reflect.h"
 #include "uinta/runtime_getter.h"
 #include "uinta/shader.h"
 #include "uinta/status.h"
+#include "uinta/system.h"
 #include "uinta/texture.h"
 #include "uinta/types.h"
 #include "uinta/uniform.h"
@@ -57,6 +60,36 @@ class Engine : public RuntimeGetter {
     components_.remove(component);
   }
 
+  template <typename T, typename... Args>
+  T* addSystem(Args&&... args) noexcept {
+    return systems_.add<T>(std::forward<Args>(args)...);
+  }
+
+  template <typename T>
+  void removeSystem(T* system) noexcept {
+    systems_.remove(system);
+  }
+
+  template <typename T>
+  std::optional<T*> findSystem() const noexcept {
+    if (std::optional<T*> system = systems_.find<T>(); system.has_value()) {
+      return system;
+    } else {
+      return std::nullopt;
+    }
+  }
+
+  template <typename T>
+  T* findSystemOrThrow() const {
+    if (std::optional<T*> system = findSystem<T>(); system != std::nullopt) {
+      return system.value();
+    } else {
+      throw std::runtime_error(
+          absl::StrFormat("Required system not found: '%s'",
+                          demangleTypeName(typeid(T).name())));
+    }
+  }
+
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
   const FileSystem* fileSystem() const noexcept { return fileSystem_; }
@@ -92,12 +125,17 @@ class Engine : public RuntimeGetter {
     }
   }
 
+  const SystemManager* systems() const noexcept { return &systems_; }
+
+  SystemManager* systems() noexcept { return &systems_; }
+
  private:
   ComponentManager components_;
   EngineState state_;
   EngineDispatchers dispatchers_;
   FrameManager frame_;
   Status status_;
+  SystemManager systems_;
 
   AppConfig* appConfig_;
   FileSystem* fileSystem_;
@@ -132,6 +170,7 @@ class Engine : public RuntimeGetter {
     auto delta = state_.delta();
 
     components_.update<S>(delta);
+    systems_.update<S>(delta);
 
     if constexpr (S == EngineStage::PreTick) {
       preTick();
