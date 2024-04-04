@@ -10,7 +10,7 @@
 namespace uinta {
 
 Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
-    : gl_(gl), platform_(platform) {
+    : frameManager_(platform), gl_(gl), platform_(platform) {
   assert(platform_ && "`Platform*` cannot be null.");
 
   setCallbacks();
@@ -18,16 +18,20 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
   onViewportChange(platform_->window()->width(), platform_->window()->height());
 
   while (!state_.isClosing() && status_.ok()) {
-    if (auto status = platform_->runtime(); status.ok()) {
-      state_.addTicks(1);
-      state_.addDelta(status.value() - state_.runtime());
-    } else {
-      status_ = status.status();
-      return;
-    }
-
     status_ = platform_->pollEvents();
     if (!status_.ok()) return;
+
+    do {
+      if (auto status = platform_->runtime(); status.ok()) {
+        state_.addTicks(1);
+        state_.addDelta(status.value() - state_.runtime());
+      } else {
+        status_ = status.status();
+        return;
+      }
+
+      state_.newFrame(false);
+    } while (state_.runtime() < frameManager_.nextFrame);
 
     newFrame();
   }
@@ -43,6 +47,7 @@ void Engine::newFrame() noexcept {
 
   state_.newFrame(true);
   state_.resetFrameDelta();
+  frameManager_.nextFrame = state_.runtime() + frameManager_.nextFrameAdvance;
 }
 
 void Engine::setCallbacks() noexcept {

@@ -5,6 +5,7 @@
 #include "uinta/gl.h"
 #include "uinta/lib/absl/status.h"
 #include "uinta/types.h"
+#include "uinta/utils/frame_manager.h"
 
 namespace uinta {
 
@@ -32,6 +33,7 @@ class Engine {
   const EngineState& state() const noexcept { return state_; }
 
  private:
+  FrameManager frameManager_;
   Status status_;
   EngineState state_;
 
