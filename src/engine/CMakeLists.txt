@@ -9,6 +9,7 @@ list(APPEND ENGINE_SRCS src/lib/stb_image_api.cc)
 list(APPEND ENGINE_SRCS src/reflect.cc)
 list(APPEND ENGINE_SRCS src/shader.cc)
 list(APPEND ENGINE_SRCS src/texture.cc)
+list(APPEND ENGINE_SRCS src/utils/frame_manager.cc)
 list(APPEND ENGINE_SRCS src/vbo_guard.cc)
 
 add_library(engine STATIC ${ENGINE_SRCS})
