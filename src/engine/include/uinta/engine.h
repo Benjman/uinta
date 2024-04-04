@@ -30,6 +30,11 @@ class Engine {
   const EngineState& state() const noexcept { return state_; }
 
  private:
+  struct FrameManager {
+    explicit FrameManager(const Platform*);
+    f32 nextFrame = 0;
+    const u32 nextFrameAdvance;
+  } frameManager_;
   Status status_;
   EngineState state_;
 

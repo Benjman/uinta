@@ -10,7 +10,7 @@
 namespace uinta {
 
 Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
-    : gl_(gl), platform_(platform) {
+    : frameManager_(platform), gl_(gl), platform_(platform) {
   assert(platform_ && "`Platform*` cannot be null.");
 
   setCallbacks();
@@ -22,15 +22,18 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
   const auto startRuntime = status_.ok() ? runtime.value() : 0;
 
   while (!state_.isClosing() && status_.ok()) {
-    auto runtime = platform_->runtime();
-    if (!runtime.ok()) {
-      status_ = runtime.status();
-      return;
-    }
-    state_.advance(runtime.value() - startRuntime);
-
     status_ = platform_->pollEvents();
     if (!status_.ok()) return;
+
+    do {
+      if (runtime = platform_->runtime(); !runtime.ok()) {
+        status_ = runtime.status();
+        return;
+      }
+
+      state_.advance(runtime.value() - startRuntime);
+      state_.newFrame(false);
+    } while (state_.runtime() < frameManager_.nextFrame);
 
     newFrame();
   }
@@ -46,6 +49,7 @@ void Engine::newFrame() noexcept {
 
   state_.newFrame(true);
   state_.resetFrameDelta();
+  frameManager_.nextFrame = state_.runtime() + frameManager_.nextFrameAdvance;
 }
 
 void Engine::setCallbacks() noexcept {
@@ -79,5 +83,9 @@ void Engine::setCallbacks() noexcept {
 void Engine::onViewportChange(u32 width, u32 height) noexcept {
   gl_->viewport(0, 0, width, height);
 }
+
+Engine::FrameManager::FrameManager(const Platform* platform)
+    : nextFrameAdvance(1.0f /
+                       static_cast<f32>(platform->primaryMonitor()->hz())) {}
 
 }  // namespace uinta
