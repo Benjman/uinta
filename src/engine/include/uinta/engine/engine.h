@@ -13,6 +13,7 @@
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
 #include "uinta/types.h"
+#include "uinta/utils/frame_manager.h"
 
 namespace uinta {
 
@@ -22,8 +23,16 @@ class Engine : public RuntimeGetter {
  public:
   struct Flags final {
     using value_type = u8;
+    // `FixedTickRate` will run the tick loop only once per frame.
+    static constexpr value_type FixedTickRateMask = 1 << 0;
 
-    FlagsOperations(0);
+    bool isFixedTickRate() const noexcept { return flags_ & FixedTickRateMask; }
+    void isFixedTickRate(bool v) noexcept {
+      flags_ &= ~FixedTickRateMask;
+      if (v) flags_ |= FixedTickRateMask;
+    }
+
+    FlagsOperations(FixedTickRateMask);
 
    private:
     value_type flags_;
@@ -48,6 +57,10 @@ class Engine : public RuntimeGetter {
 
   void flags(Flags flags) noexcept { flags_ = flags; }
 
+  const FrameManager& frameManager() const noexcept { return frame_; }
+
+  FrameManager& frameManager() noexcept { return frame_; }
+
   const OpenGLApi* gl() const noexcept { return gl_; }
 
   const Platform* platform() const noexcept { return platform_; }
@@ -69,6 +82,7 @@ class Engine : public RuntimeGetter {
  private:
   EngineState state_;
   EngineDispatchers dispatchers_;
+  FrameManager frame_;
   Status status_;
   Flags flags_;
 

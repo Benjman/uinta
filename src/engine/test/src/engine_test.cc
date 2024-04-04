@@ -217,4 +217,20 @@ TEST(Engine, EventRenderComplete) {
   ASSERT_TRUE(renderCompleteEventCalled);
 }
 
+TEST(Engine, EventOnMonitorChange) {
+  Monitor firstMon("First monitor", 1920, 1080, 60, nullptr, true);
+  Monitor secondMon("Second monitor", 1920, 1080, 144);
+  MockPlatform platform(&firstMon);
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto firstMonExpectedAdvance = 1.0 / firstMon.hz();
+  ASSERT_FLOAT_EQ(firstMonExpectedAdvance,
+                  engine.frameManager().nextFrameAdvance);
+  platform.dispatch<PlatformEvent::OnMonitorChange>(
+      OnMonitorChangeEvent(&secondMon));
+  auto secondMonExpectedAdvance = 1.0 / secondMon.hz();
+  ASSERT_FLOAT_EQ(secondMonExpectedAdvance,
+                  engine.frameManager().nextFrameAdvance);
+}
+
 }  // namespace uinta

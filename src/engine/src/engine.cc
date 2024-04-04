@@ -14,7 +14,7 @@
 namespace uinta {
 
 Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
-    : gl_(gl), platform_(platform) {
+    : frame_(platform), gl_(gl), platform_(platform) {
   assert(platform_ && "`Platform*` cannot be null.");
 
   platform_->addListener<PlatformEvent::OnCloseRequest>(
@@ -59,6 +59,9 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
     LOG(INFO) << StrFormat("Event: Viewport size change (%u, %u)", width,
                            height);
   });
+
+  platform_->addListener<PlatformEvent::OnMonitorChange>(
+      [&](const auto& event) { frame_.onMonitorChange(event.monitor); });
 
   gl_->clearColor(0.1, 0.1, 0.1, 1.0);
 
@@ -116,7 +119,7 @@ void Engine::run() noexcept {
     do {
       runtime = getRuntime();
       start = runtime;
-      state_.isNewFrame(true);
+      state_.isNewFrame(runtime >= frame_.nextFrame);
       state_.update(runtime, 1);
       advance<EngineStage::PreTick>();
       advance<EngineStage::Tick>();
@@ -128,6 +131,8 @@ void Engine::run() noexcept {
 
     runtime = getRuntime();
     start = runtime;
+    frame_.nextFrame =
+        runtime + (flags_.isFixedTickRate() ? 0 : frame_.nextFrameAdvance);
 
     advance<EngineStage::PreRender>();
     advance<EngineStage::Render>();
@@ -139,6 +144,7 @@ void Engine::run() noexcept {
     gl_->drawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     state_.isNewFrame(false);
+
     runtime = getRuntime();
     dispatch<EngineEvent::RenderComplete>(
         RenderComplete(&state_, runtime - start));
