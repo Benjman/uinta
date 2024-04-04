@@ -333,4 +333,81 @@ TEST(Engine, ComponentTick) {
   ASSERT_TRUE(component->updateCalled);
 }
 
+TEST(Engine, SystemExecuting) {
+  class TestSystem : public System {
+   public:
+    bool onPreTickCalled = false;
+    void onPreTick(const EngineState&) noexcept override {
+      if (onPreTickCalled) return;
+      onPreTickCalled = true;
+      ASSERT_EQ(0, callIndex);
+      callIndex++;
+    }
+
+    bool onTickCalled = false;
+    void onTick(const EngineState&) noexcept override {
+      if (onTickCalled) return;
+      onTickCalled = true;
+      ASSERT_EQ(1, callIndex);
+      callIndex++;
+    }
+
+    bool onPostTickCalled = false;
+    void onPostTick(const EngineState&) noexcept override {
+      if (onPostTickCalled) return;
+      onPostTickCalled = true;
+      ASSERT_EQ(2, callIndex);
+      callIndex++;
+    }
+
+    bool onNewFrameCalled = false;
+    void onNewFrame(const EngineState&) noexcept override {
+      if (onNewFrameCalled) return;
+      onNewFrameCalled = true;
+      ASSERT_EQ(3, callIndex);
+      callIndex++;
+    }
+
+    bool onPreRenderCalled = false;
+    void onPreRender(const EngineState&) noexcept override {
+      if (onPreRenderCalled) return;
+      onPreRenderCalled = true;
+      ASSERT_EQ(4, callIndex);
+      callIndex++;
+    }
+
+    bool onRenderCalled = false;
+    void onRender(const EngineState&) noexcept override {
+      if (onRenderCalled) return;
+      onRenderCalled = true;
+      ASSERT_EQ(5, callIndex);
+      callIndex++;
+    }
+
+    bool onPostRenderCalled = false;
+    void onPostRender(const EngineState&) noexcept override {
+      if (onPostRenderCalled) return;
+      onPostRenderCalled = true;
+      ASSERT_EQ(6, callIndex);
+      callIndex++;
+    }
+
+    std::size_t callIndex = 0;
+  };
+
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  auto* system = engine.addSystem<TestSystem>();
+  runThenClose(&engine, [&system]() { return system->onPostRenderCalled; });
+
+  ASSERT_TRUE(system->onPreTickCalled);
+  ASSERT_TRUE(system->onTickCalled);
+  ASSERT_TRUE(system->onPostTickCalled);
+  ASSERT_TRUE(system->onNewFrameCalled);
+  ASSERT_TRUE(system->onPreRenderCalled);
+  ASSERT_TRUE(system->onRenderCalled);
+  ASSERT_TRUE(system->onPostRenderCalled);
+}
+
 }  // namespace uinta

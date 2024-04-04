@@ -123,12 +123,15 @@ void Engine::run() noexcept {
       state_.update(runtime, 1);
 
       components_.update<EngineStage::PreTick>(state_);
+      systems_.update<EngineStage::PreTick>(state_);
       advance<EngineStage::PreTick>();
 
       components_.update<EngineStage::Tick>(state_);
+      systems_.update<EngineStage::Tick>(state_);
       advance<EngineStage::Tick>();
 
       components_.update<EngineStage::PostTick>(state_);
+      systems_.update<EngineStage::PostTick>(state_);
       advance<EngineStage::PostTick>();
 
       runtime = getRuntime();
@@ -137,6 +140,7 @@ void Engine::run() noexcept {
     } while (!state_.isNewFrame());
 
     components_.update<ComponentType::NewFrame>(state_);
+    systems_.update<SystemType::NewFrame>(state_);
 
     runtime = getRuntime();
     start = runtime;
@@ -144,12 +148,15 @@ void Engine::run() noexcept {
         runtime + (flags_.isFixedTickRate() ? 0 : frame_.nextFrameAdvance);
 
     components_.update<EngineStage::PreRender>(state_);
+    systems_.update<EngineStage::PreRender>(state_);
     advance<EngineStage::PreRender>();
 
     components_.update<EngineStage::Render>(state_);
+    systems_.update<EngineStage::Render>(state_);
     advance<EngineStage::Render>();
 
     components_.update<EngineStage::PostRender>(state_);
+    systems_.update<EngineStage::PostRender>(state_);
     advance<EngineStage::PostRender>();
 
     ShaderGuard shaderGuard(&shader);

@@ -13,6 +13,7 @@
 #include "uinta/lib/absl/status.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
+#include "uinta/system.h"
 #include "uinta/types.h"
 #include "uinta/utils/frame_manager.h"
 
@@ -64,6 +65,12 @@ class Engine : public RuntimeGetter {
     dispatchers_.template addListener<E>(std::forward<Args>(args)...);
   }
 
+  template <typename T, typename... Args>
+  T* addSystem(Args&&... args) noexcept {
+    static_assert(std::is_base_of_v<System, T>);
+    return systems_.add<T>(std::forward<Args>(args)...);
+  }
+
   const ComponentManager* components() const noexcept { return &components_; }
 
   ComponentManager* components() noexcept { return &components_; }
@@ -96,12 +103,17 @@ class Engine : public RuntimeGetter {
 
   Status& status() noexcept { return status_; }
 
+  const SystemManager* systems() const noexcept { return &systems_; }
+
+  SystemManager* systems() noexcept { return &systems_; }
+
  private:
   ComponentManager components_;
   EngineState state_;
   EngineDispatchers dispatchers_;
   FrameManager frame_;
   Status status_;
+  SystemManager systems_;
   Flags flags_;
 
   const OpenGLApi* gl_;
