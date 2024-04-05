@@ -9,11 +9,12 @@
 namespace uinta {
 
 class Platform;
+class Scene;
 
 class Engine {
  public:
-  explicit Engine(Platform*,
-                  const OpenGLApi* = OpenGLApiImpl::GetInstance()) noexcept;
+  Engine(Platform*, Scene*,
+         const OpenGLApi* = OpenGLApiImpl::GetInstance()) noexcept;
 
   ~Engine() noexcept = default;
   Engine(const Engine&) noexcept = delete;
@@ -29,6 +30,8 @@ class Engine {
 
   const EngineState& state() const noexcept { return state_; }
 
+  Scene* scene() noexcept { return scene_; }
+
  private:
   struct FrameManager {
     explicit FrameManager(const Platform*);
@@ -40,6 +43,7 @@ class Engine {
 
   const OpenGLApi* gl_;
   Platform* platform_;
+  Scene* scene_;
 
   void newFrame() noexcept;
   void setCallbacks() noexcept;

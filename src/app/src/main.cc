@@ -1,3 +1,4 @@
+#include "./demo.h"
 #include "absl/log/log.h"
 #include "uinta/desktop_platform.h"
 #include "uinta/engine.h"
@@ -10,7 +11,8 @@ int main() {
     return platform.status().raw_code();
   }
 
-  uinta::Engine engine(&platform);
+  uinta::DemoScene scene;
+  uinta::Engine engine(&platform, &scene);
   if (!engine.status().ok()) {
     LOG(FATAL) << absl::StrFormat("Engine failure: %s",
                                   engine.status().message());
