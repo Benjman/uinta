@@ -3,6 +3,7 @@
 
 #include <atomic>
 
+#include "uinta/engine/engine_stage.h"
 #include "uinta/flags.h"
 #include "uinta/types.h"
 
@@ -16,6 +17,13 @@ class EngineState {
   void updateRuntime(time_t runtime) noexcept {
     delta_ = runtime - runtime_;
     runtime_ = runtime;
+  }
+
+  time_t updateStageDelta(EngineStage stage, time_t currentRuntime) noexcept {
+    auto index = static_cast<size_t>(stage);
+    auto delta = currentRuntime - stageRuntimes_[index];
+    stageRuntimes_[index] = currentRuntime;
+    return delta;
   }
 
   void addTick(i32 count = 1) noexcept { tickCount_ += count; }
@@ -65,6 +73,7 @@ class EngineState {
 
   time_t runtime_ = 0;
   time_t delta_ = 0;
+  time_t stageRuntimes_[6] = {0, 0, 0, 0, 0, 0};
   count_t frameCount_ = 0;
   count_t tickCount_ = 0;
 };
