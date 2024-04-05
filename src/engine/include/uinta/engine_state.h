@@ -1,7 +1,7 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_STATE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_STATE_H_
 
-#include "uinta/types.h"
+#include "uinta/engine_stage.h"
 
 namespace uinta {
 
@@ -50,9 +50,21 @@ class EngineState {
 
   void setClosing() noexcept { flags_ |= ClosingMask; }
 
+  EngineStage stage() const noexcept {
+    return static_cast<EngineStage>((flags_ & StageMask) >> StageShift);
+  }
+
+  void stage(EngineStage stage) noexcept {
+    flags_ &= ~StageMask;
+    flags_ |= static_cast<EngineStateFlags>(stage) << StageShift;
+  }
+
  private:
   static constexpr EngineStateFlags NewFrameMask = 1 << 0;
   static constexpr EngineStateFlags ClosingMask = 1 << 1;
+
+  static constexpr EngineStateFlags StageShift = 2;
+  static constexpr EngineStateFlags StageMask = 0x7 << StageShift;
 
   f32 delta_ = 0;
   f32 lastFrameRuntime_ = 0;

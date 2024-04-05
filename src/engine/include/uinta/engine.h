@@ -1,6 +1,8 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_H_
 
+#include <memory>
+
 #include "uinta/engine_state.h"
 #include "uinta/gl.h"
 #include "uinta/lib/absl/status.h"
@@ -10,6 +12,7 @@
 namespace uinta {
 
 class Platform;
+class Scene;
 
 class Engine {
  public:
@@ -32,6 +35,8 @@ class Engine {
 
   const EngineState& state() const noexcept { return state_; }
 
+  void runScene(std::unique_ptr<Scene> scene) noexcept;
+
  private:
   FrameManager frameManager_;
   Status status_;
@@ -40,8 +45,14 @@ class Engine {
   const OpenGLApi* gl_;
   Platform* platform_;
 
-  void newFrame() noexcept;
-  void setCallbacks() noexcept;
+  static constexpr u8 FramebufferResizedMask = 1 << 0;
+  u8 flags_ = FramebufferResizedMask;
+
+  void newFrame(Scene*) noexcept;
+
+  inline bool hasFramebufferResized() const noexcept {
+    return (flags_ & FramebufferResizedMask) != 0;
+  }
 };
 
 }  // namespace uinta

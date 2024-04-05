@@ -14,7 +14,15 @@ class System : public ComponentManager {
   friend class SystemManager;
 
  public:
+  virtual ~System() noexcept = default;
+
   virtual void onNewFrame(const EngineState&) noexcept {}
+  virtual void onPostRender(const EngineState&) noexcept {}
+  virtual void onPostTick(const EngineState&) noexcept {}
+  virtual void onPreRender(const EngineState&) noexcept {}
+  virtual void onPreTick(const EngineState&) noexcept {}
+  virtual void onRender(const EngineState&) noexcept {}
+  virtual void onTick(const EngineState&) noexcept {}
 
  protected:
   System() noexcept = default;
@@ -42,9 +50,44 @@ class SystemManager {
                                        const auto& state) noexcept {
       system->onNewFrame(state);
     };
+    constexpr auto preTickAction = [](auto& system,
+                                      const auto& state) noexcept {
+      system->onPreTick(state);
+    };
+    constexpr auto tickAction = [](auto& system, const auto& state) noexcept {
+      system->onTick(state);
+    };
+    constexpr auto postTickAction = [](auto& system,
+                                       const auto& state) noexcept {
+      system->onPostTick(state);
+    };
+    constexpr auto preRenderAction = [](auto& system,
+                                        const auto& state) noexcept {
+      system->onPreRender(state);
+    };
+    constexpr auto renderAction = [](auto& system, const auto& state) noexcept {
+      system->onRender(state);
+    };
+    constexpr auto postRenderAction = [](auto& system,
+                                         const auto& state) noexcept {
+      system->onPostRender(state);
+    };
 
     constexpr auto runtimeAction = []() {
-      if constexpr (S == EngineStage::NewFrame) return newFrameAction;
+      if constexpr (S == EngineStage::NewFrame)
+        return newFrameAction;
+      else if constexpr (S == EngineStage::PreTick)
+        return preTickAction;
+      else if constexpr (S == EngineStage::Tick)
+        return tickAction;
+      else if constexpr (S == EngineStage::PostTick)
+        return postTickAction;
+      else if constexpr (S == EngineStage::PreRender)
+        return preRenderAction;
+      else if constexpr (S == EngineStage::Render)
+        return renderAction;
+      else if constexpr (S == EngineStage::PostRender)
+        return postRenderAction;
     }();
 
     std::for_each(systems_.begin(), systems_.end(),
