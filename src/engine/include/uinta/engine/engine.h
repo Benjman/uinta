@@ -1,6 +1,8 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 
+#include <memory>
+#include <queue>
 #include <type_traits>
 #include <utility>
 
@@ -13,6 +15,7 @@
 #include "uinta/lib/absl/status.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
+#include "uinta/scene.h"
 #include "uinta/system.h"
 #include "uinta/types.h"
 #include "uinta/utils/frame_manager.h"
@@ -66,6 +69,12 @@ class Engine : public RuntimeGetter {
   }
 
   template <typename T, typename... Args>
+  void addScene(Args&&... args) noexcept {
+    static_assert(std::is_base_of_v<Scene, T>);
+    sceneQueue_.push(std::make_unique<T>(std::forward<Args>(args)...));
+  }
+
+  template <typename T, typename... Args>
   T* addSystem(Args&&... args) noexcept {
     static_assert(std::is_base_of_v<System, T>);
     return systems_.add<T>(std::forward<Args>(args)...);
@@ -95,6 +104,10 @@ class Engine : public RuntimeGetter {
 
   void run() noexcept;
 
+  const auto* scenes() const noexcept { return &sceneQueue_; }
+
+  auto* scenes() noexcept { return &sceneQueue_; }
+
   EngineState& state() noexcept { return state_; }
 
   const EngineState& state() const noexcept { return state_; }
@@ -112,6 +125,7 @@ class Engine : public RuntimeGetter {
   EngineState state_;
   EngineDispatchers dispatchers_;
   FrameManager frame_;
+  std::queue<std::unique_ptr<Scene>> sceneQueue_;
   Status status_;
   SystemManager systems_;
   Flags flags_;
@@ -133,27 +147,30 @@ class Engine : public RuntimeGetter {
     }
   }
 
-  void preTick() noexcept;
-  void preRender() noexcept;
-  void tick() noexcept;
-  void render() noexcept;
-  void postTick() noexcept;
-  void postRender() noexcept;
+  void preTick(Scene*) noexcept;
+  void tick(Scene*) noexcept;
+  void postTick(Scene*) noexcept;
+  void preRender(Scene*) noexcept;
+  void render(Scene*) noexcept;
+  void postRender(Scene*) noexcept;
 
   template <EngineStage S>
-  void advance() noexcept {
+  void advance(Scene* scene) noexcept {
+    if (!scene) return;
+    scene->updateComponents<S>(state_);
+    scene->updateSystems<S>(state_);
     if constexpr (S == EngineStage::PreTick) {
-      preTick();
+      preTick(scene);
     } else if constexpr (S == EngineStage::Tick) {
-      tick();
+      tick(scene);
     } else if constexpr (S == EngineStage::PostTick) {
-      postTick();
+      postTick(scene);
     } else if constexpr (S == EngineStage::PreRender) {
-      preRender();
+      preRender(scene);
     } else if constexpr (S == EngineStage::Render) {
-      render();
+      render(scene);
     } else if constexpr (S == EngineStage::PostRender) {
-      postRender();
+      postRender(scene);
     }
   }
 };

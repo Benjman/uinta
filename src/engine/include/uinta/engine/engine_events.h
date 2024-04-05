@@ -9,10 +9,15 @@
 namespace uinta {
 
 class EngineState;
+class Scene;
 
 struct RenderComplete {
   const EngineState* state;
   time_t duration;
+};
+
+struct SceneAddedEvent {
+  const Scene* scene;
 };
 
 struct TickComplete {
@@ -31,12 +36,18 @@ struct ViewportSizeChange {
 
 enum class EngineEvent {
   RenderComplete,
+  SceneAdded,
   TickComplete,
   ViewportSizeChange,
 };
 
 template <typename Event>
 constexpr EngineEvent getEngineEvent() noexcept;
+
+template <>
+constexpr EngineEvent getEngineEvent<SceneAddedEvent>() noexcept {
+  return EngineEvent::SceneAdded;
+}
 
 template <>
 constexpr EngineEvent getEngineEvent<RenderComplete>() noexcept {
@@ -65,6 +76,10 @@ struct EngineDispatchers {
                            EngineEventPolicies>
       renderComplete;
 
+  eventpp::EventDispatcher<EngineEvent, void(const SceneAddedEvent&),
+                           EngineEventPolicies>
+      sceneAdded;
+
   eventpp::EventDispatcher<EngineEvent, void(const TickComplete&),
                            EngineEventPolicies>
       tickComplete;
@@ -77,6 +92,8 @@ struct EngineDispatchers {
   void addListener(Args&&... args) noexcept {
     if constexpr (EngineEvent::RenderComplete == E)
       renderComplete.appendListener(E, std::forward<Args>(args)...);
+    else if constexpr (EngineEvent::SceneAdded == E)
+      sceneAdded.appendListener(E, std::forward<Args>(args)...);
     else if constexpr (EngineEvent::TickComplete == E)
       tickComplete.appendListener(E, std::forward<Args>(args)...);
     else if constexpr (EngineEvent::ViewportSizeChange == E)
@@ -87,6 +104,8 @@ struct EngineDispatchers {
   void dispatch(Args&&... args) const noexcept {
     if constexpr (EngineEvent::RenderComplete == E)
       renderComplete.dispatch(std::forward<Args>(args)...);
+    else if constexpr (EngineEvent::SceneAdded == E)
+      sceneAdded.dispatch(std::forward<Args>(args)...);
     else if constexpr (EngineEvent::TickComplete == E)
       tickComplete.dispatch(std::forward<Args>(args)...);
     else if constexpr (EngineEvent::ViewportSizeChange == E)

@@ -1,4 +1,6 @@
+#include "./demo.h"
 #include "absl/log/log.h"
+#include "absl/strings/str_cat.h"
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
 #include "uinta/gl.h"
@@ -19,10 +21,19 @@ int main(int argc, const char** argv) {
     LOG(FATAL) << uinta::StrFormat("Failed to initialize `Engine`: %s",
                                    engine.status().message());
 
+  engine.addScene<uinta::DemoScene>(nullptr, &engine);
   engine.run();
-  if (!engine.status().ok())
-    LOG(FATAL) << absl::StrCat("`Engine::run()` failure: ",
-                               engine.status().message());
+  if (!engine.status().ok()) {
+    auto msg =
+        absl::StrCat("`Engine::run()` failure: ", engine.status().message());
+
+    if (!engine.scenes()->empty()) {
+      msg = absl::StrCat(msg, "\n\tWith active scene: \"",
+                         engine.scenes()->front()->name(), "\"");
+    }
+
+    LOG(FATAL) << msg;
+  }
 
   LOG(INFO) << "Exiting";
   return EXIT_SUCCESS;

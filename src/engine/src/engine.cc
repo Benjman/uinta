@@ -1,15 +1,11 @@
 #include "uinta/engine/engine.h"
 
+#include <algorithm>
 #include <cassert>
 
 #include "absl/log/log.h"
 #include "uinta/gl.h"
 #include "uinta/lib/absl/strings.h"
-#include "uinta/shader.h"
-#include "uinta/texture.h"
-#include "uinta/uniform.h"
-#include "uinta/vao.h"
-#include "uinta/vbo.h"
 
 namespace uinta {
 
@@ -77,46 +73,13 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
 void Engine::run() noexcept {
   state_.update(getRuntime(), 0);
 
+  Scene* scene = nullptr;
   time_t start;
   time_t runtime;
 
-  Shader shader({{GL_VERTEX_SHADER, "shader.vs.glsl"},
-                 {GL_FRAGMENT_SHADER, "shader.fs.glsl"}},
-                gl_);
-
-  UniformMatrix4fv projection("uProjection", &shader);
-
-  addListener<EngineEvent::ViewportSizeChange>([&](const auto& event) {
-    ShaderGuard guard(&shader);
-    projection = glm::perspective<f32>(45, event.aspect(), 0.1, 2);
-  });
-
-  Vbo vbo(GL_ARRAY_BUFFER, 0, gl_);
-  std::vector<f32> vertices = {
-      // positions  // uv coords
-      0.5f,  0.5f,  1.0f, 1.0f,  // top right
-      0.5f,  -0.5f, 1.0f, 0.0f,  // bottom right
-      -0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
-      -0.5f, 0.5f,  0.0f, 1.0f   // top left
-  };
-  VboGuard vbg(&vbo);
-  vbo.bufferData(vertices.data(), vertices.size() * sizeof(f32),
-                 GL_STATIC_DRAW);
-
-  Vao vao(gl_);
-  std::vector<u32> idxBuffer = {0, 1, 3, 1, 2, 3};
-  VaoGuard vag(&vao);
-  vao.ebo(idxBuffer);
-  vao.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0});
-  vao.linkAttribute(
-      {1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat)});
-
-  Texture texture(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gl_);
-  if (status_ = texture.fromFile("wall.jpg"); !status_.ok()) {
-    return;
-  }
-
   while (!state_.isClosing() && status_.ok()) {
+    if (!scene && !sceneQueue_.empty()) scene = sceneQueue_.front().get();
+
     if (status_ = platform_->pollEvents(); !status_.ok()) {
       LOG(ERROR) << "`Platform::pollEvents()` failed: " << status_.message();
       break;
@@ -130,15 +93,15 @@ void Engine::run() noexcept {
 
       components_.update<EngineStage::PreTick>(state_);
       systems_.update<EngineStage::PreTick>(state_);
-      advance<EngineStage::PreTick>();
+      advance<EngineStage::PreTick>(scene);
 
       components_.update<EngineStage::Tick>(state_);
       systems_.update<EngineStage::Tick>(state_);
-      advance<EngineStage::Tick>();
+      advance<EngineStage::Tick>(scene);
 
       components_.update<EngineStage::PostTick>(state_);
       systems_.update<EngineStage::PostTick>(state_);
-      advance<EngineStage::PostTick>();
+      advance<EngineStage::PostTick>(scene);
 
       runtime = getRuntime();
       dispatch<EngineEvent::TickComplete>(
@@ -147,6 +110,10 @@ void Engine::run() noexcept {
 
     components_.update<ComponentType::NewFrame>(state_);
     systems_.update<SystemType::NewFrame>(state_);
+    if (scene) {
+      scene->updateComponents<ComponentType::NewFrame>(state_);
+      scene->updateSystems<SystemType::NewFrame>(state_);
+    }
 
     runtime = getRuntime();
     start = runtime;
@@ -155,20 +122,15 @@ void Engine::run() noexcept {
 
     components_.update<EngineStage::PreRender>(state_);
     systems_.update<EngineStage::PreRender>(state_);
-    advance<EngineStage::PreRender>();
+    advance<EngineStage::PreRender>(scene);
 
     components_.update<EngineStage::Render>(state_);
     systems_.update<EngineStage::Render>(state_);
-    advance<EngineStage::Render>();
+    advance<EngineStage::Render>(scene);
 
     components_.update<EngineStage::PostRender>(state_);
     systems_.update<EngineStage::PostRender>(state_);
-    advance<EngineStage::PostRender>();
-
-    ShaderGuard shaderGuard(&shader);
-    VaoGuard vaoGuard(&vao);
-    TextureGuard textureGuard(&texture);
-    gl_->drawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    advance<EngineStage::PostRender>(scene);
 
     state_.isNewFrame(false);
 
@@ -184,19 +146,77 @@ void Engine::run() noexcept {
     gl_->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     state_.input().reset();
+
+    if (scene) {
+      scene->removeStaleScenes();
+      if (!scene || !scene->isRunning()) {
+        if (scene && scene->isError()) {
+          LOG(ERROR) << StrFormat("`%s` produced an error.", scene->name());
+          status_ = CancelledError();
+        }
+        sceneQueue_.pop();
+        scene = nullptr;
+      }
+    }
   }
 }
 
-void Engine::preTick() noexcept {}
+void Engine::preTick(Scene* scene) noexcept {
+  if (scene && scene->isTicking()) {
+    scene->preTick(state_);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [&](auto& scene) { preTick(scene.get()); });
+  }
+}
 
-void Engine::tick() noexcept {}
+void Engine::tick(Scene* scene) noexcept {
+  if (scene && scene->isTicking()) {
+    scene->tick(state_);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [&](auto& scene) { tick(scene.get()); });
+  }
+}
 
-void Engine::postTick() noexcept {}
+void Engine::postTick(Scene* scene) noexcept {
+  if (scene && scene->isTicking()) {
+    scene->postTick(state_);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [&](auto& scene) { postTick(scene.get()); });
+  }
+}
 
-void Engine::preRender() noexcept {}
+void Engine::preRender(Scene* scene) noexcept {
+  if (scene && scene->isRendering()) {
+    scene->preRender(state_);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [&](auto& scene) { preRender(scene.get()); });
+  }
+}
 
-void Engine::render() noexcept {}
+// FIXME: The current rendering order of scenes is incorrect. Each scene
+// manages its own collection of sub-scenes, each with a specific rendering
+// order. We need to implement a priority queue which we populate each new frame
+// with the appropriate rendering order. Although incorrect, it is working.
+void Engine::render(Scene* scene) noexcept {
+  if (scene && scene->isRendering()) {
+    scene->render(state_);
+    std::for_each(Scene::RenderOrder.begin(), Scene::RenderOrder.end(),
+                  [&](auto layer) {
+                    std::for_each(scene->children().begin(),
+                                  scene->children().end(), [&](auto& scene) {
+                                    if (scene->layer() == layer)
+                                      render(scene.get());
+                                  });
+                  });
+  }
+}
 
-void Engine::postRender() noexcept {}
+void Engine::postRender(Scene* scene) noexcept {
+  if (scene && scene->isRendering()) {
+    scene->postRender(state_);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [&](auto& scene) { postRender(scene.get()); });
+  }
+}
 
 }  // namespace uinta
