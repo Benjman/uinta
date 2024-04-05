@@ -8,14 +8,11 @@
 #include "uinta/gl.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
-#include "uinta/shader.h"
+#include "uinta/scene/scene.h"
+#include "uinta/scene/scene_layer.h"
 #include "uinta/status.h"
-#include "uinta/texture.h"
 #include "uinta/types.h"
-#include "uinta/uniform.h"
 #include "uinta/utils/frame_manager.h"
-#include "uinta/vao.h"
-#include "uinta/vbo.h"
 
 namespace uinta {
 
@@ -39,6 +36,13 @@ class Engine : public RuntimeGetter {
 
   AppConfig* appConfig() noexcept { return appConfig_; }
 
+  template <typename T, typename... Args>
+  T* addScene(Args&&... args) noexcept {
+    static_assert(std::is_base_of_v<Scene, T>);
+    sceneQueue_.push(std::make_unique<T>(this, std::forward<Args>(args)...));
+    return reinterpret_cast<T*>(sceneQueue_.back().get());
+  }
+
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
   const FrameManager& frameManager() const noexcept { return frame_; }
@@ -54,6 +58,12 @@ class Engine : public RuntimeGetter {
   time_t runtime() const noexcept override { return state_.runtime(); }
 
   void run() noexcept;
+
+  const std::queue<std::unique_ptr<Scene>>* scenes() const noexcept {
+    return &sceneQueue_;
+  }
+
+  std::queue<std::unique_ptr<Scene>>* scenes() noexcept { return &sceneQueue_; }
 
   EngineState& state() noexcept { return state_; }
 
@@ -74,18 +84,13 @@ class Engine : public RuntimeGetter {
   EngineState state_;
   EngineDispatchers dispatchers_;
   FrameManager frame_;
+  std::queue<std::unique_ptr<Scene>> sceneQueue_;
+  std::vector<Scene*> renderOrder_;
   Status status_;
 
   AppConfig* appConfig_;
   const OpenGLApi* gl_;
   Platform* platform_;
-
-  Shader shader_;
-  UniformMatrix4fv uProjection_;
-  Uniform4fv uColor_;
-  Vao vao_;
-  Vbo vbo_;
-  Texture texture_;
 
   time_t getRuntime() noexcept {
     if (auto status = platform_->runtime(); status.ok()) {
@@ -96,29 +101,50 @@ class Engine : public RuntimeGetter {
     }
   }
 
-  void preTick() noexcept;
-  void preRender() noexcept;
-  void tick() noexcept;
-  void render() noexcept;
-  void postTick() noexcept;
-  void postRender() noexcept;
+  void preTick(Scene*, time_t delta) noexcept;
+  void tick(Scene*, time_t delta) noexcept;
+  void postTick(Scene*, time_t delta) noexcept;
+  void preRender(Scene*, time_t delta) noexcept;
+  void render(Scene*, time_t delta) noexcept;
+  void postRender(Scene*, time_t delta) noexcept;
 
   template <EngineStage S>
-  void advance() noexcept {
-    if constexpr (S == EngineStage::PreTick) {
-      preTick();
-    } else if constexpr (S == EngineStage::Tick) {
-      tick();
-    } else if constexpr (S == EngineStage::PostTick) {
-      postTick();
-    } else if constexpr (S == EngineStage::PreRender) {
-      preRender();
-    } else if constexpr (S == EngineStage::Render) {
-      render();
-    } else if constexpr (S == EngineStage::PostRender) {
-      postRender();
+  void advance(Scene* scene) noexcept {
+    auto delta = state_.updateStageDelta(S, getRuntime());
+
+    if (scene) {
+      scene->updateComponents<S>(delta);
+      scene->updateSystems<S>(delta);
+
+      if constexpr (S == EngineStage::PreTick) {
+        preTick(scene, delta);
+      } else if constexpr (S == EngineStage::Tick) {
+        tick(scene, delta);
+      } else if constexpr (S == EngineStage::PostTick) {
+        postTick(scene, delta);
+      } else if constexpr (S == EngineStage::PreRender) {
+        preRender(scene, delta);
+      } else if constexpr (S == EngineStage::Render) {
+        auto layer = SceneLayers.front();
+        assert(layer == SceneLayer::Simulation);
+        std::for_each(renderOrder_.begin(), renderOrder_.end(),
+                      [this, &layer, delta](auto* scene) {
+                        if (layer != scene->layer()) {
+                          layer = scene->layer();
+                          dispatchers_.dispatch<EngineEvent::RenderLayerChange>(
+                              RenderLayerChange(layer));
+                        }
+                        render(scene, delta);
+                      });
+      } else if constexpr (S == EngineStage::PostRender) {
+        postRender(scene, delta);
+      }
     }
   }
+
+  void updateRenderOrder() noexcept;
+
+  void registerSceneListeners(Scene*) noexcept;
 };
 
 using EngineParams = Engine::Params;
