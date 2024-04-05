@@ -4,15 +4,21 @@
 #include <utility>
 
 #include "eventpp/eventdispatcher.h"
+#include "uinta/scene/scene_layer.h"
 #include "uinta/types.h"
 
 namespace uinta {
 
 class EngineState;
+class Scene;
 
 struct RenderComplete {
   const EngineState* state;
   time_t runtime;
+};
+
+struct RenderLayerChange {
+  SceneLayer layer;
 };
 
 struct TickComplete {
@@ -32,6 +38,7 @@ struct ViewportSizeChange {
 
 enum class EngineEvent {
   RenderComplete,
+  RenderLayerChange,
   TickComplete,
   ViewportSizeChange,
 };
@@ -42,6 +49,11 @@ constexpr EngineEvent getEngineEvent() noexcept;
 template <>
 constexpr EngineEvent getEngineEvent<RenderComplete>() noexcept {
   return EngineEvent::RenderComplete;
+}
+
+template <>
+constexpr EngineEvent getEngineEvent<RenderLayerChange>() noexcept {
+  return EngineEvent::RenderLayerChange;
 }
 
 template <>
@@ -66,6 +78,10 @@ struct EngineDispatchers {
                            EngineEventPolicies>
       renderComplete;
 
+  eventpp::EventDispatcher<EngineEvent, void(const RenderLayerChange&),
+                           EngineEventPolicies>
+      renderLayerChange;
+
   eventpp::EventDispatcher<EngineEvent, void(const TickComplete&),
                            EngineEventPolicies>
       tickComplete;
@@ -78,6 +94,8 @@ struct EngineDispatchers {
   void addListener(Args&&... args) noexcept {
     if constexpr (EngineEvent::RenderComplete == E)
       renderComplete.appendListener(E, std::forward<Args>(args)...);
+    else if constexpr (EngineEvent::RenderLayerChange == E)
+      renderLayerChange.appendListener(E, std::forward<Args>(args)...);
     else if constexpr (EngineEvent::TickComplete == E)
       tickComplete.appendListener(E, std::forward<Args>(args)...);
     else if constexpr (EngineEvent::ViewportSizeChange == E)
@@ -88,6 +106,8 @@ struct EngineDispatchers {
   void dispatch(Args&&... args) const noexcept {
     if constexpr (EngineEvent::RenderComplete == E)
       renderComplete.dispatch(std::forward<Args>(args)...);
+    else if constexpr (EngineEvent::RenderLayerChange == E)
+      renderLayerChange.dispatch(std::forward<Args>(args)...);
     else if constexpr (EngineEvent::TickComplete == E)
       tickComplete.dispatch(std::forward<Args>(args)...);
     else if constexpr (EngineEvent::ViewportSizeChange == E)

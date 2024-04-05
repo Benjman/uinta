@@ -1,24 +1,17 @@
 #include "uinta/engine/engine.h"
 
+#include <algorithm>
 #include <cassert>
+#include <queue>
 #include <string>
+#include <vector>
 
 #include "absl/log/log.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "glm/ext/vector_float4.hpp"
+#include "uinta/scene/scene_events.h"
 
 namespace uinta {
-
-constexpr std::array<glm::vec4, 5> theGrassIsAlwaysGreener = {
-    glm::vec4(58.0 / 255.0, 57.0 / 255.0, 66.0 / 255.0, 1.0),
-    glm::vec4(255.0 / 255.0, 233.0 / 255.0, 189.0 / 255.0, 1.0),
-    glm::vec4(209.0 / 255.0, 202.0 / 255.0, 147.0 / 255.0, 1.0),
-    glm::vec4(177.0 / 255.0, 188.0 / 255.0, 122.0 / 255.0, 1.0),
-    glm::vec4(130.0 / 255.0, 168.0 / 255.0, 93.0 / 255.0, 1.0),
-};
-
-constexpr auto palette = theGrassIsAlwaysGreener;
 
 Engine::Engine(Params params) noexcept
     : components_(this),
@@ -26,15 +19,7 @@ Engine::Engine(Params params) noexcept
       appConfig_(params.appConfig),
       fileSystem_(params.fileSystem),
       gl_(params.gl),
-      platform_(params.platform),
-      shader_({{GL_VERTEX_SHADER, "shader.vs.glsl"},
-               {GL_FRAGMENT_SHADER, "shader.fs.glsl"}},
-              params.gl, params.fileSystem),
-      uProjection_("uProjection", &shader_),
-      uColor_("uColor", &shader_),
-      vao_(params.gl),
-      vbo_(GL_ARRAY_BUFFER, 0, params.gl),
-      texture_(GL_TEXTURE_2D, 0, 0, 0, 0, 0, params.gl) {
+      platform_(params.platform) {
   assert(platform_ && "`Platform*` cannot be null.");
 
   platform_->engine(this);
@@ -84,42 +69,36 @@ Engine::Engine(Params params) noexcept
                                      width, height);
       });
 
-  gl_->clearColor(0.1, 0.1, 0.1, 1.0);
+  gl_->clearColor(1.0, 1.0, 1.0, 1.0);
 
   platform_->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { frame_ = FrameManager(event.monitor); });
-
-  constexpr f32 fov = 45;
-  constexpr f32 nearPlane = 0.1;
-  constexpr f32 farPlane = 5;
-  dispatchers_.addListener<EngineEvent::ViewportSizeChange>(
-      [&](const auto& event) {
-        ShaderGuard guard(&shader_);
-        uProjection_ =
-            glm::perspective(fov, event.aspect(), nearPlane, farPlane);
-      });
-
-  std::array<f32, 16> vertices = {
-      -0.32f, 0.45f,  0.0f, 1.0f,  // top-left
-      0.32f,  0.45f,  1.0f, 1.0f,  // top-right
-      -0.32f, -0.45f, 0.0f, 0.0f,  // bottom-left
-      0.32f,  -0.45f, 1.0f, 0.0f,  // bottom-right
-  };
-  {
-    VboGuard vbg(&vbo_);
-    VaoGuard vag(&vao_);
-    vbo_.bufferData(vertices.data(), sizeof(vertices), GL_STATIC_DRAW);
-    vao_.linkAttribute({0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0});
-    vao_.linkAttribute(
-        {1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 2 * sizeof(GLfloat)});
-  }
-  if (status_ = texture_.fromFile("texture.jpg", fileSystem_); !status_.ok()) {
-    return;
-  }
 }
 
 void Engine::run() noexcept {
+  Scene* scene = nullptr;
+
   while (!state_.isClosing() && status_.ok()) {
+    if (!scene && !sceneQueue_.empty()) {
+      if (scene = sceneQueue_.front().get(); scene) {
+        registerSceneListeners(scene);
+        updateRenderOrder();
+      }
+    }
+
+    if (scene) {
+      if (!scene->status().ok()) {
+        setStatusError(scene->status());
+        break;
+      } else if (scene->isComplete()) {
+        sceneQueue_.pop();
+        scene = nullptr;
+        continue;
+      }
+
+      scene->removeStaleScenes();
+    }
+
     if (auto status = platform_->pollEvents(); !status.ok()) {
       setStatusError(status);
       break;
@@ -128,9 +107,9 @@ void Engine::run() noexcept {
     do {
       state_.updateRuntime(getRuntime());
 
-      advance<EngineStage::PreTick>();
-      advance<EngineStage::Tick>();
-      advance<EngineStage::PostTick>();
+      advance<EngineStage::PreTick>(scene);
+      advance<EngineStage::Tick>(scene);
+      advance<EngineStage::PostTick>(scene);
 
       state_.addTick();
 
@@ -142,9 +121,9 @@ void Engine::run() noexcept {
 
     gl_->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    advance<EngineStage::PreRender>();
-    advance<EngineStage::Render>();
-    advance<EngineStage::PostRender>();
+    advance<EngineStage::PreRender>(scene);
+    advance<EngineStage::Render>(scene);
+    advance<EngineStage::PostRender>(scene);
 
     if (auto status = platform_->swapBuffers(); !status.ok()) {
       setStatusError(status);
@@ -163,21 +142,102 @@ void Engine::run() noexcept {
   }
 }
 
-void Engine::preTick() noexcept {}
+void Engine::updateRenderOrder() noexcept {
+  struct Comparator final {
+    bool operator()(const Scene* a, const Scene* b) const noexcept {
+      return a->layer() > b->layer();
+    }
+  };
 
-void Engine::tick() noexcept {}
+  std::priority_queue<Scene*, std::vector<Scene*>, Comparator> queue;
 
-void Engine::postTick() noexcept {}
+  if (!sceneQueue_.empty()) {
+    auto* front = sceneQueue_.front().get();
+    queue.push(front);
+    std::for_each(front->children().begin(), front->children().end(),
+                  [&queue](auto& scene) {
+                    queue.push(scene.get());
+                    std::for_each(
+                        scene->children().begin(), scene->children().end(),
+                        [&queue](auto& child) { queue.push(child.get()); });
+                  });
+  }
 
-void Engine::preRender() noexcept {}
+  renderOrder_.clear();
+  renderOrder_.reserve(queue.size());
 
-void Engine::render() noexcept {
-  ShaderGuard shaderGuard(&shader_);
-  VaoGuard vaoGuard(&vao_);
-  TextureGuard textureGuard(&texture_);
-  gl_->drawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  while (!queue.empty()) {
+    renderOrder_.push_back(queue.top());
+    queue.pop();
+  }
+
+  LOG(INFO) << "Render order updated.";
 }
 
-void Engine::postRender() noexcept {}
+void Engine::registerSceneListeners(Scene* scene) noexcept {
+  assert(scene);
+
+  scene->dispatchers()->template addListener<SceneEvent::SceneAdded>(
+      [this](const auto&) { updateRenderOrder(); });
+  scene->dispatchers()->template addListener<SceneEvent::SceneRemoved>(
+      [this](const auto&) { updateRenderOrder(); });
+  scene->dispatchers()->template addListener<SceneEvent::LayerChange>(
+      [this](const auto&) { updateRenderOrder(); });
+
+  for (auto& child : scene->children()) {
+    registerSceneListeners(child.get());
+  }
+}
+
+void Engine::preTick(Scene* scene) noexcept {
+  assert(scene);
+  if (scene->isTicking()) {
+    scene->preTick(state_.delta());
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this](auto& scene) { preTick(scene.get()); });
+  }
+}
+
+void Engine::tick(Scene* scene) noexcept {
+  assert(scene);
+  if (scene->isTicking()) {
+    scene->tick(state_.delta());
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this](auto& scene) { tick(scene.get()); });
+  }
+}
+
+void Engine::postTick(Scene* scene) noexcept {
+  assert(scene);
+  if (scene->isTicking()) {
+    scene->postTick(state_.delta());
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this](auto& scene) { postTick(scene.get()); });
+  }
+}
+
+void Engine::preRender(Scene* scene) noexcept {
+  assert(scene);
+  if (scene->isRendering()) {
+    scene->preRender(state_.delta());
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this](auto& scene) { preRender(scene.get()); });
+  }
+}
+
+void Engine::render(Scene* scene) noexcept {
+  assert(scene);
+  if (scene->isRendering()) {
+    scene->render(state_.delta());
+  }
+}
+
+void Engine::postRender(Scene* scene) noexcept {
+  if (scene->isRendering()) {
+    scene->postRender(state_.delta());
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this](auto& scene) { postRender(scene.get()); });
+  }
+}
 
 }  // namespace uinta
