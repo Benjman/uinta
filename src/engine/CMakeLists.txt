@@ -1,6 +1,7 @@
 list(APPEND ENGINE_SRCS src/camera.cc)
 list(APPEND ENGINE_SRCS src/engine.cc)
 list(APPEND ENGINE_SRCS src/file.cc)
+list(APPEND ENGINE_SRCS src/font.cc)
 list(APPEND ENGINE_SRCS src/mesh.cc)
 list(APPEND ENGINE_SRCS src/primitive.cc)
 list(APPEND ENGINE_SRCS src/scene.cc)
