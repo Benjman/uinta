@@ -2,6 +2,7 @@
 #define SRC_APP_SRC_DEMO_H_
 
 #include "./scenes/fbx_viewer.h"
+#include "./scenes/text.h"
 #include "./scenes/trees.h"
 #include "uinta/scenes/debug.h"
 
@@ -11,6 +12,7 @@ class DemoScene : public DebugScene {
  public:
   DemoScene() noexcept : DebugScene(Layer::Simulation) {
     addScene<FbxViewerScene>("pawn.fbx", &shader_);
+    addScene<TextScene>();
     addScene<TreeScene>(&shader_, camera_);
   }
 };
