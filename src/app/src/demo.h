@@ -4,6 +4,7 @@
 #include "uinta/debug/debug_scene.h"
 #include "uinta/engine.h"
 #include "uinta/scenes/fbx_viewer.h"
+#include "uinta/scenes/hexagon.h"
 #include "uinta/scenes/text.h"
 #include "uinta/scenes/trees.h"
 
@@ -14,6 +15,7 @@ class DemoScene : public DebugScene {
   explicit DemoScene(Engine* engine) noexcept
       : DebugScene({engine, OpenGLApiImpl::Instance()}, Layer::Simulation) {
     addScene<FbxViewerScene>(this, params());
+    addScene<HexagonScene>(this, params());
     addScene<TextScene>(this, params());
     addScene<TreeScene>(this, params());
   }
