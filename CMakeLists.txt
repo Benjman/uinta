@@ -25,6 +25,7 @@ include(entt)
 include(glm)
 include(imgui)
 include(stb)
+include(poly2lib)
 
 set(UINTA_GENERATED_DIR "${CMAKE_BINARY_DIR}/generated")
 list(APPEND UINTA_INCLUDES "${UINTA_GENERATED_DIR}")

@@ -22,6 +22,7 @@ can greatly speed up the build times.
 * [EnTT](https://github.com/skypjack/entt)
 * [GLFW](https://github.com/glfw/glfw)
 * [glm](https://github.com/g-truc/glm)
+* [poly2tri](https://github.com/jhasse/poly2tri)
 
 ## Build project
 

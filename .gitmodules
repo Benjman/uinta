@@ -4,3 +4,6 @@
 [submodule "lib/stb/stb"]
 	path = lib/stb/stb
 	url = https://github.com/nothings/stb.git
+[submodule "lib/poly2tri"]
+	path = lib/poly2tri
+	url = https://github.com/jhasse/poly2tri
