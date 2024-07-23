@@ -7,7 +7,9 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_float3.hpp"
+#include "uinta/lib/absl/status.h"
 #include "uinta/types.h"
+#include "uinta/utils/generator.h"
 
 namespace uinta {
 
@@ -109,6 +111,8 @@ class Mesh {
   std::vector<Vertex> vertices_;
   std::vector<u32> elements_;
 };
+
+using MeshGenerator = Generator<StatusOr<Mesh>>;
 
 }  // namespace uinta
 
