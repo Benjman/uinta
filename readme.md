@@ -26,6 +26,7 @@ times.
 The following libraries are required to be available on your path prior to building:
 
 * Platform appropriate OpenGL headers
+* [eventpp](https://github.com/wqking/eventpp)
 
 ## Build project
 
