@@ -11,6 +11,7 @@ add_library(uinta::platform ALIAS platform)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(abseil-cpp)
+include(eventpp)
 include(GLFW)
 
 target_link_libraries(
