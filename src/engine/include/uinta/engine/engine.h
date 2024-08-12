@@ -1,6 +1,10 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 
+#include <type_traits>
+#include <utility>
+
+#include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
 #include "uinta/flags.h"
@@ -33,6 +37,13 @@ class Engine : public RuntimeGetter {
   Engine(const Engine&&) noexcept = delete;
   Engine& operator=(const Engine&&) noexcept = delete;
 
+  template <EngineEvent E, typename... Args>
+  void addListener(Args&&... args) noexcept {
+    dispatchers_.template addListener<E>(std::forward<Args>(args)...);
+  }
+
+  EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
+
   Flags flags() const noexcept { return flags_; }
 
   void flags(Flags flags) noexcept { flags_ = flags; }
@@ -57,11 +68,17 @@ class Engine : public RuntimeGetter {
 
  private:
   EngineState state_;
+  EngineDispatchers dispatchers_;
   Status status_;
   Flags flags_;
 
   const OpenGLApi* gl_;
   Platform* platform_;
+
+  template <EngineEvent E, typename... Args>
+  void dispatch(Args&&... args) const noexcept {
+    dispatchers_.template dispatch<E>(std::forward<Args>(args)...);
+  }
 
   time_t getRuntime() noexcept {
     if (auto status = platform_->runtime(); status.ok()) {

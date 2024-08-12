@@ -48,6 +48,8 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
     auto width = platform_->window()->width();
     auto height = platform_->window()->height();
     gl_->viewport(0, 0, width, height);
+    dispatch<EngineEvent::ViewportSizeChange>(
+        ViewportSizeChange(width, height));
     LOG(INFO) << StrFormat("Event: Viewport size change (%u, %u)", width,
                            height);
   });
@@ -60,6 +62,7 @@ Engine::Engine(Platform* platform, const OpenGLApi* gl) noexcept
 void Engine::run() noexcept {
   state_.update(getRuntime(), 0);
 
+  time_t start;
   time_t runtime;
 
   while (!state_.isClosing() && status_.ok()) {
@@ -70,15 +73,19 @@ void Engine::run() noexcept {
 
     do {
       runtime = getRuntime();
+      start = runtime;
       state_.isNewFrame(true);
       state_.update(runtime, 1);
       advance<EngineStage::PreTick>();
       advance<EngineStage::Tick>();
       advance<EngineStage::PostTick>();
       runtime = getRuntime();
+      dispatch<EngineEvent::TickComplete>(
+          TickComplete(&state_, runtime - start));
     } while (!state_.isNewFrame());
 
     runtime = getRuntime();
+    start = runtime;
 
     advance<EngineStage::PreRender>();
     advance<EngineStage::Render>();
@@ -86,6 +93,8 @@ void Engine::run() noexcept {
 
     state_.isNewFrame(false);
     runtime = getRuntime();
+    dispatch<EngineEvent::RenderComplete>(
+        RenderComplete(&state_, runtime - start));
 
     if (status_ = platform_->swapBuffers(); !status_.ok()) {
       LOG(ERROR) << "`Platform::swapBuffers()` failed: " << status_.message();

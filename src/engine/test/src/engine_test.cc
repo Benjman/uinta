@@ -53,6 +53,10 @@ TEST(Engine, constructorOnViewportSizeChangeListening) {
   MockOpenGLApi gl;
   Engine engine(&platform, &gl);
 
+  bool eventCalled = false;
+  engine.addListener<EngineEvent::ViewportSizeChange>(
+      [&eventCalled](const auto&) { eventCalled = true; });
+
   bool onViewportCalled = false;
   gl.onViewport = [&onViewportCalled](auto, auto, auto, auto) {
     onViewportCalled = true;
@@ -60,6 +64,7 @@ TEST(Engine, constructorOnViewportSizeChangeListening) {
   platform.dispatch<PlatformEvent::OnViewportSizeChange>(
       OnViewportSizeChangeEvent(nullptr, 0, 0));
   ASSERT_TRUE(onViewportCalled);
+  ASSERT_TRUE(eventCalled);
 }
 
 TEST(Engine, constructorClearColorSet) {
@@ -180,6 +185,36 @@ TEST(Engine, clearCalled) {
   ASSERT_TRUE(clearCalled);
   EXPECT_TRUE(bitsVal | GL_COLOR_BUFFER_BIT);
   EXPECT_TRUE(bitsVal | GL_DEPTH_BUFFER_BIT);
+}
+
+TEST(Engine, EventTickComplete) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  bool tickCompleteEventCalled = false;
+  engine.addListener<EngineEvent::TickComplete>(
+      [&tickCompleteEventCalled](const auto&) {
+        tickCompleteEventCalled = true;
+      });
+  runThenClose(&engine, [&tickCompleteEventCalled]() {
+    return tickCompleteEventCalled;
+  });
+  ASSERT_TRUE(tickCompleteEventCalled);
+}
+
+TEST(Engine, EventRenderComplete) {
+  MockPlatform platform;
+  MockOpenGLApi gl;
+  Engine engine(&platform, &gl);
+  bool renderCompleteEventCalled = false;
+  engine.addListener<EngineEvent::RenderComplete>(
+      [&renderCompleteEventCalled](const auto&) {
+        renderCompleteEventCalled = true;
+      });
+  runThenClose(&engine, [&renderCompleteEventCalled]() {
+    return renderCompleteEventCalled;
+  });
+  ASSERT_TRUE(renderCompleteEventCalled);
 }
 
 }  // namespace uinta
