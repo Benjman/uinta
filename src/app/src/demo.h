@@ -3,6 +3,7 @@
 
 #include "uinta/camera/camera.h"
 #include "uinta/camera/camera_manager.h"
+#include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
 #include "uinta/gl.h"
 #include "uinta/scene.h"
@@ -27,6 +28,7 @@ class DemoScene : public Scene {
     camera_.pitch(25);
     camera_.force();
     auto* cameraManager = addSystem<CameraManager>(&camera_);
+    addComponent<CursorManager>(engine, cameraManager);
     addSystem<PrimitiveShaderManager>(&shader_, engine->dispatchers(),
                                       cameraManager);
 
