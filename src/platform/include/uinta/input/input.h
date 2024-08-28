@@ -74,6 +74,15 @@ class Input final {
       if (v) flags_ |= MouseScrollMask;
     }
 
+    bool isCursorWorldPointUpdated() const noexcept {
+      return flags_ & CursorWorldPointUpdatedMask;
+    }
+
+    void isCursorWorldPointUpdated(bool v) noexcept {
+      flags_ &= ~CursorWorldPointUpdatedMask;
+      if (v) flags_ |= CursorWorldPointUpdatedMask;
+    }
+
    private:
     static constexpr value_type KeyDownMask = 1 << 0;
     static constexpr value_type KeyPressedMask = 1 << 1;
@@ -84,6 +93,7 @@ class Input final {
     static constexpr value_type MousePressedMask = 1 << 6;
     static constexpr value_type MouseReleasedMask = 1 << 7;
     static constexpr value_type MouseScrollMask = 1 << 8;
+    static constexpr value_type CursorWorldPointUpdatedMask = 1 << 9;
 
     value_type flags_;
   };
@@ -437,6 +447,16 @@ class Input final {
 
   inline f32 cursory() const noexcept { return cursory_; }
 
+  inline glm::vec3 cursorWorldPoint() const noexcept {
+    return cursorWorldPoint_;
+  }
+
+  inline void cursorWorldPoint(glm::vec3 pos) noexcept {
+    if (cursorWorldPoint_ == pos) return;
+    cursorWorldPoint_ = pos;
+    flags_.isCursorWorldPointUpdated(true);
+  }
+
   inline Flags flags() const noexcept { return flags_; }
 
   inline f32 scrolldx() const noexcept { return scrolldx_; }
@@ -573,6 +593,7 @@ class Input final {
 
     flags_.isMouseMove(false);
     flags_.isMouseScroll(false);
+    flags_.isCursorWorldPointUpdated(false);
 
     cursordx_ = 0;
     cursordy_ = 0;
@@ -597,6 +618,7 @@ class Input final {
   f32 cursordx_ = 0, cursordy_ = 0;
   f32 cursorx_ = 0, cursory_ = 0;
   f32 scrolldx_ = 0, scrolldy_ = 0;
+  glm::vec3 cursorWorldPoint_{0, 0, 0};
   Flags flags_;
 
   inline Status keyPressed(const KeyboardEvent& event) noexcept {
