@@ -1,0 +1,13 @@
+#ifndef UINTA_CFG_H
+#define UINTA_CFG_H
+
+namespace uinta {
+namespace cfg {
+constexpr const char *FileSearchPaths = "${UINTA_RES_PATHS}";
+constexpr const char FileSearchPathsDelim = ';';
+
+constexpr const char *EngineResDir = "${UINTA_ENGINE_RES}";
+}  // namespace cfg
+}  // namespace uinta
+
+#endif  // UINTA_CFG_H

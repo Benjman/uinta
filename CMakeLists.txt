@@ -27,6 +27,20 @@ list(APPEND UINTA_INCLUDES "${UINTA_GENERATED_DIR}")
 set(CMAKE_CXX_FLAGS_DEBUG
     "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror -Wpedantic")
 
+enable_testing()
+
+# Enable code coverage for Debug builds
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Code coverage enabled")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} --coverage")
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
+  endif()
+endif()
+
 add_subdirectory(src/platform)
 add_subdirectory(src/engine)
 add_subdirectory(src/app)
+
+configure_file(cmake/cfg.h.in ${UINTA_GENERATED_DIR}/uinta/cfg.h)
+message(STATUS "Created configuration file: ${UINTA_GENERATED_DIR}/uinta/cfg.h")

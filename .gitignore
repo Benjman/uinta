@@ -22,3 +22,5 @@
 compile_commands.json
 local.properties
 imgui.ini
+lcov.info
+coverage_html/
