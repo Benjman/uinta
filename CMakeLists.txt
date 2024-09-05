@@ -30,3 +30,6 @@ set(CMAKE_CXX_FLAGS_DEBUG
 add_subdirectory(src/platform)
 add_subdirectory(src/engine)
 add_subdirectory(src/app)
+
+configure_file(cmake/cfg.h.in ${UINTA_GENERATED_DIR}/uinta/cfg.h)
+message(STATUS "Created configuration file: ${UINTA_GENERATED_DIR}/uinta/cfg.h")
