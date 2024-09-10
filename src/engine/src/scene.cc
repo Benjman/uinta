@@ -21,6 +21,7 @@ Scene::Scene(Engine* engine, std::string name, SceneLayer layer) noexcept
 
 Scene::Scene(Scene* parent, std::string name, SceneLayer layer) noexcept
     : Scene(parent->engine(), name, layer) {
+  assert(parent && "`Scene*` cannot be null.");
   parent_ = parent;
 }
 

@@ -6,8 +6,7 @@
 #include "uinta/scene/scene.h"
 #include "uinta/scenes/demo_palette.h"
 #include "uinta/scenes/texture_scene.h"
-#include "uinta/shader.h"
-#include "uinta/uniform.h"
+#include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
 
@@ -15,34 +14,16 @@ class DemoScene : public Scene {
  public:
   explicit DemoScene(Engine* engine,
                      SceneLayer layer = SceneLayer::Simulation) noexcept
-      : Scene(engine, SCENE_NAME, layer), shader_(engine->gl()) {
+      : Scene(engine, SCENE_NAME, layer) {
     auto palette = Palettes::PrimaryPalette();
     engine->gl()->clearColor(palette[0].r, palette[0].g, palette[0].b,
                              palette[0].a);
 
-    engine->dispatchers()->addListener<EngineEvent::ViewportSizeChange>(
-        [&](const auto& event) {
-          ShaderGuard guard(&shader_);
-          shader_.projection =
-              glm::perspective<f32>(45, event.aspect(), 0.1, 4);
-        });
+    addSystem<BasicShaderManager>(this);
 
     addScene<DebugScene>();
-    addScene<TextureScene>(&shader_);
+    addScene<TextureScene>();
   }
-
- private:
-  struct DemoShader : Shader {
-    explicit DemoShader(const OpenGLApi* gl) noexcept
-        : Shader(
-              {
-                  {GL_VERTEX_SHADER, "shader.vs.glsl"},
-                  {GL_FRAGMENT_SHADER, "shader.fs.glsl"},
-              },
-              gl) {}
-
-    UniformMatrix4fv projection = UniformMatrix4fv("uProjection", this);
-  } shader_;
 };
 
 }  // namespace uinta
