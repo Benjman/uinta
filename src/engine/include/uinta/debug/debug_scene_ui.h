@@ -7,6 +7,7 @@
 namespace uinta {
 
 class BasicShaderManager;
+class CameraManager;
 class Engine;
 class Input;
 class OpenGLApi;
@@ -65,6 +66,7 @@ class DebugSceneUi : public Scene {
 
   time_t runtime_ = 0;
 
+  CameraManager* camera_;
   BasicShaderManager* shader_;
   Input* input_ = nullptr;
 };
