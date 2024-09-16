@@ -35,19 +35,11 @@ class CubeScene : public Scene {
     bsm_->linkAttributes(&vao_);
   }
 
-  void render(time_t delta) noexcept override {
-    runtime_ += delta;
-
+  void render(time_t) noexcept override {
     ShaderGuard sg(bsm_->shader());
     CullFaceGuard cfg;
     DepthTestGuard dtg;
     VaoGuard vg(&vao_);
-
-    bsm_->model(glm::rotate(glm::mat4(1),
-                            glm::radians(static_cast<f32>(runtime_) * 30),
-                            glm::normalize(glm::vec3(-.25, 1, 0))));
-
-    bsm_->view(glm::translate(glm::mat4(1), glm::vec3(0, 0, -3)));
 
     bsm_->drawElements(GL_TRIANGLES, indexCount_, GL_UNSIGNED_INT, 0);
   }
@@ -58,7 +50,6 @@ class CubeScene : public Scene {
   size_t indexCount_;
   BasicShaderManager* bsm_;
   const OpenGLApi* gl_;
-  f32 runtime_;
 };
 
 }  // namespace uinta

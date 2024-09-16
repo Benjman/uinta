@@ -18,10 +18,12 @@ inline void RenderInputUi(const Input* input, const Window* window) noexcept {
   glm::vec2 viewport(window->width(), window->height());
   glm::vec3 ndc((2 * cursor.x) / viewport.x - 1,
                 1 - (2 * cursor.y) / viewport.y, 1);
+  auto world = input->cursorWorldPoint();
 
   ImGui::Text("%-7s(%5.0f, %5.0f)", "Screen", input->cursorx(),
               input->cursory());
   ImGui::Text("%-7s(%5.2f, %5.2f, %5.2f)", "NDC", ndc.x, ndc.y, ndc.z);
+  ImGui::Text("%-7s(%5.2f, %5.2f, %5.2f)", "y=0", world.x, world.y, world.z);
 
   ImGui::RadioButton("ImGUI Keyboard", ImGui::GetIO().WantCaptureKeyboard);
   ImGui::SameLine(UiTwoThirdsWidth);

@@ -8,6 +8,7 @@
 
 #include "uinta/component.h"
 #include "uinta/debug/ui/basic_shader_ui.h"
+#include "uinta/debug/ui/camera_ui.h"
 #include "uinta/debug/ui/engine_ui.h"
 #include "uinta/debug/ui/imgui_ui.h"
 #include "uinta/debug/ui/input_ui.h"
@@ -36,6 +37,7 @@ DebugSceneUi::DebugSceneUi(Scene* scene) noexcept
 
 DebugSceneUi::DebugSceneUi(Engine* engine) noexcept
     : Scene(engine, SCENE_NAME, SceneLayer::Debug),
+      camera_(findSystem<CameraManager>().value_or(nullptr)),
       shader_(findSystem<BasicShaderManager>().value_or(nullptr)),
       input_(engine->input()) {
   static time_t prevRenderComplete = 0;
@@ -129,6 +131,10 @@ void DebugSceneUi::render(time_t) noexcept {
 
   if (shader_) {
     RenderBasicShaderUi(shader_, engine()->gl());
+  }
+
+  if (camera_) {
+    RenderCameraUi(camera_);
   }
 
   RenderEngineUi(engineUiInfo_);
