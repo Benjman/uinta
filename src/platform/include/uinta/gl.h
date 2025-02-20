@@ -2783,6 +2783,28 @@ class BlendGuard : public CapabilityGuard {
   GLint prevDfactor_;
 };
 
+class LineWidthGuard {
+ public:
+  LineWidthGuard(GLfloat width,
+                 const OpenGLApi* gl = OpenGLApiImpl::Instance()) noexcept
+      : gl_(gl) {
+    gl_->lineWidth(width);
+  }
+
+  ~LineWidthGuard() noexcept {
+    constexpr GLfloat DefaultWidth = 1;
+    gl_->lineWidth(DefaultWidth);
+  }
+
+  LineWidthGuard(const BlendGuard&) noexcept = delete;
+  LineWidthGuard& operator=(const BlendGuard&) noexcept = delete;
+  LineWidthGuard(BlendGuard&&) noexcept = delete;
+  LineWidthGuard& operator=(BlendGuard&&) noexcept = delete;
+
+ private:
+  const OpenGLApi* gl_;
+};
+
 }  // namespace uinta
 
 #endif  // SRC_PLATFORM_INCLUDE_UINTA_GL_H_
