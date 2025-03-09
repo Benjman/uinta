@@ -15,6 +15,7 @@
 #include "uinta/color.h"
 #include "uinta/math/defs.h"
 #include "uinta/math/direction.h"
+#include "uinta/math/hex.h"
 
 namespace uinta {
 
@@ -238,6 +239,61 @@ void displaceRotation(Mesh* mesh, f32 deg, const glm::vec3& axis) {
                                glm::vec3(0, 0, 1));
         vertex.position = rotation * glm::vec4(vertex.position, 1.0);
       });
+}
+
+Mesh Mesh::Hexagon::Fill(const Hex* hex, f32 rad, f32 fill,
+                         Vertex::color_type color) noexcept {
+  std::vector<Vertex> vertices;
+  vertices.reserve(18);
+
+  auto center = hex->centerPoint(rad);
+  auto points = hex->generatePoints(rad, fill);
+  if (points.size()) {
+    for (size_t i = 0; i < points.size(); i++) {
+      vertices.emplace_back(Vertex::position_type(center, 0).xzy(), WorldUp,
+                            color);
+      vertices.emplace_back(
+          Vertex::position_type(points.at(i % points.size()), 0).xzy(), WorldUp,
+          color);
+      vertices.emplace_back(
+          Vertex::position_type(points.at((i + 1) % points.size()), 0).xzy(),
+          WorldUp, color);
+    }
+  }
+
+  return Mesh(vertices);
+}
+
+Mesh Mesh::Hexagon::Fill(const HexGroup* group) noexcept {
+  Mesh result;
+  auto hexagons = group->generateHexagons();
+  std::for_each(hexagons.begin(), hexagons.end(), [&](const auto& hex) {
+    result.merge(
+        Fill(&hex, group->size, group->fillPercentage, group->fillColor(hex)));
+  });
+  return result;
+}
+
+Mesh Mesh::Hexagon::Outline(const Hex* hex, f32 size, f32 fill,
+                            Vertex::color_type color) noexcept {
+  std::vector<Vertex> vertices;
+  vertices.reserve(7);
+  for (auto point : hex->generatePoints(size, fill)) {
+    vertices.emplace_back(Vertex::position_type(point, 0).xzy(), WorldUp,
+                          color);
+  }
+  vertices.emplace_back(*(vertices.end() - 6));
+  return Mesh(vertices);
+}
+
+Mesh Mesh::Hexagon::Outline(const HexGroup* group) noexcept {
+  Mesh result;
+  auto hexagons = group->generateHexagons();
+  std::for_each(hexagons.begin(), hexagons.end(), [&](const auto& hex) {
+    result.merge(Outline(&hex, group->size, group->fillPercentage,
+                         group->outlineColor(hex)));
+  });
+  return result;
 }
 
 Mesh Mesh::Environment::Tree(idx_t* idxOffset, glm::mat4 transform) noexcept {
