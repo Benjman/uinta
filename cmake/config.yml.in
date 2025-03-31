@@ -1,0 +1,13 @@
+engine:
+  resPath: ${UINTA_ENGINE_RES}
+platform:
+  cacheDir: ${UINTA_CACHE_DIR}
+  dataDir: ${UINTA_DATA_DIR}
+  searchPaths: ${UINTA_RES_PATHS}
+  runtimeDir: ${UINTA_RUNTIME_DIR}
+  window:
+    fullscreen: true
+    name: Uinta Engine v${CMAKE_PROJECT_VERSION}
+    position: 0 0
+    size: 0 0
+version: ${CMAKE_PROJECT_VERSION}

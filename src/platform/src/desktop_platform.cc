@@ -11,7 +11,9 @@
 
 namespace uinta {
 
-DesktopPlatform::DesktopPlatform(DesktopPlatformApi* api) noexcept : api_(api) {
+DesktopPlatform::DesktopPlatform(AppConfig* appConfig,
+                                 DesktopPlatformApi* api) noexcept
+    : api_(api) {
   if (auto* casted = dynamic_cast<GlfwPlatformApi*>(api_)) {
     casted->platform(this);
   }
@@ -27,10 +29,9 @@ DesktopPlatform::DesktopPlatform(DesktopPlatformApi* api) noexcept : api_(api) {
     return;
   }
 
-  window_ = std::make_unique<DesktopWindow>(this);
-
-  if (status_ = window_->status(); status_.ok()) {
-    LOG(INFO) << "Initialized Desktop Platform.";
+  if (window_ = std::make_unique<DesktopWindow>(this, appConfig);
+      window_->status().ok()) {
+    LOG(INFO) << "Initialized window.";
   } else {
     status_ = window_->status();
     return;

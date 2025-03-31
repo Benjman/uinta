@@ -15,6 +15,11 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(UINTA_GENERATED_DIR "${CMAKE_BINARY_DIR}/generated")
+list(APPEND UINTA_INCLUDES "${UINTA_GENERATED_DIR}")
+
+set(UINTA_APP_CONFIG_PATH ${UINTA_GENERATED_DIR}/uinta/default.yml)
 set(UINTA_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
 if(UNIX)
@@ -44,7 +49,9 @@ else()
   message(WARNING "Unknown platform, using default path: ${UINTA_DATA_HOME}")
 endif()
 
-message(STATUS "UINTA_DATA_HOME set to ${UINTA_DATA_HOME}")
+message(STATUS "Data directory: ${UINTA_DATA_DIR}")
+message(STATUS "Cache directory: ${UINTA_CACHE_DIR}")
+message(STATUS "Runtime directory: ${UINTA_RUNTIME_DIR}")
 
 list(INSERT UINTA_RES_PATHS 0 "${UINTA_DATA_HOME}")
 
@@ -52,9 +59,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(glm)
 include(yaml-cpp)
-
-set(UINTA_GENERATED_DIR "${CMAKE_BINARY_DIR}/generated")
-list(APPEND UINTA_INCLUDES "${UINTA_GENERATED_DIR}")
 
 set(CMAKE_CXX_FLAGS_DEBUG
     "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror -Wpedantic")
