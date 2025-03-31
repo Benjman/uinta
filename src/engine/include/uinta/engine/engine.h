@@ -17,6 +17,7 @@ class Engine : public RuntimeGetter {
  public:
   struct Params final {
     Platform* platform;
+    AppConfig* appConfig;
     const OpenGLApi* gl = OpenGLApiImpl::Instance();
     FileSystem* fileSystem = FileSystemImpl::Instance();
   };
@@ -28,6 +29,10 @@ class Engine : public RuntimeGetter {
   Engine& operator=(const Engine&) noexcept = delete;
   Engine(const Engine&&) noexcept = delete;
   Engine& operator=(const Engine&&) noexcept = delete;
+
+  AppConfig* appConfig() const noexcept { return appConfig_; }
+
+  AppConfig* appConfig() noexcept { return appConfig_; }
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
@@ -65,6 +70,7 @@ class Engine : public RuntimeGetter {
   EngineDispatchers dispatchers_;
   Status status_;
 
+  AppConfig* appConfig_;
   FileSystem* fileSystem_;
   const OpenGLApi* gl_;
   Platform* platform_;

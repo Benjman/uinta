@@ -2,13 +2,14 @@
 #define SRC_PLATFORM_INCLUDE_UINTA_DESKTOP_WINDOW_H_
 
 #include "uinta/desktop_platform.h"
-#include "uinta/window.h"
 
 namespace uinta {
 
+class AppConfig;
+
 class DesktopWindow : public Window {
  public:
-  DesktopWindow(DesktopPlatform*) noexcept;
+  DesktopWindow(DesktopPlatform*, const AppConfig*) noexcept;
 
   ~DesktopWindow() noexcept;
 

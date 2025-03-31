@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "uinta/engine/engine.h"
+#include "uinta/mock/mock_app_config.h"
 #include "uinta/mock/mock_file_system.h"
 #include "uinta/mock/mock_gl.h"
 
@@ -13,9 +14,11 @@ class UintaTestF : public ::testing::Test {
  protected:
   MockOpenGLApi gl;
   MockFileSystem fileSystem;
+  ArgsProcessor args = ArgsProcessor(0, nullptr);
+  MockAppConfig appConfig = MockAppConfig(&args, &fileSystem);
 
   Engine makeEngine(Platform* platform) noexcept {
-    return Engine({platform, &gl, &fileSystem});
+    return Engine({platform, &appConfig, &gl, &fileSystem});
   }
 };
 
