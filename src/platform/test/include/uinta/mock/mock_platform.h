@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 
+#include "uinta/args.h"
 #include "uinta/mock/mock_runtime_getter.h"
 #include "uinta/platform.h"
 #include "uinta/status.h"
@@ -12,6 +13,8 @@
 namespace uinta {
 
 struct MockPlatform : Platform {
+  ArgsProcessor args = ArgsProcessor(0, nullptr);
+
   explicit MockPlatform(Monitor* monitor = nullptr) noexcept {
     if (monitor)
       monitors_ = {*monitor};
