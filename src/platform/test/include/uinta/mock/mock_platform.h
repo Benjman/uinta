@@ -4,7 +4,9 @@
 #include <functional>
 #include <memory>
 
+#include "mock_file_system.h"
 #include "uinta/args.h"
+#include "uinta/mock/mock_app_config.h"
 #include "uinta/mock/mock_runtime_getter.h"
 #include "uinta/platform.h"
 #include "uinta/status.h"
@@ -14,13 +16,15 @@ namespace uinta {
 
 struct MockPlatform : Platform {
   ArgsProcessor args = ArgsProcessor(0, nullptr);
+  MockFileSystem fs;
+  MockAppConfig appConfig = MockAppConfig(&args, &fs);
 
   explicit MockPlatform(Monitor* monitor = nullptr) noexcept {
     if (monitor)
       monitors_ = {*monitor};
     else
       monitors_ = {{"Test monitor", 1920, 1080, 144, nullptr, true}};
-    window_ = std::make_unique<Window>(this);
+    window_ = std::make_unique<Window>(this, &appConfig);
   }
 
   std::function<void(i32*, i32*)> onGetAndUpdateWindowSize =

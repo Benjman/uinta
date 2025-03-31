@@ -15,7 +15,7 @@ class Window;
 
 class Window {
  public:
-  explicit Window(const Platform*) noexcept;
+  explicit Window(const Platform*, const AppConfig*) noexcept;
 
   virtual ~Window() noexcept {}
 
@@ -63,7 +63,7 @@ class Window {
   void userData(void* ptr) noexcept { userData_ = ptr; }
 
  private:
-  std::string name_ = "Uinta Engine";
+  std::string name_ = "";
   bool isFullscreen_ = false;
   u32 height_ = 0;
   u32 width_ = 0;

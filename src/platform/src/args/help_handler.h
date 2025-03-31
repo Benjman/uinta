@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "absl/strings/str_cat.h"
+#include "app_config_handler.h"
 #include "uinta/args.h"
 #include "uinta/status.h"
 
@@ -32,6 +33,7 @@ struct HelpHandler : ArgHandler {
 
   Status handle(std::string) noexcept override {
     std::vector<std::span<const std::string>> collections = {
+        AppConfigHandler::Keys,
         HelpHandler::Keys,
     };
     size_t colWidth = 0;

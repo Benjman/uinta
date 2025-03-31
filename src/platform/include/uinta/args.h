@@ -16,6 +16,7 @@ class ArgsProcessor {
 
  public:
   enum Arg : u16 {
+    AppConfigFilePath,
     Help,
   };
 

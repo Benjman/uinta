@@ -10,7 +10,8 @@
 namespace uinta {
 
 Engine::Engine(Params params) noexcept
-    : fileSystem_(params.fileSystem),
+    : appConfig_(params.appConfig),
+      fileSystem_(params.fileSystem),
       gl_(params.gl),
       platform_(params.platform) {
   assert(platform_ && "`Platform*` cannot be null.");
