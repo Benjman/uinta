@@ -1,9 +1,16 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "uinta/args.h"
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
 
-int main(int, const char**) {
+int main(int argc, const char** argv) {
+  uinta::ArgsProcessor args(argc, argv);
+  if (!args.status().ok()) {
+    LOG(ERROR) << args.status().message();
+    exit(args.status().raw_code());
+  }
+
   uinta::DesktopPlatform platform;
   if (!platform.status().ok()) {
     LOG(ERROR) << absl::StrFormat("Failed to initialize `DesktopPlatform`: %s",
