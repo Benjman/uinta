@@ -3,6 +3,7 @@
 
 namespace uinta {
 namespace cfg {
+constexpr const char *DataHome = "${UINTA_DATA_HOME}";
 constexpr const char *FileSearchPaths = "${UINTA_RES_PATHS}";
 constexpr const char FileSearchPathsDelim = ';';
 
