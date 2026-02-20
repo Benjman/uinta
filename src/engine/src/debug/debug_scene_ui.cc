@@ -7,6 +7,7 @@
 #include <string>
 
 #include "uinta/component.h"
+#include "uinta/debug/ui/basic_shader_ui.h"
 #include "uinta/debug/ui/engine_ui.h"
 #include "uinta/debug/ui/imgui_ui.h"
 #include "uinta/debug/ui/platform_ui.h"
@@ -14,6 +15,7 @@
 #include "uinta/engine/engine.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/platform.h"
+#include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
 
@@ -29,7 +31,8 @@ f32 UiThreeQuartersWidth = UiWidth * 3.0 / 4.0;
 static EngineUiInfo engineUiInfo_;
 
 DebugSceneUi::DebugSceneUi(Scene* parent) noexcept
-    : Scene(parent, SceneLayer::Debug) {
+    : Scene(parent, SceneLayer::Debug),
+      shader_(findComponent<BasicShaderManager>().value_or(nullptr)) {
   static time_t prevRenderComplete = 0;
   auto* engine = parent->engine();
   engineUiInfo_.engine = engine;
@@ -112,6 +115,10 @@ void DebugSceneUi::render(time_t) noexcept {
   flags_.isImGuiRendered(false);
 
   if (flags_.isImGuiRendered() && flags_.isImGuiDeinitialized()) return;
+
+  if (shader_) {
+    RenderBasicShaderUi(shader_, engine()->gl());
+  }
 
   RenderEngineUi(engineUiInfo_);
   RenderImGuiUi(engine()->platform()->window());
