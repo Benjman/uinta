@@ -3,6 +3,7 @@
 
 #include "uinta/debug/debug_scene.h"
 #include "uinta/engine/engine.h"
+#include "uinta/input/input_system.h"
 #include "uinta/scene/scene.h"
 #include "uinta/scenes/cube_scene.h"
 #include "uinta/scenes/demo_palette.h"
@@ -20,6 +21,7 @@ class DemoScene : public Scene {
                              palette[0].a);
 
     addComponent<BasicShaderManager>(this);
+    addComponent<InputSystem>(engine->input());
 
     addScene<DebugScene>();
     addScene<CubeScene>();
