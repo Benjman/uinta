@@ -1,7 +1,9 @@
 #ifndef SRC_APP_INCLUDE_UINTA_SCENES_DEMO_SCENE_H_
 #define SRC_APP_INCLUDE_UINTA_SCENES_DEMO_SCENE_H_
 
+#include "uinta/camera/camera_manager.h"
 #include "uinta/debug/debug_scene.h"
+#include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
 #include "uinta/input/input_system.h"
 #include "uinta/scene/scene.h"
@@ -20,7 +22,9 @@ class DemoScene : public Scene {
     engine->gl()->clearColor(palette[0].r, palette[0].g, palette[0].b,
                              palette[0].a);
 
-    addComponent<BasicShaderManager>(this);
+    auto* cameraManager = addComponent<CameraManager>(this);
+    addComponent<CursorManager>(this);
+    addComponent<BasicShaderManager>(this, cameraManager);
     addComponent<InputSystem>(engine->input());
 
     addScene<DebugScene>();

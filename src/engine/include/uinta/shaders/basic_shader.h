@@ -98,7 +98,7 @@ class BasicShaderManager : public PreRenderComponent {
     value_type flags_;
   };
 
-  explicit BasicShaderManager(Scene*) noexcept;
+  explicit BasicShaderManager(Scene*, CameraManager*) noexcept;
 
   void update(time_t delta) noexcept override {
     runtime_ += delta;
