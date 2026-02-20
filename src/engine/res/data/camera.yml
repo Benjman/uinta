@@ -1,8 +1,8 @@
 camera:
-  angle: 0.000000 8.000000
+  angle: 35318.695312 8.000000
   angleSpeedKeyboard: 90
   angleSpeedMouse: 20
-  distance: 15.000000 8.000000
+  distance: 20.000000 8.000000
   distanceMax: 20
   distanceMin: 0.200000003
   distanceSpeedKeyboard: 15
@@ -12,14 +12,14 @@ camera:
   fov: 45
   nearPlane: 0.00999999978
   orthoSize: 5
-  pitch: 90.000000 8.000000
+  pitch: 27.883659 8.000000
   pitchMax: 90
   pitchMin: 0.5
   pitchSpeedKeyboard: 90
   pitchSpeedMouse: 20
   projection: Perspective
   speedFactorMin: 0.660000026
-  target: 0.000000 0.000000 0.000000 8.000000
+  target: 0.017165 0.000000 0.003647 8.000000
   translationScaleFactor: 0.300000012
   translationSpeedKeyboard: 10
   translationSpeedMouse: 2
@@ -40,16 +40,3 @@ camera:
       angle: RIGHT
       pitch: RIGHT
       translation: MIDDLE
-engine:
-  resPath: ${UINTA_ENGINE_RES}
-platform:
-  cacheDir: ${UINTA_CACHE_DIR}
-  dataDir: ${UINTA_DATA_DIR}
-  searchPaths: ${UINTA_RES_PATHS}
-  runtimeDir: ${UINTA_RUNTIME_DIR}
-  window:
-    fullscreen: true
-    name: Uinta Engine v${CMAKE_PROJECT_VERSION}
-    position: 0 0
-    size: 0 0
-version: ${CMAKE_PROJECT_VERSION}
