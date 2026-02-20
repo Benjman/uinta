@@ -14,6 +14,7 @@ The following libraries are recommended to have been installed and available on
 your system's path:
 
 * [Abseil](https://github.com/abseil/abseil-cpp)
+* [assimp](https://github.com/assimp/assimp)
 * [Dear ImGui](https://github.com/ocornut/imgui)
 * [GLFW](https://github.com/glfw/glfw)
 * [glm](https://github.com/g-truc/glm)
