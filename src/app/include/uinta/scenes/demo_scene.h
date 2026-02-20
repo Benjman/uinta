@@ -10,6 +10,7 @@
 #include "uinta/scenes/demo_palette.h"
 #include "uinta/scenes/fbx_viewer_scene.h"
 #include "uinta/scenes/terrain_scene.h"
+#include "uinta/scenes/trees_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -31,6 +32,7 @@ class DemoScene : public Scene {
     addScene<DebugScene>();
     addScene<FbxViewerScene>();
     addScene<TerrainScene>();
+    addScene<TreeScene>();
   }
 };
 
