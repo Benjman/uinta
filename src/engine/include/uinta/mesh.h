@@ -13,6 +13,9 @@
 
 namespace uinta {
 
+struct Hex;
+struct HexGroup;
+
 struct Vertex {
   using position_type = glm::vec3;
   using normal_type = glm::vec3;
@@ -127,6 +130,15 @@ class Mesh {
                  glm::mat4 transform = glm::mat4(1)) noexcept;
 
   void transformPositions(glm::mat4 transform) noexcept;
+
+  struct Hexagon final {
+    static Mesh Fill(const Hex*, f32 spaceRad = 1, f32 fill = 1.0,
+                     Vertex::color_type color = {1, 1, 1}) noexcept;
+    static Mesh Fill(const HexGroup*) noexcept;
+    static Mesh Outline(const Hex*, f32 spaceRad = 1, f32 fill = 1.0,
+                        Vertex::color_type color = {1, 1, 1}) noexcept;
+    static Mesh Outline(const HexGroup*) noexcept;
+  };
 
   struct Environment final {
     static Mesh Tree(idx_t* idxOffset,
