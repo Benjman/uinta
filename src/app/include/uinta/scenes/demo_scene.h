@@ -8,10 +8,7 @@
 #include "uinta/input/input_system.h"
 #include "uinta/scene/scene.h"
 #include "uinta/scenes/demo_palette.h"
-#include "uinta/scenes/fbx_viewer_scene.h"
-#include "uinta/scenes/terrain_scene.h"
-#include "uinta/scenes/text_scene.h"
-#include "uinta/scenes/trees_scene.h"
+#include "uinta/scenes/hex_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -31,10 +28,7 @@ class DemoScene : public Scene {
     addComponent<InputSystem>(engine->input());
 
     addScene<DebugScene>();
-    addScene<FbxViewerScene>();
-    addScene<TerrainScene>();
-    addScene<TextScene>();
-    addScene<TreeScene>();
+    addScene<HexScene>();
   }
 };
 
