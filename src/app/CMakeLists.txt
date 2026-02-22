@@ -1,4 +1,10 @@
 list(APPEND APP_SRCS src/main.cc)
+list(APPEND APP_SRCS src/scenes/city_game/building_input_handler.cc)
+list(APPEND APP_SRCS src/scenes/city_game/building_system.cc)
+list(APPEND APP_SRCS src/scenes/city_game/city_game_scene.cc)
+list(APPEND APP_SRCS src/scenes/city_game/city_renderer.cc)
+list(APPEND APP_SRCS src/scenes/city_game/economy_system.cc)
+
 add_executable(app ${APP_SRCS})
 list(APPEND APP_PRIVATE_LIBS uinta::engine)
 list(APPEND APP_PRIVATE_LIBS uinta::platform)

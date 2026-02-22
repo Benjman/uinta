@@ -7,6 +7,7 @@
 #include "uinta/engine/engine.h"
 #include "uinta/input/input_system.h"
 #include "uinta/scene/scene.h"
+#include "uinta/scenes/city_game/city_game_scene.h"
 #include "uinta/scenes/demo_palette.h"
 #include "uinta/scenes/hex_scene.h"
 #include "uinta/scenes/manifold_scene.h"
@@ -31,6 +32,7 @@ class DemoScene : public Scene {
     addScene<DebugScene>();
     addScene<HexScene>();
     addScene<ManifoldScene>();
+    addScene<CityGameScene>();
   }
 };
 
