@@ -1,4 +1,5 @@
 list(APPEND PLATFORM_TEST_SRCS src/input_test.cc)
+list(APPEND PLATFORM_TEST_SRCS src/input_token_test.cc)
 list(APPEND PLATFORM_TEST_SRCS src/platform_test.cc)
 
 add_executable(platform_test ${PLATFORM_TEST_SRCS})
