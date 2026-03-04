@@ -307,3 +307,195 @@ class InputSystem : public System {
 - Test mouse move/scroll dispatch
 - Test that unsubscribe prevents future callbacks
 - Test MouseButton and Key token separation (no cross-contamination)
+
+## Implementation plan
+
+### **Phase 1: Define Input Enums and Operators**
+
+**Location:** `src/platform/include/uinta/input/input_enums.h` (new file)
+
+**Tasks:**
+
+1. Create strongly-typed enums with bitfield layout:
+   - `enum class Key : u32` (bits 0-15) - map to existing `KEY_*` constants
+   - `enum class Action : u32` (bits 16-19) - map to `ACTION_PRESS`, `ACTION_RELEASE`, `ACTION_REPEAT`
+   - `enum class Mod : u32` (bits 20-27) - map to `MOD_SHIFT`, `MOD_CONTROL`, `MOD_ALT`, etc.
+   - `enum class MouseButton : u32` (bits 0-15) - map to existing `MOUSE_BUTTON_*` constants
+
+2. Implement bitwise OR operators:
+   - `operator|(Key, Action)` → `u32`
+   - `operator|(u32, Mod)` → `u32`
+   - `operator|(Mod, Mod)` → `u32`
+   - `operator|(MouseButton, Action)` → `u32`
+
+3. Create helper extraction functions:
+   - `extractKey(u32 token)` → `Key`
+   - `extractMouseButton(u32 token)` → `MouseButton`
+   - `extractAction(u32 token)` → `Action`
+   - `extractMods(u32 token)` → `Mod`
+
+**Dependencies:** Only depends on `types.h` (for `u32`)
+
+---
+
+### **Phase 2: Define Subscription Handle**
+
+**Location:** Same file as Phase 1 (`input_enums.h`)
+
+**Tasks:**
+
+1. Create `SubscriptionHandle` struct:
+
+   ```cpp
+   struct SubscriptionHandle {
+     u64 id;
+     bool operator==(const SubscriptionHandle&) const = default;
+   };
+   ```
+
+**Dependencies:** Only depends on `types.h` (for `u64`)
+
+---
+
+### **Phase 3: Implement InputSystem Class**
+
+**Location:**
+
+- Header: `src/platform/include/uinta/input/input_system.h` (new file)
+- Implementation: `src/platform/src/input/input_system.cc` (new file)
+
+**Tasks:**
+
+1. **Header file** - Define `InputSystem` class:
+   - Inherit from `System` base class
+   - Constructor takes `Input*` pointer
+   - Public subscription methods:
+     - `subscribeKey(u32 token, callback)` → `SubscriptionHandle`
+     - `subscribeMouse(u32 token, callback)` → `SubscriptionHandle`
+     - `subscribeMouseMove(callback)` → `SubscriptionHandle`
+     - `subscribeMouseScroll(callback)` → `SubscriptionHandle`
+     - `unsubscribe(SubscriptionHandle)`
+   - Override `onTick(time_t delta)` from `System`
+   - Private storage:
+     - Token-indexed maps for key/mouse subscriptions
+     - Vectors for mouse move/scroll subscriptions
+     - Previous frame state storage for detecting transitions
+     - Handle ID counter
+
+2. **Implementation file** - Implement methods:
+   - **Constructor:** Store `Input*` pointer, initialize handle counter
+
+   - **`subscribeKey()`:**
+     - Generate unique handle ID
+     - Store callback in `keySubscriptions_[token]` vector
+     - Return handle
+
+   - **`subscribeMouse()`:**
+     - Same as above but use `mouseSubscriptions_` map
+
+   - **`subscribeMouseMove()` / `subscribeMouseScroll()`:**
+     - Add callback to respective vector with unique handle
+
+   - **`unsubscribe()`:**
+     - Search all subscription containers
+     - Remove entry matching handle ID
+
+   - **`onTick()`:**
+     - **Keyboard state transitions:**
+       - Compare current `Input::keysDown()` with previous frame
+       - For each changed key, determine action (press/release)
+       - Extract current modifiers from `Input::mods()`
+       - Look up matching tokens in `keySubscriptions_`
+       - For each token, check:
+         - Key matches (exact)
+         - Action matches (bitwise AND)
+         - Modifiers match (exact or `Mod::None`)
+       - Dispatch to matching callbacks
+       - Handle key repeat events similarly
+
+     - **Mouse button state transitions:**
+       - Same logic as keyboard but for `Input::mouseDown()`, `mousePressed()`, `mouseReleased()`
+
+     - **Mouse movement:**
+       - If `Input::mouseMoved()`, dispatch to all `mouseMoveSubscriptions_`
+       - Pass `cursorx()`, `cursory()`, `cursordx()`, `cursordy()`
+
+     - **Mouse scroll:**
+       - If `Input::mouseScrolled()`, dispatch to all `mouseScrollSubscriptions_`
+       - Pass `scrolldx()`, `scrolldy()`
+
+     - **Update previous state:** Copy current frame state for next frame comparison
+
+**Dependencies:**
+
+- `uinta/system.h`
+- `uinta/input/input.h`
+- `uinta/input/input_enums.h`
+- `<functional>` for callbacks
+- `<unordered_map>` and `<vector>` for storage
+
+---
+
+### **Phase 4: State Tracking Logic**
+
+**Implementation Details for `onTick()`:**
+
+1. **Key State Detection:**
+   - Store previous frame's `keysDown_`, `keysPressed_`, `keysReleased_`, `keysRepeated_` arrays
+   - On tick, compare:
+     - Keys in current `pressed` but not in previous `down` → trigger `Action::Press`
+     - Keys in current `released` → trigger `Action::Release`
+     - Keys in current `repeated` → trigger `Action::Repeat`
+
+2. **Modifier Exact Matching:**
+   - Extract subscribed mods from token using `extractMods()`
+   - Get current mods from `Input::mods()`
+   - Match only if: `currentMods == subscribedMods` (exact match)
+   - Special case: `Mod::None` (value 0) means no modifiers should be pressed
+
+3. **Action Matching:**
+   - Support multiple actions in one subscription (e.g., `Action::Press | Action::Release`)
+   - Use bitwise AND: `(currentAction & subscribedActions) != 0`
+
+4. **Token Lookup:**
+   - For keyboard: Reconstruct token from `Key + Action + Mods`, then look up in `keySubscriptions_` map
+   - Optimization: May need to iterate through map entries and check each field separately since exact token may not exist due to action combinations
+
+---
+
+### **Phase 5: Integration and Testing**
+
+**Tasks:**
+
+1. **Update build system:**
+   - Add new source files to CMake/build configuration
+   - Ensure proper linking between platform and engine libraries
+
+2. **Create integration example:**
+   - In an existing scene or create test scene
+   - Instantiate `InputSystem` via `SystemManager`
+   - Subscribe to various input combinations
+   - Verify callbacks fire correctly
+
+3. **Unit tests** (at `src/platform/test/src/input_system_test.cc`):
+   - Test bitfield packing/unpacking
+   - Test subscription/unsubscribe lifecycle
+   - Test exact modifier matching
+   - Test action combination matching
+   - Test multiple callbacks on same token
+   - Test mouse move/scroll dispatch
+   - Mock `Input` state and verify correct dispatching
+
+4. **Remove deprecated code:**
+   - As mentioned in the task, remove `cursorWorldPoint()` from `Input` class since it's spatial logic that doesn't belong there
+
+---
+
+### **Phase 6: Documentation**
+
+**Tasks:**
+
+1. Add usage examples to the task document
+2. Document callback signatures
+3. Add inline code documentation for public API
+4. Update project documentation to explain event-driven vs polling patterns

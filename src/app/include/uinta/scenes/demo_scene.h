@@ -5,6 +5,7 @@
 #include "uinta/debug/debug_scene.h"
 #include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
+#include "uinta/input/input_system.h"
 #include "uinta/scene/scene.h"
 #include "uinta/scenes/demo_palette.h"
 #include "uinta/scenes/hex_scene.h"
@@ -24,6 +25,7 @@ class DemoScene : public Scene {
     auto* cameraManager = addComponent<CameraManager>(this);
     addComponent<CursorManager>(this);
     addComponent<BasicShaderManager>(this, cameraManager);
+    addComponent<InputSystem>(engine->input());
 
     addScene<DebugScene>();
     addScene<HexScene>();

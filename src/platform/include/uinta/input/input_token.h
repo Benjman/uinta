@@ -160,14 +160,14 @@ enum class Mod : u32 {
 
 // MouseButton enum - similar pattern to Key (uses bits 0-15)
 enum class MouseBtn : u32 {
-  Button1 = 0x0001,
-  Button2 = 0x0002,
-  Button3 = 0x0003,
-  Button4 = 0x0004,
-  Button5 = 0x0005,
-  Button6 = 0x0006,
-  Button7 = 0x0007,
-  Button8 = 0x0008,
+  Button1 = 0x0000,
+  Button2 = 0x0001,
+  Button3 = 0x0002,
+  Button4 = 0x0003,
+  Button5 = 0x0004,
+  Button6 = 0x0005,
+  Button7 = 0x0006,
+  Button8 = 0x0007,
   Left = Button1,
   Right = Button2,
   Middle = Button3,
