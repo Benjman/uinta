@@ -4,6 +4,7 @@
 
 #include "uinta/engine/engine.h"
 #include "uinta/scenes/city_game/building_types.h"
+#include "uinta/scenes/city_game/road_types.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -11,15 +12,18 @@ namespace uinta {
 CityGameScene::CityGameScene(Scene* parent) noexcept
     : Scene(parent, SceneLayer::Simulation),
       economySystem_(initialBuildingCost(BuildingType::House) * 5),
-      renderer_(findComponent<BasicShaderManager>().value_or(nullptr),
-                engine()->gl()),
+      cityRenderer_(findComponent<BasicShaderManager>().value_or(nullptr),
+                    engine()->gl()),
+      roadRenderer_(findComponent<BasicShaderManager>().value_or(nullptr),
+                    engine()->gl()),
       inputHandler_(this) {
   // Place initial buildings
-  economySystem_.setMoney(100000);
-  for (i32 i = -5; i < 5; i++) {
-    tryPlaceBuilding(glm::vec2(i, 0), BuildingType::House);
+  constexpr size_t InitialBuildingCount = 10;
+  for (size_t i = 0; i < InitialBuildingCount; i++) {
+    auto position = glm::vec2(-5 + static_cast<i32>(i), 0);
+    cityRenderer_.addBuilding(
+        buildingSystem_.addBuilding(position, BuildingType::House));
   }
-  economySystem_.setMoney(initialBuildingCost(BuildingType::House) * 5);
 }
 
 void CityGameScene::postTick(time_t dt) noexcept {
@@ -27,13 +31,21 @@ void CityGameScene::postTick(time_t dt) noexcept {
                         buildingSystem_.factoryCount());
 
   if (inputHandler_.hasPlacementRequest()) {
-    tryPlaceBuilding(inputHandler_.placementPosition(),
-                     inputHandler_.activeBuildingType());
+    // Handle placement based on mode
+    if (inputHandler_.mode() == PlacementMode::Building) {
+      tryPlaceBuilding(inputHandler_.placementPosition(),
+                       inputHandler_.activeBuildingType());
+    } else {  // PlacementMode::Road
+      tryPlaceRoad(inputHandler_.placementPosition());
+    }
     inputHandler_.clearPlacementRequest();
   }
 }
 
-void CityGameScene::render(time_t) noexcept { renderer_.render(); }
+void CityGameScene::render(time_t) noexcept {
+  roadRenderer_.render();
+  cityRenderer_.render();
+}
 
 void CityGameScene::onDebugUi() noexcept {
   auto income = economySystem_.incomePerSecond(buildingSystem_.houseCount(),
@@ -41,10 +53,14 @@ void CityGameScene::onDebugUi() noexcept {
   ImGui::Text("Money: %.1f (+%.1f/s)", economySystem_.money(), income);
   ImGui::Separator();
 
-  ImGui::Text("Select Building (1-2):");
+  ImGui::Text("Select Placement (1-3):");
+  auto mode = inputHandler_.mode();
   auto activeType = inputHandler_.activeBuildingType();
 
-  if (ImGui::RadioButton("[1] House", activeType == BuildingType::House)) {
+  // Building options
+  if (ImGui::RadioButton("[1] House", mode == PlacementMode::Building &&
+                                          activeType == BuildingType::House)) {
+    inputHandler_.mode(PlacementMode::Building);
     inputHandler_.activeBuildingType(BuildingType::House);
   }
   ImGui::SameLine();
@@ -52,7 +68,10 @@ void CityGameScene::onDebugUi() noexcept {
               economySystem_.buildingCost(BuildingType::House,
                                           buildingSystem_.houseCount()));
 
-  if (ImGui::RadioButton("[2] Factory", activeType == BuildingType::Factory)) {
+  if (ImGui::RadioButton("[2] Factory",
+                         mode == PlacementMode::Building &&
+                             activeType == BuildingType::Factory)) {
+    inputHandler_.mode(PlacementMode::Building);
     inputHandler_.activeBuildingType(BuildingType::Factory);
   }
   ImGui::SameLine();
@@ -60,11 +79,19 @@ void CityGameScene::onDebugUi() noexcept {
               economySystem_.buildingCost(BuildingType::Factory,
                                           buildingSystem_.factoryCount()));
 
+  // Road option
+  if (ImGui::RadioButton("[3] Road", mode == PlacementMode::Road)) {
+    inputHandler_.mode(PlacementMode::Road);
+  }
+  ImGui::SameLine();
+  ImGui::Text("Cost: %.1f", economySystem_.roadCost(roadSystem_.count()));
+
   ImGui::Separator();
   ImGui::Text("Houses: %zu (+%.1f/s)", buildingSystem_.houseCount(),
               economySystem_.houseMoney(buildingSystem_.houseCount()));
   ImGui::Text("Factories: %zu (+%.1f/s)", buildingSystem_.factoryCount(),
               economySystem_.factoryMoney(buildingSystem_.factoryCount()));
+  ImGui::Text("Roads: %zu", roadSystem_.count());
 }
 
 bool CityGameScene::tryPlaceBuilding(glm::vec2 position,
@@ -79,7 +106,33 @@ bool CityGameScene::tryPlaceBuilding(glm::vec2 position,
   buildingSystem_.addBuilding(position, type);
 
   auto& building = buildingSystem_.buildings().back();
-  renderer_.addBuilding(building);
+  cityRenderer_.addBuilding(building);
+
+  return true;
+}
+
+bool CityGameScene::tryPlaceRoad(glm::ivec2 position) noexcept {
+  // Check if road already exists at position
+  if (roadSystem_.hasRoad(position)) {
+    return false;
+  }
+
+  auto cost = economySystem_.roadCost(roadSystem_.count());
+
+  if (!economySystem_.canAfford(cost)) {
+    return false;
+  }
+
+  economySystem_.deductMoney(cost);
+  roadSystem_.addRoad(position);
+
+  // Render new road and all updated neighbors
+  auto updatedPositions = roadSystem_.getLastUpdatedRoads();
+  for (const auto& pos : updatedPositions) {
+    if (auto* road = roadSystem_.getRoad(pos)) {
+      roadRenderer_.addRoad(*road);
+    }
+  }
 
   return true;
 }

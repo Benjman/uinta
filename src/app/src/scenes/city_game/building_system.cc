@@ -4,9 +4,9 @@
 
 namespace uinta {
 
-void BuildingSystem::addBuilding(glm::vec2 position,
-                                 BuildingType type) noexcept {
-  buildings_.emplace_back(Building{
+Building& BuildingSystem::addBuilding(glm::vec2 position,
+                                      BuildingType type) noexcept {
+  return buildings_.emplace_back(Building{
       .position = position,
       .type = type,
   });

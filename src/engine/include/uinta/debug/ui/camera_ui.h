@@ -195,6 +195,10 @@ inline void RenderCameraUi(CameraManager* camManager) noexcept {
               camera->position().y, camera->position().z);
   ImGui::Text("%-25s%+.1f %+.1f %+.1f", "Target", camera->target().x().target(),
               camera->target().y().target(), camera->target().z().target());
+  ImGui::SameLine();
+  if (ImGui::Button("Origin##CameraTargetSnapToOrigin")) {
+    camera->target(glm::vec3{0, 0, 0});
+  }
   ImGui::Text("%-25s%+.1f %+.1f %+.1f", "Forward", forward.x, forward.y,
               forward.z);
   ImGui::Text("%-25s%+.1f %+.1f %+.1f", "Right", right.x, right.y, right.z);

@@ -33,13 +33,13 @@ Mesh::Mesh(const std::span<const Vertex> vertices) noexcept {
 }
 
 Mesh::Mesh(const Mesh& other) noexcept
-    : vertices_(std::move(other.vertices_)),
-      elements_(std::move(other.elements_)) {}
+    : vertices_(other.vertices_),
+      elements_(other.elements_) {}
 
 Mesh& Mesh::operator=(const Mesh& other) noexcept {
   if (this != &other) {
-    vertices_ = std::move(other.vertices_);
-    elements_ = std::move(other.elements_);
+    vertices_ = other.vertices_;
+    elements_ = other.elements_;
   }
   return *this;
 }

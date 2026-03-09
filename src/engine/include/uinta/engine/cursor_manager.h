@@ -8,7 +8,6 @@
 #include "uinta/camera/camera_manager.h"
 #include "uinta/component.h"
 #include "uinta/engine/engine.h"
-#include "uinta/engine/engine_state.h"
 #include "uinta/math/spatial.h"
 #include "uinta/window.h"
 

@@ -22,6 +22,7 @@ class EconomySystem {
   void addMoney(f32 amount) noexcept { money_ += amount; }
 
   f32 buildingCost(BuildingType type, size_t currentCount) const noexcept;
+  f32 roadCost(size_t currentCount) const noexcept;
   f32 incomePerSecond(size_t houseCount, size_t factoryCount) const noexcept;
 
   f32 houseMoney(size_t houseCount) const noexcept;

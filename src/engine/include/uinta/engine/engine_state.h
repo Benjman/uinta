@@ -50,7 +50,7 @@ class EngineState {
   struct Flags final {
     using value_type = u8;
 
-    AtomicFlagsOperations(FixedTickRateMask);
+    AtomicFlagsOperations(0);
 
     bool isClosing() const noexcept { return flags_ & ClosingMask; }
     void isClosing(bool v) noexcept {

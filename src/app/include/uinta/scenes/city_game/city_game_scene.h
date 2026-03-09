@@ -1,10 +1,12 @@
 #ifndef SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_CITY_GAME_SCENE_SCENE_H_
 #define SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_CITY_GAME_SCENE_SCENE_H_
 
-#include "./building_input_handler.h"
+#include "./placement_input_handler.h"
 #include "./building_system.h"
 #include "./building_types.h"
 #include "./city_renderer.h"
+#include "./road_system.h"
+#include "./road_renderer.h"
 #include "./economy_system.h"
 #include "uinta/scene/scene.h"
 
@@ -20,11 +22,14 @@ class CityGameScene : public Scene {
 
  private:
   BuildingSystem buildingSystem_;
+  RoadSystem roadSystem_;
   EconomySystem economySystem_;
-  CityRenderer renderer_;
-  BuildingInputHandler inputHandler_;
+  CityRenderer cityRenderer_;
+  RoadRenderer roadRenderer_;
+  PlacementInputHandler inputHandler_;
 
   bool tryPlaceBuilding(glm::vec2 position, BuildingType type) noexcept;
+  bool tryPlaceRoad(glm::ivec2 position) noexcept;
 };
 
 }  // namespace uinta

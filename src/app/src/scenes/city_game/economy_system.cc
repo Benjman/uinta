@@ -1,5 +1,7 @@
 #include "uinta/scenes/city_game/economy_system.h"
 
+#include "uinta/scenes/city_game/road_types.h"
+
 namespace uinta {
 
 void EconomySystem::update(time_t dt, size_t houseCount,
@@ -22,6 +24,12 @@ f32 EconomySystem::buildingCost(BuildingType type,
                                 size_t currentCount) const noexcept {
   auto baseCost = initialBuildingCost(type);
   auto inflationRate = buildingInflationRate(type);
+  return baseCost * std::pow(inflationRate, currentCount);
+}
+
+f32 EconomySystem::roadCost(size_t currentCount) const noexcept {
+  auto baseCost = initialRoadCost();
+  auto inflationRate = roadInflationRate();
   return baseCost * std::pow(inflationRate, currentCount);
 }
 
