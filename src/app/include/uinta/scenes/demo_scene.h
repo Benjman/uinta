@@ -10,7 +10,9 @@
 #include "uinta/gl.h"
 #include "uinta/math/direction.h"
 #include "uinta/scene/scene.h"
-#include "uinta/scenes/camera_scene.h"
+#include "uinta/scenes/fbx_viewer_scene.h"
+#include "uinta/scenes/manifold_scene.h"
+#include "uinta/scenes/terrain_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -23,7 +25,9 @@ class DemoScene : public Scene {
     engine->service<const OpenGLApi>()->clearColor(clearColor.r, clearColor.g, clearColor.b, 1.0);
 
     debugScene_ = addScene<DebugScene>();
-    cameraScene_ = addScene<CameraScene>();
+    manifoldScene_ = addScene<ManifoldScene>();
+    fbxViewerScene_ = addScene<FbxViewerScene>();
+    terrainScene_ = addScene<TerrainScene>();
   }
 
   ~DemoScene() noexcept override { children().clear(); }
@@ -47,7 +51,9 @@ class DemoScene : public Scene {
   CursorManager cursor_;
 
   DebugScene* debugScene_ = nullptr;
-  CameraScene* cameraScene_ = nullptr;
+  ManifoldScene* manifoldScene_ = nullptr;
+  FbxViewerScene* fbxViewerScene_ = nullptr;
+  TerrainScene* terrainScene_ = nullptr;
 
   time_t runtime_ = 0.0;
 };
