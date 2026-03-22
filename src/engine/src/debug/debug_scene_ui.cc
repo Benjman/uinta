@@ -13,6 +13,7 @@
 #include "uinta/debug/ui/input_ui.h"
 #include "uinta/debug/ui/platform_ui.h"
 #include "uinta/debug/ui/scene_ui.h"
+#include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/gl.h"
@@ -34,6 +35,7 @@ static EngineUiInfo engineUiInfo_;
 
 DebugSceneUi::DebugSceneUi(Scene* parent) noexcept : Scene(parent, SceneLayer::Debug) {
   camera_ = engine()->service<CameraManager>();
+  cursorManager_ = engine()->service<CursorManager>();
   gl_ = engine()->service<const OpenGLApi>();
   input_ = engine()->service<InputSystem>()->input();
   platform_ = engine()->service<Platform>();
@@ -130,7 +132,7 @@ void DebugSceneUi::render(time_t /*unused*/) noexcept {
 
   RenderEngineUi(engineUiInfo_);
   RenderImGuiUi(platform_->window());
-  RenderInputUi(input_, platform_->window());
+  RenderInputUi(input_, platform_->window(), cursorManager_);
   RenderPlatformUi(platform_);
   RenderSceneUi(engine());
 

@@ -9,6 +9,7 @@ namespace uinta {
 
 class BasicShaderManager;
 class CameraManager;
+class CursorManager;
 class Engine;
 class Input;
 struct OpenGLApi;
@@ -81,6 +82,7 @@ class DebugSceneUi : public Scene {
   CameraManager* camera_ = nullptr;
   BasicShaderManager* shader_;
   Input* input_ = nullptr;
+  CursorManager* cursorManager_ = nullptr;
 };
 
 }  // namespace uinta
