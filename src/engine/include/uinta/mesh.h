@@ -1,12 +1,12 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_MESH_H_
 #define SRC_ENGINE_INCLUDE_UINTA_MESH_H_
 
-#include <glm/ext/matrix_float4x4.hpp>
-#include <glm/ext/vector_float2.hpp>
-#include <glm/ext/vector_float3.hpp>
 #include <span>
 #include <vector>
 
+#include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_float3.hpp"
 #include "uinta/types.h"
 
 namespace uinta {

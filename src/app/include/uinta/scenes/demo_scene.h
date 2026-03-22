@@ -5,6 +5,7 @@
 #include "uinta/engine/engine.h"
 #include "uinta/scene/scene.h"
 #include "uinta/scenes/cube_scene.h"
+#include "uinta/scenes/manifold_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -21,6 +22,7 @@ class DemoScene : public Scene {
 
     debugScene_ = addScene<DebugScene>();
     cubeScene_ = addScene<CubeScene>();
+    manifoldScene_ = addScene<ManifoldScene>();
   }
 
  private:
@@ -28,6 +30,7 @@ class DemoScene : public Scene {
 
   DebugScene* debugScene_ = nullptr;
   CubeScene* cubeScene_ = nullptr;
+  ManifoldScene* manifoldScene_ = nullptr;
 };
 
 }  // namespace uinta
