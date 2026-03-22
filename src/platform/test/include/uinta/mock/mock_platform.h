@@ -77,8 +77,8 @@ struct MockPlatform : Platform {
   std::function<Status(void*, u32, u32)> onSetWindowPosition = [](void*, u32, u32) -> Status { return OkStatus(); };
   Status setWindowPosition(void* window, u32 x, u32 y) const noexcept { return onSetWindowPosition(window, x, y); }
 
-  std::function<Status(void*, f32, f32)> onSetWindowPosition = [](void*, f32, f32) -> Status { return OkStatus(); };
-  Status setWindowPosition(void* window, f32 x, f32 y) const noexcept { return onSetWindowPosition(window, x, y); }
+  std::function<Status(Input*)> onRegisterInputHandlers = [](Input*) -> Status { return OkStatus(); };
+  Status registerInputHandlers(Input* input) const noexcept override { return onRegisterInputHandlers(input); }
 
   std::function<void(bool, const Window*, const Monitor*)> onMakeFullscreen = [](bool, const Window*, const Monitor*) {
   };
