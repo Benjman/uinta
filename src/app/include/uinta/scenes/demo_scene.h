@@ -5,6 +5,7 @@
 
 #include "uinta/camera/camera_manager.h"
 #include "uinta/debug/debug_scene.h"
+#include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
 #include "uinta/gl.h"
 #include "uinta/math/direction.h"
@@ -16,7 +17,7 @@ namespace uinta {
 
 class DemoScene : public Scene {
  public:
-  explicit DemoScene(Engine* engine) noexcept : Scene(engine), basicShader_(engine), camera_(engine) {
+  explicit DemoScene(Engine* engine) noexcept : Scene(engine), basicShader_(engine), camera_(engine), cursor_(engine) {
     auto clearColor = glm::vec3(0.62, 0.67, 0.75);
     engine->service<const OpenGLApi>()->clearColor(clearColor.r, clearColor.g, clearColor.b, 1.0);
 
@@ -27,6 +28,7 @@ class DemoScene : public Scene {
   void preRender(time_t delta) noexcept override {
     basicShader_.update(delta);
     camera_.update(delta);
+    cursor_.update(delta);
   }
 
   void render(time_t delta) noexcept override {
@@ -39,6 +41,7 @@ class DemoScene : public Scene {
  private:
   BasicShaderManager basicShader_;
   CameraManager camera_;
+  CursorManager cursor_;
 
   DebugScene* debugScene_ = nullptr;
   CameraScene* cameraScene_ = nullptr;
