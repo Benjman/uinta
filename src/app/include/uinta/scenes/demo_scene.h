@@ -10,6 +10,7 @@
 #include "uinta/gl.h"
 #include "uinta/math/direction.h"
 #include "uinta/scene/scene.h"
+#include "uinta/scenes/city_game/city_game_scene.h"
 #include "uinta/scenes/fbx_viewer_scene.h"
 #include "uinta/scenes/hex_scene.h"
 #include "uinta/scenes/manifold_scene.h"
@@ -34,6 +35,7 @@ class DemoScene : public Scene {
     treeScene_ = addScene<TreeScene>();
     textScene_ = addScene<TextScene>();
     hexScene_ = addScene<HexScene>();
+    cityGameScene_ = addScene<CityGameScene>();
   }
 
   ~DemoScene() noexcept override { children().clear(); }
@@ -63,6 +65,7 @@ class DemoScene : public Scene {
   TreeScene* treeScene_ = nullptr;
   TextScene* textScene_ = nullptr;
   HexScene* hexScene_ = nullptr;
+  CityGameScene* cityGameScene_ = nullptr;
 
   time_t runtime_ = 0.0;
 };
