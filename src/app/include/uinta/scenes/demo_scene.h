@@ -12,6 +12,7 @@
 #include "uinta/scenes/fbx_viewer_scene.h"
 #include "uinta/scenes/manifold_scene.h"
 #include "uinta/scenes/terrain_scene.h"
+#include "uinta/scenes/trees_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -32,6 +33,7 @@ class DemoScene : public Scene {
     manifoldScene_ = addScene<ManifoldScene>();
     fbxViewerScene_ = addScene<FbxViewerScene>();
     terrainScene_ = addScene<TerrainScene>();
+    treeScene_ = addScene<TreeScene>();
   }
 
   void render(time_t delta) noexcept override {
@@ -51,6 +53,7 @@ class DemoScene : public Scene {
   ManifoldScene* manifoldScene_ = nullptr;
   FbxViewerScene* fbxViewerScene_ = nullptr;
   TerrainScene* terrainScene_ = nullptr;
+  TreeScene* treeScene_ = nullptr;
 
   time_t runtime_ = 0.0;
 };
