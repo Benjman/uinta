@@ -9,6 +9,7 @@ include(GLFW)
 include(glm)
 include(yaml-cpp)
 include(stb)
+include(manifold)
 
 include("${CMAKE_CURRENT_LIST_DIR}/uinta-targets.cmake")
 
