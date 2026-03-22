@@ -7,6 +7,7 @@
 #include <string>
 
 #include "uinta/debug/ui/basic_shader_ui.h"
+#include "uinta/debug/ui/camera_ui.h"
 #include "uinta/debug/ui/engine_ui.h"
 #include "uinta/debug/ui/imgui_ui.h"
 #include "uinta/debug/ui/input_ui.h"
@@ -35,6 +36,12 @@ DebugSceneUi::DebugSceneUi(Scene* parent) noexcept
     : Scene(parent, SceneLayer::Debug), gl_(engine()->service<const OpenGLApi>()), input_(parent->engine()->input()) {
   shader_ = parent->engine()->service<BasicShaderManager>();
   assert(shader_);
+
+  viewport_ = parent->engine()->service<ViewportManager>();
+  assert(viewport_);
+
+  camera_ = parent->engine()->service<CameraManager>();
+  assert(camera_);
 
   static time_t prevRenderComplete = 0;
   auto* engine = parent->engine();
@@ -119,6 +126,10 @@ void DebugSceneUi::render(time_t /*unused*/) noexcept {
 
   if (shader_ != nullptr) {
     RenderBasicShaderUi(shader_, gl_);
+  }
+
+  if (camera_ != nullptr) {
+    RenderCameraUi(camera_, viewport_);
   }
 
   RenderEngineUi(engineUiInfo_);

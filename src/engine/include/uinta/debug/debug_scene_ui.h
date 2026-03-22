@@ -7,9 +7,11 @@
 namespace uinta {
 
 class BasicShaderManager;
+class CameraManager;
 class Engine;
 class Input;
 class OpenGLApi;
+class ViewportManager;
 
 class DebugSceneUi : public Scene {
  public:
@@ -72,6 +74,8 @@ class DebugSceneUi : public Scene {
   size_t fpsPrevSecond_ = 0;
 
   const OpenGLApi* gl_;
+  ViewportManager* viewport_ = nullptr;
+  CameraManager* camera_ = nullptr;
   BasicShaderManager* shader_;
   Input* input_ = nullptr;
 };
