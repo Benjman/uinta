@@ -5,6 +5,7 @@
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
 #include "uinta/engine/service_registry.h"
+#include "uinta/input/input_system.h"
 #include "uinta/localization/localization_system.h"
 #include "uinta/platform.h"
 #include "uinta/scene/scene.h"
@@ -42,6 +43,10 @@ class Engine {
   }
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
+
+  const Input* input() const noexcept { return inputSystem_.input(); }
+
+  Input* input() noexcept { return inputSystem_.input(); }
 
   template <typename T>
   void registerService(T* service) noexcept {
@@ -90,6 +95,7 @@ class Engine {
   EngineState state_;
   EngineDispatchers dispatchers_;
   LocalizationSystem localization_;
+  InputSystem inputSystem_;
   SceneSystem scenes_;
 
   template <EngineStage S>

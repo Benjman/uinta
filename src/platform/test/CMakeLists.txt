@@ -4,6 +4,8 @@ list(APPEND PLATFORM_TEST_SRCS
   src/desktop_window_test.cc
   src/file_test.cc
   src/gl_test.cc
+  src/input_test.cc
+  src/input_token_test.cc
   src/monitor_test.cc
   src/platform_test.cc
   src/platform_test.cc
