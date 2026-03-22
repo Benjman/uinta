@@ -14,7 +14,7 @@ struct SimTime {
   // So: 1/60 sim-hours per real second at timeScale=1
   static constexpr f32 BASE_SIM_HOURS_PER_REAL_SECOND = 1.0f / 60.0f;
 
-  f32 simHoursPerRealSecond() const noexcept {
+  inline f32 simHoursPerRealSecond() const noexcept {
     return BASE_SIM_HOURS_PER_REAL_SECOND * timeScale;
   }
 
