@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "./utils.h"
+#include "uinta/camera/camera_manager.h"
 #include "uinta/mock/mock_platform.h"
 #include "uinta/mock/mock_scene.h"
 
@@ -207,6 +208,7 @@ class BasicShaderManagerTest : public UintaTestF {};
 TEST_F(BasicShaderManagerTest, ConstructorCreatesShaderFromScene) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -217,6 +219,7 @@ TEST_F(BasicShaderManagerTest, ConstructorCreatesShaderFromScene) {
 TEST_F(BasicShaderManagerTest, ShaderAccessorReturnsValidPointer) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -231,6 +234,7 @@ TEST_F(BasicShaderManagerTest, ShaderAccessorReturnsValidPointer) {
 TEST_F(BasicShaderManagerTest, RenderCountInitializedToZero) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -241,6 +245,7 @@ TEST_F(BasicShaderManagerTest, RenderCountInitializedToZero) {
 TEST_F(BasicShaderManagerTest, RenderCountCanBeSet) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -252,6 +257,7 @@ TEST_F(BasicShaderManagerTest, RenderCountCanBeSet) {
 TEST_F(BasicShaderManagerTest, UpdateResetsRenderCount) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -265,6 +271,7 @@ TEST_F(BasicShaderManagerTest, UpdateResetsRenderCount) {
 TEST_F(BasicShaderManagerTest, UpdateAccumulatesRuntime) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -282,6 +289,7 @@ class DrawElementsCountingTest : public UintaTestF {};
 TEST_F(DrawElementsCountingTest, TrianglesCountCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -293,6 +301,7 @@ TEST_F(DrawElementsCountingTest, TrianglesCountCorrectly) {
 TEST_F(DrawElementsCountingTest, TriangleStripCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -304,6 +313,7 @@ TEST_F(DrawElementsCountingTest, TriangleStripCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, TriangleFanCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -315,6 +325,7 @@ TEST_F(DrawElementsCountingTest, TriangleFanCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, LinesCountCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -326,6 +337,7 @@ TEST_F(DrawElementsCountingTest, LinesCountCorrectly) {
 TEST_F(DrawElementsCountingTest, LineStripCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -337,6 +349,7 @@ TEST_F(DrawElementsCountingTest, LineStripCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, LineLoopCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -348,6 +361,7 @@ TEST_F(DrawElementsCountingTest, LineLoopCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, PointsCountCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -359,6 +373,7 @@ TEST_F(DrawElementsCountingTest, PointsCountCorrectly) {
 TEST_F(DrawElementsCountingTest, TrianglesAdjacencyCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -370,6 +385,7 @@ TEST_F(DrawElementsCountingTest, TrianglesAdjacencyCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, TriangleStripAdjacencyCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -382,6 +398,7 @@ TEST_F(DrawElementsCountingTest, TriangleStripAdjacencyCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, LinesAdjacencyCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -393,6 +410,7 @@ TEST_F(DrawElementsCountingTest, LinesAdjacencyCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, LineStripAdjacencyCountsCorrectly) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -404,6 +422,7 @@ TEST_F(DrawElementsCountingTest, LineStripAdjacencyCountsCorrectly) {
 TEST_F(DrawElementsCountingTest, MultipleDrawCallsAccumulate) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -419,6 +438,7 @@ class DrawArraysTest : public UintaTestF {};
 TEST_F(DrawArraysTest, DrawArraysCallsGlDrawArrays) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   bool drawArraysCalled = false;
@@ -445,6 +465,7 @@ TEST_F(DrawArraysTest, DrawArraysCallsGlDrawArrays) {
 TEST_F(DrawArraysTest, DrawArraysUpdatesRenderCount) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -459,6 +480,7 @@ class UniformAccessorsTest : public UintaTestF {};
 TEST_F(UniformAccessorsTest, AmbientStrGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -470,6 +492,7 @@ TEST_F(UniformAccessorsTest, AmbientStrGetterSetter) {
 TEST_F(UniformAccessorsTest, DiffuseMinGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -481,6 +504,7 @@ TEST_F(UniformAccessorsTest, DiffuseMinGetterSetter) {
 TEST_F(UniformAccessorsTest, TimeGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -492,6 +516,7 @@ TEST_F(UniformAccessorsTest, TimeGetterSetter) {
 TEST_F(UniformAccessorsTest, FlagsGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -503,6 +528,7 @@ TEST_F(UniformAccessorsTest, FlagsGetterSetter) {
 TEST_F(UniformAccessorsTest, LightColorGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -518,6 +544,7 @@ TEST_F(UniformAccessorsTest, LightColorGetterSetter) {
 TEST_F(UniformAccessorsTest, LightDirGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -533,6 +560,7 @@ TEST_F(UniformAccessorsTest, LightDirGetterSetter) {
 TEST_F(UniformAccessorsTest, ModelGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -546,6 +574,7 @@ TEST_F(UniformAccessorsTest, ModelGetterSetter) {
 TEST_F(UniformAccessorsTest, ProjectionGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -559,6 +588,7 @@ TEST_F(UniformAccessorsTest, ProjectionGetterSetter) {
 TEST_F(UniformAccessorsTest, ViewGetterSetter) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -575,6 +605,7 @@ class FlagMaskMethodsTest : public UintaTestF {};
 TEST_F(FlagMaskMethodsTest, SwayEnablesSwayFlag) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -587,6 +618,7 @@ TEST_F(FlagMaskMethodsTest, SwayEnablesSwayFlag) {
 TEST_F(FlagMaskMethodsTest, SwayDisablesSwayFlag) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -600,6 +632,7 @@ TEST_F(FlagMaskMethodsTest, SwayDisablesSwayFlag) {
 TEST_F(FlagMaskMethodsTest, UvEnablesUvFlag) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -612,6 +645,7 @@ TEST_F(FlagMaskMethodsTest, UvEnablesUvFlag) {
 TEST_F(FlagMaskMethodsTest, UvDisablesUvFlag) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -625,6 +659,7 @@ TEST_F(FlagMaskMethodsTest, UvDisablesUvFlag) {
 TEST_F(FlagMaskMethodsTest, NormalsEnablesNormalsFlag) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -638,6 +673,7 @@ TEST_F(FlagMaskMethodsTest, NormalsEnablesNormalsFlag) {
 TEST_F(FlagMaskMethodsTest, NormalsDisablesNormalsFlag) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -651,6 +687,7 @@ TEST_F(FlagMaskMethodsTest, NormalsDisablesNormalsFlag) {
 TEST_F(FlagMaskMethodsTest, MultipleFlagsCanBeEnabled) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -670,6 +707,7 @@ TEST_F(FlagMaskMethodsTest, MultipleFlagsCanBeEnabled) {
 TEST_F(FlagMaskMethodsTest, EnablingAlreadyEnabledFlagIsNoOp) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -683,6 +721,7 @@ TEST_F(FlagMaskMethodsTest, EnablingAlreadyEnabledFlagIsNoOp) {
 TEST_F(FlagMaskMethodsTest, DisablingAlreadyDisabledFlagIsNoOp) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   BasicShaderManager manager(&engine);
@@ -698,6 +737,7 @@ class LinkAttributesDelegationTest : public UintaTestF {};
 TEST_F(LinkAttributesDelegationTest, ManagerDelegatesToShader) {
   MockPlatform platform;
   auto engine = makeEngine(&platform);
+  auto camera = CameraManager(&engine);
   MockScene scene(&engine);
 
   std::vector<GLuint> enabledAttributes;

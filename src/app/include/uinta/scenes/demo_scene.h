@@ -1,11 +1,14 @@
 #ifndef SRC_APP_INCLUDE_UINTA_SCENES_DEMO_SCENE_H_
 #define SRC_APP_INCLUDE_UINTA_SCENES_DEMO_SCENE_H_
 
+#include <glm/ext/matrix_transform.hpp>
+
+#include "uinta/camera/camera_manager.h"
 #include "uinta/debug/debug_scene.h"
 #include "uinta/engine/engine.h"
+#include "uinta/math/direction.h"
 #include "uinta/scene/scene.h"
-#include "uinta/scenes/cube_scene.h"
-#include "uinta/scenes/manifold_scene.h"
+#include "uinta/scenes/camera_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -19,18 +22,28 @@ class DemoScene : public Scene {
     engine->gl()->clearColor(clearColor.r, clearColor.g, clearColor.b, 1.0);
 
     basicShader_ = addComponent<BasicShaderManager>();
+    camera_ = addComponent<CameraManager>();
 
     debugScene_ = addScene<DebugScene>();
-    cubeScene_ = addScene<CubeScene>();
-    manifoldScene_ = addScene<ManifoldScene>();
+    cameraScene_ = addScene<CameraScene>();
+  }
+
+  void render(time_t delta) noexcept override {
+    runtime_ += delta;
+    ShaderGuard shaderGuard(basicShader_->shader());
+    basicShader_->view(glm::lookAt(
+        static_cast<glm::vec3>(camera_->camera()->position()),
+        static_cast<glm::vec3>(camera_->camera()->target()), WorldUp));
   }
 
  private:
   BasicShaderManager* basicShader_ = nullptr;
+  CameraManager* camera_ = nullptr;
 
   DebugScene* debugScene_ = nullptr;
-  CubeScene* cubeScene_ = nullptr;
-  ManifoldScene* manifoldScene_ = nullptr;
+  CameraScene* cameraScene_ = nullptr;
+
+  time_t runtime_ = 0.0;
 };
 
 }  // namespace uinta
