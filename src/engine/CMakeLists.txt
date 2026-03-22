@@ -22,6 +22,7 @@ list(APPEND ENGINE_SRCS src/scene_system.cc)
 list(APPEND ENGINE_SRCS src/shader.cc)
 list(APPEND ENGINE_SRCS src/shaders/basic_shader.cc)
 list(APPEND ENGINE_SRCS src/texture.cc)
+list(APPEND ENGINE_SRCS src/utils/fbx.cc)
 list(APPEND ENGINE_SRCS src/vbo_guard.cc)
 list(APPEND ENGINE_SRCS src/viewport/viewport_manager.cc)
 
