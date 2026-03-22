@@ -9,6 +9,7 @@
 #include "uinta/debug/ui/basic_shader_ui.h"
 #include "uinta/debug/ui/engine_ui.h"
 #include "uinta/debug/ui/imgui_ui.h"
+#include "uinta/debug/ui/input_ui.h"
 #include "uinta/debug/ui/platform_ui.h"
 #include "uinta/debug/ui/scene_ui.h"
 #include "uinta/engine/engine.h"
@@ -31,7 +32,7 @@ f32 UiThreeQuartersWidth = static_cast<f32>(UiWidth * 3.0 / 4.0);
 static EngineUiInfo engineUiInfo_;
 
 DebugSceneUi::DebugSceneUi(Scene* parent) noexcept
-    : Scene(parent, SceneLayer::Debug), gl_(engine()->service<const OpenGLApi>()) {
+    : Scene(parent, SceneLayer::Debug), gl_(engine()->service<const OpenGLApi>()), input_(parent->engine()->input()) {
   shader_ = parent->engine()->service<BasicShaderManager>();
   assert(shader_);
 
@@ -86,6 +87,19 @@ void DebugSceneUi::postRender(time_t delta) noexcept {
   }
 }
 
+void DebugSceneUi::preTick(time_t /*unused*/) noexcept {
+  if (flags_.isImGuiDeinitialized()) {
+    return;
+  }
+  auto& io = ImGui::GetIO();
+  if (io.WantCaptureMouse) {
+    engine()->input()->resetMouse();
+  }
+  if (io.WantCaptureKeyboard) {
+    engine()->input()->resetKeyboard();
+  }
+}
+
 void DebugSceneUi::render(time_t /*unused*/) noexcept {
   if (flags_.isImGuiNewFrame() && flags_.isImGuiDeinitialized()) {
     return;
@@ -109,6 +123,7 @@ void DebugSceneUi::render(time_t /*unused*/) noexcept {
 
   RenderEngineUi(engineUiInfo_);
   RenderImGuiUi(engine()->platform()->window());
+  RenderInputUi(input_, engine()->platform()->window());
   RenderPlatformUi(engine()->platform());
   RenderSceneUi(engine());
 

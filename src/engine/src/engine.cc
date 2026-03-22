@@ -10,6 +10,8 @@
 #include "uinta/app_config.h"
 #include "uinta/args.h"
 #include "uinta/gl.h"
+#include "uinta/input/input_frame_gurad.h"
+#include "uinta/input/input_system.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
 #include "uinta/viewport/viewport_manager.h"
@@ -51,6 +53,7 @@ Engine::Engine(const EngineDependencies& deps) noexcept
 
   registerService<LocalizationSystem>(&localization_);
   registerService<SceneSystem>(&scenes_);
+  registerService<InputSystem>(&inputSystem_);
 
   platform_->engine(this);
   platform_->addListener<PlatformEvent::OnCloseRequest>([this](const auto&) { state_.isClosing(true); });
@@ -93,6 +96,10 @@ Engine::Engine(const EngineDependencies& deps) noexcept
 
   platform_->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { state_.frameInterval(frameInterval(event.monitor)); });
+
+  if (auto status = platform_->registerInputHandlers(inputSystem_.input()); !status.ok()) {
+    LOG(FATAL) << status.message();
+  }
 }
 
 void Engine::run() noexcept {
@@ -100,9 +107,7 @@ void Engine::run() noexcept {
   state_.frameInterval(frameInterval(platform_->primaryMonitor().value_or(nullptr)));
   while (!state_.isClosing()) {
     scenes_.flush();
-    if (auto status = platform_->pollEvents(); !status.ok()) {
-      LOG(FATAL) << status.message();
-    }
+    InputFrameGuard inputGuard(this, state().delta());
     do {
       state_.updateRuntime(runtime());
       advance<EngineStage::PreTick>();

@@ -8,6 +8,7 @@ namespace uinta {
 
 class BasicShaderManager;
 class Engine;
+class Input;
 class OpenGLApi;
 
 class DebugSceneUi : public Scene {
@@ -15,6 +16,7 @@ class DebugSceneUi : public Scene {
   explicit DebugSceneUi(Scene*) noexcept;
   ~DebugSceneUi() noexcept override;
 
+  void preTick(time_t /*unused*/) noexcept override;
   void render(time_t /*unused*/) noexcept override;
   void postRender(time_t delta) noexcept override;
 
@@ -71,6 +73,7 @@ class DebugSceneUi : public Scene {
 
   const OpenGLApi* gl_;
   BasicShaderManager* shader_;
+  Input* input_ = nullptr;
 };
 
 }  // namespace uinta
