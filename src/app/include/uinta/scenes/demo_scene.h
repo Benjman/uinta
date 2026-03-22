@@ -5,6 +5,7 @@
 
 #include "uinta/camera/camera_manager.h"
 #include "uinta/debug/debug_scene.h"
+#include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
 #include "uinta/math/direction.h"
 #include "uinta/scene/scene.h"
@@ -23,6 +24,7 @@ class DemoScene : public Scene {
 
     basicShader_ = addComponent<BasicShaderManager>();
     camera_ = addComponent<CameraManager>();
+    cusror_ = addComponent<CursorManager>();
 
     debugScene_ = addScene<DebugScene>();
     cameraScene_ = addScene<CameraScene>();
@@ -39,6 +41,7 @@ class DemoScene : public Scene {
  private:
   BasicShaderManager* basicShader_ = nullptr;
   CameraManager* camera_ = nullptr;
+  CursorManager* cusror_ = nullptr;
 
   DebugScene* debugScene_ = nullptr;
   CameraScene* cameraScene_ = nullptr;
