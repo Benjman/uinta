@@ -51,6 +51,7 @@ package: `cmake -B build . -DCMAKE_PREFIX_PATH=<prefix>` from within
 The following libraries are required to be available on your path prior to building:
 
 - [Abseil](https://github.com/abseil/abseil-cpp)
+- [assimp](https://github.com/assimp/assimp)
 - [Dear ImGui](https://github.com/ocornut/imgui)
 - [glm](https://github.com/g-truc/glm)
 - [Manifold](https://github.com/elalish/manifold)
