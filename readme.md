@@ -21,6 +21,7 @@ Another C++ game engine.
 - `Scene` system with layered scene management, lifecycle events, and debug UI
 - `Input` system with key/mouse/scroll handling, event subscriptions, and input tokens
 - `Camera` system with configurable camera, serialization, event handling, and debug UI
+- `Font` system with TrueType loading and `TextMeshBuilder` for aligned, styled text rendering
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 
