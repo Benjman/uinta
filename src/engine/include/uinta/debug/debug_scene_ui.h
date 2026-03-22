@@ -7,10 +7,13 @@
 
 namespace uinta {
 
+class BasicShaderManager;
+class CameraManager;
 class Engine;
 class Input;
 struct OpenGLApi;
 class Platform;
+class ViewportManager;
 
 class DebugSceneUi : public Scene {
  public:
@@ -74,6 +77,8 @@ class DebugSceneUi : public Scene {
 
   Platform* platform_;
   const OpenGLApi* gl_;
+  ViewportManager* viewport_ = nullptr;
+  CameraManager* camera_ = nullptr;
   BasicShaderManager* shader_;
   Input* input_ = nullptr;
 };

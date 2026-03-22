@@ -4,6 +4,8 @@ project(engine)
 set(CMAKE_CXX_STANDARD 20)
 
 list(APPEND ENGINE_SRCS src/app_config_yaml.cc)
+list(APPEND ENGINE_SRCS src/camera/camera.cc)
+list(APPEND ENGINE_SRCS src/camera/camera_manager.cc)
 list(APPEND ENGINE_SRCS src/color.cc)
 list(APPEND ENGINE_SRCS src/debug/debug_scene.cc)
 list(APPEND ENGINE_SRCS src/debug/debug_scene_ui.cc)

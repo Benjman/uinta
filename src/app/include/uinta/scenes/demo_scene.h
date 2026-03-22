@@ -1,12 +1,15 @@
 #ifndef SRC_APP_INCLUDE_UINTA_SCENES_DEMO_SCENE_H_
 #define SRC_APP_INCLUDE_UINTA_SCENES_DEMO_SCENE_H_
 
+#include <glm/ext/matrix_transform.hpp>
+
+#include "uinta/camera/camera_manager.h"
 #include "uinta/debug/debug_scene.h"
 #include "uinta/engine/engine.h"
 #include "uinta/gl.h"
+#include "uinta/math/direction.h"
 #include "uinta/scene/scene.h"
-#include "uinta/scenes/cube_scene.h"
-#include "uinta/scenes/manifold_scene.h"
+#include "uinta/scenes/camera_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -14,27 +17,36 @@ namespace uinta {
 class DemoScene : public Scene {
  public:
   explicit DemoScene(Engine* engine, SceneLayer layer = SceneLayer::Simulation) noexcept
-      : Scene(engine, layer), basicShader_(engine) {
+      : Scene(engine, layer), basicShader_(engine), camera_(engine) {
     auto clearColor = glm::vec3(0.62, 0.67, 0.75);
     engine->service<const OpenGLApi>()->clearColor(clearColor.r, clearColor.g, clearColor.b, 1.0);
 
     debugScene_ = addScene<DebugScene>();
-    cubeScene_ = addScene<CubeScene>();
-    manifoldScene_ = addScene<ManifoldScene>();
+    cameraScene_ = addScene<CameraScene>();
   }
 
   ~DemoScene() noexcept override { children().clear(); }
 
-  void preRender(time_t delta) noexcept override { basicShader_.update(delta); }
+  void preRender(time_t delta) noexcept override {
+    basicShader_.update(delta);
+    camera_.update(delta);
+  }
 
-  void render(time_t /*unused*/) noexcept override { ShaderGuard shaderGuard(basicShader_.shader()); }
+  void render(time_t delta) noexcept override {
+    runtime_ += delta;
+    ShaderGuard shaderGuard(basicShader_.shader());
+    basicShader_.view(glm::lookAt(static_cast<glm::vec3>(camera_.camera()->position()),
+                                  static_cast<glm::vec3>(camera_.camera()->target()), WorldUp));
+  }
 
  private:
   BasicShaderManager basicShader_;
+  CameraManager camera_;
 
   DebugScene* debugScene_ = nullptr;
-  CubeScene* cubeScene_ = nullptr;
-  ManifoldScene* manifoldScene_ = nullptr;
+  CameraScene* cameraScene_ = nullptr;
+
+  time_t runtime_ = 0.0;
 };
 
 }  // namespace uinta
