@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "uinta/app_config.h"
+#include "uinta/input/input_frame_gurad.h"
+#include "uinta/input/input_system.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
 #include "uinta/scene/scene_events.h"
@@ -25,7 +27,8 @@ Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept;
 }  // namespace
 
 Engine::Engine(Params params) noexcept
-    : viewport(this, params.appConfig),
+    : inputSystem_(this),
+      viewport(this, params.appConfig),
       frame_(params.platform->primaryMonitor().value_or(nullptr)),
       localization_(resolveLocale(params.args, params.locale)),
       gl_(params.gl),
@@ -35,6 +38,7 @@ Engine::Engine(Params params) noexcept
   registerService<AppConfig>(params.appConfig);
   registerService<LocalizationSystem>(&localization_);
   registerService<ViewportManager>(&viewport);
+  registerService<InputSystem>(&inputSystem_);
 
   platform_->engine(this);
 
@@ -87,6 +91,11 @@ Engine::Engine(Params params) noexcept
 
   platform_->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { frame_ = FrameManager(event.monitor); });
+
+  if (auto status = platform_->registerInputHandlers(&input_); !status.ok()) {
+    setStatusError(status);
+    return;
+  }
 }
 
 void Engine::run() noexcept {
@@ -114,8 +123,8 @@ void Engine::run() noexcept {
       scene->removeStaleScenes();
     }
 
-    if (auto status = platform_->pollEvents(); !status.ok()) {
-      setStatusError(status);
+    InputFrameGuard inputGuard(this);
+    if (!status_.ok()) {
       break;
     }
 
