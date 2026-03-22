@@ -1,4 +1,51 @@
 schemaVersion: 1
+camera:
+  angle:
+    value: 0.0
+    agility: 8.0
+  angleSpeedKeyboard: 90
+  angleSpeedMouse: 20
+  distance:
+    value: 15.0
+    agility: 8.0
+  distanceMax: 20
+  distanceMin: 0.200000003
+  distanceSpeedKeyboard: 15
+  distanceSpeedMouse: 30
+  flags: 15
+  pitch:
+    value: 90.0
+    agility: 8.0
+  pitchMax: 90
+  pitchMin: 0.5
+  pitchSpeedKeyboard: 90
+  pitchSpeedMouse: 20
+  speedFactorMin: 0.660000026
+  target:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    agility: 8.0
+  translationScaleFactor: 0.300000012
+  translationSpeedKeyboard: 10
+  translationSpeedMouse: 2
+  verticalOffset: 0
+  mappings:
+    keyboard:
+      angleNegative: E
+      anglePositive: Q
+      backward: S
+      distanceNegative: C
+      distancePositive: V
+      forward: W
+      left: A
+      pitchNegative: F
+      pitchPositive: R
+      right: D
+    mouse:
+      angle: RIGHT
+      pitch: RIGHT
+      translation: MIDDLE
 engine:
   resPath: ${UINTA_ENGINE_RES}
 platform:
