@@ -6,6 +6,8 @@
 #include "uinta/engine/engine_state.h"
 #include "uinta/engine/service_registry.h"
 #include "uinta/gl.h"
+#include "uinta/input.h"
+#include "uinta/input/input_system.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
 #include "uinta/platform.h"
@@ -52,6 +54,14 @@ class Engine : public RuntimeGetter {
   FrameManager& frameManager() noexcept { return frame_; }
 
   const OpenGLApi* gl() const noexcept { return gl_; }
+
+  const Input* input() const noexcept { return &input_; }
+
+  Input* input() noexcept { return &input_; }
+
+  const InputSystem* inputSystem() const noexcept { return &inputSystem_; }
+
+  InputSystem* inputSystem() noexcept { return &inputSystem_; }
 
   const Platform* platform() const noexcept { return platform_; }
 
@@ -106,6 +116,8 @@ class Engine : public RuntimeGetter {
  private:
   EngineState state_;
   EngineDispatchers dispatchers_;
+  InputSystem inputSystem_;
+  Input input_;
   ViewportManager viewport;
   FrameManager frame_;
   LocalizationSystem localization_;

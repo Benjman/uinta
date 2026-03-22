@@ -1,6 +1,8 @@
 #ifndef SRC_PLATFORM_TEST_INCLUDE_UINTA_MOCK_MOCK_DESKTOP_PLATFORM_API_H_
 #define SRC_PLATFORM_TEST_INCLUDE_UINTA_MOCK_MOCK_DESKTOP_PLATFORM_API_H_
 
+#include <absl/status/status.h>
+
 #include <functional>
 #include <vector>
 
@@ -56,6 +58,13 @@ struct MockDesktopPlatformApi : DesktopPlatformApi {
 
   std::function<Status(const Window*)> onSwapBuffers = [](const Window*) -> Status { return OkStatus(); };
   Status swapBuffers(const Window* window) const noexcept override { return onSwapBuffers(window); }
+
+  std::function<Status(const Window*, Input*)> onRegisterInputHandlers = [](const Window*, Input*) -> Status {
+    return OkStatus();
+  };
+  Status registerInputHandlers(const Window* window, Input* input) noexcept override {
+    return onRegisterInputHandlers(window, input);
+  }
 };
 
 }  // namespace uinta

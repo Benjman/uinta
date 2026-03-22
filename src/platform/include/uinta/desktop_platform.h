@@ -40,6 +40,10 @@ class DesktopPlatform : public Platform {
 
   void makeFullscreen(bool makeFullscreen, Window* window, const Monitor* monitor = nullptr) noexcept override;
 
+  Status registerInputHandlers(Input* input) const noexcept override {
+    return api_->registerInputHandlers(window_.get(), input);
+  }
+
  private:
   DesktopPlatformApi* api_;
 };
