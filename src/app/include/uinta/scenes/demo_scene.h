@@ -5,7 +5,7 @@
 #include "uinta/engine/engine.h"
 #include "uinta/gl.h"
 #include "uinta/scene/scene.h"
-#include "uinta/scenes/texture_scene.h"
+#include "uinta/scenes/cube_scene.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -17,7 +17,7 @@ class DemoScene : public Scene {
     engine->service<const OpenGLApi>()->clearColor(clearColor.r, clearColor.g, clearColor.b, 1.0);
 
     debugScene_ = addScene<DebugScene>();
-    textureScene_ = addScene<TextureScene>();
+    cubeScene_ = addScene<CubeScene>();
   }
 
   void preRender(time_t delta) noexcept override { basicShader_.update(delta); }
@@ -28,7 +28,7 @@ class DemoScene : public Scene {
   BasicShaderManager basicShader_;
 
   DebugScene* debugScene_ = nullptr;
-  TextureScene* textureScene_ = nullptr;
+  CubeScene* cubeScene_ = nullptr;
 };
 
 }  // namespace uinta
