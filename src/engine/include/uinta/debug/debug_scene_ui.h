@@ -3,6 +3,7 @@
 
 #include "uinta/flags.h"
 #include "uinta/scene/scene.h"
+#include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
 
@@ -70,6 +71,8 @@ class DebugSceneUi : public Scene {
   size_t fpsPrevSecond_ = 0;
 
   Platform* platform_;
+  const OpenGLApi* gl_;
+  BasicShaderManager* shader_;
 };
 
 }  // namespace uinta
