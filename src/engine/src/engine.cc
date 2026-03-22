@@ -10,6 +10,8 @@
 #include "uinta/app_config.h"
 #include "uinta/args.h"
 #include "uinta/gl.h"
+#include "uinta/input/input_frame_gurad.h"
+#include "uinta/input/input_system.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
 #include "uinta/viewport/viewport_manager.h"
@@ -46,7 +48,8 @@ void unregisterService(Engine* engine, std::type_index type) noexcept { engine->
 
 }  // namespace _
 
-Engine::Engine(const EngineDependencies& deps) noexcept : localization_(this, resolveLocale(deps.args)), scenes_(this) {
+Engine::Engine(const EngineDependencies& deps) noexcept
+    : localization_(this, resolveLocale(deps.args)), inputSystem_(this), scenes_(this) {
   assert(deps.appConfig && "Engine::Engine(): AppConfig cannot be null!");
   registerService<AppConfig>(deps.appConfig);
   assert(deps.args && "Engine::Engine(): ArgsProcessor cannot be null!");
@@ -100,6 +103,10 @@ Engine::Engine(const EngineDependencies& deps) noexcept : localization_(this, re
 
   platform->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { state_.frameInterval(frameInterval(event.monitor)); });
+
+  if (auto status = platform->registerInputHandlers(inputSystem_.input()); !status.ok()) {
+    LOG(FATAL) << status.message();
+  }
 }
 
 void Engine::run() noexcept {
@@ -109,9 +116,7 @@ void Engine::run() noexcept {
   state_.frameInterval(frameInterval(platform->primaryMonitor().value_or(nullptr)));
   while (!state_.isClosing()) {
     scenes_.flush();
-    if (auto status = platform->pollEvents(); !status.ok()) {
-      LOG(FATAL) << status.message();
-    }
+    InputFrameGuard inputGuard(this, state().delta());
     do {
       state_.updateRuntime(platform->runtime() - startTime);
       advance<EngineStage::PreTick>();
