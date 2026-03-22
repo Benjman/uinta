@@ -14,6 +14,7 @@
 #include "uinta/debug/ui/input_ui.h"
 #include "uinta/debug/ui/platform_ui.h"
 #include "uinta/debug/ui/scene_ui.h"
+#include "uinta/engine/cursor_manager.h"
 #include "uinta/engine/engine.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/platform.h"
@@ -36,6 +37,7 @@ DebugSceneUi::DebugSceneUi(Scene* parent) noexcept
     : Scene(parent, SceneLayer::Debug), input_(parent->engine()->input()) {
   shader_ = parent->engine()->service<BasicShaderManager>();
   assert(shader_);
+  cursorManager_ = parent->engine()->service<CursorManager>();
 
   viewport_ = parent->engine()->service<ViewportManager>();
   assert(viewport_);
@@ -147,7 +149,7 @@ void DebugSceneUi::render(time_t /*unused*/) noexcept {
 
   RenderEngineUi(engineUiInfo_);
   RenderImGuiUi(engine()->platform()->window());
-  RenderInputUi(input_, engine()->platform()->window());
+  RenderInputUi(input_, engine()->platform()->window(), cursorManager_);
   RenderPlatformUi(engine()->platform());
   RenderSceneUi(engine());
 

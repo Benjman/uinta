@@ -7,12 +7,13 @@
 #include <glm/ext/vector_float3.hpp>
 
 #include "uinta/debug/ui/utils.h"
+#include "uinta/engine/cursor_manager.h"
 #include "uinta/input.h"
 #include "uinta/window.h"
 
 namespace uinta {
 
-inline void RenderInputUi(const Input* input, const Window* window) noexcept {
+inline void RenderInputUi(const Input* input, const Window* window, const CursorManager* cursorManager) noexcept {
   if (!ImGui::TreeNode("Input")) {
     return;
   }
@@ -23,6 +24,10 @@ inline void RenderInputUi(const Input* input, const Window* window) noexcept {
 
   ImGui::Text("%-7s(%5.0f, %5.0f)", "Screen", input->cursorx(), input->cursory());
   ImGui::Text("%-7s(%5.2f, %5.2f, %5.2f)", "NDC", ndc.x, ndc.y, ndc.z);
+  if (cursorManager != nullptr) {
+    auto world = cursorManager->worldPoint();
+    ImGui::Text("%-7s(%5.2f, %5.2f, %5.2f)", "y=0", world.x, world.y, world.z);
+  }
 
   ImGui::RadioButton("ImGUI Keyboard", ImGui::GetIO().WantCaptureKeyboard);
   ImGui::SameLine(UiTwoThirdsWidth);
