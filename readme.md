@@ -51,6 +51,7 @@ The following libraries are required to be available on your path prior to build
 - [Abseil](https://github.com/abseil/abseil-cpp)
 - [Dear ImGui](https://github.com/ocornut/imgui)
 - [glm](https://github.com/g-truc/glm)
+- [Manifold](https://github.com/elalish/manifold)
 - OpenGL headers
 - [stb](https://github.com/nothings/stb)
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)

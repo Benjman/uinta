@@ -28,6 +28,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(abseil-cpp)
 include(glm)
 include(imgui)
+include(manifold)
 include(stb)
 include(yaml-cpp)
 
