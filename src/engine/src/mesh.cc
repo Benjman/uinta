@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "uinta/color.h"
 #include "uinta/math/defs.h"
 #include "uinta/math/direction.h"
 
@@ -247,6 +248,37 @@ void displaceRotation(Mesh* mesh, f32 deg, const glm::vec3& axis) {
                                glm::vec3(0, 0, 1));
         vertex.position = rotation * glm::vec4(vertex.position, 1.0);
       });
+}
+
+Mesh Mesh::Environment::Tree(idx_t* idxOffset, glm::mat4 transform) noexcept {
+  static auto genCanopy = [&](idx_t* idxOffset, const glm::mat4& transform) {
+    auto idx = *idxOffset;
+    auto cube = Cube(idxOffset);
+    displaceRotation(&cube, 15, WorldUp);
+    displacePositions(&cube, Vertex::position_type(0.075));
+    cube.scale({0.75, 1, 0.75});
+    cube.translate({0, 1.1, 0}, transform);
+    cube.recalculateNormals(idx);
+    cube.color(color::Green600);
+    return cube;
+  };
+
+  static auto genTrunk = [&](idx_t* idxOffset,
+                             const glm::mat4& transform) noexcept {
+    auto idx = *idxOffset;
+    auto cube = Cube(idxOffset);
+    displaceRotation(&cube, 45, WorldUp);
+    cube.scale({0.25, 1, 0.25});
+    cube.translate({0, 0.5, 0}, transform);
+    cube.recalculateNormals(idx);
+    cube.color(color::Brown500);
+    return cube;
+  };
+
+  assert(idxOffset && "`*idxOffset` cannot be null.");
+  std::array<Mesh, 2> meshes = {genCanopy(idxOffset, transform),
+                                genTrunk(idxOffset, transform)};
+  return Mesh(meshes);
 }
 
 }  // namespace uinta
