@@ -20,6 +20,7 @@ Another C++ game engine.
 - `Component` system with stage-typed components and thread-safe `ComponentManager`
 - `Scene` system with layered scene management, lifecycle events, and debug UI
 - `Input` system with key/mouse/scroll handling, event subscriptions, and input tokens
+- `Camera` system with configurable camera, serialization, event handling, and debug UI
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 
