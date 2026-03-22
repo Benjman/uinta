@@ -2084,6 +2084,74 @@ struct OpenGLApi {
    */
   virtual void viewport(GLint x, GLint y, GLsizei width,
                         GLsizei height) const noexcept = 0;
+
+  /*! `glGenFramebuffers` — Generate framebuffer object names
+   *
+   *  @param n Specifies the number of framebuffer object names to be generated.
+   *  @param ids Specifies an array in which the generated framebuffer object
+   * names are stored.
+   */
+  virtual void genFramebuffers(GLsizei n, GLuint* ids) const noexcept = 0;
+
+  /*! `glDeleteFramebuffers` — Delete framebuffer objects
+   *
+   *  @param n Specifies the number of framebuffer objects to be deleted.
+   *  @param ids A pointer to an array containing n framebuffer objects to be
+   * deleted.
+   */
+  virtual void deleteFramebuffers(GLsizei n, GLuint* ids) const noexcept = 0;
+
+  /*! `glBindFramebuffer` — Bind a framebuffer to a framebuffer target
+   *
+   *  @param target Specifies the framebuffer target of the binding operation.
+   *  @param framebuffer Specifies the name of the framebuffer object to bind.
+   */
+  virtual void bindFramebuffer(GLenum target,
+                               GLuint framebuffer) const noexcept = 0;
+
+  /*! `glFramebufferTexture2D` — Attach a level of a texture object as a
+   * logical buffer of a framebuffer object
+   *
+   *  @param target Specifies the framebuffer target.
+   *  @param attachment Specifies the attachment point of the framebuffer.
+   *  @param textarget Specifies the texture target.
+   *  @param texture Specifies the texture object to attach to the framebuffer
+   * attachment point.
+   *  @param level Specifies the mipmap level of the texture object to attach.
+   */
+  virtual void framebufferTexture2D(GLenum target, GLenum attachment,
+                                    GLenum textarget, GLuint texture,
+                                    GLint level) const noexcept = 0;
+
+  /*! `glFramebufferRenderbuffer` — Attach a renderbuffer as a logical buffer
+   * of the currently bound framebuffer object
+   *
+   *  @param target Specifies the framebuffer target.
+   *  @param attachment Specifies the attachment point of the framebuffer.
+   *  @param renderbuffertarget Specifies the renderbuffer target.
+   *  @param renderbuffer Specifies the name of an existing renderbuffer
+   * object.
+   */
+  virtual void framebufferRenderbuffer(GLenum target, GLenum attachment,
+                                       GLenum renderbuffertarget,
+                                       GLuint renderbuffer) const noexcept = 0;
+
+  /*! `glCheckFramebufferStatus` — Check the completeness status of a
+   * framebuffer
+   *
+   *  @param target Specifies the target of the framebuffer completeness check.
+   *  @returns The completeness status of the framebuffer object.
+   */
+  [[nodiscard]] virtual GLenum checkFramebufferStatus(
+      GLenum target) const noexcept = 0;
+
+  /*! `glDrawBuffers` — Specify which color buffers are to be drawn into
+   *
+   *  @param n Specifies the number of buffers in bufs.
+   *  @param bufs A pointer to an array of symbolic constants specifying the
+   * buffers into which fragment colors or data values will be written.
+   */
+  virtual void drawBuffers(GLsizei n, const GLenum* bufs) const noexcept = 0;
 };
 
 struct OpenGLApiImpl : OpenGLApi {
@@ -2618,6 +2686,41 @@ struct OpenGLApiImpl : OpenGLApi {
   void viewport(GLint x, GLint y, GLsizei width,
                 GLsizei height) const noexcept override {
     glViewport(x, y, width, height);
+  }
+
+  void genFramebuffers(GLsizei n, GLuint* ids) const noexcept override {
+    glGenFramebuffers(n, ids);
+  }
+
+  void deleteFramebuffers(GLsizei n, GLuint* ids) const noexcept override {
+    glDeleteFramebuffers(n, ids);
+  }
+
+  void bindFramebuffer(GLenum target,
+                       GLuint framebuffer) const noexcept override {
+    glBindFramebuffer(target, framebuffer);
+  }
+
+  void framebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget,
+                            GLuint texture,
+                            GLint level) const noexcept override {
+    glFramebufferTexture2D(target, attachment, textarget, texture, level);
+  }
+
+  void framebufferRenderbuffer(GLenum target, GLenum attachment,
+                               GLenum renderbuffertarget,
+                               GLuint renderbuffer) const noexcept override {
+    glFramebufferRenderbuffer(target, attachment, renderbuffertarget,
+                              renderbuffer);
+  }
+
+  [[nodiscard]] GLenum checkFramebufferStatus(
+      GLenum target) const noexcept override {
+    return glCheckFramebufferStatus(target);
+  }
+
+  void drawBuffers(GLsizei n, const GLenum* bufs) const noexcept override {
+    glDrawBuffers(n, bufs);
   }
 
  private:

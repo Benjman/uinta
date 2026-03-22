@@ -740,6 +740,58 @@ struct MockOpenGLApi : OpenGLApi {
                 GLsizei height) const noexcept override {
     onViewport(x, y, width, height);
   }
+
+  std::function<void(GLsizei, GLuint*)> onGenFramebuffers = [](auto count,
+                                                               auto* idPtrs) {
+    for (auto i = 0; i < count; i++) {
+      *idPtrs = i + 1;
+    }
+  };
+  void genFramebuffers(GLsizei count, GLuint* ptr) const noexcept override {
+    onGenFramebuffers(count, ptr);
+  }
+
+  std::function<void(GLsizei, GLuint*)> onDeleteFramebuffers = [](auto, auto*) {
+  };
+  void deleteFramebuffers(GLsizei count, GLuint* ptr) const noexcept override {
+    onDeleteFramebuffers(count, ptr);
+  }
+
+  std::function<void(GLenum, GLuint)> onBindFramebuffer = [](auto, auto) {};
+  void bindFramebuffer(GLenum target, GLuint id) const noexcept override {
+    onBindFramebuffer(target, id);
+  }
+
+  std::function<void(GLenum, GLenum, GLenum, GLuint, GLint)>
+      onFramebufferTexture2D = [](auto, auto, auto, auto, auto) {};
+  void framebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget,
+                            GLuint texture,
+                            GLint level) const noexcept override {
+    onFramebufferTexture2D(target, attachment, textarget, texture, level);
+  }
+
+  std::function<void(GLenum, GLenum, GLenum, GLuint)>
+      onFramebufferRenderbuffer = [](auto, auto, auto, auto) {};
+  void framebufferRenderbuffer(GLenum target, GLenum attachment,
+                               GLenum renderbuffertarget,
+                               GLuint renderbuffer) const noexcept override {
+    onFramebufferRenderbuffer(target, attachment, renderbuffertarget,
+                              renderbuffer);
+  }
+
+  std::function<GLenum(GLenum)> onCheckFramebufferStatus = [](auto) -> GLenum {
+    return GL_FRAMEBUFFER_COMPLETE;
+  };
+  [[nodiscard]] GLenum checkFramebufferStatus(
+      GLenum target) const noexcept override {
+    return onCheckFramebufferStatus(target);
+  }
+
+  std::function<void(GLsizei, const GLenum*)> onDrawBuffers =
+      [](auto, const auto*) {};
+  void drawBuffers(GLsizei n, const GLenum* bufs) const noexcept override {
+    onDrawBuffers(n, bufs);
+  }
 };
 
 }  // namespace uinta
