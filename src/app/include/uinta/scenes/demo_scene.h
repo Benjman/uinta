@@ -5,8 +5,7 @@
 #include "uinta/engine/engine.h"
 #include "uinta/scene/scene.h"
 #include "uinta/scenes/texture_scene.h"
-#include "uinta/shader.h"
-#include "uinta/uniform.h"
+#include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
 
@@ -14,33 +13,21 @@ class DemoScene : public Scene {
  public:
   explicit DemoScene(Engine* engine,
                      SceneLayer layer = SceneLayer::Simulation) noexcept
-      : Scene(engine, layer), shader_(engine->gl()) {
+      : Scene(engine, layer) {
     auto clearColor = glm::vec3(0.62, 0.67, 0.75);
     engine->gl()->clearColor(clearColor.r, clearColor.g, clearColor.b, 1.0);
 
-    engine->dispatchers()->addListener<EngineEvent::ViewportSizeChange>(
-        [&](const auto& event) {
-          ShaderGuard guard(&shader_);
-          shader_.projection =
-              glm::perspective<f32>(45, event.aspect(), 0.1, 4);
-        });
+    basicShader_ = addComponent<BasicShaderManager>();
 
-    addScene<DebugScene>();
-    addScene<TextureScene>(&shader_);
+    debugScene_ = addScene<DebugScene>();
+    textureScene_ = addScene<TextureScene>();
   }
 
  private:
-  struct DemoShader : Shader {
-    explicit DemoShader(const OpenGLApi* gl) noexcept
-        : Shader(
-              {
-                  {GL_VERTEX_SHADER, "shader.vs.glsl"},
-                  {GL_FRAGMENT_SHADER, "shader.fs.glsl"},
-              },
-              gl) {}
+  BasicShaderManager* basicShader_ = nullptr;
 
-    UniformMatrix4fv projection = UniformMatrix4fv("uProjection", this);
-  } shader_;
+  DebugScene* debugScene_ = nullptr;
+  TextureScene* textureScene_ = nullptr;
 };
 
 }  // namespace uinta
