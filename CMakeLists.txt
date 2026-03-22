@@ -26,6 +26,7 @@ list(INSERT UINTA_RES_PATHS 0 "${UINTA_DATA_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(abseil-cpp)
+include(assimp)
 include(glm)
 include(imgui)
 include(manifold)
