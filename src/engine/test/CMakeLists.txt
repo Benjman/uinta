@@ -1,3 +1,4 @@
+list(APPEND ENGINE_TEST_SRCS src/aabb_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/app_config_yaml_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/basic_shader_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/camera_comparator_test.cc)
