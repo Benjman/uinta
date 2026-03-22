@@ -33,6 +33,50 @@ struct MockOpenGLApi : OpenGLApi {
     onBindVertexArray(id);
   }
 
+  std::function<void(GLfloat, GLfloat, GLfloat, GLfloat)> onBlendColor =
+      [](auto, auto, auto, auto) {};
+  void blendColor(GLfloat red, GLfloat green, GLfloat blue,
+                  GLfloat alpha) const noexcept override {
+    onBlendColor(red, green, blue, alpha);
+  }
+
+  std::function<void(GLenum)> onBlendEquation = [](auto) {};
+  void blendEquation(GLenum mode) const noexcept override {
+    onBlendEquation(mode);
+  }
+
+  std::function<void(GLuint, GLenum)> onBlendEquationi = [](auto, auto) {};
+  void blendEquationi(GLuint buf, GLenum mode) const noexcept override {
+    onBlendEquationi(buf, mode);
+  }
+
+  std::function<void(GLenum, GLenum)> onBlendFunc = [](auto, auto) {};
+  void blendFunc(GLenum sfactor, GLenum dfactor) const noexcept override {
+    onBlendFunc(sfactor, dfactor);
+  }
+
+  std::function<void(GLenum, GLenum, GLenum, GLenum)> onBlendFuncSeparate =
+      [](auto, auto, auto, auto) {};
+  void blendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha,
+                         GLenum dstAlpha) const noexcept override {
+    onBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+  }
+
+  std::function<void(GLuint, GLenum, GLenum, GLenum, GLenum)>
+      onBlendFuncSeparatei = [](auto, auto, auto, auto, auto) {};
+  void blendFuncSeparatei(GLuint buf, GLenum srcRGB, GLenum dstRGB,
+                          GLenum srcAlpha,
+                          GLenum dstAlpha) const noexcept override {
+    onBlendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+  }
+
+  std::function<void(GLuint, GLenum, GLenum)> onBlendFunci = [](auto, auto,
+                                                                auto) {};
+  void blendFunci(GLuint buf, GLenum sfactor,
+                  GLenum dfactor) const noexcept override {
+    onBlendFunci(buf, sfactor, dfactor);
+  }
+
   std::function<void(GLenum, GLsizeiptr, const void*, GLenum)> onBufferData =
       [](auto, auto, const auto*, auto) {};
   void bufferData(GLenum target, GLsizeiptr size, const void* data,
