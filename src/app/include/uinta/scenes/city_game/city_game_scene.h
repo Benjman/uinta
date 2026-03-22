@@ -11,6 +11,8 @@
 
 namespace uinta {
 
+class BasicShaderManager;
+
 class CityGameScene : public Scene {
  public:
   explicit CityGameScene(Scene* parent) noexcept;
@@ -20,6 +22,12 @@ class CityGameScene : public Scene {
   void onDebugUi() noexcept override;
 
  private:
+  // Calculate sun direction based on time of day
+  glm::vec3 calculateSunDirection(f32 hour) const noexcept;
+
+  // Update shader lighting based on current simulation time
+  void updateLighting() noexcept;
+
   // Simulation data
   IntersectionBuildings buildings_;
   Pawns pawns_;
@@ -27,6 +35,7 @@ class CityGameScene : public Scene {
   PawnConfig pawnConfig_;
 
   // Rendering
+  BasicShaderManager* shaderManager_ = nullptr;
   IntersectionRenderer intersectionRenderer_;
   PawnRenderer pawnRenderer_;
 
