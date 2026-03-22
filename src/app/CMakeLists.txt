@@ -1,4 +1,11 @@
 list(APPEND APP_SRCS src/main.cc)
+list(APPEND APP_SRCS src/scenes/city_game/city_game_scene.cc)
+list(APPEND APP_SRCS src/scenes/city_game/intersection_init.cc)
+list(APPEND APP_SRCS src/scenes/city_game/intersection_renderer.cc)
+list(APPEND APP_SRCS src/scenes/city_game/movement_system.cc)
+list(APPEND APP_SRCS src/scenes/city_game/pawn_renderer.cc)
+list(APPEND APP_SRCS src/scenes/city_game/pawn_system.cc)
+
 add_executable(app ${APP_SRCS})
 list(APPEND APP_PRIVATE_LIBS uinta::engine)
 list(APPEND APP_PRIVATE_LIBS uinta::platform)
