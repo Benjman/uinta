@@ -1,11 +1,12 @@
 #ifndef SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_CITY_GAME_SCENE_SCENE_H_
 #define SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_CITY_GAME_SCENE_SCENE_H_
 
-#include "./building_input_handler.h"
-#include "./building_system.h"
-#include "./building_types.h"
-#include "./city_renderer.h"
-#include "./economy_system.h"
+#include "./intersection_data.h"
+#include "./intersection_renderer.h"
+#include "./pawn_data.h"
+#include "./pawn_renderer.h"
+#include "./pawn_types.h"
+#include "./sim_time.h"
 #include "uinta/scene/scene.h"
 
 namespace uinta {
@@ -19,12 +20,18 @@ class CityGameScene : public Scene {
   void onDebugUi() noexcept override;
 
  private:
-  BuildingSystem buildingSystem_;
-  EconomySystem economySystem_;
-  CityRenderer renderer_;
-  BuildingInputHandler inputHandler_;
+  // Simulation data
+  IntersectionBuildings buildings_;
+  Pawns pawns_;
+  SimTime simTime_;
+  PawnConfig pawnConfig_;
 
-  bool tryPlaceBuilding(glm::vec2 position, BuildingType type) noexcept;
+  // Rendering
+  IntersectionRenderer intersectionRenderer_;
+  PawnRenderer pawnRenderer_;
+
+  // Simulation control
+  bool simulationPaused_ = false;
 };
 
 }  // namespace uinta

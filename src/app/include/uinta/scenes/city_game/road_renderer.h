@@ -1,9 +1,7 @@
-#ifndef SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_CITY_RENDERER_H_
-#define SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_CITY_RENDERER_H_
+#ifndef SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_ROAD_RENDERER_H_
+#define SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_ROAD_RENDERER_H_
 
-#include <manifold/manifold.h>
-
-#include "./building_types.h"
+#include "./road_types.h"
 #include "uinta/gl.h"
 #include "uinta/shaders/basic_shader.h"
 #include "uinta/types.h"
@@ -12,11 +10,12 @@
 
 namespace uinta {
 
-class CityRenderer {
+class RoadRenderer {
  public:
-  explicit CityRenderer(BasicShaderManager* bsm, const OpenGLApi* gl) noexcept;
+  explicit RoadRenderer(BasicShaderManager* bsm,
+                        const OpenGLApi* gl) noexcept;
 
-  void addBuilding(const Building& building) noexcept;
+  void addRoad(const Road& road) noexcept;
   void render() const noexcept;
   bool empty() const noexcept { return indexCount_ == 0; }
 
@@ -32,4 +31,4 @@ class CityRenderer {
 
 }  // namespace uinta
 
-#endif  // SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_CITY_RENDERER_H_
+#endif  // SRC_APP_INCLUDE_UINTA_SCENES_CITY_GAME_ROAD_RENDERER_H_

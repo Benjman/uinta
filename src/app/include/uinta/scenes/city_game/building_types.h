@@ -11,6 +11,9 @@ namespace uinta {
 enum class BuildingType {
   House,
   Factory,
+  Residential,  // Living Intersection: where pawns sleep
+  Workplace,    // Living Intersection: where pawns work
+  Shop,         // Living Intersection: where pawns eat
 };
 
 inline f32 buildingTypeSize(BuildingType type) {
@@ -19,6 +22,12 @@ inline f32 buildingTypeSize(BuildingType type) {
       return 1;
     case BuildingType::Factory:
       return 3;
+    case BuildingType::Residential:
+      return 8;  // Larger buildings for intersection
+    case BuildingType::Workplace:
+      return 10;
+    case BuildingType::Shop:
+      return 6;
   }
   return 0;
 }
@@ -29,6 +38,12 @@ inline Color buildingTypeColor(BuildingType type) {
       return color::Green500;
     case BuildingType::Factory:
       return color::Orange500;
+    case BuildingType::Residential:
+      return color::LightBlue400;
+    case BuildingType::Workplace:
+      return color::Gray500;
+    case BuildingType::Shop:
+      return color::Amber500;
   }
   return color::Gray50;
 }
@@ -39,6 +54,12 @@ inline i32 initialBuildingCost(BuildingType type) {
       return 10;
     case BuildingType::Factory:
       return 50;
+    case BuildingType::Residential:
+      return 0;  // Not player-placeable
+    case BuildingType::Workplace:
+      return 0;
+    case BuildingType::Shop:
+      return 0;
   }
   return 0;
 }

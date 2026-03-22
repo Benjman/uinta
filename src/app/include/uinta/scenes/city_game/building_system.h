@@ -14,7 +14,7 @@ class BuildingSystem {
   const std::vector<Building>& buildings() const noexcept { return buildings_; }
   bool empty() const noexcept { return buildings_.empty(); }
 
-  void addBuilding(glm::vec2 position, BuildingType type) noexcept;
+  Building& addBuilding(glm::vec2 position, BuildingType type) noexcept;
 
   size_t count(BuildingType type) const noexcept;
   size_t houseCount() const noexcept { return count(BuildingType::House); }
