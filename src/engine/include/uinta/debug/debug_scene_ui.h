@@ -69,6 +69,7 @@ class DebugSceneUi : public Scene {
   size_t fpsFrameCount_ = 0;
   size_t fpsPrevSecond_ = 0;
 
+  const OpenGLApi* gl_;
   BasicShaderManager* shader_;
 };
 

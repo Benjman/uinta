@@ -8,12 +8,12 @@ namespace uinta {
 
 using Palette = std::array<glm::vec4, 5>;
 
-class Shader;
+class BasicShader;
 class SystemManager;
 
 struct DebugSceneParams {
   Palette palette;
-  Shader* shader;
+  BasicShader* shader;
   SystemManager* systems;
 };
 

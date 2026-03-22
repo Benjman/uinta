@@ -6,13 +6,16 @@
 
 #include <string>
 
+#include "uinta/debug/ui/basic_shader_ui.h"
 #include "uinta/debug/ui/engine_ui.h"
 #include "uinta/debug/ui/imgui_ui.h"
 #include "uinta/debug/ui/platform_ui.h"
 #include "uinta/debug/ui/scene_ui.h"
 #include "uinta/engine/engine.h"
 #include "uinta/engine/engine_events.h"
+#include "uinta/gl.h"
 #include "uinta/platform.h"
+#include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
 
@@ -27,7 +30,11 @@ f32 UiThreeQuartersWidth = static_cast<f32>(UiWidth * 3.0 / 4.0);
 
 static EngineUiInfo engineUiInfo_;
 
-DebugSceneUi::DebugSceneUi(Scene* parent) noexcept : Scene(parent, SceneLayer::Debug) {
+DebugSceneUi::DebugSceneUi(Scene* parent) noexcept
+    : Scene(parent, SceneLayer::Debug), gl_(engine()->service<const OpenGLApi>()) {
+  shader_ = parent->engine()->service<BasicShaderManager>();
+  assert(shader_);
+
   static time_t prevRenderComplete = 0;
   auto* engine = parent->engine();
   engineUiInfo_.engine = engine;
@@ -94,6 +101,10 @@ void DebugSceneUi::render(time_t /*unused*/) noexcept {
 
   if (flags_.isImGuiRendered() && flags_.isImGuiDeinitialized()) {
     return;
+  }
+
+  if (shader_ != nullptr) {
+    RenderBasicShaderUi(shader_, gl_);
   }
 
   RenderEngineUi(engineUiInfo_);
