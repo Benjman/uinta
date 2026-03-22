@@ -11,6 +11,7 @@ namespace uinta {
 class DesktopPlatform;
 class DesktopWindow;
 class GlfwPlatformApi;
+class Input;
 class Monitor;
 class Window;
 
@@ -36,6 +37,8 @@ class DesktopPlatformApi {
   virtual Status setWindowPosition(void*, u32, u32) const noexcept = 0;
 
   virtual Status swapBuffers(const Window*) const noexcept = 0;
+
+  virtual Status registerInputHandlers(const Window*, Input*) noexcept = 0;
 };
 
 }  // namespace uinta
