@@ -10,6 +10,7 @@
 
 #include "./app_config_handler.h"
 #include "./locale_handler.h"
+#include "./plugin_path_handler.h"
 #include "uinta/args.h"
 #include "uinta/status.h"
 
@@ -33,6 +34,7 @@ struct HelpHandler : ArgHandler {
         AppConfigHandler::Keys,
         HelpHandler::Keys,
         LocaleHandler::Keys,
+        PluginPathHandler::Keys,
     };
     size_t colWidth = 0;
     for (const auto& collection : collections) {

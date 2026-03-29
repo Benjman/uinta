@@ -7,6 +7,7 @@
 #include "uinta/engine/service_registry.h"
 #include "uinta/input/input_system.h"
 #include "uinta/localization/localization_system.h"
+#include "uinta/lua/lua_runtime.h"
 #include "uinta/platform.h"
 #include "uinta/scene/scene.h"
 #include "uinta/scene/scene_system.h"
@@ -47,6 +48,10 @@ class Engine {
   const Input* input() const noexcept { return inputSystem_.input(); }
 
   Input* input() noexcept { return inputSystem_.input(); }
+
+  LuaRuntime* lua() noexcept { return &lua_; }
+
+  const LuaRuntime* lua() const noexcept { return &lua_; }
 
   template <typename T>
   void registerService(T* service) noexcept {
@@ -97,11 +102,13 @@ class Engine {
   LocalizationSystem localization_;
   InputSystem inputSystem_;
   SceneSystem scenes_;
+  LuaRuntime lua_;
 
   template <EngineStage S>
   void advance() noexcept {
     auto delta = state_.updateStageDelta(S, state_.runtime());
     scenes_.advance<S>(delta);
+    lua_.dispatchStage(S, static_cast<f32>(delta));
   }
 };
 
