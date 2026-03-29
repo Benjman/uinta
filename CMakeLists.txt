@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(
   uinta
-  VERSION 0.0.47
+  VERSION 0.0.50
   LANGUAGES CXX C)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -30,6 +30,7 @@ include(abseil-cpp)
 include(assimp)
 include(glm)
 include(imgui)
+include(lua)
 include(manifold)
 include(stb)
 include(yaml-cpp)
@@ -106,6 +107,9 @@ set(UINTA_INSTALL_RES_DIR
   "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/uinta")
 list(APPEND UINTA_RES_PATHS "${UINTA_INSTALL_RES_DIR}")
 
+set(UINTA_INSTALL_PLUGINS_DIR
+  "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/uinta/plugins")
+
 # Convert UINTA_RES_PATHS list to C++ array initializer
 list(LENGTH UINTA_RES_PATHS UINTA_FILE_PATHS_COUNT)
 set(UINTA_FILE_PATHS_INIT "")
@@ -119,6 +123,7 @@ endforeach()
 configure_file(cmake/cfg.h.in ${UINTA_GENERATED_DIR}/uinta/cfg.h)
 message(STATUS "Created configuration file: ${UINTA_GENERATED_DIR}/uinta/cfg.h")
 
+install(DIRECTORY plugins/ DESTINATION ${CMAKE_INSTALL_DATADIR}/uinta/plugins)
 install(FILES ${UINTA_GENERATED_DIR}/uinta/cfg.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/uinta)
 
@@ -131,7 +136,7 @@ install(DIRECTORY src/platform/lib/eventpp/include/ DESTINATION
   ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(
-  TARGETS platform engine glad eventpp imgui
+  TARGETS platform engine glad eventpp imgui uinta_lua sol2
   EXPORT uinta-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -3,17 +3,22 @@
 #include <absl/log/log.h>
 #include <absl/strings/str_cat.h>
 #include <absl/strings/str_format.h>
+#include <absl/strings/str_split.h>
 
 #include <cassert>
+#include <filesystem>
 #include <string>
+#include <vector>
 
 #include "uinta/app_config.h"
 #include "uinta/args.h"
+#include "uinta/cfg.h"
 #include "uinta/gl.h"
 #include "uinta/input/input_frame_gurad.h"
 #include "uinta/input/input_system.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
+#include "uinta/lua/lua_runtime.h"
 #include "uinta/viewport/viewport_manager.h"
 
 namespace uinta {
@@ -100,6 +105,37 @@ Engine::Engine(const EngineDependencies& deps) noexcept
   if (auto status = platform_->registerInputHandlers(inputSystem_.input()); !status.ok()) {
     LOG(FATAL) << status.message();
   }
+
+  // Initialize Lua runtime
+  lua_ = LuaRuntime(this);
+  registerService<LuaRuntime>(&lua_);
+  if (auto status = lua_.initialize(); !status.ok()) {
+    LOG(ERROR) << "Failed to initialize Lua runtime: " << status.message();
+  } else {
+    std::vector<std::filesystem::path> pluginPaths;
+
+    const auto* args = service<const ArgsProcessor>();
+    assert(args && "Engine::Engine(): ArgsProcessor cannot be null!");
+
+    // CLI --plugin-path (highest priority)
+    if (auto val = args->getValue(ArgsProcessor::PluginPath)) {
+      for (auto piece : absl::StrSplit(*val, ';', absl::SkipEmpty())) {
+        pluginPaths.emplace_back(std::string(piece));
+      }
+    }
+
+#ifdef UINTA_DEBUG
+    // Source-tree plugins (debug only)
+    pluginPaths.emplace_back(cfg::UINTA_SRC_PLUGINS_DIR);
+#endif
+
+    // System/installed plugins
+    pluginPaths.emplace_back(cfg::UINTA_INSTALL_PLUGINS_DIR);
+
+    if (auto status = lua_.loadPlugins(pluginPaths); !status.ok()) {
+      LOG(ERROR) << "Failed to load plugins: " << status.message();
+    }
+  }
 }
 
 void Engine::run() noexcept {
@@ -117,6 +153,7 @@ void Engine::run() noexcept {
       dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, runtime()));
     } while (state_.runtime() < state_.nextFrame());
     state_.updateRuntime(runtime());
+    lua_.update();
     gl->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     advance<EngineStage::PreRender>();
     advance<EngineStage::Render>();

@@ -18,6 +18,7 @@ class ArgsProcessor {
   enum Arg : u8 {
     AppConfigFilePath,
     Locale,
+    PluginPath,
     Help,
   };
 
