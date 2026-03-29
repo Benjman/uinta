@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "./app_config_handler.h"
+#include "./plugin_path_handler.h"
 #include "uinta/args.h"
 #include "uinta/status.h"
 
@@ -40,6 +41,7 @@ struct HelpHandler : ArgHandler {
     std::vector<std::span<const std::string>> collections = {
         AppConfigHandler::Keys,
         HelpHandler::Keys,
+        PluginPathHandler::Keys,
     };
     size_t colWidth = 0;
     for (const auto& collection : collections) {

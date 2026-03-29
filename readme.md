@@ -22,6 +22,7 @@ Another C++ game engine.
 - `Input` system with key/mouse/scroll handling, event subscriptions, and input tokens
 - `Camera` system with configurable camera, serialization, event handling, and debug UI
 - `Font` system with TrueType loading and `TextMeshBuilder` for aligned, styled text rendering
+- `LuaRuntime` plugin system with sol2 bindings, sandboxing, and hot reload support
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 
@@ -51,6 +52,7 @@ The following libraries are required to be available on your path prior to build
 - [assimp](https://github.com/assimp/assimp)
 - [Dear ImGui](https://github.com/ocornut/imgui)
 - [glm](https://github.com/g-truc/glm)
+- [Lua 5.4](https://www.lua.org/ftp/lua-5.4.8.tar.gz)
 - [Manifold](https://github.com/elalish/manifold)
 - OpenGL headers
 - [stb](https://github.com/nothings/stb)

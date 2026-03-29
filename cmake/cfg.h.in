@@ -8,6 +8,10 @@ constexpr std::size_t UINTA_FILE_PATHS_COUNT = ${UINTA_FILE_PATHS_COUNT};
 constexpr std::array<const char*, UINTA_FILE_PATHS_COUNT> UINTA_FILE_PATHS = {
     ${UINTA_FILE_PATHS_INIT}
 };
+
+/// Absolute path to the source-tree plugins directory.
+/// Only meaningful in debug builds; release builds should ignore this value.
+constexpr const char* UINTA_SRC_PLUGINS_DIR = "${UINTA_SRC_PLUGINS_DIR}";
 }  // namespace uinta::cfg
 
 #endif  // UINTA_CFG_H

@@ -9,6 +9,7 @@
 #include "uinta/gl.h"
 #include "uinta/input.h"
 #include "uinta/input/input_system.h"
+#include "uinta/lua/lua_runtime.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
 #include "uinta/scene/scene.h"
@@ -61,6 +62,10 @@ class Engine : public RuntimeGetter {
   const Platform* platform() const noexcept { return platform_; }
 
   Platform* platform() noexcept { return platform_; }
+
+  LuaRuntime* lua() noexcept { return &lua_; }
+
+  const LuaRuntime* lua() const noexcept { return &lua_; }
 
   template <typename T>
   void registerService(T* service) noexcept {
@@ -120,6 +125,7 @@ class Engine : public RuntimeGetter {
   Input input_;
   ViewportManager viewport;
   FrameManager frame_;
+  LuaRuntime lua_;
   std::queue<std::unique_ptr<Scene>> sceneQueue_;
   std::vector<Scene*> renderOrder_;
   Status status_;
@@ -174,6 +180,9 @@ class Engine : public RuntimeGetter {
         postRender(scene, delta);
       }
     }
+
+    // Dispatch Lua stage callbacks
+    lua_.dispatchStage(S, static_cast<f32>(delta));
   }
 
   void updateRenderOrder() noexcept;
