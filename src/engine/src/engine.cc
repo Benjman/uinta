@@ -3,18 +3,25 @@
 #include <absl/log/log.h>
 #include <absl/strings/str_cat.h>
 #include <absl/strings/str_format.h>
+#include <absl/strings/str_split.h>
 
 #include <algorithm>
 #include <cassert>
+#include <filesystem>
+#include <memory>
 #include <queue>
 #include <string>
 #include <vector>
 
 #include "uinta/app_config.h"
+#include "uinta/args.h"
+#include "uinta/cfg.h"
+#include "uinta/dirs.h"
 #include "uinta/input/input_frame_gurad.h"
 #include "uinta/input/input_system.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
+#include "uinta/lua/lua_runtime.h"
 #include "uinta/scene/scene_events.h"
 #include "uinta/viewport/viewport_manager.h"
 
@@ -96,6 +103,37 @@ Engine::Engine(Params params) noexcept
     setStatusError(status);
     return;
   }
+
+  // Initialize Lua runtime
+  lua_ = LuaRuntime(this);
+  if (auto status = lua_.initialize(); !status.ok()) {
+    LOG(ERROR) << "Failed to initialize Lua runtime: " << status.message();
+  } else {
+    std::vector<std::filesystem::path> pluginPaths;
+
+    // CLI --plugin-path (highest priority)
+    if (params.args != nullptr) {
+      if (auto val = params.args->getValue(ArgsProcessor::PluginPath)) {
+        for (auto piece : absl::StrSplit(*val, ';', absl::SkipEmpty())) {
+          pluginPaths.emplace_back(std::string(piece));
+        }
+      }
+    }
+
+#ifdef UINTA_DEBUG
+    // Source-tree plugins (debug only)
+    pluginPaths.emplace_back(cfg::UINTA_SRC_PLUGINS_DIR);
+#endif
+
+    // System/installed plugins
+    if (auto dataDir = GetDir<DirType::DataDir>(); dataDir) {
+      pluginPaths.emplace_back(*dataDir / "uinta/plugins");
+    }
+
+    if (auto status = lua_.loadPlugins(pluginPaths); !status.ok()) {
+      LOG(ERROR) << "Failed to load plugins: " << status.message();
+    }
+  }
 }
 
 void Engine::run() noexcept {
@@ -134,6 +172,9 @@ void Engine::run() noexcept {
       advance<EngineStage::PreTick>(scene);
       advance<EngineStage::Tick>(scene);
       advance<EngineStage::PostTick>(scene);
+
+      // Process Lua hot reload changes
+      lua_.update();
 
       state_.addTick();
 

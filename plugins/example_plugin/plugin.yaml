@@ -1,0 +1,11 @@
+# Example Plugin Metadata
+# Demonstrates the Uinta Lua plugin system.
+
+id: example_plugin
+name: Example Plugin
+version: "1.0.0"
+api_version: "1.0.0"
+author: Uinta Engine
+description: Demonstrates core Lua plugin features including logging, math, and events.
+dependencies: []
+load_order: 10
