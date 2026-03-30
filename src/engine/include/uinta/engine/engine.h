@@ -14,6 +14,7 @@
 #include "uinta/status.h"
 #include "uinta/types.h"
 #include "uinta/utils/frame_manager.h"
+#include "uinta/viewport/viewport_manager.h"
 
 namespace uinta {
 
@@ -109,6 +110,7 @@ class Engine : public RuntimeGetter {
   EngineState state_;
   EngineDispatchers dispatchers_;
   ServiceRegistry services_;
+  ViewportManager viewport;
   FrameManager frame_;
   std::queue<std::unique_ptr<Scene>> sceneQueue_;
   std::vector<Scene*> renderOrder_;

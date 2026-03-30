@@ -12,16 +12,19 @@
 
 #include "uinta/app_config.h"
 #include "uinta/scene/scene_events.h"
+#include "uinta/viewport/viewport_manager.h"
 
 namespace uinta {
 
 Engine::Engine(Params params) noexcept
-    : frame_(params.platform->primaryMonitor().value_or(nullptr)),
+    : viewport(this, params.appConfig),
+      frame_(params.platform->primaryMonitor().value_or(nullptr)),
       gl_(params.gl),
       platform_(params.platform) {
   assert(platform_ && "`Platform*` cannot be null.");
 
   registerService<AppConfig>(params.appConfig);
+  registerService<ViewportManager>(&viewport);
 
   platform_->engine(this);
 
