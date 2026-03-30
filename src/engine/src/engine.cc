@@ -14,6 +14,7 @@
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
 #include "uinta/scene/scene_events.h"
+#include "uinta/viewport/viewport_manager.h"
 
 namespace uinta {
 
@@ -24,7 +25,8 @@ Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept;
 }  // namespace
 
 Engine::Engine(Params params) noexcept
-    : frame_(params.platform->primaryMonitor().value_or(nullptr)),
+    : viewport(this, params.appConfig),
+      frame_(params.platform->primaryMonitor().value_or(nullptr)),
       localization_(resolveLocale(params.args, params.locale)),
       gl_(params.gl),
       platform_(params.platform) {
@@ -32,6 +34,7 @@ Engine::Engine(Params params) noexcept
 
   registerService<AppConfig>(params.appConfig);
   registerService<LocalizationSystem>(&localization_);
+  registerService<ViewportManager>(&viewport);
 
   platform_->engine(this);
 
