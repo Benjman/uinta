@@ -12,6 +12,7 @@
 #include "uinta/gl.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
+#include "uinta/viewport/viewport_manager.h"
 
 namespace uinta {
 
@@ -45,6 +46,8 @@ Engine::Engine(const EngineDependencies& deps) noexcept
   registerService<const OpenGLApi>(deps.gl);
   assert(deps.platform && "Engine::Engine(): Platform cannot be null!");
   registerService<Platform>(deps.platform);
+  assert(deps.viewport && "Engine::Engine(): ViewportManager cannot be null!");
+  registerService<ViewportManager>(deps.viewport);
 
   registerService<LocalizationSystem>(&localization_);
   registerService<SceneSystem>(&scenes_);
@@ -84,6 +87,9 @@ Engine::Engine(const EngineDependencies& deps) noexcept
     dispatchers_.dispatch<EngineEvent::ViewportSizeChange>(ViewportSizeChange(width, height));
     LOG(INFO) << absl::StrFormat("Event: Viewport size change (%u, %u)", width, height);
   });
+
+  dispatchers_.addListener<EngineEvent::ViewportSizeChange>(
+      [viewport = deps.viewport](const auto& event) { viewport->aspect(event.aspect()); });
 
   platform_->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { state_.frameInterval(frameInterval(event.monitor)); });

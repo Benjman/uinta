@@ -9,6 +9,7 @@
 #include "uinta/engine/service_registry.h"
 #include "uinta/gl.h"
 #include "uinta/scenes/demo_scene.h"
+#include "uinta/viewport/viewport_manager.h"
 
 int main(int argc, const char** argv) {
   uinta::ArgsProcessor args(argc, argv);
@@ -16,11 +17,13 @@ int main(int argc, const char** argv) {
 
   {  // Scoping for app config serializing
     uinta::DesktopPlatform platform(&appConfig);
+    uinta::ViewportManager viewport(&appConfig);
     uinta::Engine engine({
         .platform = &platform,
         .gl = uinta::OpenGLApiImpl::Instance(),
         .appConfig = &appConfig,
         .args = &args,
+        .viewport = &viewport,
     });
     engine.addScene<uinta::DemoScene>();
     engine.run();

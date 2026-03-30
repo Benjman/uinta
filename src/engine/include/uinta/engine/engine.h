@@ -17,12 +17,14 @@ namespace uinta {
 class AppConfig;
 class ArgsProcessor;
 struct OpenGLApi;
+class ViewportManager;
 
 struct EngineDependencies {
   Platform* platform;
   const OpenGLApi* gl;
   AppConfig* appConfig;
   const ArgsProcessor* args;
+  ViewportManager* viewport;
 };
 
 class Engine : public RuntimeGetter {
