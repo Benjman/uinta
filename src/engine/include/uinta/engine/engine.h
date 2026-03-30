@@ -16,12 +16,14 @@ class AppConfig;
 class ArgsProcessor;
 struct OpenGLApi;
 class Platform;
+class ViewportManager;
 
 struct EngineDependencies {
   Platform* platform;
   const OpenGLApi* gl;
   AppConfig* appConfig;
   const ArgsProcessor* args;
+  ViewportManager* viewport;
 };
 
 class Engine {
