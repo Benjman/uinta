@@ -89,8 +89,194 @@ function vec4:dot(other) end
 
 ---@class uinta.mat4
 ---4x4 matrix for transformations (view, projection, model matrices).
----Note: Not yet implemented. Coming in a future phase.
+---@operator mul(uinta.mat4): uinta.mat4
+---@operator mul(uinta.vec4): uinta.vec4
 local mat4 = {}
+
+---Create an identity matrix.
+---@return uinta.mat4
+function mat4.identity() end
+
+---Create a view matrix for camera positioning.
+---@param eye uinta.vec3 Camera position
+---@param center uinta.vec3 Look-at target position
+---@param up uinta.vec3 Up direction vector
+---@return uinta.mat4
+function mat4.lookAt(eye, center, up) end
+
+---Create a perspective projection matrix.
+---@param fov number Field of view in radians
+---@param aspect number Aspect ratio (width/height)
+---@param near number Near clipping plane
+---@param far number Far clipping plane
+---@return uinta.mat4
+function mat4.perspective(fov, aspect, near, far) end
+
+---Create an orthographic projection matrix.
+---@param left number Left clipping plane
+---@param right number Right clipping plane
+---@param bottom number Bottom clipping plane
+---@param top number Top clipping plane
+---@param near number Near clipping plane
+---@param far number Far clipping plane
+---@return uinta.mat4
+function mat4.ortho(left, right, bottom, top, near, far) end
+
+---Create a translation matrix from an existing matrix.
+---@param m uinta.mat4 Input matrix
+---@param offset uinta.vec3 Translation offset
+---@return uinta.mat4
+function mat4.translate(m, offset) end
+
+---Create a rotation matrix from an existing matrix.
+---@param m uinta.mat4 Input matrix
+---@param angle number Rotation angle in radians
+---@param axis uinta.vec3 Rotation axis (should be normalized)
+---@return uinta.mat4
+function mat4.rotate(m, angle, axis) end
+
+---Create a scale matrix from an existing matrix.
+---@param m uinta.mat4 Input matrix
+---@param scale uinta.vec3 Scale factors for each axis
+---@return uinta.mat4
+function mat4.scale(m, scale) end
+
+--------------------------------------------------------------------------------
+-- Smooth Interpolation Types
+--------------------------------------------------------------------------------
+
+---@class uinta.SmoothFloat
+---Smoothly interpolated float value for camera animations and UI transitions.
+local SmoothFloat = {}
+
+---Get the target value.
+---@return number
+---@overload fun(self: uinta.SmoothFloat, value: number) Set the target value
+function SmoothFloat:target() end
+
+---Get the current interpolated value.
+---@return number
+---@overload fun(self: uinta.SmoothFloat, value: number) Set the current value directly
+function SmoothFloat:current() end
+
+---Advance the interpolation by the given delta time.
+---@param dt number Delta time in seconds
+function SmoothFloat:update(dt) end
+
+---Snap to the target value immediately.
+---@overload fun(self: uinta.SmoothFloat, value: number) Snap to a specific value
+function SmoothFloat:force() end
+
+---Get the agility (interpolation speed).
+---@return number
+function SmoothFloat:agility() end
+
+---Set the agility (interpolation speed).
+---@param value number New agility value
+function SmoothFloat:setAgility(value) end
+
+---@class uinta.SmoothVec2
+---Smoothly interpolated vec2 value.
+local SmoothVec2 = {}
+
+---Get the target value.
+---@return uinta.vec2
+---@overload fun(self: uinta.SmoothVec2, value: uinta.vec2) Set the target value
+function SmoothVec2:target() end
+
+---Get the current interpolated value.
+---@return uinta.vec2
+---@overload fun(self: uinta.SmoothVec2, value: uinta.vec2) Set the current value directly
+function SmoothVec2:current() end
+
+---Advance the interpolation by the given delta time.
+---@param dt number Delta time in seconds
+function SmoothVec2:update(dt) end
+
+---Snap to the target value immediately.
+---@overload fun(self: uinta.SmoothVec2, value: uinta.vec2) Snap to a specific value
+function SmoothVec2:force() end
+
+---Get the agility (interpolation speed).
+---@return number
+function SmoothVec2:agility() end
+
+---Set the agility (interpolation speed).
+---@param value number New agility value
+function SmoothVec2:setAgility(value) end
+
+---@class uinta.SmoothVec3
+---Smoothly interpolated vec3 value.
+local SmoothVec3 = {}
+
+---Get the target value.
+---@return uinta.vec3
+---@overload fun(self: uinta.SmoothVec3, value: uinta.vec3) Set the target value
+function SmoothVec3:target() end
+
+---Get the current interpolated value.
+---@return uinta.vec3
+---@overload fun(self: uinta.SmoothVec3, value: uinta.vec3) Set the current value directly
+function SmoothVec3:current() end
+
+---Advance the interpolation by the given delta time.
+---@param dt number Delta time in seconds
+function SmoothVec3:update(dt) end
+
+---Snap to the target value immediately.
+---@overload fun(self: uinta.SmoothVec3, value: uinta.vec3) Snap to a specific value
+function SmoothVec3:force() end
+
+---Get the agility (interpolation speed).
+---@return number
+function SmoothVec3:agility() end
+
+---Set the agility (interpolation speed).
+---@param value number New agility value
+function SmoothVec3:setAgility(value) end
+
+--------------------------------------------------------------------------------
+-- Math Utilities
+--------------------------------------------------------------------------------
+
+---@class uinta.math
+---Math utility functions.
+local math_utils = {}
+
+---Clamp a value to a range.
+---@param value number The value to clamp
+---@param min number Minimum value
+---@param max number Maximum value
+---@return number
+function math_utils.clamp(value, min, max) end
+
+---Linear interpolation between two values.
+---@param a number Start value
+---@param b number End value
+---@param t number Interpolation factor (0-1)
+---@return number
+function math_utils.lerp(a, b, t) end
+
+---Smooth Hermite interpolation between two edge values.
+---@param edge0 number Lower edge
+---@param edge1 number Upper edge
+---@param x number Input value
+---@return number Result in range [0, 1]
+function math_utils.smoothstep(edge0, edge1, x) end
+
+---Linear interpolation between two vec3 values.
+---@param a uinta.vec3 Start value
+---@param b uinta.vec3 End value
+---@param t number Interpolation factor (0-1)
+---@return uinta.vec3
+function math_utils.lerpVec3(a, b, t) end
+
+---Clamp a vec3 component-wise to a range.
+---@param v uinta.vec3 The vector to clamp
+---@param min uinta.vec3 Minimum values per component
+---@param max uinta.vec3 Maximum values per component
+---@return uinta.vec3
+function math_utils.clampVec3(v, min, max) end
 
 --------------------------------------------------------------------------------
 -- Logging
@@ -492,6 +678,8 @@ function input.off(handle) end
 ---@field Action uinta.Action Input action codes
 ---@field Mod uinta.Mod Modifier key flags
 ---@field MouseBtn uinta.MouseBtn Mouse button codes
+---@field math uinta.math Math utility functions
+---@field mat4 uinta.mat4 Matrix type and factory methods
 uinta = {}
 
 ---Create a 2D vector.
@@ -514,6 +702,31 @@ function uinta.vec3(x, y, z) end
 ---@param w number W component
 ---@return uinta.vec4
 function uinta.vec4(x, y, z, w) end
+
+---Create a 4x4 identity matrix.
+---@return uinta.mat4
+---@overload fun(v: number): uinta.mat4 Create a matrix with diagonal value
+function uinta.mat4() end
+
+---Create a smoothly interpolated float.
+---@param agility number Interpolation speed (higher = faster)
+---@param initial number Initial value
+---@return uinta.SmoothFloat
+function uinta.SmoothFloat(agility, initial) end
+
+---Create a smoothly interpolated vec2.
+---@param agility number Interpolation speed (higher = faster)
+---@param initial uinta.vec2 Initial value
+---@return uinta.SmoothVec2
+---@overload fun(agility: number, x: number, y: number): uinta.SmoothVec2
+function uinta.SmoothVec2(agility, initial) end
+
+---Create a smoothly interpolated vec3.
+---@param agility number Interpolation speed (higher = faster)
+---@param initial uinta.vec3 Initial value
+---@return uinta.SmoothVec3
+---@overload fun(agility: number, x: number, y: number, z: number): uinta.SmoothVec3
+function uinta.SmoothVec3(agility, initial) end
 
 --------------------------------------------------------------------------------
 -- Engine Stage Callbacks
