@@ -1,0 +1,11 @@
+# Uinta Engine Core Plugin
+# Provides default engine functionality.
+
+id: uinta_core
+name: Uinta Core
+version: "1.0.0"
+api_version: "1.0.0"
+author: Uinta Engine
+description: Core engine plugin providing default camera and utilities.
+dependencies: []
+load_order: 0
