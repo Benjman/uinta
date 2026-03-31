@@ -22,6 +22,7 @@ class CoreBindings : public BindingModule {
 
   void registerLogging(sol::state& lua);
   void registerMathTypes(sol::state& lua);
+  void registerMathExtensions(sol::state& lua);
   void registerEngineInfo(sol::state& lua);
 };
 
