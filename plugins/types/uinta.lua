@@ -283,6 +283,197 @@ function camera.setViewMatrixProvider(provider) end
 function camera.clearViewMatrixProvider() end
 
 --------------------------------------------------------------------------------
+-- Input Bindings
+--------------------------------------------------------------------------------
+
+---@class uinta.SubscriptionHandle
+---Opaque handle for unsubscribing from input events.
+---@field id integer Handle ID
+local SubscriptionHandle = {}
+
+---@alias uinta.key_callback fun(key: integer, action: integer, mods: integer)
+---@alias uinta.mouse_button_callback fun(button: integer, action: integer, mods: integer)
+---@alias uinta.mouse_move_callback fun(x: number, y: number, dx: number, dy: number)
+---@alias uinta.mouse_scroll_callback fun(dx: number, dy: number)
+
+---@class uinta.Key
+---Keyboard key codes.
+local Key = {}
+Key.Space = 32
+Key.Apostrophe = 39
+Key.Comma = 44
+Key.Minus = 45
+Key.Period = 46
+Key.Slash = 47
+Key.Num0 = 48
+Key.Num1 = 49
+Key.Num2 = 50
+Key.Num3 = 51
+Key.Num4 = 52
+Key.Num5 = 53
+Key.Num6 = 54
+Key.Num7 = 55
+Key.Num8 = 56
+Key.Num9 = 57
+Key.Semicolon = 59
+Key.Equal = 61
+Key.A = 65
+Key.B = 66
+Key.C = 67
+Key.D = 68
+Key.E = 69
+Key.F = 70
+Key.G = 71
+Key.H = 72
+Key.I = 73
+Key.J = 74
+Key.K = 75
+Key.L = 76
+Key.M = 77
+Key.N = 78
+Key.O = 79
+Key.P = 80
+Key.Q = 81
+Key.R = 82
+Key.S = 83
+Key.T = 84
+Key.U = 85
+Key.V = 86
+Key.W = 87
+Key.X = 88
+Key.Y = 89
+Key.Z = 90
+Key.LeftBracket = 91
+Key.Backslash = 92
+Key.RightBracket = 93
+Key.GraveAccent = 96
+
+Key.Escape = 256
+Key.Enter = 257
+Key.Tab = 258
+Key.Backspace = 259
+Key.Insert = 260
+Key.Delete = 261
+Key.Right = 262
+Key.Left = 263
+Key.Down = 264
+Key.Up = 265
+Key.PageUp = 266
+Key.PageDown = 267
+Key.Home = 268
+Key.End = 269
+Key.CapsLock = 280
+Key.ScrollLock = 281
+Key.NumLock = 282
+Key.PrintScreen = 283
+Key.Pause = 284
+Key.F1 = 290
+Key.F2 = 291
+Key.F3 = 292
+Key.F4 = 293
+Key.F5 = 294
+Key.F6 = 295
+Key.F7 = 296
+Key.F8 = 297
+Key.F9 = 298
+Key.F10 = 299
+Key.F11 = 300
+Key.F12 = 301
+Key.F13 = 302
+Key.F14 = 303
+Key.F15 = 304
+Key.F16 = 305
+Key.F17 = 306
+Key.F18 = 307
+Key.F19 = 308
+Key.F20 = 309
+Key.F21 = 310
+Key.F22 = 311
+Key.F23 = 312
+Key.F24 = 313
+Key.F25 = 314
+
+Key.Kp0 = 320
+Key.Kp1 = 321
+Key.Kp2 = 322
+Key.Kp3 = 323
+Key.Kp4 = 324
+Key.Kp5 = 325
+Key.Kp6 = 326
+Key.Kp7 = 327
+Key.Kp8 = 328
+Key.Kp9 = 329
+Key.KpDecimal = 330
+Key.KpDivide = 331
+Key.KpMultiply = 332
+Key.KpSubtract = 333
+Key.KpAdd = 334
+Key.KpEnter = 335
+Key.KpEqual = 336
+
+Key.LeftShift = 340
+Key.LeftControl = 341
+Key.LeftAlt = 342
+Key.LeftSuper = 343
+Key.RightShift = 344
+Key.RightControl = 345
+Key.RightAlt = 346
+Key.RightSuper = 347
+Key.Menu = 348
+
+---@class uinta.Action
+---Input action codes (bitwise flags).
+local Action = {}
+Action.Press = 0x00010000
+Action.Release = 0x00020000
+Action.Repeat = 0x00040000
+
+---@class uinta.Mod
+---Modifier key flags (bitwise).
+local Mod = {}
+Mod.Shift = 0x00100000
+Mod.Control = 0x00200000
+Mod.Alt = 0x00400000
+Mod.Super = 0x00800000
+
+---@class uinta.MouseBtn
+---Mouse button codes.
+local MouseBtn = {}
+MouseBtn.Left = 0
+MouseBtn.Right = 1
+MouseBtn.Middle = 2
+
+---@class uinta.input
+---Input system bindings for keyboard and mouse events.
+local input = {}
+
+---Subscribe to keyboard input.
+---@param token integer Key | Action | Mod token (use bitwise OR)
+---@param callback uinta.key_callback Function to call when key event occurs
+---@return uinta.SubscriptionHandle Handle for unsubscription
+function input.onKey(token, callback) end
+
+---Subscribe to mouse button input.
+---@param token integer MouseBtn | Action | Mod token (use bitwise OR)
+---@param callback uinta.mouse_button_callback Function to call when button event occurs
+---@return uinta.SubscriptionHandle Handle for unsubscription
+function input.onMouseButton(token, callback) end
+
+---Subscribe to mouse movement.
+---@param callback uinta.mouse_move_callback Function to call when mouse moves
+---@return uinta.SubscriptionHandle Handle for unsubscription
+function input.onMouseMove(callback) end
+
+---Subscribe to mouse scroll.
+---@param callback uinta.mouse_scroll_callback Function to call when scrolling
+---@return uinta.SubscriptionHandle Handle for unsubscription
+function input.onMouseScroll(callback) end
+
+---Unsubscribe from an input event.
+---@param handle uinta.SubscriptionHandle The handle returned by a subscription function
+function input.off(handle) end
+
+--------------------------------------------------------------------------------
 -- Main uinta Global
 --------------------------------------------------------------------------------
 
@@ -296,6 +487,11 @@ function camera.clearViewMatrixProvider() end
 ---@field config uinta.config Application config access
 ---@field ui uinta.ui UI widgets (stubbed)
 ---@field camera uinta.camera Camera system (future)
+---@field input uinta.input Input system bindings
+---@field Key uinta.Key Keyboard key codes
+---@field Action uinta.Action Input action codes
+---@field Mod uinta.Mod Modifier key flags
+---@field MouseBtn uinta.MouseBtn Mouse button codes
 uinta = {}
 
 ---Create a 2D vector.
