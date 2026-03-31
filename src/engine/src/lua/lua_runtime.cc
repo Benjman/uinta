@@ -22,6 +22,7 @@
 #include "uinta/app_config.h"
 #include "uinta/engine/engine.h"
 #include "uinta/lua/core_bindings.h"
+#include "uinta/lua/input_bindings.h"
 #include "uinta/lua/ui_bindings.h"
 
 namespace uinta {
@@ -386,6 +387,11 @@ void LuaRuntime::registerCoreBindings() {
   // Register stub UI bindings
   auto uiBindings = std::make_unique<UIBindings>();
   uiBindings->registerBindings(*impl_->lua);
+
+  // Register input bindings (requires lifecycle management for cleanup)
+  auto inputBindings = std::make_unique<InputBindings>(impl_->engine);
+  inputBindings->registerBindings(*impl_->lua);
+  impl_->bindingModules.push_back(std::move(inputBindings));
 }
 
 void LuaRuntime::registerEventBindings() {
