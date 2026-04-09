@@ -1,6 +1,8 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_EVENTS_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_EVENTS_H_
 
+#include <type_traits>
+#include <typeindex>
 #include <utility>
 
 #include "uinta/event.h"
@@ -22,7 +24,37 @@ struct ViewportSizeChange {
   }
 };
 
+struct ServiceRegistered {
+  std::type_index type;
+  void* service;
+  bool isConst = false;
+
+  template <typename T>
+  [[nodiscard]] bool is() const noexcept {
+    return type == std::type_index(typeid(T));
+  }
+
+  template <typename T>
+  [[nodiscard]] T* as() const noexcept {
+    if (is<T>() && (std::is_const_v<T> || !isConst)) {
+      return static_cast<T*>(service);
+    }
+    return nullptr;
+  }
+};
+
+struct ServiceUnregistered {
+  std::type_index type;
+
+  template <typename T>
+  [[nodiscard]] bool is() const noexcept {
+    return type == std::type_index(typeid(T));
+  }
+};
+
 enum class EngineEvent : u8 {
+  ServiceRegistered,
+  ServiceUnregistered,
   ViewportSizeChange,
 };
 
@@ -34,6 +66,16 @@ constexpr EngineEvent getEngineEvent<ViewportSizeChange>() noexcept {
   return EngineEvent::ViewportSizeChange;
 }
 
+template <>
+constexpr EngineEvent getEngineEvent<ServiceRegistered>() noexcept {
+  return EngineEvent::ServiceRegistered;
+}
+
+template <>
+constexpr EngineEvent getEngineEvent<ServiceUnregistered>() noexcept {
+  return EngineEvent::ServiceUnregistered;
+}
+
 struct EngineEventPolicies {
   template <typename Event>
   static EngineEvent getEvent(const Event& /*unused*/) {
@@ -42,18 +84,28 @@ struct EngineEventPolicies {
 };
 
 struct EngineDispatchers {
+  EventDispatcher<EngineEvent, void(const ServiceRegistered&), EngineEventPolicies> serviceRegistered;
+  EventDispatcher<EngineEvent, void(const ServiceUnregistered&), EngineEventPolicies> serviceUnregistered;
   EventDispatcher<EngineEvent, void(const ViewportSizeChange&), EngineEventPolicies> viewportChanged;
 
   template <EngineEvent E, typename... Args>
   void addListener(Args&&... args) noexcept {
-    if constexpr (EngineEvent::ViewportSizeChange == E) {
+    if constexpr (EngineEvent::ServiceRegistered == E) {
+      serviceRegistered.appendListener(E, std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::ServiceUnregistered == E) {
+      serviceUnregistered.appendListener(E, std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::ViewportSizeChange == E) {
       viewportChanged.appendListener(E, std::forward<Args>(args)...);
     }
   }
 
   template <EngineEvent E, typename... Args>
   void dispatch(Args&&... args) const noexcept {
-    if constexpr (EngineEvent::ViewportSizeChange == E) {
+    if constexpr (EngineEvent::ServiceRegistered == E) {
+      serviceRegistered.dispatch(std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::ServiceUnregistered == E) {
+      serviceUnregistered.dispatch(std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::ViewportSizeChange == E) {
       viewportChanged.dispatch(std::forward<Args>(args)...);
     }
   }

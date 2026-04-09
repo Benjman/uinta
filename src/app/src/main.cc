@@ -3,6 +3,7 @@
 
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
+#include "uinta/engine/service_registry.h"
 #include "uinta/gl.h"
 
 int main() {
