@@ -27,6 +27,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(abseil-cpp)
 include(glm)
+include(stb)
 include(yaml-cpp)
 
 set(CMAKE_CXX_FLAGS_DEBUG
