@@ -6,15 +6,21 @@
 #include <utility>
 
 #include "uinta/event.h"
+#include "uinta/scene/scene_layer.h"
 #include "uinta/types.h"
 
 namespace uinta {
 
 class EngineState;
+class Scene;
 
 struct RenderComplete {
   const EngineState* state;
   time_t runtime;
+};
+
+struct RenderLayerChange {
+  SceneLayer layer;
 };
 
 struct TickComplete {
@@ -64,6 +70,7 @@ struct ServiceUnregistered {
 
 enum class EngineEvent : u8 {
   RenderComplete,
+  RenderLayerChange,
   ServiceRegistered,
   ServiceUnregistered,
   TickComplete,
@@ -76,6 +83,11 @@ constexpr EngineEvent getEngineEvent() noexcept;
 template <>
 constexpr EngineEvent getEngineEvent<RenderComplete>() noexcept {
   return EngineEvent::RenderComplete;
+}
+
+template <>
+constexpr EngineEvent getEngineEvent<RenderLayerChange>() noexcept {
+  return EngineEvent::RenderLayerChange;
 }
 
 template <>
@@ -109,6 +121,7 @@ struct EngineDispatchers {
   EventDispatcher<EngineEvent, void(const RenderComplete&), EngineEventPolicies> renderComplete;
   EventDispatcher<EngineEvent, void(const ServiceRegistered&), EngineEventPolicies> serviceRegistered;
   EventDispatcher<EngineEvent, void(const ServiceUnregistered&), EngineEventPolicies> serviceUnregistered;
+  EventDispatcher<EngineEvent, void(const RenderLayerChange&), EngineEventPolicies> renderLayerChange;
   EventDispatcher<EngineEvent, void(const TickComplete&), EngineEventPolicies> tickComplete;
   EventDispatcher<EngineEvent, void(const ViewportSizeChange&), EngineEventPolicies> viewportChanged;
 
@@ -120,6 +133,8 @@ struct EngineDispatchers {
       serviceRegistered.appendListener(E, std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ServiceUnregistered == E) {
       serviceUnregistered.appendListener(E, std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::RenderLayerChange == E) {
+      renderLayerChange.appendListener(E, std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::TickComplete == E) {
       tickComplete.appendListener(E, std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ViewportSizeChange == E) {
@@ -135,6 +150,8 @@ struct EngineDispatchers {
       serviceRegistered.dispatch(std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ServiceUnregistered == E) {
       serviceUnregistered.dispatch(std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::RenderLayerChange == E) {
+      renderLayerChange.dispatch(std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::TickComplete == E) {
       tickComplete.dispatch(std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ViewportSizeChange == E) {
