@@ -143,4 +143,20 @@ TEST_F(EngineTest, EventRenderComplete) {
   ASSERT_TRUE(renderCompleteEventCalled);
 }
 
+TEST_F(EngineTest, EventOnMonitorChange) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  auto primaryMonitor = platform.primaryMonitor();
+  ASSERT_NE(std::nullopt, primaryMonitor);
+  auto firstMonExpectedAdvance =
+      1.0 / static_cast<time_t>(primaryMonitor.value()->hz());
+  ASSERT_FLOAT_EQ(firstMonExpectedAdvance, engine.frameManager().frequency);
+
+  Monitor secondMon("Second monitor", 1920, 1080, 144);
+  platform.dispatch<PlatformEvent::OnMonitorChange>(
+      OnMonitorChangeEvent(&secondMon));
+  auto secondMonExpectedAdvance = 1.0 / secondMon.hz();
+  ASSERT_FLOAT_EQ(secondMonExpectedAdvance, engine.frameManager().frequency);
+}
+
 }  // namespace uinta

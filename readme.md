@@ -14,6 +14,7 @@ Another C++ game engine.
 - OpenGL API abstraction with mock support for testing
 - OpenGL rendering primitives: `Shader`, `Vbo`, `Vao`, `Uniform`, and `Texture` classes
 - `LocalizationSystem` service with YAML-backed per-locale string tables and a typed `Localization` key enum
+- `FrameManager` for frame timing and delta time management
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 

@@ -16,6 +16,7 @@
 #include "uinta/texture.h"
 #include "uinta/types.h"
 #include "uinta/uniform.h"
+#include "uinta/utils/frame_manager.h"
 #include "uinta/vao.h"
 #include "uinta/vbo.h"
 
@@ -42,6 +43,10 @@ class Engine : public RuntimeGetter {
   Engine& operator=(const Engine&&) noexcept = delete;
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
+
+  const FrameManager& frameManager() const noexcept { return frame_; }
+
+  FrameManager& frameManager() noexcept { return frame_; }
 
   const OpenGLApi* gl() const noexcept { return gl_; }
 
@@ -97,6 +102,7 @@ class Engine : public RuntimeGetter {
   EngineState state_;
   EngineDispatchers dispatchers_;
   ServiceRegistry services_;
+  FrameManager frame_;
   LocalizationSystem localization_;
   Status status_;
 
