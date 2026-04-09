@@ -16,6 +16,7 @@ Another C++ game engine.
 - OpenGL state guards: `CapabilityGuard`, `DepthTestGuard`, `CullFaceGuard`, `PolygonMode`
 - `FrameManager` for frame timing and delta time management
 - `Component` system with stage-typed components and thread-safe `ComponentManager`
+- `Scene` system with layered scene management, lifecycle events, and debug UI
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 
