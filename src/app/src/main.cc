@@ -1,6 +1,8 @@
 #include <absl/log/log.h>
+#include <absl/status/status.h>
 #include <absl/strings/str_format.h>
 
+#include "uinta/app_config_yaml.h"
 #include "uinta/args.h"
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
@@ -9,13 +11,22 @@
 
 int main(int argc, const char** argv) {
   uinta::ArgsProcessor args(argc, argv);
-  uinta::DesktopPlatform platform;
-  uinta::Engine engine({
-      .platform = &platform,
-      .gl = uinta::OpenGLApiImpl::Instance(),
-      .args = &args,
-  });
-  engine.run();
+  uinta::AppConfigYamlImpl appConfig(&args);
+
+  {  // Scoping for app config serializing
+    uinta::DesktopPlatform platform(&appConfig);
+    uinta::Engine engine({
+        .platform = &platform,
+        .gl = uinta::OpenGLApiImpl::Instance(),
+        .appConfig = &appConfig,
+        .args = &args,
+    });
+    engine.run();
+  }
+
+  if (auto status = appConfig.flush(); !status.ok()) {
+    LOG(FATAL) << status.message();
+  }
 
   LOG(INFO) << "Exiting";
   return EXIT_SUCCESS;

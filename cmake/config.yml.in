@@ -1,0 +1,10 @@
+schemaVersion: 1
+engine:
+  resPath: ${UINTA_ENGINE_RES}
+platform:
+  window:
+    fullscreen: true
+    name: Uinta Engine v${CMAKE_PROJECT_VERSION}
+    position: 0 0
+    size: 0 0
+version: ${CMAKE_PROJECT_VERSION}

@@ -9,6 +9,7 @@
 
 namespace uinta {
 
+class AppConfig;
 class ArgsProcessor;
 struct OpenGLApi;
 class Platform;
@@ -16,6 +17,7 @@ class Platform;
 struct EngineDependencies {
   Platform* platform;
   const OpenGLApi* gl;
+  AppConfig* appConfig;
   const ArgsProcessor* args;
 };
 

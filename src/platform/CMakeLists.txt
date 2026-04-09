@@ -3,6 +3,7 @@ project(platform)
 
 set(CMAKE_CXX_STANDARD 20)
 
+list(APPEND PLATFORM_SRCS src/app_config.cc)
 list(APPEND PLATFORM_SRCS src/args.cc)
 list(APPEND PLATFORM_SRCS src/desktop_platform.cc)
 list(APPEND PLATFORM_SRCS src/desktop_window.cc)

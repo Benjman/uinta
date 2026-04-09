@@ -16,6 +16,7 @@ class ArgsProcessor {
 
  public:
   enum Arg : u8 {
+    AppConfigFilePath,
     Help,
   };
 

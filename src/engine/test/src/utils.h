@@ -5,6 +5,7 @@
 
 #include "uinta/args.h"
 #include "uinta/engine/engine.h"
+#include "uinta/mock/mock_app_config.h"
 #include "uinta/mock/mock_gl.h"
 
 namespace uinta {
@@ -13,11 +14,13 @@ class UintaTestF : public ::testing::Test {
  protected:
   MockOpenGLApi gl;
   ArgsProcessor args_ = ArgsProcessor(0, nullptr);
+  MockAppConfig appConfig_;
 
   EngineDependencies engineDependencies(Platform* platform) noexcept {
     return {
         .platform = platform,
         .gl = &gl,
+        .appConfig = &appConfig_,
         .args = &args_,
     };
   }

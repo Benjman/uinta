@@ -10,7 +10,7 @@
 
 namespace uinta {
 
-DesktopPlatform::DesktopPlatform(DesktopPlatformApi* api) noexcept : api_(api) {
+DesktopPlatform::DesktopPlatform(AppConfig* appConfig, DesktopPlatformApi* api) noexcept : api_(api) {
   if (auto* casted = dynamic_cast<GlfwPlatformApi*>(api_)) {
     casted->platform(this);
   }
@@ -25,7 +25,7 @@ DesktopPlatform::DesktopPlatform(DesktopPlatformApi* api) noexcept : api_(api) {
     LOG(FATAL) << status.status().message();
   }
 
-  window_ = std::make_unique<DesktopWindow>(this);
+  window_ = std::make_unique<DesktopWindow>(this, appConfig);
 
   if (window_->isFullscreen()) {
     i32 w;

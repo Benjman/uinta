@@ -7,7 +7,8 @@
 
 namespace uinta {
 
-DesktopWindow::DesktopWindow(DesktopPlatform* platform) noexcept : Window(platform), platform_(platform) {
+DesktopWindow::DesktopWindow(DesktopPlatform* platform, AppConfig* appConfig) noexcept
+    : Window(platform, appConfig), platform_(platform) {
   assert(platform_ && "`Platform*' cannot be null.");
 
   if (const auto status = platform_->createWindow(this); status.ok()) {
