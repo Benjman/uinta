@@ -1,0 +1,82 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: |
+          wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh
+          chmod +x /tmp/llvm.sh
+          sudo /tmp/llvm.sh 22
+          sudo apt-get install -y clang-format-22
+
+      - name: Check formatting
+        run: |
+          find . \
+            -type d \( -name lib -o -name build \) -prune -o \
+            -type f \( -name '*.cc' -o -name '*.h' \) -print0 |
+          xargs -0 clang-format-22 --dry-run -Werror
+
+  build-and-test:
+    needs: clang-format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            build-essential \
+            libassimp-dev \
+            libgl1-mesa-dev \
+            libglfw3-dev \
+            libglu1-mesa-dev \
+            libgtest-dev \
+            libstb-dev \
+            libwayland-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbcommon-dev \
+            libxrandr-dev \
+            libyaml-cpp-dev
+
+      - name: Build and install Manifold
+        run: |
+          git clone --depth 1 https://github.com/elalish/manifold.git /tmp/manifold
+          cmake -B /tmp/manifold/build -S /tmp/manifold \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DMANIFOLD_TEST=OFF \
+            -DMANIFOLD_CBIND=OFF \
+            -DMANIFOLD_PYBIND=OFF
+          cmake --build /tmp/manifold/build --parallel
+          sudo cmake --install /tmp/manifold/build
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
