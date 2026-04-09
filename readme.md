@@ -7,6 +7,7 @@ Another C++ game engine.
 - Modular CMake build system with three components
 - Fundamental type definitions (integer/float aliases)
 - `Engine` class with game loop, tick/render stages, and event system
+- `AppConfig` system for YAML-based configuration with typed getters/setters
 - Platform layer with windowing, input polling, and monitor support (GLFW backend)
 - Command-line argument processing (`ArgsProcessor`)
 - File I/O utilities with search path resolution and RAII reader (`File`)

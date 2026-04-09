@@ -8,9 +8,11 @@
 
 namespace uinta {
 
+class AppConfig;
+
 class DesktopPlatform : public Platform {
  public:
-  explicit DesktopPlatform(DesktopPlatformApi* = GlfwPlatformApi::Instance()) noexcept;
+  explicit DesktopPlatform(AppConfig* config = nullptr, DesktopPlatformApi* = GlfwPlatformApi::Instance()) noexcept;
 
   ~DesktopPlatform() noexcept { auto _ = destroy(window_.get()); }
 
