@@ -7,6 +7,7 @@ Another C++ game engine.
 - Modular CMake build system with three components
 - Fundamental type definitions (integer/float aliases)
 - Placeholder `Engine` class
+- OpenGL API abstraction with mock support for testing
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 
@@ -34,3 +35,4 @@ The following libraries are required to be available on your path prior to build
 
 - [Abseil](https://github.com/abseil/abseil-cpp)
 - [glm](https://github.com/g-truc/glm)
+- OpenGL headers
