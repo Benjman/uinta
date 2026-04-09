@@ -20,7 +20,8 @@ Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept;
 }  // namespace
 
 Engine::Engine(Params params) noexcept
-    : localization_(resolveLocale(params.args, params.locale)),
+    : frame_(params.platform->primaryMonitor().value_or(nullptr)),
+      localization_(resolveLocale(params.args, params.locale)),
       gl_(params.gl),
       platform_(params.platform),
       shader_({{GL_VERTEX_SHADER, "shader.vs.glsl"}, {GL_FRAGMENT_SHADER, "shader.fs.glsl"}}, params.gl),
@@ -76,6 +77,9 @@ Engine::Engine(Params params) noexcept
 
   gl_->clearColor(0.1, 0.1, 0.1, 1.0);
 
+  platform_->addListener<PlatformEvent::OnMonitorChange>(
+      [this](const auto& event) { frame_ = FrameManager(event.monitor); });
+
   constexpr f32 fov = 45;
   constexpr f32 nearPlane = 0.1;
   constexpr f32 farPlane = 5;
@@ -115,15 +119,17 @@ void Engine::run() noexcept {
       break;
     }
 
-    state_.updateRuntime(getRuntime());
+    do {
+      state_.updateRuntime(getRuntime());
 
-    advance<EngineStage::PreTick>();
-    advance<EngineStage::Tick>();
-    advance<EngineStage::PostTick>();
+      advance<EngineStage::PreTick>();
+      advance<EngineStage::Tick>();
+      advance<EngineStage::PostTick>();
 
-    state_.addTick();
+      state_.addTick();
 
-    dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, getRuntime()));
+      dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, getRuntime()));
+    } while (state_.runtime() < frame_.next);
 
     state_.updateRuntime(getRuntime());
 
@@ -139,6 +145,11 @@ void Engine::run() noexcept {
     }
 
     state_.addFrame();
+
+    frame_.next = state_.runtime();
+    if (!state_.isFixedTickRate()) {
+      frame_.next += frame_.frequency;
+    }
 
     dispatchers_.dispatch<EngineEvent::RenderComplete>(RenderComplete(&state_, getRuntime()));
   }
