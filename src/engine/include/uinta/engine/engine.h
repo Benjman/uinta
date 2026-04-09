@@ -11,11 +11,13 @@
 
 namespace uinta {
 
+class ArgsProcessor;
 struct OpenGLApi;
 
 struct EngineDependencies {
   Platform* platform;
   const OpenGLApi* gl;
+  const ArgsProcessor* args;
 };
 
 class Engine : public RuntimeGetter {

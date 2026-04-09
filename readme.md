@@ -8,6 +8,7 @@ Another C++ game engine.
 - Fundamental type definitions (integer/float aliases)
 - `Engine` class with game loop, tick/render stages, and event system
 - Platform layer with windowing, input polling, and monitor support (GLFW backend)
+- Command-line argument processing (`ArgsProcessor`)
 - OpenGL API abstraction with mock support for testing
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
