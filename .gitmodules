@@ -4,3 +4,6 @@
 [submodule "src/platform/lib/eventpp"]
 	path = src/platform/lib/eventpp
 	url = https://github.com/wqking/eventpp
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui
