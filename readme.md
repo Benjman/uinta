@@ -41,4 +41,5 @@ The following libraries are required to be available on your path prior to build
 - [Abseil](https://github.com/abseil/abseil-cpp)
 - [glm](https://github.com/g-truc/glm)
 - OpenGL headers
+- [stb](https://github.com/nothings/stb)
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
