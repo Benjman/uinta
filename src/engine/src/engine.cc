@@ -11,16 +11,6 @@
 
 namespace uinta {
 
-constexpr std::array<glm::vec4, 5> theGrassIsAlwaysGreener = {
-    glm::vec4(58.0 / 255.0, 57.0 / 255.0, 66.0 / 255.0, 1.0),
-    glm::vec4(255.0 / 255.0, 233.0 / 255.0, 189.0 / 255.0, 1.0),
-    glm::vec4(209.0 / 255.0, 202.0 / 255.0, 147.0 / 255.0, 1.0),
-    glm::vec4(177.0 / 255.0, 188.0 / 255.0, 122.0 / 255.0, 1.0),
-    glm::vec4(130.0 / 255.0, 168.0 / 255.0, 93.0 / 255.0, 1.0),
-};
-
-constexpr auto palette = theGrassIsAlwaysGreener;
-
 Engine::Engine(Params params) noexcept
     : gl_(params.gl),
       platform_(params.platform),
@@ -30,7 +20,8 @@ Engine::Engine(Params params) noexcept
       uProjection_("uProjection", &shader_),
       uColor_("uColor", &shader_),
       vao_(params.gl),
-      vbo_(GL_ARRAY_BUFFER, 0, params.gl) {
+      vbo_(GL_ARRAY_BUFFER, 0, params.gl),
+      texture_(GL_TEXTURE_2D, 0, 0, 0, 0, 0, params.gl) {
   assert(platform_ && "`Platform*` cannot be null.");
 
   registerService<AppConfig>(params.appConfig);
@@ -94,57 +85,31 @@ Engine::Engine(Params params) noexcept
             glm::perspective(fov, event.aspect(), nearPlane, farPlane);
       });
 
-  constexpr f32 triLen = (0.2 * 2) / glm::root_three<f32>();
-  constexpr f32 rectHeight = 0.2f;
-  constexpr f32 rectWidth = (16.0 / 9.0) * rectHeight;
-  std::array<f32, 30> vertices = {
-      0.0f,
-      0.2 / 2.0f,  // Tri Vertex 1 - top
-      -triLen / 2.0f,
-      -0.2 / 2.0f,  // Tri Vertex 2 - bottom left
-      triLen / 2.0f,
-      -0.2 / 2.0f,  // Tri Vertex 3 - bottom right
-
-      // 16:9 rectangle
-      -rectWidth / 2.0f,
-      rectHeight / 2.0f,  // Rect vertex top-left
-      rectWidth / 2.0f,
-      rectHeight / 2.0f,  // Rect vertex top-right
-      -rectWidth / 2.0f,
-      -rectHeight / 2.0f,  // Rect vertex bottom-left
-      -rectWidth / 2.0f,
-      -rectHeight / 2.0f,  // Rect vertex bottom-left
-      rectWidth / 2.0f,
-      -rectHeight / 2.0f,  // Rect vertex bottom-right
-      rectWidth / 2.0f,
-      rectHeight / 2.0f,  // Rect vertex top-right
+  std::array<f32, 16> vertices = {
+      -0.32f, 0.45f,  0.0f, 1.0f,  // top-left
+      0.32f,  0.45f,  1.0f, 1.0f,  // top-right
+      -0.32f, -0.45f, 0.0f, 0.0f,  // bottom-left
+      0.32f,  -0.45f, 1.0f, 0.0f,  // bottom-right
   };
-
-  std::copy(vertices.begin() + 6, vertices.begin() + 18, vertices.begin() + 18);
-
-  for (std::size_t i = 0; i < 6; i += 2) {
-    vertices.at(i) -= 0.5;
-  }
-  for (std::size_t i = 18; i < vertices.size(); i += 2) {
-    vertices.at(i) += 0.5;
-  }
-  for (std::size_t i = 6; i < 18; i += 2) {
-    constexpr f32 separation = 0.005;
-    vertices.at(i) += static_cast<f32>(i >= 12 ? 1 : -1) * separation;
-  }
-
   {
     VboGuard vbg(&vbo_);
     VaoGuard vag(&vao_);
-    vbo_.bufferData(vertices.data(), vertices.size() * sizeof(GLfloat),
-                    GL_STATIC_DRAW);
-
+    vbo_.bufferData(vertices.data(), sizeof(vertices), GL_STATIC_DRAW);
     vao_.linkAttribute({.index = 0,
                         .size = 2,
                         .type = GL_FLOAT,
                         .normalized = GL_FALSE,
-                        .stride = 2 * sizeof(GLfloat),
+                        .stride = 4 * sizeof(GLfloat),
                         .offset = 0});
+    vao_.linkAttribute({.index = 1,
+                        .size = 2,
+                        .type = GL_FLOAT,
+                        .normalized = GL_FALSE,
+                        .stride = 4 * sizeof(GLfloat),
+                        .offset = 2 * sizeof(GLfloat)});
+  }
+  if (status_ = texture_.fromFile("texture.jpg"); !status_.ok()) {
+    return;
   }
 }
 
@@ -197,14 +162,8 @@ void Engine::preRender() noexcept {}
 void Engine::render() noexcept {
   ShaderGuard shaderGuard(&shader_);
   VaoGuard vaoGuard(&vao_);
-  uColor_ = palette[1];
-  gl_->drawArrays(GL_TRIANGLES, 0, 3);  // Triangle
-  uColor_ = palette[2];
-  gl_->drawArrays(GL_TRIANGLES, 3, 3);  // Top separated rectangle
-  uColor_ = palette[3];
-  gl_->drawArrays(GL_TRIANGLES, 6, 3);  // Bottom separated rectangle
-  uColor_ = palette[4];
-  gl_->drawArrays(GL_TRIANGLES, 9, 6);  // Rectangle
+  TextureGuard textureGuard(&texture_);
+  gl_->drawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 void Engine::postRender() noexcept {}
