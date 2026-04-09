@@ -13,6 +13,7 @@ Another C++ game engine.
 - File I/O utilities with search path resolution and RAII reader (`File`)
 - OpenGL API abstraction with mock support for testing
 - OpenGL rendering primitives: `Shader`, `Vbo`, `Vao`, `Uniform`, and `Texture` classes
+- `Mesh` class with vertex/element storage, primitive generation (Cube, Plane), and transform utilities
 - OpenGL state guards: `CapabilityGuard`, `DepthTestGuard`, `CullFaceGuard`, `PolygonMode`
 - `FrameManager` for frame timing and delta time management
 - OpenGL state guards: `CapabilityGuard`
