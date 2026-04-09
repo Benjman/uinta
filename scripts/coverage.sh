@@ -13,12 +13,17 @@ if [[ "$1" == "--html" ]]; then
   GENERATE_HTML=true
 fi
 
-# Run tests if .gcda files don't exist
-if ! find "$BUILD_DIR" -name "*.gcda" 2>/dev/null | grep -q .; then
-  echo "Running tests to generate coverage data..."
-  "$BUILD_DIR/src/platform/test/platform_test"
-  "$BUILD_DIR/src/engine/test/engine_test"
-fi
+# Coverage instrumentation is opt-in (see CMakeLists.txt), since it makes
+# installed libraries unlinkable by consumers that don't also build with
+# --coverage. Always (re)configure with it on so this script works
+# regardless of how $BUILD_DIR was last configured.
+cmake -B "$BUILD_DIR" . -DCMAKE_BUILD_TYPE=Debug -DUINTA_ENABLE_COVERAGE=ON
+cmake --build "$BUILD_DIR" -j"$(nproc)"
+
+echo "Running tests to generate coverage data..."
+find "$BUILD_DIR" -name "*.gcda" -delete
+"$BUILD_DIR/src/platform/test/platform_test"
+"$BUILD_DIR/src/engine/test/engine_test"
 
 # Generate lcov.info
 lcov --capture \
