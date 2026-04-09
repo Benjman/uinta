@@ -15,9 +15,9 @@ class Window;
 
 class Window {
  public:
-  explicit Window(const Platform*) noexcept;
+  explicit Window(const Platform*, AppConfig*) noexcept;
 
-  virtual ~Window() noexcept {}
+  ~Window() noexcept;
 
   [[nodiscard]] f32 aspect() const noexcept {
     return static_cast<f32>(width_) / static_cast<f32>(height_);
@@ -63,7 +63,7 @@ class Window {
   void userData(void* ptr) noexcept { userData_ = ptr; }
 
  private:
-  std::string name_ = "Uinta Engine";
+  std::string name_;
   bool isFullscreen_ = false;
   u32 height_ = 0;
   u32 width_ = 0;
@@ -71,6 +71,7 @@ class Window {
   u32 y_ = 0;
   const Monitor* monitor_ = nullptr;
   void* userData_ = nullptr;
+  AppConfig* appConfig_ = nullptr;
 };
 
 }  // namespace uinta

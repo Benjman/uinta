@@ -7,11 +7,15 @@
 #include <cassert>
 #include <string>
 
+#include "uinta/app_config.h"
+
 namespace uinta {
 
 Engine::Engine(Params params) noexcept
     : gl_(params.gl), platform_(params.platform) {
   assert(platform_ && "`Platform*` cannot be null.");
+
+  registerService<AppConfig>(params.appConfig);
 
   platform_->engine(this);
 

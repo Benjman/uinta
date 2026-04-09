@@ -3,8 +3,8 @@
 
 #include <functional>
 
+#include "./mock_app_config.h"
 #include "./mock_runtime_getter.h"
-#include "uinta/args.h"
 #include "uinta/platform.h"
 #include "uinta/status.h"
 #include "uinta/window.h"
@@ -12,15 +12,44 @@
 namespace uinta {
 
 struct MockPlatform : Platform {
-  ArgsProcessor args = ArgsProcessor(0, nullptr);
+  MockAppConfig appConfig;
 
   explicit MockPlatform(Monitor* monitor = nullptr) noexcept {
+    // Configure appConfig with default window settings
+    appConfig.onGetBoolean = [](const std::string& key) -> std::optional<bool> {
+      if (key == "platform.window.fullscreen") {
+        return false;
+      }
+      return std::nullopt;
+    };
+    appConfig.onGetString =
+        [](const std::string& key) -> std::optional<std::string> {
+      if (key == "platform.window.name") {
+        return "Uinta Engine";
+      }
+      return std::nullopt;
+    };
+    appConfig.onGetInt2 = [](const std::string& key,
+                             i32* ptr) -> std::optional<i32*> {
+      if (key == "platform.window.position") {
+        ptr[0] = 0;
+        ptr[1] = 0;
+        return ptr;
+      }
+      if (key == "platform.window.size") {
+        ptr[0] = 800;
+        ptr[1] = 600;
+        return ptr;
+      }
+      return std::nullopt;
+    };
+
     if (monitor != nullptr) {
       monitors_ = {*monitor};
     } else {
       monitors_ = {{"Test monitor", 1920, 1080, 144, nullptr, true}};
     }
-    window_ = std::make_unique<Window>(this);
+    window_ = std::make_unique<Window>(this, &appConfig);
   }
 
   ~MockPlatform() noexcept {
@@ -60,9 +89,9 @@ struct MockPlatform : Platform {
     return onDestroy(window);
   }
 
-  std::function<Status(void*, f32, f32)> onSetWindowPosition =
-      [](void*, f32, f32) -> Status { return OkStatus(); };
-  Status setWindowPosition(void* window, f32 x, f32 y) const noexcept {
+  std::function<Status(void*, u32, u32)> onSetWindowPosition =
+      [](void*, u32, u32) -> Status { return OkStatus(); };
+  Status setWindowPosition(void* window, u32 x, u32 y) const noexcept {
     return onSetWindowPosition(window, x, y);
   }
 
