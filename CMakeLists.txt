@@ -28,6 +28,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(abseil-cpp)
 include(glm)
+include(imgui)
 include(stb)
 include(yaml-cpp)
 
@@ -128,7 +129,7 @@ install(DIRECTORY src/platform/lib/eventpp/include/ DESTINATION
   ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(
-  TARGETS platform engine glad eventpp
+  TARGETS platform engine glad eventpp imgui
   EXPORT uinta-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
