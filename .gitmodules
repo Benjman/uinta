@@ -1,3 +1,6 @@
 [submodule "src/platform/lib/glfw"]
 	path = src/platform/lib/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "src/platform/lib/eventpp"]
+	path = src/platform/lib/eventpp
+	url = https://github.com/wqking/eventpp
