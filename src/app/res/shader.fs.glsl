@@ -1,8 +1,10 @@
 #version 330 core
 out vec4 oColor;
 
-uniform vec4 uColor = vec4(1);
+in vec2 pUv;
+
+uniform sampler2D texture1;
 
 void main() {
-  oColor = vec4(uColor);
+  oColor = texture(texture1, pUv);
 }
