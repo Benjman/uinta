@@ -27,3 +27,9 @@ git clone --recurse-submodules --shallow-submodules git@github.com:Benjman/uinta
 cmake -B build . && make -j$(nproc) --directory build
 ./build/src/app/app
 ```
+
+### Required libraries
+
+The following libraries are required to be available on your path prior to building:
+
+- [Abseil](https://github.com/abseil/abseil-cpp)
