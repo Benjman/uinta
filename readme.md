@@ -13,6 +13,8 @@ Another C++ game engine.
 - File I/O utilities with search path resolution and RAII reader (`File`)
 - OpenGL API abstraction with mock support for testing
 - OpenGL rendering primitives: `Shader`, `Vbo`, `Vao`, `Uniform`, and `Texture` classes
+- `FrameManager` for frame timing and delta time management
+- OpenGL state guards: `CapabilityGuard`
 - `LocalizationSystem` service with YAML-backed per-locale string tables and a typed `Localization` key enum
 - `FrameManager` for frame timing and delta time management
 - Code style enforcement (Google C++ style via clang-format, cpplint)
