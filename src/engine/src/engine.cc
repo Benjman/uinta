@@ -38,6 +38,14 @@ Locale resolveLocale(const ArgsProcessor* args) noexcept {
   return Locale::EnUs;
 }
 
+time_t frameInterval(const Monitor* monitor) noexcept {
+  if (monitor == nullptr || monitor->hz() == 0) {
+    LOG(WARNING) << "Monitor refresh rate unavailable, defaulting frame interval to 60hz";
+    return 1.0 / 60;
+  }
+  return 1.0 / monitor->hz();
+}
+
 }  // namespace
 
 Engine::Engine(const EngineDependencies& deps) noexcept
@@ -99,6 +107,9 @@ Engine::Engine(const EngineDependencies& deps) noexcept
     LOG(INFO) << absl::StrFormat("Event: Viewport size change (%u, %u)", width, height);
   });
 
+  platform_->addListener<PlatformEvent::OnMonitorChange>(
+      [this](const auto& event) { state_.frameInterval(frameInterval(event.monitor)); });
+
   constexpr f32 fov = 45;
   constexpr f32 nearPlane = 0.1;
   constexpr f32 farPlane = 5;
@@ -142,16 +153,19 @@ Engine::~Engine() noexcept {
 
 void Engine::run() noexcept {
   const auto* gl = service<const OpenGLApi>();
+  state_.frameInterval(frameInterval(platform_->primaryMonitor().value_or(nullptr)));
   while (!state_.isClosing()) {
     if (auto status = platform_->pollEvents(); !status.ok()) {
       LOG(FATAL) << status.message();
     }
-    state_.updateRuntime(runtime());
-    advance<EngineStage::PreTick>();
-    advance<EngineStage::Tick>();
-    advance<EngineStage::PostTick>();
-    state_.addTick();
-    dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, runtime()));
+    do {
+      state_.updateRuntime(runtime());
+      advance<EngineStage::PreTick>();
+      advance<EngineStage::Tick>();
+      advance<EngineStage::PostTick>();
+      state_.addTick();
+      dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, runtime()));
+    } while (state_.runtime() < state_.nextFrame());
     state_.updateRuntime(runtime());
     gl->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     advance<EngineStage::PreRender>();
@@ -161,6 +175,7 @@ void Engine::run() noexcept {
       LOG(FATAL) << status.message();
     }
     state_.addFrame();
+    state_.scheduleNextFrame();
     dispatchers_.dispatch<EngineEvent::RenderComplete>(RenderComplete(&state_, runtime()));
   }
 }
