@@ -34,11 +34,23 @@ class EngineState {
 
   void isClosing(bool v) noexcept { flags_.isClosing(v); }
 
+  [[nodiscard]] bool isFixedTickRate() const noexcept { return flags_.isFixedTickRate(); }
+
+  void isFixedTickRate(bool v) noexcept { flags_.isFixedTickRate(v); }
+
+  [[nodiscard]] auto frameInterval() const noexcept { return frameInterval_; }
+
+  void frameInterval(time_t v) noexcept { frameInterval_ = v; }
+
+  [[nodiscard]] auto nextFrame() const noexcept { return nextFrame_; }
+
+  void scheduleNextFrame() noexcept { nextFrame_ = runtime_ + (isFixedTickRate() ? 0 : frameInterval_); }
+
  private:
   struct Flags final {
     using value_type = u8;
 
-    AtomicFlagsOperations(0);
+    AtomicFlagsOperations(FixedTickRateMask);
 
     [[nodiscard]] bool isClosing() const noexcept { return (flags_ & ClosingMask) != 0; }
     void isClosing(bool v) noexcept {
@@ -48,14 +60,26 @@ class EngineState {
       }
     }
 
+    [[nodiscard]] bool isFixedTickRate() const noexcept { return (flags_ & FixedTickRateMask) != 0; }
+
+    void isFixedTickRate(bool v) noexcept {
+      flags_ &= ~FixedTickRateMask;
+      if (v) {
+        flags_ |= FixedTickRateMask;
+      }
+    }
+
    private:
     static constexpr value_type ClosingMask = 1 << 0;
+    static constexpr value_type FixedTickRateMask = 1 << 2;
 
     std::atomic<value_type> flags_;
   } flags_;
 
   time_t runtime_ = 0;
   time_t delta_ = 0;
+  time_t frameInterval_ = 1.0 / 60;
+  time_t nextFrame_ = 0;
   count_t frameCount_ = 0;
   count_t tickCount_ = 0;
 };

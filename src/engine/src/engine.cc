@@ -38,6 +38,14 @@ Locale resolveLocale(const ArgsProcessor* args) noexcept {
   return Locale::EnUs;
 }
 
+time_t frameInterval(const Monitor* monitor) noexcept {
+  if (monitor == nullptr || monitor->hz() == 0) {
+    LOG(WARNING) << "Monitor refresh rate unavailable, defaulting frame interval to 60hz";
+    return 1.0 / 60;
+  }
+  return 1.0 / monitor->hz();
+}
+
 }  // namespace
 
 namespace _ {
@@ -107,6 +115,9 @@ Engine::Engine(const EngineDependencies& deps) noexcept : localization_(this, re
     LOG(INFO) << absl::StrFormat("Event: Viewport size change (%u, %u)", width, height);
   });
 
+  platform->addListener<PlatformEvent::OnMonitorChange>(
+      [this](const auto& event) { state_.frameInterval(frameInterval(event.monitor)); });
+
   constexpr f32 fov = 45;
   constexpr f32 nearPlane = 0.1;
   constexpr f32 farPlane = 5;
@@ -152,16 +163,19 @@ void Engine::run() noexcept {
   const auto* platform = service<Platform>();
   const auto* gl = service<const OpenGLApi>();
   time_t startTime = platform->runtime();
+  state_.frameInterval(frameInterval(platform->primaryMonitor().value_or(nullptr)));
   while (!state_.isClosing()) {
     if (auto status = platform->pollEvents(); !status.ok()) {
       LOG(FATAL) << status.message();
     }
-    state_.updateRuntime(platform->runtime() - startTime);
-    advance<EngineStage::PreTick>();
-    advance<EngineStage::Tick>();
-    advance<EngineStage::PostTick>();
-    state_.addTick();
-    // dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, runtime())); // TODO: delete me
+    do {
+      state_.updateRuntime(platform->runtime() - startTime);
+      advance<EngineStage::PreTick>();
+      advance<EngineStage::Tick>();
+      advance<EngineStage::PostTick>();
+      state_.addTick();
+      // dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, runtime())); // TODO: delete me
+    } while (state_.runtime() < state_.nextFrame());
     state_.updateRuntime(platform->runtime() - startTime);
     gl->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     advance<EngineStage::PreRender>();
@@ -171,6 +185,7 @@ void Engine::run() noexcept {
       LOG(FATAL) << status.message();
     }
     state_.addFrame();
+    state_.scheduleNextFrame();
     // dispatchers_.dispatch<EngineEvent::RenderComplete>(RenderComplete(&state_, runtime())); // TODO: delete me
   }
 }
