@@ -3,6 +3,7 @@ project(engine)
 
 set(CMAKE_CXX_STANDARD 20)
 
+list(APPEND ENGINE_SRCS src/app_config_yaml.cc)
 list(APPEND ENGINE_SRCS src/engine.cc)
 list(APPEND ENGINE_SRCS src/reflect.cc)
 
@@ -24,6 +25,12 @@ set(UINTA_ENGINE_RES "${CMAKE_CURRENT_SOURCE_DIR}/res")
 set(UINTA_ENGINE_RES ${UINTA_ENGINE_RES} PARENT_SCOPE)
 list(APPEND UINTA_RES_PATHS "${UINTA_ENGINE_RES}")
 set(UINTA_RES_PATHS ${UINTA_RES_PATHS} PARENT_SCOPE)
+
+configure_file(${CMAKE_MODULE_PATH}/config.yml.in ${UINTA_APP_CONFIG_PATH})
+message(STATUS "config.yml file: ${UINTA_APP_CONFIG_PATH}")
+
+install(DIRECTORY res/ DESTINATION ${CMAKE_INSTALL_DATADIR}/uinta)
+
 find_package(GTest)
 if(GTest_FOUND)
   add_subdirectory(test)

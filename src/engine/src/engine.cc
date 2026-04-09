@@ -7,6 +7,7 @@
 #include <cassert>
 #include <string>
 
+#include "uinta/app_config.h"
 #include "uinta/args.h"
 #include "uinta/gl.h"
 
@@ -23,6 +24,8 @@ void unregisterService(Engine* engine, std::type_index type) noexcept { engine->
 }  // namespace _
 
 Engine::Engine(const EngineDependencies& deps) noexcept {
+  assert(deps.appConfig && "Engine::Engine(): AppConfig cannot be null!");
+  registerService<AppConfig>(deps.appConfig);
   assert(deps.args && "Engine::Engine(): ArgsProcessor cannot be null!");
   registerService<const ArgsProcessor>(deps.args);
   assert(deps.gl && "Engine::Engine(): OpenGLApi cannot be null!");
