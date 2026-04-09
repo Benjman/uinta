@@ -1,6 +1,7 @@
 list(APPEND ENGINE_TEST_SRCS src/app_config_yaml_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/engine_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/shader_test.cc)
+list(APPEND ENGINE_TEST_SRCS src/uniform_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/vao_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/vbo_test.cc)
 
