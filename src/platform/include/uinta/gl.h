@@ -724,6 +724,692 @@ struct OpenGLApi {
   virtual void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
                             const GLint* length) const noexcept = 0;
 
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform1f(GLint location, GLfloat v0) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform2f(GLint location, GLfloat v0,
+                         GLfloat v1) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v2` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform3f(GLint location, GLfloat v0, GLfloat v1,
+                         GLfloat v2) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v2` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v3` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2,
+                         GLfloat v3) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform1i(GLint location, GLint v0) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform2i(GLint location, GLint v0, GLint v1) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v2` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform3i(GLint location, GLint v0, GLint v1,
+                         GLint v2) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v2` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v3` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform4i(GLint location, GLint v0, GLint v1, GLint v2,
+                         GLint v3) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform1ui(GLint location, GLuint v0) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform2ui(GLint location, GLuint v0,
+                          GLuint v1) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v2` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform3ui(GLint location, GLuint v0, GLuint v1,
+                          GLuint v2) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `v0` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v1` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v2` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   *  @param `v3` For the scalar commands, specifies the new values to be used
+   * for the specified uniform variable.
+   */
+  virtual void uniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2,
+                          GLuint v3) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform1fv(GLint location, GLsizei count,
+                          const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform2fv(GLint location, GLsizei count,
+                          const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform3fv(GLint location, GLsizei count,
+                          const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform4fv(GLint location, GLsizei count,
+                          const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform1iv(GLint location, GLsizei count,
+                          const GLint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform2iv(GLint location, GLsizei count,
+                          const GLint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform3iv(GLint location, GLsizei count,
+                          const GLint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform4iv(GLint location, GLsizei count,
+                          const GLint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform1uiv(GLint location, GLsizei count,
+                           const GLuint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniform2uiv(GLint location, GLsizei count,
+                           const GLuint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   */
+  virtual void uniform3uiv(GLint location, GLsizei count,
+                           const GLuint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   */
+  virtual void uniform4uiv(GLint location, GLsizei count,
+                           const GLuint* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix2fv(GLint location, GLsizei count,
+                                GLboolean transpose,
+                                const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix3fv(GLint location, GLsizei count,
+                                GLboolean transpose,
+                                const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix4fv(GLint location, GLsizei count,
+                                GLboolean transpose,
+                                const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix2x3fv(GLint location, GLsizei count,
+                                  GLboolean transpose,
+                                  const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix3x2fv(GLint location, GLsizei count,
+                                  GLboolean transpose,
+                                  const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix2x4fv(GLint location, GLsizei count,
+                                  GLboolean transpose,
+                                  const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix4x2fv(GLint location, GLsizei count,
+                                  GLboolean transpose,
+                                  const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix3x4fv(GLint location, GLsizei count,
+                                  GLboolean transpose,
+                                  const GLfloat* value) const noexcept = 0;
+
+  /*! `glUniform` — Specify the value of a uniform variable for the current
+   * program object
+   *
+   *  @brief `glUniform` modifies the value of a uniform variable or a uniform
+   * variable array.
+   *
+   *  @param `location` Specifies the location of the uniform variable to be
+   * modified.
+   *  @param `count` For the vector (`glUniform`*v) commands, specifies the
+   * number of elements that are to be modified. This should be 1 if the
+   * targeted uniform variable is not an array, and 1 or more if it is an array.
+   * For the matrix (`glUniformMatrix`*) commands, specifies the number of
+   * matrices that are to be modified. This should be 1 if the targeted uniform
+   * variable is not an array of matrices, and 1 or more if it is an array of
+   * matrices.
+   *  @param `transpose` For the matrix commands, specifies whether to transpose
+   * the matrix as the values are loaded into the uniform variable.
+   *  @param `value` For the vector and matrix commands, specifies a pointer to
+   * an array of count values that will be used to update the specified uniform
+   * variable.
+   */
+  virtual void uniformMatrix4x3fv(GLint location, GLsizei count,
+                                  GLboolean transpose,
+                                  const GLfloat* value) const noexcept = 0;
+
   /*! `glUseProgram` — Installs a program object as part of current rendering
    * state
    *
@@ -1067,6 +1753,167 @@ struct OpenGLApiImpl : OpenGLApi {
   void shaderSource(GLuint shader, GLsizei count, const GLchar** source,
                     const GLint* length) const noexcept override {
     glShaderSource(shader, count, source, length);
+  }
+
+  void uniform1f(GLint location, GLfloat v0) const noexcept override {
+    glUniform1f(location, v0);
+  }
+
+  void uniform1fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    glUniform1fv(location, count, value);
+  }
+
+  void uniform1i(GLint location, GLint v0) const noexcept override {
+    glUniform1i(location, v0);
+  }
+
+  void uniform1iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    glUniform1iv(location, count, value);
+  }
+
+  void uniform1ui(GLint location, GLuint v0) const noexcept override {
+    glUniform1ui(location, v0);
+  }
+
+  void uniform1uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    glUniform1uiv(location, count, value);
+  }
+
+  void uniform2f(GLint location, GLfloat v0,
+                 GLfloat v1) const noexcept override {
+    glUniform2f(location, v0, v1);
+  }
+
+  void uniform2fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    glUniform2fv(location, count, value);
+  }
+
+  void uniform2i(GLint location, GLint v0, GLint v1) const noexcept override {
+    glUniform2i(location, v0, v1);
+  }
+
+  void uniform2iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    glUniform2iv(location, count, value);
+  }
+
+  void uniform2ui(GLint location, GLuint v0,
+                  GLuint v1) const noexcept override {
+    glUniform2ui(location, v0, v1);
+  }
+
+  void uniform2uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    glUniform2uiv(location, count, value);
+  }
+
+  void uniform3f(GLint location, GLfloat v0, GLfloat v1,
+                 GLfloat v2) const noexcept override {
+    glUniform3f(location, v0, v1, v2);
+  }
+
+  void uniform3fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    glUniform3fv(location, count, value);
+  }
+
+  void uniform3i(GLint location, GLint v0, GLint v1,
+                 GLint v2) const noexcept override {
+    glUniform3i(location, v0, v1, v2);
+  }
+
+  void uniform3iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    glUniform3iv(location, count, value);
+  }
+
+  void uniform3ui(GLint location, GLuint v0, GLuint v1,
+                  GLuint v2) const noexcept override {
+    glUniform3ui(location, v0, v1, v2);
+  }
+
+  void uniform3uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    glUniform3uiv(location, count, value);
+  }
+
+  void uniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2,
+                 GLfloat v3) const noexcept override {
+    glUniform4f(location, v0, v1, v2, v3);
+  }
+
+  void uniform4fv(GLint location, GLsizei count,
+                  const GLfloat* value) const noexcept override {
+    glUniform4fv(location, count, value);
+  }
+
+  void uniform4i(GLint location, GLint v0, GLint v1, GLint v2,
+                 GLint v3) const noexcept override {
+    glUniform4i(location, v0, v1, v2, v3);
+  }
+
+  void uniform4iv(GLint location, GLsizei count,
+                  const GLint* value) const noexcept override {
+    glUniform4iv(location, count, value);
+  }
+
+  void uniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2,
+                  GLuint v3) const noexcept override {
+    glUniform4ui(location, v0, v1, v2, v3);
+  }
+
+  void uniform4uiv(GLint location, GLsizei count,
+                   const GLuint* value) const noexcept override {
+    glUniform4uiv(location, count, value);
+  }
+
+  void uniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,
+                        const GLfloat* value) const noexcept override {
+    glUniformMatrix2fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    glUniformMatrix2x3fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    glUniformMatrix2x4fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,
+                        const GLfloat* value) const noexcept override {
+    glUniformMatrix3fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    glUniformMatrix3x2fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    glUniformMatrix3x4fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,
+                        const GLfloat* value) const noexcept override {
+    glUniformMatrix4fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    glUniformMatrix4x2fv(location, count, transpose, value);
+  }
+
+  void uniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose,
+                          const GLfloat* value) const noexcept override {
+    glUniformMatrix4x3fv(location, count, transpose, value);
   }
 
   void useProgram(GLuint program) const noexcept override {
