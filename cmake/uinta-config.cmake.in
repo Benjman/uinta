@@ -6,6 +6,7 @@ list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 # so the targets referenced by uinta-targets.cmake
 include(abseil-cpp)
 include(GLFW)
+include(glm)
 
 include("${CMAKE_CURRENT_LIST_DIR}/uinta-targets.cmake")
 
