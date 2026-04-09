@@ -3,8 +3,12 @@
 
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
+#include "uinta/engine/service_registry.h"
 
 int main() {
+  uinta::ServiceRegistry serviceRegistry;
+  serviceRegistry.registerService<const uinta::OpenGLApi>(uinta::OpenGLApiImpl::Instance());
+
   uinta::DesktopPlatform platform;
   if (!platform.status().ok()) {
     LOG(ERROR) << absl::StrFormat("Failed to initialize `DesktopPlatform`: %s", platform.status().message());
@@ -12,8 +16,8 @@ int main() {
   }
 
   uinta::Engine engine({
+      .serviceRegistry = &serviceRegistry,
       .platform = &platform,
-      .gl = uinta::OpenGLApiImpl::Instance(),
   });
   if (!engine.status().ok()) {
     LOG(ERROR) << absl::StrFormat("Failed to initialize `Engine`: %s", engine.status().message());

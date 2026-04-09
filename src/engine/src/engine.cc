@@ -7,10 +7,14 @@
 #include <cassert>
 #include <string>
 
+#include "uinta/gl.h"
+
 namespace uinta {
 
-Engine::Engine(Params params) noexcept : gl_(params.gl), platform_(params.platform) {
+Engine::Engine(Params params) noexcept
+    : serviceRegistry_(params.serviceRegistry), gl_(service<const OpenGLApi>()), platform_(params.platform) {
   assert(platform_ && "Engine::Engine(): Platform cannot be null.");
+  assert(gl_ && "Engine::Engine(): OpenGLApi cannot be null!");
 
   platform_->engine(this);
 
