@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(
   uinta
-  VERSION 0.0.22
+  VERSION 0.0.23
   LANGUAGES CXX C)
 
 if(NOT CMAKE_BUILD_TYPE)
