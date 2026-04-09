@@ -4,7 +4,7 @@
 #include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
-#include "uinta/gl.h"
+#include "uinta/engine/service_registry.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
 #include "uinta/types.h"
@@ -30,11 +30,34 @@ class Engine : public RuntimeGetter {
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
-  const OpenGLApi* gl() const noexcept { return gl_; }
-
   const Platform* platform() const noexcept { return platform_; }
 
   Platform* platform() noexcept { return platform_; }
+
+  template <typename T>
+  void registerService(T* service) noexcept {
+    serviceRegistry_.registerService<T>(service);
+    dispatchers_.dispatch<EngineEvent::ServiceRegistered>(
+        ServiceRegistered{.type = std::type_index(typeid(T)),
+                          .service = const_cast<void*>(static_cast<const void*>(service)),
+                          .isConst = std::is_const_v<T>});
+  }
+
+  template <typename T>
+  void unregisterService() noexcept {
+    serviceRegistry_.unregisterService<T>();
+    dispatchers_.dispatch<EngineEvent::ServiceUnregistered>(ServiceUnregistered{std::type_index(typeid(T))});
+  }
+
+  template <typename T>
+  T* service() noexcept {
+    return serviceRegistry_.service<T>();
+  }
+
+  template <typename T>
+  const T* service() const noexcept {
+    return serviceRegistry_.service<T>();
+  }
 
   time_t runtime() const noexcept override { return platform_->runtime().value_or(state_.runtime()); }
 
@@ -45,9 +68,9 @@ class Engine : public RuntimeGetter {
   const EngineState& state() const noexcept { return state_; }
 
  private:
-  const OpenGLApi* gl_;
   Platform* platform_;
 
+  ServiceRegistry serviceRegistry_;
   EngineState state_;
   EngineDispatchers dispatchers_;
 

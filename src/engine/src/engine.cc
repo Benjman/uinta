@@ -11,9 +11,11 @@
 
 namespace uinta {
 
-Engine::Engine(const EngineDependencies& deps) noexcept : gl_(deps.gl), platform_(deps.platform) {
+Engine::Engine(const EngineDependencies& deps) noexcept : platform_(deps.platform) {
   assert(deps.gl && "Engine::Engine(): OpenGLApi cannot be null!");
+  registerService<const OpenGLApi>(deps.gl);
   assert(deps.platform && "Engine::Engine(): Platform cannot be null!");
+  registerService<Platform>(deps.platform);
 
   platform_->engine(this);
   platform_->addListener<PlatformEvent::OnCloseRequest>([this](const auto&) { state_.isClosing(true); });
@@ -45,13 +47,15 @@ Engine::Engine(const EngineDependencies& deps) noexcept : gl_(deps.gl), platform
   platform_->addListener<PlatformEvent::OnViewportSizeChange>([this](const auto&) {
     auto width = platform_->window()->width();
     auto height = platform_->window()->height();
-    gl_->viewport(0, 0, static_cast<i32>(width), static_cast<i32>(height));
+    const auto* gl = service<const OpenGLApi>();
+    gl->viewport(0, 0, static_cast<i32>(width), static_cast<i32>(height));
     dispatchers_.dispatch<EngineEvent::ViewportSizeChange>(ViewportSizeChange(width, height));
     LOG(INFO) << absl::StrFormat("Event: Viewport size change (%u, %u)", width, height);
   });
 }
 
 void Engine::run() noexcept {
+  const auto* gl = service<const OpenGLApi>();
   while (!state_.isClosing()) {
     if (auto status = platform_->pollEvents(); !status.ok()) {
       LOG(FATAL) << status.message();
@@ -63,7 +67,7 @@ void Engine::run() noexcept {
     state_.addTick();
     dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, runtime()));
     state_.updateRuntime(runtime());
-    gl_->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gl->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     advance<EngineStage::PreRender>();
     advance<EngineStage::Render>();
     advance<EngineStage::PostRender>();
