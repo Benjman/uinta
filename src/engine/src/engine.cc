@@ -5,7 +5,6 @@
 #include <absl/strings/str_format.h>
 
 #include <cassert>
-#include <memory>
 #include <string>
 
 #include "uinta/app_config.h"
@@ -13,22 +12,10 @@
 #include "uinta/gl.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
-#include "uinta/shader.h"
-#include "uinta/texture.h"
-#include "uinta/uniform.h"
-#include "uinta/vao.h"
-#include "uinta/vbo.h"
 
 namespace uinta {
 
 namespace {
-
-std::unique_ptr<Shader> shader;
-std::unique_ptr<UniformMatrix4fv> uProjection;
-std::unique_ptr<Uniform4fv> uColor;
-std::unique_ptr<Vao> vao;
-std::unique_ptr<Vbo> vbo;
-std::unique_ptr<Texture> texture;
 
 Locale resolveLocale(const ArgsProcessor* args) noexcept {
   assert(args && "Engine::Engine(): ArgsProcessor cannot be null!");
@@ -49,7 +36,7 @@ time_t frameInterval(const Monitor* monitor) noexcept {
 }  // namespace
 
 Engine::Engine(const EngineDependencies& deps) noexcept
-    : platform_(deps.platform), localization_(resolveLocale(deps.args)) {
+    : platform_(deps.platform), localization_(resolveLocale(deps.args)), scenes_(this) {
   assert(deps.appConfig && "Engine::Engine(): AppConfig cannot be null!");
   registerService<AppConfig>(deps.appConfig);
   assert(deps.args && "Engine::Engine(): ArgsProcessor cannot be null!");
@@ -60,16 +47,7 @@ Engine::Engine(const EngineDependencies& deps) noexcept
   registerService<Platform>(deps.platform);
 
   registerService<LocalizationSystem>(&localization_);
-
-  const auto* gl = service<const OpenGLApi>();
-  shader = std::make_unique<Shader>(std::unordered_map<GLenum, std::string>{{GL_VERTEX_SHADER, "shader.vs.glsl"},
-                                                                            {GL_FRAGMENT_SHADER, "shader.fs.glsl"}},
-                                    gl);
-  uProjection = std::make_unique<UniformMatrix4fv>("uProjection", shader.get());
-  uColor = std::make_unique<Uniform4fv>("uColor", shader.get());
-  vao = std::make_unique<Vao>(gl);
-  vbo = std::make_unique<Vbo>(GL_ARRAY_BUFFER, 0, gl);
-  texture = std::make_unique<Texture>(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gl);
+  registerService<SceneSystem>(&scenes_);
 
   platform_->engine(this);
   platform_->addListener<PlatformEvent::OnCloseRequest>([this](const auto&) { state_.isClosing(true); });
@@ -109,52 +87,13 @@ Engine::Engine(const EngineDependencies& deps) noexcept
 
   platform_->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { state_.frameInterval(frameInterval(event.monitor)); });
-
-  constexpr f32 fov = 45;
-  constexpr f32 nearPlane = 0.1;
-  constexpr f32 farPlane = 5;
-  dispatchers_.addListener<EngineEvent::ViewportSizeChange>([](const auto& event) {
-    ShaderGuard guard(shader.get());
-    *uProjection = glm::perspective(fov, event.aspect(), nearPlane, farPlane);
-  });
-
-  std::array<f32, 16> vertices = {
-      -0.32f, 0.45f,  0.0f, 1.0f,  // top-left
-      0.32f,  0.45f,  1.0f, 1.0f,  // top-right
-      -0.32f, -0.45f, 0.0f, 0.0f,  // bottom-left
-      0.32f,  -0.45f, 1.0f, 0.0f,  // bottom-right
-  };
-  {
-    VboGuard vbg(vbo.get());
-    VaoGuard vag(vao.get());
-    vbo->bufferData(vertices.data(), sizeof(vertices), GL_STATIC_DRAW);
-    vao->linkAttribute(
-        {.index = 0, .size = 2, .type = GL_FLOAT, .normalized = GL_FALSE, .stride = 4 * sizeof(GLfloat), .offset = 0});
-    vao->linkAttribute({.index = 1,
-                        .size = 2,
-                        .type = GL_FLOAT,
-                        .normalized = GL_FALSE,
-                        .stride = 4 * sizeof(GLfloat),
-                        .offset = 2 * sizeof(GLfloat)});
-  }
-  if (auto status = texture->fromFile("texture.jpg"); !status.ok()) {
-    LOG(FATAL) << status.message();
-  }
-}
-
-Engine::~Engine() noexcept {
-  vbo.reset();
-  vao.reset();
-  uColor.reset();
-  uProjection.reset();
-  shader.reset();
-  texture.reset();
 }
 
 void Engine::run() noexcept {
   const auto* gl = service<const OpenGLApi>();
   state_.frameInterval(frameInterval(platform_->primaryMonitor().value_or(nullptr)));
   while (!state_.isClosing()) {
+    scenes_.flush();
     if (auto status = platform_->pollEvents(); !status.ok()) {
       LOG(FATAL) << status.message();
     }
@@ -179,23 +118,5 @@ void Engine::run() noexcept {
     dispatchers_.dispatch<EngineEvent::RenderComplete>(RenderComplete(&state_, runtime()));
   }
 }
-
-void Engine::preTick() noexcept {}
-
-void Engine::tick() noexcept {}
-
-void Engine::postTick() noexcept {}
-
-void Engine::preRender() noexcept {}
-
-void Engine::render() noexcept {
-  ShaderGuard shaderGuard(shader.get());
-  VaoGuard vaoGuard(vao.get());
-  const auto* gl = service<const OpenGLApi>();
-  TextureGuard textureGuard(texture.get());
-  gl->drawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-
-void Engine::postRender() noexcept {}
 
 }  // namespace uinta

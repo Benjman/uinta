@@ -8,6 +8,8 @@
 #include "uinta/localization/localization_system.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
+#include "uinta/scene/scene.h"
+#include "uinta/scene/scene_system.h"
 #include "uinta/types.h"
 
 namespace uinta {
@@ -27,11 +29,16 @@ class Engine : public RuntimeGetter {
  public:
   explicit Engine(const EngineDependencies& deps) noexcept;
 
-  ~Engine() noexcept;
+  ~Engine() noexcept = default;
   Engine(const Engine&) noexcept = delete;
   Engine& operator=(const Engine&) noexcept = delete;
   Engine(const Engine&&) noexcept = delete;
   Engine& operator=(const Engine&&) noexcept = delete;
+
+  template <typename T, typename... Args>
+  T* addScene(Args&&... args) noexcept {
+    return scenes_.addScene<T>(std::forward<Args>(args)...);
+  }
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
@@ -68,6 +75,10 @@ class Engine : public RuntimeGetter {
 
   void run() noexcept;
 
+  const SceneSystem* scenes() const noexcept { return &scenes_; }
+
+  SceneSystem* scenes() noexcept { return &scenes_; }
+
   EngineState& state() noexcept { return state_; }
 
   const EngineState& state() const noexcept { return state_; }
@@ -79,29 +90,12 @@ class Engine : public RuntimeGetter {
   EngineState state_;
   EngineDispatchers dispatchers_;
   LocalizationSystem localization_;
-
-  void preTick() noexcept;
-  void preRender() noexcept;
-  void tick() noexcept;
-  void render() noexcept;
-  void postTick() noexcept;
-  void postRender() noexcept;
+  SceneSystem scenes_;
 
   template <EngineStage S>
   void advance() noexcept {
-    if constexpr (S == EngineStage::PreTick) {
-      preTick();
-    } else if constexpr (S == EngineStage::Tick) {
-      tick();
-    } else if constexpr (S == EngineStage::PostTick) {
-      postTick();
-    } else if constexpr (S == EngineStage::PreRender) {
-      preRender();
-    } else if constexpr (S == EngineStage::Render) {
-      render();
-    } else if constexpr (S == EngineStage::PostRender) {
-      postRender();
-    }
+    auto delta = state_.updateStageDelta(S, runtime());
+    scenes_.advance<S>(delta);
   }
 };
 

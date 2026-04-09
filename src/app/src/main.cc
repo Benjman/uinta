@@ -8,6 +8,7 @@
 #include "uinta/engine/engine.h"
 #include "uinta/engine/service_registry.h"
 #include "uinta/gl.h"
+#include "uinta/scenes/demo_scene.h"
 
 int main(int argc, const char** argv) {
   uinta::ArgsProcessor args(argc, argv);
@@ -21,6 +22,7 @@ int main(int argc, const char** argv) {
         .appConfig = &appConfig,
         .args = &args,
     });
+    engine.addScene<uinta::DemoScene>();
     engine.run();
   }
 
