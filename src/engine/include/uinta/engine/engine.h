@@ -13,6 +13,7 @@
 #include "uinta/runtime_getter.h"
 #include "uinta/shader.h"
 #include "uinta/status.h"
+#include "uinta/texture.h"
 #include "uinta/types.h"
 #include "uinta/uniform.h"
 #include "uinta/vao.h"
@@ -107,6 +108,7 @@ class Engine : public RuntimeGetter {
   Uniform4fv uColor_;
   Vao vao_;
   Vbo vbo_;
+  Texture texture_;
 
   time_t getRuntime() noexcept {
     auto status = platform_->runtime();
