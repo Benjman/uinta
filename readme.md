@@ -18,6 +18,7 @@ Another C++ game engine.
 - OpenGL state guards: `CapabilityGuard`
 - `LocalizationSystem` service with YAML-backed per-locale string tables and a typed `Localization` key enum
 - `FrameManager` for frame timing and delta time management
+- `Component` system with stage-typed components and thread-safe `ComponentManager`
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 

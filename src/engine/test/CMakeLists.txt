@@ -1,4 +1,5 @@
 list(APPEND ENGINE_TEST_SRCS src/app_config_yaml_test.cc)
+list(APPEND ENGINE_TEST_SRCS src/component_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/defs_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/direction_test.cc)
 list(APPEND ENGINE_TEST_SRCS src/easing_test.cc)
