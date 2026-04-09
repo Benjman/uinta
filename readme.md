@@ -15,6 +15,7 @@ Another C++ game engine.
 - OpenGL rendering primitives: `Shader`, `Vbo`, `Vao`, `Uniform`, and `Texture` classes
 - OpenGL state guards: `CapabilityGuard`, `DepthTestGuard`, `CullFaceGuard`, `PolygonMode`
 - `FrameManager` for frame timing and delta time management
+- `Component` system with stage-typed components and thread-safe `ComponentManager`
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
 
