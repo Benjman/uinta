@@ -9,6 +9,7 @@ Another C++ game engine.
 - `Engine` class with game loop, tick/render stages, and event system
 - Platform layer with windowing, input polling, and monitor support (GLFW backend)
 - Command-line argument processing (`ArgsProcessor`)
+- File I/O utilities with search path resolution and RAII reader (`File`)
 - OpenGL API abstraction with mock support for testing
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
