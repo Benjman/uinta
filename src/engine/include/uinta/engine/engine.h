@@ -25,7 +25,7 @@ class Engine : public RuntimeGetter {
 
   explicit Engine(Params) noexcept;
 
-  ~Engine() noexcept = default;
+  ~Engine() noexcept;
   Engine(const Engine&) noexcept = delete;
   Engine& operator=(const Engine&) noexcept = delete;
   Engine(const Engine&&) noexcept = delete;

@@ -5,14 +5,48 @@
 #include <absl/strings/str_format.h>
 
 #include <cassert>
+#include <memory>
 #include <string>
 
+#include "uinta/shader.h"
+#include "uinta/uniform.h"
+#include "uinta/vao.h"
+#include "uinta/vbo.h"
+
 namespace uinta {
+
+namespace {
+
+constexpr std::array<glm::vec4, 5> theGrassIsAlwaysGreener = {
+    glm::vec4(58.0 / 255.0, 57.0 / 255.0, 66.0 / 255.0, 1.0),
+    glm::vec4(255.0 / 255.0, 233.0 / 255.0, 189.0 / 255.0, 1.0),
+    glm::vec4(209.0 / 255.0, 202.0 / 255.0, 147.0 / 255.0, 1.0),
+    glm::vec4(177.0 / 255.0, 188.0 / 255.0, 122.0 / 255.0, 1.0),
+    glm::vec4(130.0 / 255.0, 168.0 / 255.0, 93.0 / 255.0, 1.0),
+};
+
+constexpr auto palette = theGrassIsAlwaysGreener;
+
+std::unique_ptr<Shader> shader;
+std::unique_ptr<UniformMatrix4fv> uProjection;
+std::unique_ptr<Uniform4fv> uColor;
+std::unique_ptr<Vao> vao;
+std::unique_ptr<Vbo> vbo;
+
+}  // namespace
 
 Engine::Engine(Params params) noexcept
     : serviceRegistry_(params.serviceRegistry), gl_(service<const OpenGLApi>()), platform_(params.platform) {
   assert(platform_ && "Engine::Engine(): Platform cannot be null.");
   assert(gl_ && "Engine::Engine(): OpenGLApi cannot be null!");
+
+  shader = std::make_unique<Shader>(std::unordered_map<GLenum, std::string>{{GL_VERTEX_SHADER, "shader.vs.glsl"},
+                                                                            {GL_FRAGMENT_SHADER, "shader.fs.glsl"}},
+                                    gl_);
+  uProjection = std::make_unique<UniformMatrix4fv>("uProjection", shader.get());
+  uColor = std::make_unique<Uniform4fv>("uColor", shader.get());
+  vao = std::make_unique<Vao>(gl_);
+  vbo = std::make_unique<Vbo>(GL_ARRAY_BUFFER, 0, gl_);
 
   platform_->engine(this);
 
@@ -55,6 +89,70 @@ Engine::Engine(Params params) noexcept
   });
 
   gl_->clearColor(0.1, 0.1, 0.1, 1.0);
+
+  constexpr f32 fov = 45;
+  constexpr f32 nearPlane = 0.1;
+  constexpr f32 farPlane = 5;
+  dispatchers_.addListener<EngineEvent::ViewportSizeChange>([](const auto& event) {
+    ShaderGuard guard(shader.get());
+    *uProjection = glm::perspective(fov, event.aspect(), nearPlane, farPlane);
+  });
+
+  constexpr f32 triLen = (0.2 * 2) / glm::root_three<f32>();
+  constexpr f32 rectHeight = 0.2f;
+  constexpr f32 rectWidth = (16.0 / 9.0) * rectHeight;
+  std::array<f32, 30> vertices = {
+      0.0f,
+      0.2 / 2.0f,  // Tri Vertex 1 - top
+      -triLen / 2.0f,
+      -0.2 / 2.0f,  // Tri Vertex 2 - bottom left
+      triLen / 2.0f,
+      -0.2 / 2.0f,  // Tri Vertex 3 - bottom right
+
+      // 16:9 rectangle
+      -rectWidth / 2.0f,
+      rectHeight / 2.0f,  // Rect vertex top-left
+      rectWidth / 2.0f,
+      rectHeight / 2.0f,  // Rect vertex top-right
+      -rectWidth / 2.0f,
+      -rectHeight / 2.0f,  // Rect vertex bottom-left
+      -rectWidth / 2.0f,
+      -rectHeight / 2.0f,  // Rect vertex bottom-left
+      rectWidth / 2.0f,
+      -rectHeight / 2.0f,  // Rect vertex bottom-right
+      rectWidth / 2.0f,
+      rectHeight / 2.0f,  // Rect vertex top-right
+  };
+
+  std::copy(vertices.begin() + 6, vertices.begin() + 18, vertices.begin() + 18);
+
+  for (std::size_t i = 0; i < 6; i += 2) {
+    vertices.at(i) -= 0.5;
+  }
+  for (std::size_t i = 18; i < vertices.size(); i += 2) {
+    vertices.at(i) += 0.5;
+  }
+  for (std::size_t i = 6; i < 18; i += 2) {
+    constexpr f32 separation = 0.005;
+    vertices.at(i) += static_cast<f32>(i >= 12 ? 1 : -1) * separation;
+  }
+
+  {
+    VboGuard vbg(vbo.get());
+    VaoGuard vag(vao.get());
+    vbo->bufferData(vertices.data(), vertices.size() * sizeof(GLfloat), GL_STATIC_DRAW);
+
+    vao->linkAttribute(
+        {.index = 0, .size = 2, .type = GL_FLOAT, .normalized = GL_FALSE, .stride = 2 * sizeof(GLfloat), .offset = 0});
+  }
+}
+
+Engine::~Engine() noexcept {
+  vbo.reset();
+  vao.reset();
+  uColor.reset();
+  uProjection.reset();
+  shader.reset();
 }
 
 void Engine::run() noexcept {
@@ -101,7 +199,18 @@ void Engine::postTick() noexcept {}
 
 void Engine::preRender() noexcept {}
 
-void Engine::render() noexcept {}
+void Engine::render() noexcept {
+  ShaderGuard shaderGuard(shader.get());
+  VaoGuard vaoGuard(vao.get());
+  *uColor = palette[1];
+  gl_->drawArrays(GL_TRIANGLES, 0, 3);  // Triangle
+  *uColor = palette[2];
+  gl_->drawArrays(GL_TRIANGLES, 3, 3);  // Top separated rectangle
+  *uColor = palette[3];
+  gl_->drawArrays(GL_TRIANGLES, 6, 3);  // Bottom separated rectangle
+  *uColor = palette[4];
+  gl_->drawArrays(GL_TRIANGLES, 9, 6);  // Rectangle
+}
 
 void Engine::postRender() noexcept {}
 
