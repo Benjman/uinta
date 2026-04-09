@@ -2,17 +2,54 @@
 
 #include <gtest/gtest.h>
 
+#include "uinta/mock/mock_app_config.h"
 #include "uinta/mock/mock_desktop_platform_api.h"
 
 namespace uinta {
 
+namespace {
+
+// Helper to configure MockAppConfig with default window settings
+void configureDefaultWindowSettings(MockAppConfig* config) {
+  config->onGetBoolean = [](const std::string& key) -> std::optional<bool> {
+    if (key == "platform.window.fullscreen") {
+      return false;
+    }
+    return std::nullopt;
+  };
+  config->onGetString = [](const std::string& key) -> std::optional<std::string> {
+    if (key == "platform.window.name") {
+      return "Uinta Engine";
+    }
+    return std::nullopt;
+  };
+  config->onGetInt2 = [](const std::string& key, i32* ptr) -> std::optional<i32*> {
+    if (key == "platform.window.position") {
+      ptr[0] = 0;
+      ptr[1] = 0;
+      return ptr;
+    }
+    if (key == "platform.window.size") {
+      ptr[0] = 800;
+      ptr[1] = 600;
+      return ptr;
+    }
+    return std::nullopt;
+  };
+}
+
+}  // namespace
+
 class DesktopPlatformTestF : public ::testing::Test {
  protected:
   MockDesktopPlatformApi api;
+  MockAppConfig appConfig;
+
+  void SetUp() override { configureDefaultWindowSettings(&appConfig); }
 };
 
 TEST_F(DesktopPlatformTestF, ConstructorSuccess) {
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
 
   EXPECT_TRUE(platform.status().ok());
   EXPECT_NE(platform.window(), nullptr);
@@ -22,7 +59,7 @@ TEST_F(DesktopPlatformTestF, ConstructorSuccess) {
 TEST_F(DesktopPlatformTestF, ConstructorInitOpenGLFails) {
   api.onInitOpenGL = []() -> Status { return InternalError("OpenGL initialization failed"); };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
 
   EXPECT_FALSE(platform.status().ok());
   EXPECT_TRUE(IsInternal(platform.status()));
@@ -31,7 +68,7 @@ TEST_F(DesktopPlatformTestF, ConstructorInitOpenGLFails) {
 TEST_F(DesktopPlatformTestF, ConstructorFindMonitorsFails) {
   api.onFindMonitors = []() -> StatusOr<std::vector<Monitor>> { return NotFoundError("No monitors found"); };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
 
   EXPECT_FALSE(platform.status().ok());
   EXPECT_TRUE(IsNotFound(platform.status()));
@@ -40,7 +77,7 @@ TEST_F(DesktopPlatformTestF, ConstructorFindMonitorsFails) {
 TEST_F(DesktopPlatformTestF, ConstructorFindMonitorsReturnsEmpty) {
   api.onFindMonitors = []() -> StatusOr<std::vector<Monitor>> { return std::vector<Monitor>{}; };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
 
   // Empty monitors means no primary monitor, which causes Window creation to
   // fail
@@ -51,7 +88,7 @@ TEST_F(DesktopPlatformTestF, ConstructorFindMonitorsReturnsEmpty) {
 TEST_F(DesktopPlatformTestF, ConstructorCreateWindowFails) {
   api.onCreateWindow = [](Window*) -> StatusOr<void*> { return InternalError("Failed to create window"); };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
 
   EXPECT_FALSE(platform.status().ok());
   EXPECT_TRUE(IsInternal(platform.status()));
@@ -64,7 +101,7 @@ TEST_F(DesktopPlatformTestF, PollEventsDelegatesToApi) {
     return OkStatus();
   };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
   ASSERT_TRUE(platform.status().ok());
 
   auto status = platform.pollEvents();
@@ -76,7 +113,7 @@ TEST_F(DesktopPlatformTestF, PollEventsDelegatesToApi) {
 TEST_F(DesktopPlatformTestF, RuntimeDelegatesToApi) {
   api.onRuntime = []() -> StatusOr<time_t> { return 42.0; };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
   ASSERT_TRUE(platform.status().ok());
 
   auto runtime = platform.runtime();
@@ -94,7 +131,7 @@ TEST_F(DesktopPlatformTestF, SwapBuffersDelegatesToApi) {
     return OkStatus();
   };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
   ASSERT_TRUE(platform.status().ok());
 
   auto status = platform.swapBuffers();
@@ -110,7 +147,7 @@ TEST_F(DesktopPlatformTestF, GetAndUpdateWindowSizeDelegatesToApi) {
     *h = 1080;
   };
 
-  DesktopPlatform platform(&api);
+  DesktopPlatform platform(&appConfig, &api);
   ASSERT_TRUE(platform.status().ok());
 
   i32 width;
@@ -131,7 +168,7 @@ TEST_F(DesktopPlatformTestF, DestroyDelegatesToApi) {
   };
 
   {
-    DesktopPlatform platform(&api);
+    DesktopPlatform platform(&appConfig, &api);
     ASSERT_TRUE(platform.status().ok());
   }  // Destructor called here
 

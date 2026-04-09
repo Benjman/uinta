@@ -7,8 +7,6 @@
 #include <cassert>
 #include <string>
 
-#include "uinta/gl.h"
-
 namespace uinta {
 
 Engine::Engine(Params params) noexcept

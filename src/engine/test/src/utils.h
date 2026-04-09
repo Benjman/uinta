@@ -5,7 +5,7 @@
 
 #include "uinta/engine/engine.h"
 #include "uinta/engine/service_registry.h"
-#include "uinta/gl.h"
+#include "uinta/mock/mock_app_config.h"
 #include "uinta/mock/mock_gl.h"
 
 namespace uinta {
@@ -14,12 +14,17 @@ class UintaTestF : public ::testing::Test {
  protected:
   MockOpenGLApi gl;
   ServiceRegistry serviceRegistry_;
+  ArgsProcessor args = ArgsProcessor(0, nullptr);
+  MockAppConfig appConfig = MockAppConfig(&args);
 
   Engine makeEngine(Platform* platform) noexcept {
     serviceRegistry_.registerService<const OpenGLApi>(&gl);
+    serviceRegistry_.registerService<const ArgsProcessor>(&args);
+    serviceRegistry_.registerService<AppConfig>(&appConfig);
     return Engine({
         .serviceRegistry = &serviceRegistry_,
         .platform = platform,
+        .appConfig = &appConfig,
     });
   }
 };

@@ -13,11 +13,14 @@
 
 namespace uinta {
 
+class AppConfig;
+
 class Engine : public RuntimeGetter {
  public:
   struct Params final {
     ServiceRegistry* serviceRegistry;
     Platform* platform;
+    AppConfig* appConfig;
   };
 
   explicit Engine(Params) noexcept;
