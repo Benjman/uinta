@@ -8,6 +8,7 @@
 #include "uinta/engine/engine.h"
 #include "uinta/engine/service_registry.h"
 #include "uinta/localization/locale.h"
+#include "uinta/scenes/demo_scene.h"
 
 int main(int argc, const char** argv) {
   uinta::ServiceRegistry serviceRegistry;
@@ -49,9 +50,13 @@ int main(int argc, const char** argv) {
       exit(engine.status().raw_code());
     }
 
+    engine.addScene<uinta::DemoScene>();
     engine.run();
     if (!engine.status().ok()) {
-      LOG(ERROR) << absl::StrFormat("`Engine::run()` failure: %s", engine.status().message());
+      LOG(ERROR) << absl::StrFormat(
+          "`Engine::runScene<T>()` %s failure: %s",
+          engine.scenes()->empty() ? "" : absl::StrFormat("with %s", engine.scenes()->front()->name()),
+          engine.status().message());
       exit(engine.status().raw_code());
     }
   }

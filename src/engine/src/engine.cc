@@ -4,29 +4,20 @@
 #include <absl/strings/str_cat.h>
 #include <absl/strings/str_format.h>
 
+#include <algorithm>
 #include <cassert>
-#include <memory>
+#include <queue>
 #include <string>
+#include <vector>
 
 #include "uinta/args.h"
 #include "uinta/localization/locale.h"
 #include "uinta/localization/localization_system.h"
-#include "uinta/shader.h"
-#include "uinta/texture.h"
-#include "uinta/uniform.h"
-#include "uinta/vao.h"
-#include "uinta/vbo.h"
+#include "uinta/scene/scene_events.h"
 
 namespace uinta {
 
 namespace {
-
-std::unique_ptr<Shader> shader;
-std::unique_ptr<UniformMatrix4fv> uProjection;
-std::unique_ptr<Uniform4fv> uColor;
-std::unique_ptr<Vao> vao;
-std::unique_ptr<Vbo> vbo;
-std::unique_ptr<Texture> texture;
 
 Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept;
 
@@ -40,15 +31,6 @@ Engine::Engine(Params params) noexcept
       platform_(params.platform) {
   assert(platform_ && "Engine::Engine(): Platform cannot be null.");
   assert(gl_ && "Engine::Engine(): OpenGLApi cannot be null!");
-
-  shader = std::make_unique<Shader>(std::unordered_map<GLenum, std::string>{{GL_VERTEX_SHADER, "shader.vs.glsl"},
-                                                                            {GL_FRAGMENT_SHADER, "shader.fs.glsl"}},
-                                    gl_);
-  uProjection = std::make_unique<UniformMatrix4fv>("uProjection", shader.get());
-  uColor = std::make_unique<Uniform4fv>("uColor", shader.get());
-  vao = std::make_unique<Vao>(gl_);
-  vbo = std::make_unique<Vbo>(GL_ARRAY_BUFFER, 0, gl_);
-  texture = std::make_unique<Texture>(GL_TEXTURE_2D, 0, 0, 0, 0, 0, gl_);
 
   registerService<LocalizationSystem>(&localization_);
 
@@ -92,54 +74,37 @@ Engine::Engine(Params params) noexcept
     LOG(INFO) << absl::StrFormat("Event: Viewport size change (%u, %u)", width, height);
   });
 
-  gl_->clearColor(0.1, 0.1, 0.1, 1.0);
+  gl_->clearColor(1.0, 1.0, 1.0, 1.0);
 
   platform_->addListener<PlatformEvent::OnMonitorChange>(
       [this](const auto& event) { frame_ = FrameManager(event.monitor); });
-
-  constexpr f32 fov = 45;
-  constexpr f32 nearPlane = 0.1;
-  constexpr f32 farPlane = 5;
-  dispatchers_.addListener<EngineEvent::ViewportSizeChange>([](const auto& event) {
-    ShaderGuard guard(shader.get());
-    *uProjection = glm::perspective(fov, event.aspect(), nearPlane, farPlane);
-  });
-
-  std::array<f32, 16> vertices = {
-      -0.32f, 0.45f,  0.0f, 1.0f,  // top-left
-      0.32f,  0.45f,  1.0f, 1.0f,  // top-right
-      -0.32f, -0.45f, 0.0f, 0.0f,  // bottom-left
-      0.32f,  -0.45f, 1.0f, 0.0f,  // bottom-right
-  };
-  {
-    VboGuard vbg(vbo.get());
-    VaoGuard vag(vao.get());
-    vbo->bufferData(vertices.data(), sizeof(vertices), GL_STATIC_DRAW);
-    vao->linkAttribute(
-        {.index = 0, .size = 2, .type = GL_FLOAT, .normalized = GL_FALSE, .stride = 4 * sizeof(GLfloat), .offset = 0});
-    vao->linkAttribute({.index = 1,
-                        .size = 2,
-                        .type = GL_FLOAT,
-                        .normalized = GL_FALSE,
-                        .stride = 4 * sizeof(GLfloat),
-                        .offset = 2 * sizeof(GLfloat)});
-  }
-  if (status_ = texture->fromFile("texture.jpg"); !status_.ok()) {
-    return;
-  }
-}
-
-Engine::~Engine() noexcept {
-  vbo.reset();
-  vao.reset();
-  uColor.reset();
-  uProjection.reset();
-  shader.reset();
-  texture.reset();
 }
 
 void Engine::run() noexcept {
+  Scene* scene = nullptr;
+
   while (!state_.isClosing() && status_.ok()) {
+    if ((scene == nullptr) && !sceneQueue_.empty()) {
+      if (scene = sceneQueue_.front().get(); scene != nullptr) {
+        registerSceneListeners(scene);
+        updateRenderOrder();
+      }
+    }
+
+    if (scene != nullptr) {
+      if (!scene->status().ok()) {
+        setStatusError(scene->status());
+        break;
+      }
+      if (scene->isComplete()) {
+        sceneQueue_.pop();
+        scene = nullptr;
+        continue;
+      }
+
+      scene->removeStaleScenes();
+    }
+
     if (auto status = platform_->pollEvents(); !status.ok()) {
       setStatusError(status);
       break;
@@ -148,9 +113,9 @@ void Engine::run() noexcept {
     do {
       state_.updateRuntime(getRuntime());
 
-      advance<EngineStage::PreTick>();
-      advance<EngineStage::Tick>();
-      advance<EngineStage::PostTick>();
+      advance<EngineStage::PreTick>(scene);
+      advance<EngineStage::Tick>(scene);
+      advance<EngineStage::PostTick>(scene);
 
       state_.addTick();
 
@@ -161,9 +126,9 @@ void Engine::run() noexcept {
 
     gl_->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    advance<EngineStage::PreRender>();
-    advance<EngineStage::Render>();
-    advance<EngineStage::PostRender>();
+    advance<EngineStage::PreRender>(scene);
+    advance<EngineStage::Render>(scene);
+    advance<EngineStage::PostRender>(scene);
 
     if (auto status = platform_->swapBuffers(); !status.ok()) {
       setStatusError(status);
@@ -181,22 +146,97 @@ void Engine::run() noexcept {
   }
 }
 
-void Engine::preTick() noexcept {}
+void Engine::updateRenderOrder() noexcept {
+  struct Comparator final {
+    bool operator()(const Scene* a, const Scene* b) const noexcept { return a->layer() > b->layer(); }
+  };
 
-void Engine::tick() noexcept {}
+  std::priority_queue<Scene*, std::vector<Scene*>, Comparator> queue;
 
-void Engine::postTick() noexcept {}
+  if (!sceneQueue_.empty()) {
+    auto* front = sceneQueue_.front().get();
+    queue.push(front);
+    std::for_each(front->children().begin(), front->children().end(), [&queue](auto& scene) {
+      queue.push(scene.get());
+      std::for_each(scene->children().begin(), scene->children().end(),
+                    [&queue](auto& child) { queue.push(child.get()); });
+    });
+  }
 
-void Engine::preRender() noexcept {}
+  renderOrder_.clear();
+  renderOrder_.reserve(queue.size());
 
-void Engine::render() noexcept {
-  ShaderGuard shaderGuard(shader.get());
-  VaoGuard vaoGuard(vao.get());
-  TextureGuard textureGuard(texture.get());
-  gl_->drawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  while (!queue.empty()) {
+    renderOrder_.push_back(queue.top());
+    queue.pop();
+  }
+
+  LOG(INFO) << "Render order updated.";
 }
 
-void Engine::postRender() noexcept {}
+void Engine::registerSceneListeners(Scene* scene) noexcept {
+  assert(scene);
+
+  scene->dispatchers()->template addListener<SceneEvent::SceneAdded>([this](const auto&) { updateRenderOrder(); });
+  scene->dispatchers()->template addListener<SceneEvent::SceneRemoved>([this](const auto&) { updateRenderOrder(); });
+  scene->dispatchers()->template addListener<SceneEvent::LayerChange>([this](const auto&) { updateRenderOrder(); });
+
+  for (auto& child : scene->children()) {
+    registerSceneListeners(child.get());
+  }
+}
+
+void Engine::preTick(Scene* scene, time_t delta) noexcept {
+  assert(scene);
+  if (scene->isTicking()) {
+    scene->preTick(delta);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this, delta](auto& scene) { preTick(scene.get(), delta); });
+  }
+}
+
+void Engine::tick(Scene* scene, time_t delta) noexcept {
+  assert(scene);
+  if (scene->isTicking()) {
+    scene->tick(delta);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this, delta](auto& scene) { tick(scene.get(), delta); });
+  }
+}
+
+void Engine::postTick(Scene* scene, time_t delta) noexcept {
+  assert(scene);
+  if (scene->isTicking()) {
+    scene->postTick(delta);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this, delta](auto& scene) { postTick(scene.get(), delta); });
+  }
+}
+
+void Engine::preRender(Scene* scene, time_t delta) noexcept {
+  assert(scene);
+  if (scene->isRendering()) {
+    scene->preRender(delta);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this, delta](auto& scene) { preRender(scene.get(), delta); });
+  }
+}
+
+void Engine::render(  // NOLINT(readability-convert-member-functions-to-static)
+    Scene* scene, time_t delta) noexcept {
+  assert(scene);
+  if (scene->isRendering()) {
+    scene->render(delta);
+  }
+}
+
+void Engine::postRender(Scene* scene, time_t delta) noexcept {
+  if (scene->isRendering()) {
+    scene->postRender(delta);
+    std::for_each(scene->children().begin(), scene->children().end(),
+                  [this, delta](auto& scene) { postRender(scene.get(), delta); });
+  }
+}
 
 namespace {
 
