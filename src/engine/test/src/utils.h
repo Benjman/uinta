@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include "uinta/args.h"
 #include "uinta/engine/engine.h"
 #include "uinta/mock/mock_gl.h"
 
@@ -11,11 +12,13 @@ namespace uinta {
 class UintaTestF : public ::testing::Test {
  protected:
   MockOpenGLApi gl;
+  ArgsProcessor args_ = ArgsProcessor(0, nullptr);
 
   EngineDependencies engineDependencies(Platform* platform) noexcept {
     return {
         .platform = platform,
         .gl = &gl,
+        .args = &args_,
     };
   }
 

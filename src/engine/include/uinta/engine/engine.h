@@ -9,12 +9,14 @@
 
 namespace uinta {
 
+class ArgsProcessor;
 struct OpenGLApi;
 class Platform;
 
 struct EngineDependencies {
   Platform* platform;
   const OpenGLApi* gl;
+  const ArgsProcessor* args;
 };
 
 class Engine {
