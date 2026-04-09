@@ -14,10 +14,13 @@
 
 namespace uinta {
 
+class AppConfig;
+
 class Engine : public RuntimeGetter {
  public:
   struct Params final {
     Platform* platform;
+    AppConfig* appConfig;
     const ArgsProcessor* args;
     const OpenGLApi* gl = OpenGLApiImpl::Instance();
   };

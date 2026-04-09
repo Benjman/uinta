@@ -7,7 +7,8 @@
 
 namespace uinta {
 
-DesktopWindow::DesktopWindow(DesktopPlatform* platform) noexcept : Window(platform), platform_(platform) {
+DesktopWindow::DesktopWindow(DesktopPlatform* platform, AppConfig* appConfig) noexcept
+    : Window(platform, appConfig), platform_(platform) {
   if (!status_.ok()) {
     return;
   }

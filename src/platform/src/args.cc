@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "./args/app_config_handler.h"
 #include "./args/help_handler.h"
 
 namespace uinta {
@@ -26,6 +27,7 @@ ArgsProcessor::ArgsProcessor(i32 argc, const char** argv) noexcept {
   };
 
   std::vector<std::unique_ptr<ArgHandler>> handlers;
+  handlers.push_back(std::make_unique<AppConfigHandler>(this));
   handlers.push_back(std::make_unique<HelpHandler>(this));
 
   for (auto i = 0; i < argc; i++) {
