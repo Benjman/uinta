@@ -114,8 +114,11 @@ endforeach()
 install(DIRECTORY src/platform/lib/glad/include/ DESTINATION
   ${CMAKE_INSTALL_INCLUDEDIR})
 
+install(DIRECTORY src/platform/lib/eventpp/include/ DESTINATION
+  ${CMAKE_INSTALL_INCLUDEDIR})
+
 install(
-  TARGETS engine glad
+  TARGETS engine glad eventpp
   EXPORT uinta-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -130,6 +133,9 @@ install(EXPORT uinta-targets
 # that logic in consumer projects.
 install(DIRECTORY cmake/ DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/uinta/modules
   FILES_MATCHING PATTERN "*.cmake")
+install(FILES src/platform/cmake/GLFW.cmake src/platform/cmake/eventpp.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/uinta/modules)
+
 configure_package_config_file(
   cmake/uinta-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/uinta-config.cmake
