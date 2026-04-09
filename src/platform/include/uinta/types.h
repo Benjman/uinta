@@ -23,6 +23,7 @@ using f32 = float;
 using f64 = double;
 
 using count_t = u64;
+using idx_t = u32;
 using size_t = std::size_t;
 using time_t = f64;
 
