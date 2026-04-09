@@ -39,6 +39,7 @@ cmake -B build . && make -j$(nproc) --directory build
 The following libraries are required to be available on your path prior to building:
 
 - [Abseil](https://github.com/abseil/abseil-cpp)
+- [Dear ImGui](https://github.com/ocornut/imgui)
 - [glm](https://github.com/g-truc/glm)
 - OpenGL headers
 - [stb](https://github.com/nothings/stb)
