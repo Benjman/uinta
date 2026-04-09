@@ -1,13 +1,24 @@
 #include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 
+#include "uinta/args.h"
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
 #include "uinta/engine/service_registry.h"
 
-int main() {
+int main(int argc, const char** argv) {
   uinta::ServiceRegistry serviceRegistry;
   serviceRegistry.registerService<const uinta::OpenGLApi>(uinta::OpenGLApiImpl::Instance());
+
+  uinta::ArgsProcessor args(argc, argv);
+  if (args.status().ok()) {
+    serviceRegistry.registerService<const uinta::ArgsProcessor>(&args);
+  } else {
+    if (!args.status().message().empty()) {
+      LOG(ERROR) << args.status().message();
+    }
+    exit(args.status().raw_code());
+  }
 
   uinta::DesktopPlatform platform;
   if (!platform.status().ok()) {

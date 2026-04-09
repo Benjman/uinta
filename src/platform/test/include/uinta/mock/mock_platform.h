@@ -2,9 +2,9 @@
 #define SRC_PLATFORM_TEST_INCLUDE_UINTA_MOCK_MOCK_PLATFORM_H_
 
 #include <functional>
-#include <memory>
 
 #include "./mock_runtime_getter.h"
+#include "uinta/args.h"
 #include "uinta/platform.h"
 #include "uinta/status.h"
 #include "uinta/window.h"
@@ -12,6 +12,8 @@
 namespace uinta {
 
 struct MockPlatform : Platform {
+  ArgsProcessor args = ArgsProcessor(0, nullptr);
+
   explicit MockPlatform(Monitor* monitor = nullptr) noexcept {
     if (monitor != nullptr) {
       monitors_ = {*monitor};
