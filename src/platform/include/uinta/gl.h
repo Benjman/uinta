@@ -2443,6 +2443,38 @@ struct BufferSegment {
   GLsizeiptr size = 0;
 };
 
+class CapabilityGuard {
+ public:
+  CapabilityGuard(GLenum capability, bool isActive = true,
+                  const OpenGLApi* gl = OpenGLApiImpl::Instance()) noexcept
+      : gl_(gl),
+        capability_(capability),
+        wasEnabled_(static_cast<GLboolean>(gl_->isEnabled(capability_))) {
+    if (isActive && (wasEnabled_ == 0u)) {
+      activate();
+    }
+  }
+
+  virtual ~CapabilityGuard() noexcept {
+    if (isActive_ && (wasEnabled_ == 0u)) {
+      gl_->disable(capability_);
+    }
+  }
+
+  virtual void activate() noexcept {
+    if (!isActive_) {
+      gl_->enable(capability_);
+      isActive_ = true;
+    }
+  }
+
+ protected:
+  const OpenGLApi* gl_;
+  const GLenum capability_;
+  const GLboolean wasEnabled_;
+  bool isActive_ = false;
+};
+
 }  // namespace uinta
 
 #endif  // SRC_PLATFORM_INCLUDE_UINTA_GL_H_
