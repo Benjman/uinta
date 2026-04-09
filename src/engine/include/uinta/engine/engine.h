@@ -1,6 +1,7 @@
 #ifndef SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_UINTA_ENGINE_ENGINE_H_
 
+#include "uinta/args.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
@@ -16,6 +17,7 @@ class Engine : public RuntimeGetter {
  public:
   struct Params final {
     Platform* platform;
+    const ArgsProcessor* args;
     const OpenGLApi* gl = OpenGLApiImpl::Instance();
   };
 

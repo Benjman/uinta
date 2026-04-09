@@ -1,4 +1,5 @@
 list(APPEND PLATFORM_TEST_SRCS
+  src/args_test.cc
   src/desktop_platform_test.cc
   src/desktop_window_test.cc
   src/gl_test.cc
