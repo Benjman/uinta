@@ -1,0 +1,60 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            build-essential \
+            libassimp-dev \
+            libgl1-mesa-dev \
+            libglfw3-dev \
+            libglu1-mesa-dev \
+            libgtest-dev \
+            libstb-dev \
+            libwayland-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbcommon-dev \
+            libxrandr-dev \
+            libyaml-cpp-dev
+
+      - name: Build and install Manifold
+        run: |
+          git clone --depth 1 https://github.com/elalish/manifold.git /tmp/manifold
+          cmake -B /tmp/manifold/build -S /tmp/manifold \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DMANIFOLD_TEST=OFF \
+            -DMANIFOLD_CBIND=OFF \
+            -DMANIFOLD_PYBIND=OFF
+          cmake --build /tmp/manifold/build --parallel
+          sudo cmake --install /tmp/manifold/build
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
