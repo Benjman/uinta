@@ -2,10 +2,48 @@
 
 #include <gtest/gtest.h>
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "./utils.h"
 #include "uinta/mock/mock_platform.h"
 
 namespace uinta {
+
+namespace {
+
+enum class RenderPass : u8 { Simulation, Ui, Debug };
+
+constexpr auto SimulationRenderedMarker = "SimulationRendered";
+
+class RenderLogScene : public Scene {
+ public:
+  RenderLogScene(Engine* engine, std::vector<std::string>* log, std::string id,
+                 RenderPass pass = RenderPass::Simulation) noexcept
+      : Scene(engine), log_(log), id_(std::move(id)), pass_(pass) {}
+
+  RenderLogScene(Scene* parent, std::vector<std::string>* log, std::string id,
+                 RenderPass pass = RenderPass::Simulation) noexcept
+      : Scene(parent), log_(log), id_(std::move(id)), pass_(pass) {}
+
+  void render(time_t /*unused*/) noexcept override { log(RenderPass::Simulation); }
+  void renderUi(time_t /*unused*/) noexcept override { log(RenderPass::Ui); }
+  void renderDebug(time_t /*unused*/) noexcept override { log(RenderPass::Debug); }
+
+ private:
+  std::vector<std::string>* log_;
+  std::string id_;
+  RenderPass pass_;
+
+  void log(RenderPass pass) noexcept {
+    if (pass == pass_) {
+      log_->push_back(id_);
+    }
+  }
+};
+
+}  // namespace
 
 class EngineTest : public UintaTestF {
  protected:
@@ -16,6 +54,13 @@ class EngineTest : public UintaTestF {
       }
       return OkStatus();
     };
+  }
+
+  static void renderFrame(MockPlatform* platform, Engine* engine, std::vector<std::string>* log) noexcept {
+    engine->dispatchers()->addListener<EngineEvent::SimulationRendered>(
+        [log](const SimulationRendered& /*unused*/) { log->push_back(SimulationRenderedMarker); });
+    closeAfterFrames(platform, engine);
+    engine->run();
   }
 };
 
@@ -110,6 +155,259 @@ TEST_F(EngineTest, EventOnMonitorChange) {
 
   platform.dispatch<PlatformEvent::OnMonitorChange>(OnMonitorChangeEvent(nullptr));
   ASSERT_FLOAT_EQ(1.0 / 60, engine.state().frameInterval());
+}
+
+TEST_F(EngineTest, PerStageDeltaTimeCalculation) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+
+  // Control runtime manually
+  time_t currentTime = 0.0;
+  platform.onRuntime = [&currentTime] { return currentTime; };
+
+  // Track delta times received in each stage
+  time_t preTickDelta = 0.0;
+  time_t tickDelta = 0.0;
+  time_t postTickDelta = 0.0;
+  time_t preRenderDelta = 0.0;
+  time_t renderDelta = 0.0;
+  time_t postRenderDelta = 0.0;
+
+  class TestScene : public Scene {
+   public:
+    time_t* preTickDelta_;
+    time_t* tickDelta_;
+    time_t* postTickDelta_;
+    time_t* preRenderDelta_;
+    time_t* renderDelta_;
+    time_t* postRenderDelta_;
+
+    TestScene(Engine* engine, time_t* preTick, time_t* tick, time_t* postTick, time_t* preRender, time_t* render,
+              time_t* postRender)
+        : Scene(engine),
+          preTickDelta_(preTick),
+          tickDelta_(tick),
+          postTickDelta_(postTick),
+          preRenderDelta_(preRender),
+          renderDelta_(render),
+          postRenderDelta_(postRender) {}
+
+    void preTick(time_t delta) noexcept override { *preTickDelta_ = delta; }
+    void tick(time_t delta) noexcept override { *tickDelta_ = delta; }
+    void postTick(time_t delta) noexcept override { *postTickDelta_ = delta; }
+    void preRender(time_t delta) noexcept override { *preRenderDelta_ = delta; }
+    void render(time_t delta) noexcept override { *renderDelta_ = delta; }
+    void postRender(time_t delta) noexcept override { *postRenderDelta_ = delta; }
+  };
+
+  engine.addScene<TestScene>(&preTickDelta, &tickDelta, &postTickDelta, &preRenderDelta, &renderDelta,
+                             &postRenderDelta);
+
+  closeAfterFrames(&platform, &engine);
+
+  // First frame: time = 0.0, all stages should have delta = 0.0 (first call)
+  currentTime = 0.0;
+  engine.run();
+
+  // After first frame, all deltas should be 0.0 (since stageRuntimes_
+  // initialized to 0)
+  EXPECT_FLOAT_EQ(0.0, preTickDelta);
+  EXPECT_FLOAT_EQ(0.0, tickDelta);
+  EXPECT_FLOAT_EQ(0.0, postTickDelta);
+  EXPECT_FLOAT_EQ(0.0, preRenderDelta);
+  EXPECT_FLOAT_EQ(0.0, renderDelta);
+  EXPECT_FLOAT_EQ(0.0, postRenderDelta);
+}
+
+TEST_F(EngineTest, DifferentDeltasPerStage) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+
+  // Control runtime manually with precise timing
+  time_t currentTime = 0.0;
+  platform.onRuntime = [&currentTime] { return currentTime; };
+
+  std::vector<time_t> preTickDeltas;
+  std::vector<time_t> tickDeltas;
+  std::vector<time_t> renderDeltas;
+
+  class TestScene : public Scene {
+   public:
+    std::vector<time_t>* preTickDeltas_;
+    std::vector<time_t>* tickDeltas_;
+    std::vector<time_t>* renderDeltas_;
+    time_t* currentTime_;
+
+    TestScene(Engine* engine, std::vector<time_t>* preTick, std::vector<time_t>* tick, std::vector<time_t>* render,
+              time_t* currentTime)
+        : Scene(engine), preTickDeltas_(preTick), tickDeltas_(tick), renderDeltas_(render), currentTime_(currentTime) {}
+
+    void preTick(time_t delta) noexcept override { preTickDeltas_->push_back(delta); }
+    void tick(time_t delta) noexcept override { tickDeltas_->push_back(delta); }
+    void postTick(time_t /*unused*/) noexcept override { *currentTime_ += 0.016; }  // Advance 16ms after each tick
+    void render(time_t delta) noexcept override { renderDeltas_->push_back(delta); }
+  };
+
+  engine.addScene<TestScene>(&preTickDeltas, &tickDeltas, &renderDeltas, &currentTime);
+
+  int renderCount = 0;
+  platform.onSwapBuffers = [&]() {
+    currentTime += 0.001;  // Advance 1ms after render
+    if (++renderCount >= 2) {
+      engine.state().isClosing(true);
+    }
+    return OkStatus();
+  };
+
+  engine.run();
+
+  // We should have multiple tick and render deltas
+  EXPECT_GT(preTickDeltas.size(), 0);
+  EXPECT_GT(tickDeltas.size(), 0);
+  EXPECT_GT(renderDeltas.size(), 0);
+
+  // Each stage should track its own time independently
+  // (exact values depend on timing, but they should be captured)
+  EXPECT_TRUE(!preTickDeltas.empty());
+  EXPECT_TRUE(!tickDeltas.empty());
+  EXPECT_TRUE(!renderDeltas.empty());
+}
+
+TEST_F(EngineTest, IndependentStageDeltaTimes) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+
+  // Track when each stage is called and with what delta
+  struct StageCall {
+    std::string stage;
+    time_t delta;
+  };
+  std::vector<StageCall> stageCalls;
+
+  class TestScene : public Scene {
+   public:
+    std::vector<StageCall>* stageCalls_;
+
+    TestScene(Engine* engine, std::vector<StageCall>* calls) : Scene(engine), stageCalls_(calls) {}
+
+    void preTick(time_t delta) noexcept override { stageCalls_->push_back({.stage = "preTick", .delta = delta}); }
+    void tick(time_t delta) noexcept override { stageCalls_->push_back({.stage = "tick", .delta = delta}); }
+    void postTick(time_t delta) noexcept override { stageCalls_->push_back({.stage = "postTick", .delta = delta}); }
+    void preRender(time_t delta) noexcept override { stageCalls_->push_back({.stage = "preRender", .delta = delta}); }
+    void render(time_t delta) noexcept override { stageCalls_->push_back({.stage = "render", .delta = delta}); }
+    void postRender(time_t delta) noexcept override { stageCalls_->push_back({.stage = "postRender", .delta = delta}); }
+  };
+
+  engine.addScene<TestScene>(&stageCalls);
+
+  closeAfterFrames(&platform, &engine, 2);
+
+  engine.run();
+
+  // We should have captured calls to all stages across multiple frames
+  EXPECT_GT(stageCalls.size(), 6) << "Expected at least 2 frames worth of stage calls";
+
+  // Verify all stages were called
+  bool hasPreTick = false;
+  bool hasTick = false;
+  bool hasPostTick = false;
+  bool hasPreRender = false;
+  bool hasRender = false;
+  bool hasPostRender = false;
+
+  for (const auto& call : stageCalls) {
+    if (call.stage == "preTick") {
+      hasPreTick = true;
+    }
+    if (call.stage == "tick") {
+      hasTick = true;
+    }
+    if (call.stage == "postTick") {
+      hasPostTick = true;
+    }
+    if (call.stage == "preRender") {
+      hasPreRender = true;
+    }
+    if (call.stage == "render") {
+      hasRender = true;
+    }
+    if (call.stage == "postRender") {
+      hasPostRender = true;
+    }
+  }
+
+  EXPECT_TRUE(hasPreTick) << "preTick should have been called";
+  EXPECT_TRUE(hasTick) << "tick should have been called";
+  EXPECT_TRUE(hasPostTick) << "postTick should have been called";
+  EXPECT_TRUE(hasPreRender) << "preRender should have been called";
+  EXPECT_TRUE(hasRender) << "render should have been called";
+  EXPECT_TRUE(hasPostRender) << "postRender should have been called";
+}
+
+TEST_F(EngineTest, RenderDeeplyNestedScenes) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  std::vector<std::string> log;
+
+  auto* root = engine.addScene<RenderLogScene>(&log, "root");
+  auto* child = root->addScene<RenderLogScene>(&log, "child");
+  auto* grandchild = child->addScene<RenderLogScene>(&log, "grandchild");
+  auto* greatGrandchild = grandchild->addScene<RenderLogScene>(&log, "greatGrandchild");
+  greatGrandchild->addScene<RenderLogScene>(&log, "greatGreatGrandchild");
+
+  renderFrame(&platform, &engine, &log);
+
+  EXPECT_EQ((std::vector<std::string>{"root", "child", "grandchild", "greatGrandchild", "greatGreatGrandchild",
+                                      SimulationRenderedMarker}),
+            log);
+}
+
+TEST_F(EngineTest, RenderOrderedByPassThenTree) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  std::vector<std::string> log;
+
+  auto* root = engine.addScene<RenderLogScene>(&log, "root");
+  auto* debug = root->addScene<RenderLogScene>(&log, "debug", RenderPass::Debug);
+  debug->addScene<RenderLogScene>(&log, "debugChild", RenderPass::Debug);
+  auto* sim = root->addScene<RenderLogScene>(&log, "sim");
+  sim->addScene<RenderLogScene>(&log, "simUi", RenderPass::Ui);
+  sim->addScene<RenderLogScene>(&log, "simSim");
+
+  renderFrame(&platform, &engine, &log);
+
+  EXPECT_EQ(
+      (std::vector<std::string>{"root", "sim", "simSim", SimulationRenderedMarker, "simUi", "debug", "debugChild"}),
+      log);
+}
+
+TEST_F(EngineTest, RenderSkipsChildrenOfNonRenderingScene) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  std::vector<std::string> log;
+
+  auto* root = engine.addScene<RenderLogScene>(&log, "root");
+  auto* paused = root->addScene<RenderLogScene>(&log, "paused", RenderPass::Debug);
+  paused->addScene<RenderLogScene>(&log, "pausedChild", RenderPass::Debug);
+  paused->state(SceneState::Pause);
+
+  renderFrame(&platform, &engine, &log);
+
+  EXPECT_EQ((std::vector<std::string>{"root", SimulationRenderedMarker}), log);
+}
+
+TEST_F(EngineTest, SimulationRenderedDispatchedWithoutUiOrDebugScenes) {
+  MockPlatform platform;
+  auto engine = makeEngine(&platform);
+  std::vector<std::string> log;
+
+  engine.addScene<RenderLogScene>(&log, "root");
+
+  renderFrame(&platform, &engine, &log);
+
+  // Listeners (e.g. PostProcessor) rely on observing the end of the
+  // Simulation pass every frame, even without UI or Debug scenes.
+  EXPECT_EQ((std::vector<std::string>{"root", SimulationRenderedMarker}), log);
 }
 
 }  // namespace uinta

@@ -11,6 +11,11 @@
 namespace uinta {
 
 class EngineState;
+class Scene;
+
+// Dispatched each frame once the Simulation render pass (`Scene::render()`)
+// has finished, before the UI and Debug passes.
+struct SimulationRendered {};
 
 struct ViewportSizeChange {
   u32 width;
@@ -55,11 +60,17 @@ struct ServiceUnregistered {
 enum class EngineEvent : u8 {
   ServiceRegistered,
   ServiceUnregistered,
+  SimulationRendered,
   ViewportSizeChange,
 };
 
 template <typename Event>
 constexpr EngineEvent getEngineEvent() noexcept;
+
+template <>
+constexpr EngineEvent getEngineEvent<SimulationRendered>() noexcept {
+  return EngineEvent::SimulationRendered;
+}
 
 template <>
 constexpr EngineEvent getEngineEvent<ViewportSizeChange>() noexcept {
@@ -86,6 +97,7 @@ struct EngineEventPolicies {
 struct EngineDispatchers {
   EventDispatcher<EngineEvent, void(const ServiceRegistered&), EngineEventPolicies> serviceRegistered;
   EventDispatcher<EngineEvent, void(const ServiceUnregistered&), EngineEventPolicies> serviceUnregistered;
+  EventDispatcher<EngineEvent, void(const SimulationRendered&), EngineEventPolicies> simulationRendered;
   EventDispatcher<EngineEvent, void(const ViewportSizeChange&), EngineEventPolicies> viewportChanged;
 
   template <EngineEvent E, typename... Args>
@@ -94,6 +106,8 @@ struct EngineDispatchers {
       serviceRegistered.appendListener(E, std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ServiceUnregistered == E) {
       serviceUnregistered.appendListener(E, std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::SimulationRendered == E) {
+      simulationRendered.appendListener(E, std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ViewportSizeChange == E) {
       viewportChanged.appendListener(E, std::forward<Args>(args)...);
     }
@@ -105,6 +119,8 @@ struct EngineDispatchers {
       serviceRegistered.dispatch(std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ServiceUnregistered == E) {
       serviceUnregistered.dispatch(std::forward<Args>(args)...);
+    } else if constexpr (EngineEvent::SimulationRendered == E) {
+      simulationRendered.dispatch(std::forward<Args>(args)...);
     } else if constexpr (EngineEvent::ViewportSizeChange == E) {
       viewportChanged.dispatch(std::forward<Args>(args)...);
     }
