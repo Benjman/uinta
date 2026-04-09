@@ -108,8 +108,13 @@ foreach(path IN LISTS UINTA_RES_PATHS)
   string(APPEND UINTA_FILE_PATHS_INIT "\"${path}\"")
 endforeach()
 
+# glad and eventpp are vendored in-tree rather than found/fetched, so their
+# public headers aren't installed by any cmake/*.cmake module.
+install(DIRECTORY src/platform/lib/glad/include/ DESTINATION
+  ${CMAKE_INSTALL_INCLUDEDIR})
+
 install(
-  TARGETS engine
+  TARGETS engine glad
   EXPORT uinta-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
