@@ -11,10 +11,12 @@ namespace uinta {
 class UintaTestF : public ::testing::Test {
  protected:
   MockOpenGLApi gl;
+  ArgsProcessor args = ArgsProcessor(0, nullptr);
 
   Engine makeEngine(Platform* platform) noexcept {
     return Engine({
         .platform = platform,
+        .args = &args,
         .gl = &gl,
     });
   }
