@@ -33,6 +33,8 @@ while in_rebase_state; do
 
     cmake -S $DIR -B $BUILD_DIR || exit $?
     make -j$(nproc) --directory $BUILD_DIR || exit $?
+    $BUILD_DIR/src/engine/test/engine_test || exit $?
+    $BUILD_DIR/src/platform/test/platform_test || exit $?
 
     continue_rebase
     if [ $? -ne 0 ]; then

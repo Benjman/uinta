@@ -6,7 +6,8 @@ Another C++ game engine.
 
 - Modular CMake build system with three components
 - Fundamental type definitions (integer/float aliases)
-- Placeholder `Engine` class
+- `Engine` class with game loop, tick/render stages, and event system
+- Platform layer with windowing, input polling, and monitor support (GLFW backend)
 - OpenGL API abstraction with mock support for testing
 - Code style enforcement (Google C++ style via clang-format, cpplint)
 - Debug/Release build configuration
