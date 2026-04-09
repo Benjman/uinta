@@ -33,3 +33,4 @@ cmake -B build . && make -j$(nproc) --directory build
 The following libraries are required to be available on your path prior to building:
 
 - [Abseil](https://github.com/abseil/abseil-cpp)
+- [glm](https://github.com/g-truc/glm)
