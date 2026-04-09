@@ -4,12 +4,13 @@
 #include "uinta/engine/engine_events.h"
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
-#include "uinta/gl.h"
+#include "uinta/engine/service_registry.h"
 #include "uinta/platform.h"
 
 namespace uinta {
 
 struct OpenGLApi;
+class Platform;
 
 struct EngineDependencies {
   Platform* platform;
@@ -28,11 +29,37 @@ class Engine {
 
   EngineDispatchers* dispatchers() noexcept { return &dispatchers_; }
 
-  const OpenGLApi* gl() const noexcept { return gl_; }
+  template <typename T>
+  void registerService(T* service) noexcept {
+    registerService(std::type_index(typeid(T)), const_cast<void*>(static_cast<const void*>(service)),
+                    std::is_const_v<T>);
+  }
 
-  const Platform* platform() const noexcept { return platform_; }
+  void registerService(std::type_index type, void* service, bool isConst) noexcept {
+    serviceRegistry_.registerService(type, service, isConst);
+    dispatchers_.dispatch<EngineEvent::ServiceRegistered>(
+        ServiceRegistered{.type = type, .service = service, .isConst = isConst});
+  }
 
-  Platform* platform() noexcept { return platform_; }
+  template <typename T>
+  void unregisterService() noexcept {
+    unregisterService(std::type_index(typeid(T)));
+  }
+
+  void unregisterService(std::type_index type) noexcept {
+    serviceRegistry_.unregisterService(type);
+    dispatchers_.dispatch<EngineEvent::ServiceUnregistered>(ServiceUnregistered{type});
+  }
+
+  template <typename T>
+  T* service() noexcept {
+    return serviceRegistry_.service<T>();
+  }
+
+  template <typename T>
+  const T* service() const noexcept {
+    return serviceRegistry_.service<T>();
+  }
 
   void run() noexcept;
 
@@ -41,9 +68,7 @@ class Engine {
   const EngineState& state() const noexcept { return state_; }
 
  private:
-  const OpenGLApi* gl_;
-  Platform* platform_;
-
+  ServiceRegistry serviceRegistry_;
   EngineState state_;
   EngineDispatchers dispatchers_;
 

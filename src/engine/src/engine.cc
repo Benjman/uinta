@@ -11,16 +11,29 @@
 
 namespace uinta {
 
-Engine::Engine(const EngineDependencies& deps) noexcept : gl_(deps.gl), platform_(deps.platform) {
-  assert(deps.gl && "Engine::Engine(): OpenGLApi cannot be null!");
-  assert(deps.platform && "Engine::Engine(): Platform cannot be null!");
+namespace _ {
 
-  platform_->engine(this);
-  platform_->addListener<PlatformEvent::OnCloseRequest>([this](const auto&) { state_.isClosing(true); });
-  platform_->addListener<PlatformEvent::OnError>(
+void registerService(Engine* engine, std::type_index type, void* service, bool isConst) noexcept {
+  engine->registerService(type, service, isConst);
+}
+
+void unregisterService(Engine* engine, std::type_index type) noexcept { engine->unregisterService(type); }
+
+}  // namespace _
+
+Engine::Engine(const EngineDependencies& deps) noexcept {
+  assert(deps.gl && "Engine::Engine(): OpenGLApi cannot be null!");
+  registerService<const OpenGLApi>(deps.gl);
+  assert(deps.platform && "Engine::Engine(): Platform cannot be null!");
+  registerService<Platform>(deps.platform);
+
+  auto* platform = service<Platform>();
+  platform->engine(this);
+  platform->addListener<PlatformEvent::OnCloseRequest>([this](const auto&) { state_.isClosing(true); });
+  platform->addListener<PlatformEvent::OnError>(
       [](const auto& event) { LOG(FATAL) << absl::StrFormat("%i: %s", event.code, event.description); });
 
-  platform_->addListener<PlatformEvent::OnDebugMessage>([](const auto& event) {
+  platform->addListener<PlatformEvent::OnDebugMessage>([](const auto& event) {
     std::string message(event.message, event.length);
     message = absl::StrCat(message, "\n\tID: ", event.id);
     message = absl::StrCat(message, "\n\tSeverity: ", OpenGLApi::GetSeverityString(event.severity));
@@ -42,33 +55,36 @@ Engine::Engine(const EngineDependencies& deps) noexcept : gl_(deps.gl), platform
     }
   });
 
-  platform_->addListener<PlatformEvent::OnViewportSizeChange>([this](const auto&) {
-    auto width = platform_->window()->width();
-    auto height = platform_->window()->height();
-    gl_->viewport(0, 0, static_cast<i32>(width), static_cast<i32>(height));
+  platform->addListener<PlatformEvent::OnViewportSizeChange>([this, platform](const auto&) {
+    auto width = platform->window()->width();
+    auto height = platform->window()->height();
+    const auto* gl = service<const OpenGLApi>();
+    gl->viewport(0, 0, static_cast<i32>(width), static_cast<i32>(height));
     dispatchers_.dispatch<EngineEvent::ViewportSizeChange>(ViewportSizeChange(width, height));
     LOG(INFO) << absl::StrFormat("Event: Viewport size change (%u, %u)", width, height);
   });
 }
 
 void Engine::run() noexcept {
-  time_t startTime = platform_->runtime();
+  const auto* platform = service<Platform>();
+  const auto* gl = service<const OpenGLApi>();
+  time_t startTime = platform->runtime();
   while (!state_.isClosing()) {
-    if (auto status = platform_->pollEvents(); !status.ok()) {
+    if (auto status = platform->pollEvents(); !status.ok()) {
       LOG(FATAL) << status.message();
     }
-    state_.updateRuntime(platform_->runtime() - startTime);
+    state_.updateRuntime(platform->runtime() - startTime);
     advance<EngineStage::PreTick>();
     advance<EngineStage::Tick>();
     advance<EngineStage::PostTick>();
     state_.addTick();
     // dispatchers_.dispatch<EngineEvent::TickComplete>(TickComplete(&state_, runtime())); // TODO: delete me
-    state_.updateRuntime(platform_->runtime() - startTime);
-    gl_->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    state_.updateRuntime(platform->runtime() - startTime);
+    gl->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     advance<EngineStage::PreRender>();
     advance<EngineStage::Render>();
     advance<EngineStage::PostRender>();
-    if (auto status = platform_->swapBuffers(); !status.ok()) {
+    if (auto status = platform->swapBuffers(); !status.ok()) {
       LOG(FATAL) << status.message();
     }
     state_.addFrame();
