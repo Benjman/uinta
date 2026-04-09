@@ -34,11 +34,17 @@ class EngineState {
 
   void isClosing(bool v) noexcept { flags_.isClosing(v); }
 
+  [[nodiscard]] bool isFixedTickRate() const noexcept {
+    return flags_.isFixedTickRate();
+  }
+
+  void isFixedTickRate(bool v) noexcept { flags_.isFixedTickRate(v); }
+
  private:
   struct Flags final {
     using value_type = u8;
 
-    AtomicFlagsOperations(0);
+    AtomicFlagsOperations(FixedTickRateMask);
 
     [[nodiscard]] bool isClosing() const noexcept {
       return (flags_ & ClosingMask) != 0;
@@ -50,8 +56,20 @@ class EngineState {
       }
     }
 
+    [[nodiscard]] bool isFixedTickRate() const noexcept {
+      return (flags_ & FixedTickRateMask) != 0;
+    }
+
+    void isFixedTickRate(bool v) noexcept {
+      flags_ &= ~FixedTickRateMask;
+      if (v) {
+        flags_ |= FixedTickRateMask;
+      }
+    }
+
    private:
     static constexpr value_type ClosingMask = 1 << 0;
+    static constexpr value_type FixedTickRateMask = 1 << 2;
 
     std::atomic<value_type> flags_;
   } flags_;
