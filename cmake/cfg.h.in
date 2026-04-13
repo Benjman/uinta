@@ -8,10 +8,6 @@ constexpr std::size_t UINTA_FILE_PATHS_COUNT = ${UINTA_FILE_PATHS_COUNT};
 constexpr std::array<const char*, UINTA_FILE_PATHS_COUNT> UINTA_FILE_PATHS = {
     ${UINTA_FILE_PATHS_INIT}
 };
-constexpr const char* UINTA_CACHE_DIR = "${UINTA_CACHE_DIR}";
-constexpr const char* UINTA_DATA_DIR = "${UINTA_DATA_DIR}";
-constexpr const char* UINTA_GENERATED_DIR = "${UINTA_GENERATED_DIR}";
-constexpr const char* UINTA_RUNTIME_DIR = "${UINTA_RUNTIME_DIR}";
-}
+}  // namespace uinta::cfg
 
 #endif  // UINTA_CFG_H
