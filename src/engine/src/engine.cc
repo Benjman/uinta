@@ -36,6 +36,7 @@ Engine::Engine(Params params) noexcept
   registerService<AppConfig>(params.appConfig);
   registerService<ViewportManager>(&viewport);
   registerService<InputSystem>(&inputSystem_);
+  registerService<JobSystem>(&jobs_);
 
   platform_->engine(this);
 

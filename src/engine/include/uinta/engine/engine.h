@@ -9,6 +9,7 @@
 #include "uinta/gl.h"
 #include "uinta/input.h"
 #include "uinta/input/input_system.h"
+#include "uinta/job/job_system.h"
 #include "uinta/lua/lua_runtime.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
@@ -30,6 +31,7 @@ class Engine : public RuntimeGetter {
     AppConfig* appConfig;
     const ArgsProcessor* args;
     const OpenGLApi* gl = OpenGLApiImpl::Instance();
+    JobSystemParams jobSystemParams = {};
   };
 
   explicit Engine(Params) noexcept;
@@ -66,6 +68,11 @@ class Engine : public RuntimeGetter {
   LuaRuntime* lua() noexcept { return &lua_; }
 
   const LuaRuntime* lua() const noexcept { return &lua_; }
+
+  // Access the job system for parallel task execution.
+  JobSystem* jobs() noexcept { return &jobs_; }
+
+  const JobSystem* jobs() const noexcept { return &jobs_; }
 
   template <typename T>
   void registerService(T* service) noexcept {
@@ -119,6 +126,7 @@ class Engine : public RuntimeGetter {
 
  private:
   EngineState state_;
+  JobSystem jobs_;
   EngineDispatchers dispatchers_;
   ServiceRegistry services_;
   InputSystem inputSystem_;
@@ -180,6 +188,10 @@ class Engine : public RuntimeGetter {
         postRender(scene, delta);
       }
     }
+
+    // Wait for all jobs submitted during this stage to complete
+    // before advancing to the next stage
+    jobs_.waitAll();
 
     // Dispatch Lua stage callbacks
     lua_.dispatchStage(S, static_cast<f32>(delta));
