@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "./app_config_handler.h"
+#include "./locale_handler.h"
 #include "uinta/args.h"
 #include "uinta/status.h"
 
@@ -31,6 +32,7 @@ struct HelpHandler : ArgHandler {
     std::vector<std::span<const std::string>> collections = {
         AppConfigHandler::Keys,
         HelpHandler::Keys,
+        LocaleHandler::Keys,
     };
     size_t colWidth = 0;
     for (const auto& collection : collections) {
