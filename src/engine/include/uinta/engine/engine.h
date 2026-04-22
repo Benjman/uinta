@@ -5,6 +5,7 @@
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
 #include "uinta/engine/service_registry.h"
+#include "uinta/localization/localization_system.h"
 #include "uinta/platform.h"
 
 namespace uinta {
@@ -75,6 +76,7 @@ class Engine {
   ServiceRegistry serviceRegistry_;
   EngineState state_;
   EngineDispatchers dispatchers_;
+  LocalizationSystem localization_;
 
   void preTick() noexcept;
   void preRender() noexcept;

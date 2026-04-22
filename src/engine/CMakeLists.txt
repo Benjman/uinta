@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 list(APPEND ENGINE_SRCS src/app_config_yaml.cc)
 list(APPEND ENGINE_SRCS src/engine.cc)
+list(APPEND ENGINE_SRCS src/localization/localization.cc)
+list(APPEND ENGINE_SRCS src/localization/localization_system.cc)
 list(APPEND ENGINE_SRCS src/reflect.cc)
 list(APPEND ENGINE_SRCS src/shader.cc)
 list(APPEND ENGINE_SRCS src/vbo_guard.cc)
