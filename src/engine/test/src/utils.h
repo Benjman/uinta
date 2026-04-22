@@ -5,6 +5,7 @@
 
 #include "uinta/engine/engine.h"
 #include "uinta/engine/service_registry.h"
+#include "uinta/localization/locale.h"
 #include "uinta/mock/mock_app_config.h"
 #include "uinta/mock/mock_gl.h"
 
@@ -25,6 +26,7 @@ class UintaTestF : public ::testing::Test {
         .serviceRegistry = &serviceRegistry_,
         .platform = platform,
         .appConfig = &appConfig,
+        .locale = Locale::EnUs,
     });
   }
 };

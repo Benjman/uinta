@@ -6,6 +6,8 @@
 #include "uinta/engine/engine_state.h"
 #include "uinta/engine/service_registry.h"
 #include "uinta/gl.h"
+#include "uinta/localization/locale.h"
+#include "uinta/localization/localization_system.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
 #include "uinta/status.h"
@@ -21,6 +23,7 @@ class Engine : public RuntimeGetter {
     ServiceRegistry* serviceRegistry;
     Platform* platform;
     AppConfig* appConfig;
+    Locale locale = Locale::Unknown;
   };
 
   explicit Engine(Params) noexcept;
@@ -84,6 +87,7 @@ class Engine : public RuntimeGetter {
  private:
   EngineState state_;
   EngineDispatchers dispatchers_;
+  LocalizationSystem localization_;
   Status status_;
 
   ServiceRegistry* serviceRegistry_;

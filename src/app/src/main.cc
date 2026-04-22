@@ -7,6 +7,7 @@
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
 #include "uinta/engine/service_registry.h"
+#include "uinta/localization/locale.h"
 
 int main(int argc, const char** argv) {
   uinta::ServiceRegistry serviceRegistry;
@@ -41,6 +42,7 @@ int main(int argc, const char** argv) {
         .serviceRegistry = &serviceRegistry,
         .platform = &platform,
         .appConfig = &appConfig,
+        .locale = uinta::Locale::EnUs,
     });
     if (!engine.status().ok()) {
       LOG(ERROR) << absl::StrFormat("Failed to initialize `Engine`: %s", engine.status().message());

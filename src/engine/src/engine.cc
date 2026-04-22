@@ -8,6 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "uinta/args.h"
+#include "uinta/localization/locale.h"
+#include "uinta/localization/localization_system.h"
 #include "uinta/shader.h"
 #include "uinta/uniform.h"
 #include "uinta/vao.h"
@@ -33,10 +36,15 @@ std::unique_ptr<Uniform4fv> uColor;
 std::unique_ptr<Vao> vao;
 std::unique_ptr<Vbo> vbo;
 
+Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept;
+
 }  // namespace
 
 Engine::Engine(Params params) noexcept
-    : serviceRegistry_(params.serviceRegistry), gl_(service<const OpenGLApi>()), platform_(params.platform) {
+    : localization_(resolveLocale(params.serviceRegistry->service<const ArgsProcessor>(), params.locale)),
+      serviceRegistry_(params.serviceRegistry),
+      gl_(service<const OpenGLApi>()),
+      platform_(params.platform) {
   assert(platform_ && "Engine::Engine(): Platform cannot be null.");
   assert(gl_ && "Engine::Engine(): OpenGLApi cannot be null!");
 
@@ -47,6 +55,8 @@ Engine::Engine(Params params) noexcept
   uColor = std::make_unique<Uniform4fv>("uColor", shader.get());
   vao = std::make_unique<Vao>(gl_);
   vbo = std::make_unique<Vbo>(GL_ARRAY_BUFFER, 0, gl_);
+
+  registerService<LocalizationSystem>(&localization_);
 
   platform_->engine(this);
 
@@ -213,5 +223,25 @@ void Engine::render() noexcept {
 }
 
 void Engine::postRender() noexcept {}
+
+namespace {
+
+Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept {
+  if (args == nullptr) {
+    LOG(WARNING) << "resolveLocale(): ArgsProcessor is null!";
+    return fallback;
+  }
+  if (auto val = args->getValue(ArgsProcessor::Locale)) {
+    auto parsed = toLocale(*val);
+    if (!parsed) {
+      LOG(WARNING) << absl::StrFormat("Unknown locale '%s' from --locale; falling back to engine params.", *val);
+    } else {
+      return parsed;
+    }
+  }
+  return fallback;
+}
+
+}  // namespace
 
 }  // namespace uinta
