@@ -8,6 +8,8 @@
 #include <string>
 
 #include "uinta/app_config.h"
+#include "uinta/localization/locale.h"
+#include "uinta/localization/localization_system.h"
 
 namespace uinta {
 
@@ -21,8 +23,15 @@ constexpr std::array<glm::vec4, 5> theGrassIsAlwaysGreener = {
 
 constexpr auto palette = theGrassIsAlwaysGreener;
 
+namespace {
+
+Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept;
+
+}  // namespace
+
 Engine::Engine(Params params) noexcept
-    : gl_(params.gl),
+    : localization_(resolveLocale(params.args, params.locale)),
+      gl_(params.gl),
       platform_(params.platform),
       shader_({{GL_VERTEX_SHADER, "shader.vs.glsl"},
                {GL_FRAGMENT_SHADER, "shader.fs.glsl"}},
@@ -34,6 +43,7 @@ Engine::Engine(Params params) noexcept
   assert(platform_ && "`Platform*` cannot be null.");
 
   registerService<AppConfig>(params.appConfig);
+  registerService<LocalizationSystem>(&localization_);
 
   platform_->engine(this);
 
@@ -208,5 +218,26 @@ void Engine::render() noexcept {
 }
 
 void Engine::postRender() noexcept {}
+
+namespace {
+
+Locale resolveLocale(const ArgsProcessor* args, Locale fallback) noexcept {
+  if (args != nullptr) {
+    if (auto val = args->getValue(ArgsProcessor::Locale)) {
+      auto parsed = toLocale(*val);
+      if (!parsed) {
+        LOG(WARNING) << absl::StrFormat(
+            "Unknown locale '%s' from --locale; falling back to engine "
+            "params.",
+            *val);
+      } else {
+        return parsed;
+      }
+    }
+  }
+  return fallback;
+}
+
+}  // namespace
 
 }  // namespace uinta

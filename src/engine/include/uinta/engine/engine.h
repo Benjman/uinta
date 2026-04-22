@@ -7,6 +7,8 @@
 #include "uinta/engine/engine_state.h"
 #include "uinta/engine/service_registry.h"
 #include "uinta/gl.h"
+#include "uinta/localization/locale.h"
+#include "uinta/localization/localization_system.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
 #include "uinta/shader.h"
@@ -27,6 +29,7 @@ class Engine : public RuntimeGetter {
     AppConfig* appConfig;
     const ArgsProcessor* args;
     const OpenGLApi* gl = OpenGLApiImpl::Instance();
+    Locale locale = Locale::Unknown;
   };
 
   explicit Engine(Params) noexcept;
@@ -93,6 +96,7 @@ class Engine : public RuntimeGetter {
   EngineState state_;
   EngineDispatchers dispatchers_;
   ServiceRegistry services_;
+  LocalizationSystem localization_;
   Status status_;
 
   const OpenGLApi* gl_;

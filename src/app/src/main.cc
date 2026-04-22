@@ -6,6 +6,7 @@
 #include "uinta/args.h"
 #include "uinta/desktop_platform.h"
 #include "uinta/engine/engine.h"
+#include "uinta/localization/locale.h"
 
 int main(int argc, const char** argv) {
   uinta::ArgsProcessor args(argc, argv);
@@ -36,6 +37,7 @@ int main(int argc, const char** argv) {
         .appConfig = &appConfig,
         .args = &args,
         .gl = uinta::OpenGLApiImpl::Instance(),
+        .locale = uinta::Locale::EnUs,
     });
     if (!engine.status().ok()) {
       LOG(ERROR) << absl::StrFormat("Failed to initialize `Engine`: %s",
