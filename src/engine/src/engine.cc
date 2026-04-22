@@ -11,6 +11,8 @@
 #include "uinta/app_config.h"
 #include "uinta/args.h"
 #include "uinta/gl.h"
+#include "uinta/localization/locale.h"
+#include "uinta/localization/localization_system.h"
 #include "uinta/shader.h"
 #include "uinta/uniform.h"
 #include "uinta/vao.h"
@@ -36,9 +38,18 @@ std::unique_ptr<Uniform4fv> uColor;
 std::unique_ptr<Vao> vao;
 std::unique_ptr<Vbo> vbo;
 
+Locale resolveLocale(const ArgsProcessor* args) noexcept {
+  assert(args && "Engine::Engine(): ArgsProcessor cannot be null!");
+  if (auto val = args->getValue(ArgsProcessor::Locale)) {
+    return toLocale(*val);
+  }
+  return Locale::EnUs;
+}
+
 }  // namespace
 
-Engine::Engine(const EngineDependencies& deps) noexcept : platform_(deps.platform) {
+Engine::Engine(const EngineDependencies& deps) noexcept
+    : platform_(deps.platform), localization_(resolveLocale(deps.args)) {
   assert(deps.appConfig && "Engine::Engine(): AppConfig cannot be null!");
   registerService<AppConfig>(deps.appConfig);
   assert(deps.args && "Engine::Engine(): ArgsProcessor cannot be null!");
@@ -47,6 +58,8 @@ Engine::Engine(const EngineDependencies& deps) noexcept : platform_(deps.platfor
   registerService<const OpenGLApi>(deps.gl);
   assert(deps.platform && "Engine::Engine(): Platform cannot be null!");
   registerService<Platform>(deps.platform);
+
+  registerService<LocalizationSystem>(&localization_);
 
   const auto* gl = service<const OpenGLApi>();
   shader = std::make_unique<Shader>(std::unordered_map<GLenum, std::string>{{GL_VERTEX_SHADER, "shader.vs.glsl"},

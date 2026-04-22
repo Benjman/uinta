@@ -5,6 +5,7 @@
 #include "uinta/engine/engine_stage.h"
 #include "uinta/engine/engine_state.h"
 #include "uinta/engine/service_registry.h"
+#include "uinta/localization/localization_system.h"
 #include "uinta/platform.h"
 #include "uinta/runtime_getter.h"
 #include "uinta/types.h"
@@ -77,6 +78,7 @@ class Engine : public RuntimeGetter {
   ServiceRegistry serviceRegistry_;
   EngineState state_;
   EngineDispatchers dispatchers_;
+  LocalizationSystem localization_;
 
   void preTick() noexcept;
   void preRender() noexcept;
