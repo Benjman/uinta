@@ -799,6 +799,61 @@ struct MockOpenGLApi : OpenGLApi {
   void drawBuffers(GLsizei n, const GLenum* bufs) const noexcept override {
     onDrawBuffers(n, bufs);
   }
+
+  std::function<void(GLboolean)> onDepthMask = [](auto) {};
+  void depthMask(GLboolean flag) const noexcept override { onDepthMask(flag); }
+
+  std::function<void(GLenum)> onDepthFunc = [](auto) {};
+  void depthFunc(GLenum func) const noexcept override { onDepthFunc(func); }
+
+  std::function<void(GLenum, GLuint, GLsizei, const GLchar*)> onObjectLabel =
+      [](auto, auto, auto, const auto*) {};
+  void objectLabel(GLenum identifier, GLuint name, GLsizei length,
+                   const GLchar* label) const noexcept override {
+    onObjectLabel(identifier, name, length, label);
+  }
+
+  std::function<void(GLDEBUGPROC, const void*)> onDebugMessageCallback =
+      [](auto, const auto*) {};
+  void debugMessageCallback(GLDEBUGPROC callback,
+                            const void* userParam) const noexcept override {
+    onDebugMessageCallback(callback, userParam);
+  }
+
+  std::function<void(GLsizei, GLuint*)> onGenRenderbuffers = [](auto, auto*) {};
+  void genRenderbuffers(GLsizei n, GLuint* ids) const noexcept override {
+    onGenRenderbuffers(n, ids);
+  }
+
+  std::function<void(GLsizei, GLuint*)> onDeleteRenderbuffers = [](auto,
+                                                                   auto*) {};
+  void deleteRenderbuffers(GLsizei n, GLuint* ids) const noexcept override {
+    onDeleteRenderbuffers(n, ids);
+  }
+
+  std::function<void(GLenum, GLuint)> onBindRenderbuffer = [](auto, auto) {};
+  void bindRenderbuffer(GLenum target,
+                        GLuint renderbuffer) const noexcept override {
+    onBindRenderbuffer(target, renderbuffer);
+  }
+
+  std::function<void(GLenum, GLenum, GLsizei, GLsizei)> onRenderbufferStorage =
+      [](auto, auto, auto, auto) {};
+  void renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width,
+                           GLsizei height) const noexcept override {
+    onRenderbufferStorage(target, internalformat, width, height);
+  }
+
+  std::function<void(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint,
+                     GLbitfield, GLenum)>
+      onBlitFramebuffer =
+          [](auto, auto, auto, auto, auto, auto, auto, auto, auto, auto) {};
+  void blitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
+                       GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1,
+                       GLbitfield mask, GLenum filter) const noexcept override {
+    onBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
+                      mask, filter);
+  }
 };
 
 }  // namespace uinta

@@ -889,6 +889,16 @@ struct OpenGLApi {
                                   GLsizeiptr size,
                                   const void* data) const noexcept = 0;
 
+  /*! `glObjectLabel` — Label a named object identified within a namespace
+   *
+   *  @param identifier Specifies the type of object identified by `name`.
+   *  @param name Specifies the name of the object whose label is to be set.
+   *  @param length Specifies the length of the label to be used.
+   *  @param label Pointer to a string containing the label to be assigned.
+   */
+  virtual void objectLabel(GLenum identifier, GLuint name, GLsizei length,
+                           const GLchar* label) const noexcept = 0;
+
   /*! `glPointSize` — specify the diameter of rasterized points
    *
    *  @brief `glPointSize` specifies the rasterized diameter of points.
@@ -2166,6 +2176,54 @@ struct OpenGLApi {
    * buffers into which fragment colors or data values will be written.
    */
   virtual void drawBuffers(GLsizei n, const GLenum* bufs) const noexcept = 0;
+
+  /*! `glDepthMask` — Enable or disable writing into the depth buffer
+   *
+   *  @param flag Specifies whether the depth buffer is enabled for writing.
+   */
+  virtual void depthMask(GLboolean flag) const noexcept = 0;
+
+  /*! `glDepthFunc` — Specify the value used for depth buffer comparisons
+   *
+   *  @param func Specifies the depth comparison function.
+   */
+  virtual void depthFunc(GLenum func) const noexcept = 0;
+
+  /*! `glDebugMessageCallback` — Register a callback for debug messages
+   *
+   *  @param callback Callback function to invoke.
+   *  @param userParam User-supplied pointer passed to callback.
+   */
+  virtual void debugMessageCallback(GLDEBUGPROC callback,
+                                    const void* userParam) const noexcept = 0;
+
+  /*! `glGenRenderbuffers` — Generate renderbuffer object names
+   */
+  virtual void genRenderbuffers(GLsizei n, GLuint* ids) const noexcept = 0;
+
+  /*! `glDeleteRenderbuffers` — Delete renderbuffer objects
+   */
+  virtual void deleteRenderbuffers(GLsizei n, GLuint* ids) const noexcept = 0;
+
+  /*! `glBindRenderbuffer` — Bind a renderbuffer to a renderbuffer target
+   */
+  virtual void bindRenderbuffer(GLenum target,
+                                GLuint renderbuffer) const noexcept = 0;
+
+  /*! `glRenderbufferStorage` — Establish data storage, format and dimensions
+   * of a renderbuffer object's image
+   */
+  virtual void renderbufferStorage(GLenum target, GLenum internalformat,
+                                   GLsizei width,
+                                   GLsizei height) const noexcept = 0;
+
+  /*! `glBlitFramebuffer` — Copy a block of pixels from the read framebuffer
+   * to the draw framebuffer
+   */
+  virtual void blitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1,
+                               GLint srcY1, GLint dstX0, GLint dstY0,
+                               GLint dstX1, GLint dstY1, GLbitfield mask,
+                               GLenum filter) const noexcept = 0;
 };
 
 struct OpenGLApiImpl : OpenGLApi {
@@ -2434,6 +2492,11 @@ struct OpenGLApiImpl : OpenGLApi {
   void namedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size,
                           const void* data) const noexcept override {
     glNamedBufferSubData(buffer, offset, size, data);
+  }
+
+  void objectLabel(GLenum identifier, GLuint name, GLsizei length,
+                   const GLchar* label) const noexcept override {
+    glObjectLabel(identifier, name, length, label);
   }
 
   void pointSize(GLfloat size) const noexcept override { glPointSize(size); }
@@ -2742,6 +2805,40 @@ struct OpenGLApiImpl : OpenGLApi {
     glDrawBuffers(n, bufs);
   }
 
+  void depthMask(GLboolean flag) const noexcept override { glDepthMask(flag); }
+
+  void depthFunc(GLenum func) const noexcept override { glDepthFunc(func); }
+
+  void debugMessageCallback(GLDEBUGPROC callback,
+                            const void* userParam) const noexcept override {
+    glDebugMessageCallback(callback, userParam);
+  }
+
+  void genRenderbuffers(GLsizei n, GLuint* ids) const noexcept override {
+    glGenRenderbuffers(n, ids);
+  }
+
+  void deleteRenderbuffers(GLsizei n, GLuint* ids) const noexcept override {
+    glDeleteRenderbuffers(n, ids);
+  }
+
+  void bindRenderbuffer(GLenum target,
+                        GLuint renderbuffer) const noexcept override {
+    glBindRenderbuffer(target, renderbuffer);
+  }
+
+  void renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width,
+                           GLsizei height) const noexcept override {
+    glRenderbufferStorage(target, internalformat, width, height);
+  }
+
+  void blitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
+                       GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1,
+                       GLbitfield mask, GLenum filter) const noexcept override {
+    glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
+                      mask, filter);
+  }
+
  private:
   OpenGLApiImpl() noexcept = default;
 };
@@ -2794,6 +2891,31 @@ class DepthTestGuard : public CapabilityGuard {
   DepthTestGuard& operator=(const DepthTestGuard&) noexcept = delete;
   DepthTestGuard(DepthTestGuard&&) noexcept = delete;
   DepthTestGuard& operator=(DepthTestGuard&&) noexcept = delete;
+};
+
+/*! RAII guard for `glDepthMask`. Saves previous depth-mask state on
+ * construction and restores it on destruction. */
+class DepthMaskGuard {
+ public:
+  explicit DepthMaskGuard(GLboolean enabled,
+                          const OpenGLApi* gl = OpenGLApiImpl::Instance())
+      : gl_(gl) {
+    GLboolean prev = GL_TRUE;
+    gl_->getBooleanv(GL_DEPTH_WRITEMASK, &prev);
+    prev_ = prev;
+    gl_->depthMask(enabled);
+  }
+
+  ~DepthMaskGuard() noexcept { gl_->depthMask(prev_); }
+
+  DepthMaskGuard(const DepthMaskGuard&) noexcept = delete;
+  DepthMaskGuard& operator=(const DepthMaskGuard&) noexcept = delete;
+  DepthMaskGuard(DepthMaskGuard&&) noexcept = delete;
+  DepthMaskGuard& operator=(DepthMaskGuard&&) noexcept = delete;
+
+ private:
+  const OpenGLApi* gl_;
+  GLboolean prev_ = GL_TRUE;
 };
 
 class CullFaceGuard : public CapabilityGuard {
@@ -2860,8 +2982,8 @@ class BlendGuard : public CapabilityGuard {
       : CapabilityGuard(GL_BLEND, isActive, gl),
         sfactor_(sfactor),
         dfactor_(dfactor) {
-    glGetIntegerv(GL_BLEND_SRC, &prevSfactor_);
-    glGetIntegerv(GL_BLEND_DST, &prevDfactor_);
+    gl_->getIntegerv(GL_BLEND_SRC, &prevSfactor_);
+    gl_->getIntegerv(GL_BLEND_DST, &prevDfactor_);
     if (isActive) {
       activate();
     }

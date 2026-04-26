@@ -13,10 +13,12 @@
 #include "uinta/debug/ui/imgui_ui.h"
 #include "uinta/debug/ui/input_ui.h"
 #include "uinta/debug/ui/platform_ui.h"
+#include "uinta/debug/ui/post_process_ui.h"
 #include "uinta/debug/ui/scene_ui.h"
 #include "uinta/engine/engine.h"
 #include "uinta/engine/engine_events.h"
 #include "uinta/platform.h"
+#include "uinta/post_process/post_processor.h"
 #include "uinta/shaders/basic_shader.h"
 
 namespace uinta {
@@ -159,6 +161,9 @@ void DebugSceneUi::render(time_t /*unused*/) noexcept {
   RenderImGuiUi(engine()->platform()->window());
   RenderInputUi(input_, engine()->platform()->window());
   RenderPlatformUi(engine()->platform());
+  if (auto* processor = engine()->service<PostProcessor>()) {
+    RenderPostProcessUi(processor);
+  }
   RenderSceneUi(engine());
 
   if (flags_.isImGuiDeinitialized()) {
