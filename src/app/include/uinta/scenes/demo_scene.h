@@ -9,6 +9,14 @@
 #include "uinta/engine/engine.h"
 #include "uinta/gl.h"
 #include "uinta/math/direction.h"
+#include "uinta/post_process/passes/bloom_pass.h"
+#include "uinta/post_process/passes/color_grading_pass.h"
+#include "uinta/post_process/passes/depth_visualizer_pass.h"
+#include "uinta/post_process/passes/fog_pass.h"
+#include "uinta/post_process/passes/outline_pass.h"
+#include "uinta/post_process/passes/passthrough_pass.h"
+#include "uinta/post_process/passes/tonemap_pass.h"
+#include "uinta/post_process/post_processor.h"
 #include "uinta/scene/scene.h"
 #include "uinta/scenes/city_game/city_game_scene.h"
 #include "uinta/scenes/fbx_viewer_scene.h"
@@ -24,9 +32,27 @@ namespace uinta {
 class DemoScene : public Scene {
  public:
   explicit DemoScene(Engine* engine, SceneLayer layer = SceneLayer::Simulation) noexcept
-      : Scene(engine, layer), basicShader_(engine), camera_(engine), cursor_(engine) {
+      : Scene(engine, layer), basicShader_(engine), camera_(engine), cursor_(engine), postProcessor_(engine) {
     auto clearColor = glm::vec3(0.62, 0.67, 0.75);
     engine->service<const OpenGLApi>()->clearColor(clearColor.r, clearColor.g, clearColor.b, 1.0);
+
+    // Register default passes. Order matters: passes execute in insertion
+    // order and the terminal enabled pass writes to the default framebuffer.
+    //
+    // Passthrough: identity (placeholder / easy on/off).
+    // DepthVisualizer: debug tool.
+    // Fog: HDR depth-based fog.
+    // Bloom: HDR glow; runs before Tonemap so it's summed in HDR.
+    // Tonemap: HDR -> sRGB LDR conversion.
+    // ColorGrading: LUT-based grade applied in sRGB space.
+    // Outline: cel/toon silhouette pass.
+    postProcessor_.addPass<PassthroughPass>();
+    postProcessor_.addPass<DepthVisualizerPass>();
+    postProcessor_.addPass<FogPass>();
+    postProcessor_.addPass<BloomPass>();
+    postProcessor_.addPass<TonemapPass>();
+    postProcessor_.addPass<ColorGradingPass>();
+    postProcessor_.addPass<OutlinePass>();
 
     debugScene_ = addScene<DebugScene>();
     manifoldScene_ = addScene<ManifoldScene>();
@@ -44,6 +70,7 @@ class DemoScene : public Scene {
     basicShader_.update(delta);
     camera_.update(delta);
     cursor_.update(delta);
+    postProcessor_.beginSimulation();
   }
 
   void render(time_t delta) noexcept override {
@@ -66,6 +93,8 @@ class DemoScene : public Scene {
   TextScene* textScene_ = nullptr;
   HexScene* hexScene_ = nullptr;
   CityGameScene* cityGameScene_ = nullptr;
+
+  PostProcessor postProcessor_;
 
   time_t runtime_ = 0.0;
 };
