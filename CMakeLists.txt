@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(
   uinta
-  VERSION 0.0.1
+  VERSION 0.0.2
   LANGUAGES CXX C)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -109,6 +109,12 @@ foreach(path IN LISTS UINTA_RES_PATHS)
   string(APPEND UINTA_FILE_PATHS_INIT "\"${path}\"")
 endforeach()
 
+configure_file(cmake/cfg.h.in ${UINTA_GENERATED_DIR}/uinta/cfg.h)
+message(STATUS "Created configuration file: ${UINTA_GENERATED_DIR}/uinta/cfg.h")
+
+install(FILES ${UINTA_GENERATED_DIR}/uinta/cfg.h
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/uinta)
+
 # glad and eventpp are vendored in-tree rather than found/fetched, so their
 # public headers aren't installed by any cmake/*.cmake module.
 install(DIRECTORY src/platform/lib/glad/include/ DESTINATION
@@ -118,7 +124,7 @@ install(DIRECTORY src/platform/lib/eventpp/include/ DESTINATION
   ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(
-  TARGETS engine glad eventpp
+  TARGETS platform engine glad eventpp
   EXPORT uinta-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
