@@ -1,0 +1,13 @@
+#ifndef UINTA_CFG_H
+#define UINTA_CFG_H
+
+#include <array>
+
+namespace uinta::cfg {
+constexpr std::size_t UINTA_FILE_PATHS_COUNT = ${UINTA_FILE_PATHS_COUNT};
+constexpr std::array<const char*, UINTA_FILE_PATHS_COUNT> UINTA_FILE_PATHS = {
+    ${UINTA_FILE_PATHS_INIT}
+};
+}  // namespace uinta::cfg
+
+#endif  // UINTA_CFG_H
